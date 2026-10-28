@@ -1,6 +1,7 @@
 pub mod actions;
 pub mod credential_query_matching;
 pub mod reducers;
+pub mod selective_disclosure;
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;

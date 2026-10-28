@@ -63,6 +63,11 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                     client_name: client_metadata.client_name,
                     logo_uri: client_metadata.logo_uri,
+                    connection_url: Some(client_metadata.connection_url),
+                    domain_validation: pending_connection_data
+                        .domain_validation
+                        .as_ref()
+                        .map(|(status, _)| status.clone()),
                     requested_credentials,
                     is_interactive: false,
                 }),

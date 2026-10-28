@@ -8,17 +8,20 @@
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
   import type { RequestedCredential } from '@bindings/user_prompt/RequestedCredential';
 
-  import { ActionSheet, Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { PlugsConnectedFillIcon, SealCheckFillIcon, WarningCircleFillIcon } from '$lib/icons';
+  import { SealCheckFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
   import { error, state } from '$lib/stores';
-  import { formatDateWithWrittenMonth, hash } from '$lib/utils';
+  import { formatDateWithWrittenMonth } from '$lib/utils';
 
   import CredentialDetails from '../../credentials/[id]/CredentialDetails.svelte';
   import CredentialPicker from './CredentialPicker.svelte';
+  import { claimRows, claimText, defaultDisclosure, satisfiesRequest } from './disclosure';
   import RequestCard from './RequestCard.svelte';
+  import ReviewShare from './ReviewShare.svelte';
   import { isSelectable } from './utils';
+  import VerifierHeader from './VerifierHeader.svelte';
 
   // TypeScript does not know that the `current_user_prompt` is of type `share-credentials`.
   // Extract the type from `CurrentUserPrompt`.
@@ -26,7 +29,7 @@
   type ShareCredentialsPrompt = IsShareCredentialsPrompt<CurrentUserPrompt>;
 
   // TODO: client_name should fallback to hostname if no display name is provided
-  const { client_name, logo_uri, requested_credentials, is_interactive } =
+  const { client_name, logo_uri, connection_url, domain_validation, requested_credentials, is_interactive } =
     $state.current_user_prompt as ShareCredentialsPrompt;
 
   const credentialsById = new Map(($state.credentials ?? []).map((c) => [c.id, c]));
@@ -63,9 +66,82 @@
     requested_credentials.map((r) => [r.query_id, defaultSelection(r)]),
   );
 
+  const optionOf = (requested: RequestedCredential, id: string | undefined) =>
+    requested.options.find((option) => option.id === id);
+
+  // The fields of the first chosen credential, which the card of the request shows.
+  function rowsOf(requested: RequestedCredential, ids: string[]) {
+    const option = optionOf(requested, ids[0]);
+    const credential = credentialsById.get(ids[0]);
+    return option && credential ? claimRows(requested, option, credential) : [];
+  }
+
+  const initialDisclosure = (requested: RequestedCredential, ids: string[]) => {
+    const option = optionOf(requested, ids[0]);
+    return option ? defaultDisclosure(requested, option) : [];
+  };
+
+  // Cards with a choice to make start expanded.
+  const initialExpanded = (requested: RequestedCredential, ids: string[]) =>
+    rowsOf(requested, ids).some((row) => !row.required);
+
+  // The requested claims (by index) that are shared, per credential query.
+  let disclosure: Record<string, number[]> = Object.fromEntries(
+    requested_credentials.map((r) => [r.query_id, initialDisclosure(r, selection[r.query_id])]),
+  );
+  let expanded: Record<string, boolean> = Object.fromEntries(
+    requested_credentials.map((r) => [r.query_id, initialExpanded(r, selection[r.query_id])]),
+  );
+
+  function select(requested: RequestedCredential, ids: string[]) {
+    selection = { ...selection, [requested.query_id]: ids };
+    disclosure = { ...disclosure, [requested.query_id]: initialDisclosure(requested, ids) };
+    expanded = { ...expanded, [requested.query_id]: initialExpanded(requested, ids) };
+  }
+
   $: selections = requested_credentials
     .filter((r) => selection[r.query_id].length > 0)
-    .map((r) => ({ query_id: r.query_id, credential_uuids: selection[r.query_id] }));
+    .map((r) => ({
+      query_id: r.query_id,
+      credential_uuids: selection[r.query_id],
+      ...(optionOf(r, selection[r.query_id][0])?.selective_disclosure
+        ? { disclosed_claims: disclosure[r.query_id] }
+        : {}),
+    }));
+
+  $: satisfied = requested_credentials.every((r) =>
+    selection[r.query_id].every((id) => {
+      const option = optionOf(r, id);
+      return !option || satisfiesRequest(r, option, disclosure[r.query_id]);
+    }),
+  );
+
+  // What the review lists: the shared fields per chosen credential, and the switched-off fields and the credentials
+  // that were not chosen.
+  $: review = (() => {
+    const locale = $state.profile_settings.locale;
+    const shared = requested_credentials.flatMap((r) =>
+      selection[r.query_id].flatMap((id) => {
+        const credential = credentialsById.get(id);
+        if (!credential) return [];
+        const fields = rowsOf(r, [id])
+          .filter((row) => row.required || (row.index !== undefined && disclosure[r.query_id].includes(row.index)))
+          .map((row) => ({ label: row.label, value: claimText(row.value, locale) }));
+        return [{ credential, fields }];
+      }),
+    );
+    const notShared = requested_credentials.flatMap((r) => [
+      ...selection[r.query_id].flatMap((id) =>
+        rowsOf(r, [id])
+          .filter((row) => !row.required && row.index !== undefined && !disclosure[r.query_id].includes(row.index))
+          .map((row) => ({ label: row.label, detail: credentialsById.get(id)?.display_name ?? '' })),
+      ),
+      ...candidates[r.query_id]
+        .filter((c) => !selection[r.query_id].includes(c.id) && isSelectable(optionStates.get(c.id)))
+        .map((c) => ({ label: c.display_name, detail: $LL.SCAN.SHARE_CREDENTIALS.REVIEW.NOT_CHOSEN() })),
+    ]);
+    return { shared, notShared };
+  })();
 
   $: expiredSelected = selections
     .flatMap((s) => s.credential_uuids)
@@ -77,6 +153,8 @@
   let picker: { requested: RequestedCredential; selected: string[]; search: string } | undefined;
   // A credential opened from the picker with "View details".
   let details: DisplayCredential | undefined;
+  // Whether the last check before sharing is shown.
+  let reviewing = false;
 
   function openPicker(requested: RequestedCredential) {
     picker = { requested, selected: [...selection[requested.query_id]], search: '' };
@@ -94,15 +172,15 @@
   let loading = false;
   const expiredWarningOpen = writable(false);
 
-  $: imageId = logo_uri ? hash(logo_uri) : '_';
-
-  // Going back closes the details or the picker, or cancels sharing just like the "Cancel" button (which is disabled
-  // while loading).
+  // Going back closes the details, the picker or the review, or declines sharing just like the "Decline" button (which
+  // is disabled while loading).
   const cancel = useBackNavigation(() => {
     if (details) {
       details = undefined;
     } else if (picker) {
       picker = undefined;
+    } else if (reviewing && !loading) {
+      reviewing = false;
     } else if (!loading) {
       cancelUserFlow();
     }
@@ -129,6 +207,7 @@
 
   function chooseAnother() {
     $expiredWarningOpen = false;
+    reviewing = false;
     const requested = requested_credentials.find((r) => selection[r.query_id].includes(expiredSelected[0]?.id));
     if (requested) openPicker(requested);
   }
@@ -178,8 +257,23 @@
     on:back={() => (picker = undefined)}
     on:details={({ detail }) => (details = detail)}
     on:use={({ detail }) => {
-      if (picker) selection = { ...selection, [picker.requested.query_id]: detail };
+      if (picker) select(picker.requested, detail);
       picker = undefined;
+    }}
+  />
+{:else if reviewing}
+  <ReviewShare
+    clientName={client_name}
+    logoUri={logo_uri}
+    connectionUrl={connection_url}
+    domainValidation={domain_validation}
+    shared={review.shared}
+    notShared={review.notShared}
+    {loading}
+    on:back={() => (reviewing = false)}
+    on:share={approve}
+    on:decline={() => {
+      if (!loading) cancelUserFlow();
     }}
   />
 {:else}
@@ -191,57 +285,46 @@
       class="sticky top-0 z-10"
     />
 
-    <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-      <!-- Header -->
-      {#if logo_uri}
-        <div class="flex h-[75px] w-[75px] items-center justify-center">
-          <Image id={imageId} isTempAsset={true} imgClass="size-full rounded-3xl bg-transparent object-contain" />
-        </div>
-      {:else}
-        <PaddedIcon icon={PlugsConnectedFillIcon} />
-      {/if}
-      <div class="text-center">
-        <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-          {client_name}
+    <div class="flex grow flex-col gap-4 px-4 pt-2 pb-6">
+      <VerifierHeader
+        title={$LL.SCAN.SHARE_CREDENTIALS.WANTS_TO_SEE({ name: client_name })}
+        logoUri={logo_uri}
+        connectionUrl={connection_url}
+        domainValidation={domain_validation}
+      />
+
+      <div class="flex items-center gap-1.5">
+        <SealCheckFillIcon class="size-4 text-primary" />
+        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+          {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED_COUNT({ count: requested_credentials.length })}
         </p>
       </div>
 
-      <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-        {$LL.SCAN.SHARE_CREDENTIALS.DESCRIPTION()}
-      </p>
-
-      <div class="w-full">
-        <div class="flex items-center">
-          <SealCheckFillIcon class="mr-2 text-primary" />
-          <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-            {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED()}
-          </p>
-        </div>
-
-        <div class="mt-3 flex w-full flex-col space-y-[15px]">
-          {#each requested_credentials as requested (requested.query_id)}
-            <RequestCard
-              {requested}
-              candidates={candidates[requested.query_id]}
-              selected={selection[requested.query_id]
-                .map((id) => credentialsById.get(id))
-                .filter((c): c is DisplayCredential => c !== undefined)}
-              on:change={() => openPicker(requested)}
-            />
-          {/each}
-        </div>
+      <div class="flex w-full flex-col space-y-4">
+        {#each requested_credentials as requested (requested.query_id)}
+          <RequestCard
+            {requested}
+            candidates={candidates[requested.query_id]}
+            selected={selection[requested.query_id]
+              .map((id) => credentialsById.get(id))
+              .filter((c): c is DisplayCredential => c !== undefined)}
+            disclosed={disclosure[requested.query_id]}
+            bind:expanded={expanded[requested.query_id]}
+            on:change={() => openPicker(requested)}
+            on:disclose={({ detail }) => (disclosure = { ...disclosure, [requested.query_id]: detail })}
+          />
+        {/each}
       </div>
     </div>
 
     <!-- Controls -->
     <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
       <Button
-        label={$LL.SCAN.SHARE_CREDENTIALS.APPROVE()}
-        on:click={approve}
-        disabled={selections.length < requested_credentials.length}
-        {loading}
+        label={$LL.SCAN.SHARE_CREDENTIALS.REVIEW_AND_SHARE()}
+        on:click={() => (reviewing = true)}
+        disabled={selections.length < requested_credentials.length || !satisfied}
       />
-      <Button label={$LL.CANCEL()} variant="secondary" on:click={cancel} disabled={loading} />
+      <Button label={$LL.SCAN.SHARE_CREDENTIALS.DECLINE()} variant="secondary" on:click={cancel} disabled={loading} />
     </div>
   </div>
 {/if}

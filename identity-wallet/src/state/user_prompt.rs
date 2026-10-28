@@ -5,7 +5,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
-use crate::state::{core_utils::history_event::HistoryEvent, did::validate_domain_linkage::ValidationResult};
+use crate::state::{
+    core_utils::history_event::HistoryEvent,
+    did::validate_domain_linkage::{ValidationResult, ValidationStatus},
+};
 
 use super::credentials::credential_query_matching::RequestedCredential;
 use super::did::validate_linked_verifiable_presentations::LinkedVerifiableCredentialData;
@@ -55,6 +58,13 @@ pub enum CurrentUserPrompt {
         client_name: String,
         #[ts(optional)]
         logo_uri: Option<String>,
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        connection_url: Option<String>,
+        /// The result of the domain linkage check of `connection_url`, when it was checked.
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        domain_validation: Option<ValidationStatus>,
         requested_credentials: Vec<RequestedCredential>,
         // If this is set to `true`, then this means that the credentials being requested are required during an
         // OID4VCI Interactive Authorization flow.

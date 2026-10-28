@@ -15,7 +15,9 @@ use crate::{
         },
         credentials::{
             actions::credentials_selected::{CredentialSelection, CredentialsSelected},
-            credential_query_matching::{credential_query_types_key, satisfies_credential_query},
+            credential_query_matching::{credential_data, credential_query_types_key, satisfies_credential_query},
+            selective_disclosure::{claims_to_disclose, conceal_unrequested_claims, supports_selective_disclosure},
+            VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -195,7 +197,11 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
                 )));
             }
 
-            verifiable_credentials.push(verifiable_credential_record.verifiable_credential.clone());
+            verifiable_credentials.push(presented_credential(
+                requested_credential_query,
+                verifiable_credential_record,
+                selection.disclosed_claims.as_deref(),
+            )?);
             history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
         }
 
@@ -245,6 +251,29 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     .await?;
 
     Ok((vp_token_payload, history_credentials, last_shared))
+}
+
+/// The credential as it is presented for the query: for selectively disclosable formats only the requested claims
+/// chosen by the holder are disclosed.
+fn presented_credential(
+    credential_query: &CredentialQuery,
+    record: &VerifiableCredentialRecord,
+    disclosed_claims: Option<&[usize]>,
+) -> Result<Value, AppError> {
+    let verifiable_credential = &record.verifiable_credential;
+    if !supports_selective_disclosure(&credential_query.format) {
+        return Ok(verifiable_credential.clone());
+    }
+    let sd_jwt = verifiable_credential
+        .as_str()
+        .ok_or(AppError::InvalidCredentialFormatError)?;
+    let credential_json = credential_data(credential_query, record).unwrap_or_default();
+    let claims = credential_query.claims.as_deref().unwrap_or_default();
+    let claim_paths: Vec<_> = claims_to_disclose(credential_query, &credential_json, disclosed_claims)?
+        .into_iter()
+        .map(|index| &claims[index].path)
+        .collect();
+    conceal_unrequested_claims(sd_jwt, &credential_query.format, &claim_paths).map(Value::String)
 }
 
 #[tracing::instrument(skip_all)]
@@ -362,7 +391,7 @@ async fn get_vp_token(
                     StringOrObject::from(signed_vc_presentation_jwt_string)
                 }
                 Format::DcSdJwt => {
-                    let sd_jwt_vc = vc_value
+                    let mut sd_jwt_vc = vc_value
                         .as_str()
                         .ok_or(AppError::InvalidCredentialFormatError)?
                         .to_string()
@@ -394,12 +423,6 @@ async fn get_vp_token(
                         .finish(&sd_jwt_vc, &Sha256Hasher::new(), algorithm, &subject_wrapper)
                         .await
                         .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
-
-                    let (mut sd_jwt_vc, _) = sd_jwt_vc
-                        .into_presentation(&Sha256Hasher::new())
-                        .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))?
-                        // TODO: Conceal claims
-                        .finish();
 
                     sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
 

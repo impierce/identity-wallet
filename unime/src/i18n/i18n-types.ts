@@ -953,18 +953,6 @@ type RootTranslation = {
 			 */
 			NAVBAR_TITLE: string
 			/**
-			 * r​e​q​u​e​s​t​s​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
-			 */
-			DESCRIPTION: string
-			/**
-			 * R​e​q​u​e​s​t​e​d
-			 */
-			REQUESTED: string
-			/**
-			 * A​p​p​r​o​v​e​ ​r​e​q​u​e​s​t
-			 */
-			APPROVE: string
-			/**
 			 * {​c​o​u​n​t​}​ ​s​e​l​e​c​t​e​d
 			 * @param {number} count
 			 */
@@ -983,6 +971,100 @@ type RootTranslation = {
 			 * @param {string} date
 			 */
 			ISSUED: RequiredParams<'date'>
+			/**
+			 * {​n​a​m​e​}​ ​w​a​n​t​s​ ​t​o​ ​s​e​e
+			 * @param {string} name
+			 */
+			WANTS_TO_SEE: RequiredParams<'name'>
+			/**
+			 * R​e​q​u​e​s​t​e​d​ ​·​ ​{​c​o​u​n​t​}​ ​{​{​c​r​e​d​e​n​t​i​a​l​|​c​r​e​d​e​n​t​i​a​l​s​}​}
+			 * @param {number} count
+			 */
+			REQUESTED_COUNT: RequiredParams<'count'>
+			/**
+			 * R​e​v​i​e​w​ ​a​n​d​ ​s​h​a​r​e
+			 */
+			REVIEW_AND_SHARE: string
+			/**
+			 * D​e​c​l​i​n​e
+			 */
+			DECLINE: string
+			CLAIMS: {
+				/**
+				 * R​e​q​u​i​r​e​d
+				 */
+				REQUIRED: string
+				/**
+				 * O​p​t​i​o​n​a​l
+				 */
+				OPTIONAL: string
+				/**
+				 * S​h​a​r​i​n​g​ ​{​s​h​a​r​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​r​e​q​u​e​s​t​e​d​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}
+				 * @param {number} shared
+				 * @param {number} total
+				 */
+				SHARING: RequiredParams<'shared' | 'total'>
+				/**
+				 * {​s​h​a​r​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​r​e​q​u​e​s​t​e​d​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}​ ​s​h​a​r​e​d
+				 * @param {number} shared
+				 * @param {number} total
+				 */
+				SHARED_SUMMARY: RequiredParams<'shared' | 'total'>
+				/**
+				 * {​c​o​u​n​t​}​ ​o​p​t​i​o​n​a​l​ ​o​f​f
+				 * @param {number} count
+				 */
+				OPTIONAL_OFF: RequiredParams<'count'>
+				/**
+				 * T​h​e​ ​w​h​o​l​e​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​s​h​a​r​e​d
+				 */
+				WHOLE_CREDENTIAL: string
+				/**
+				 * N​o​ ​f​i​e​l​d​s​ ​a​r​e​ ​r​e​q​u​e​s​t​e​d​ ​f​r​o​m​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				NONE_REQUESTED: string
+				/**
+				 * T​u​r​n​ ​o​n​ ​m​o​r​e​ ​f​i​e​l​d​s​ ​t​o​ ​s​h​a​r​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				NOT_ENOUGH: string
+				/**
+				 * S​h​o​w​ ​f​i​e​l​d​s
+				 */
+				EXPAND: string
+				/**
+				 * H​i​d​e​ ​f​i​e​l​d​s
+				 */
+				COLLAPSE: string
+			}
+			REVIEW: {
+				/**
+				 * R​e​v​i​e​w
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * Y​o​u​ ​a​r​e​ ​s​h​a​r​i​n​g​ ​w​i​t​h​ ​{​n​a​m​e​}
+				 * @param {string} name
+				 */
+				SHARING_WITH: RequiredParams<'name'>
+				/**
+				 * W​i​l​l​ ​b​e​ ​s​h​a​r​e​d​ ​·​ ​{​c​o​u​n​t​}​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}
+				 * @param {number} count
+				 */
+				WILL_BE_SHARED: RequiredParams<'count'>
+				/**
+				 * N​o​t​ ​s​h​a​r​e​d
+				 */
+				NOT_SHARED: string
+				/**
+				 * N​o​t​ ​c​h​o​s​e​n
+				 */
+				NOT_CHOSEN: string
+				/**
+				 * S​h​a​r​e​ ​w​i​t​h​ ​{​n​a​m​e​}
+				 * @param {string} name
+				 */
+				SHARE: RequiredParams<'name'>
+			}
 			PICKER: {
 				/**
 				 * C​h​o​o​s​e​ ​c​r​e​d​e​n​t​i​a​l
@@ -2742,18 +2824,6 @@ export type TranslationFunctions = {
 			 */
 			NAVBAR_TITLE: () => LocalizedString
 			/**
-			 * requests the following credentials
-			 */
-			DESCRIPTION: () => LocalizedString
-			/**
-			 * Requested
-			 */
-			REQUESTED: () => LocalizedString
-			/**
-			 * Approve request
-			 */
-			APPROVE: () => LocalizedString
-			/**
 			 * {count} selected
 			 */
 			SELECTED_COUNT: (arg: { count: number }) => LocalizedString
@@ -2769,6 +2839,90 @@ export type TranslationFunctions = {
 			 * Issued {date}
 			 */
 			ISSUED: (arg: { date: string }) => LocalizedString
+			/**
+			 * {name} wants to see
+			 */
+			WANTS_TO_SEE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Requested · {count} {{credential|credentials}}
+			 */
+			REQUESTED_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Review and share
+			 */
+			REVIEW_AND_SHARE: () => LocalizedString
+			/**
+			 * Decline
+			 */
+			DECLINE: () => LocalizedString
+			CLAIMS: {
+				/**
+				 * Required
+				 */
+				REQUIRED: () => LocalizedString
+				/**
+				 * Optional
+				 */
+				OPTIONAL: () => LocalizedString
+				/**
+				 * Sharing {shared} of {total} requested {{field|fields}}
+				 */
+				SHARING: (arg: { shared: number, total: number }) => LocalizedString
+				/**
+				 * {shared} of {total} requested {{field|fields}} shared
+				 */
+				SHARED_SUMMARY: (arg: { shared: number, total: number }) => LocalizedString
+				/**
+				 * {count} optional off
+				 */
+				OPTIONAL_OFF: (arg: { count: number }) => LocalizedString
+				/**
+				 * The whole credential is shared
+				 */
+				WHOLE_CREDENTIAL: () => LocalizedString
+				/**
+				 * No fields are requested from this credential
+				 */
+				NONE_REQUESTED: () => LocalizedString
+				/**
+				 * Turn on more fields to share this credential
+				 */
+				NOT_ENOUGH: () => LocalizedString
+				/**
+				 * Show fields
+				 */
+				EXPAND: () => LocalizedString
+				/**
+				 * Hide fields
+				 */
+				COLLAPSE: () => LocalizedString
+			}
+			REVIEW: {
+				/**
+				 * Review
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * You are sharing with {name}
+				 */
+				SHARING_WITH: (arg: { name: string }) => LocalizedString
+				/**
+				 * Will be shared · {count} {{field|fields}}
+				 */
+				WILL_BE_SHARED: (arg: { count: number }) => LocalizedString
+				/**
+				 * Not shared
+				 */
+				NOT_SHARED: () => LocalizedString
+				/**
+				 * Not chosen
+				 */
+				NOT_CHOSEN: () => LocalizedString
+				/**
+				 * Share with {name}
+				 */
+				SHARE: (arg: { name: string }) => LocalizedString
+			}
 			PICKER: {
 				/**
 				 * Choose credential

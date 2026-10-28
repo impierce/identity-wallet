@@ -1,10 +1,16 @@
 use crate::error::AppError;
-use crate::state::{connections::Connection, credentials::VerifiableCredentialRecord};
+use crate::state::{
+    connections::Connection,
+    credentials::{
+        selective_disclosure::{claim_sets, concealable_claims, supports_selective_disclosure},
+        VerifiableCredentialRecord,
+    },
+};
 use chrono::{DateTime, Utc};
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::debug;
 use oauth_tsl::status_list::StatusType;
-use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
+use oid4vc::oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims};
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::{
     dcql::dcql_query::{CredentialQuery, DcqlQuery, Format, MetaTypes},
@@ -29,6 +35,14 @@ pub struct RequestedCredential {
     pub options: Vec<CredentialOption>,
     /// The options that were last shared with this verifier for the same credential types.
     pub last_shared: Vec<String>,
+    /// The claims the verifier asks for, in the order of the query.
+    #[serde(default)]
+    #[ts(type = "Array<Array<string | number | null>>")]
+    pub claims: Vec<ClaimPathPointer>,
+    /// The combinations of `claims` (by index) the verifier accepts, most preferred first. Empty when all claims are
+    /// requested.
+    #[serde(default)]
+    pub claim_sets: Vec<Vec<usize>>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -36,6 +50,23 @@ pub struct RequestedCredential {
 pub struct CredentialOption {
     pub id: String,
     pub state: OptionState,
+    /// Whether only the requested claims of this credential are shared, which the holder can then choose from.
+    #[serde(default)]
+    pub selective_disclosure: bool,
+    /// The requested claims as found in this credential, in the order of `RequestedCredential::claims`.
+    #[serde(default)]
+    pub claims: Vec<OptionClaim>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/OptionClaim.ts")]
+pub struct OptionClaim {
+    /// The value at the claim's path, `null` when the credential does not have it and an array when the path
+    /// selects several values.
+    #[ts(type = "any")]
+    pub value: Value,
+    /// Whether the claim can be left out of the presentation.
+    pub concealable: bool,
 }
 
 /// Whether a stored credential can be shared: valid ones are preselected, expired ones can be chosen after a warning,
@@ -64,12 +95,16 @@ pub fn match_credential_queries(
             options: verifiable_credentials
                 .iter()
                 .filter(|record| satisfies_credential_query(credential_query, record))
-                .map(|record| CredentialOption {
-                    id: record.display_credential.id.clone(),
-                    state: option_state(record),
-                })
+                .map(|record| credential_option(credential_query, record))
                 .collect(),
             last_shared: vec![],
+            claims: credential_query
+                .claims
+                .iter()
+                .flatten()
+                .map(|claim| claim.path.clone())
+                .collect(),
+            claim_sets: claim_sets(credential_query),
         })
         .collect()
 }
@@ -90,6 +125,41 @@ pub fn ensure_shareable(requested_credentials: &[RequestedCredential]) -> Result
         Ok(())
     } else {
         Err(AppError::MissingRequiredCredentialError(missing.join("; ")))
+    }
+}
+
+fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCredentialRecord) -> CredentialOption {
+    let claim_paths: Vec<&ClaimPathPointer> = credential_query
+        .claims
+        .iter()
+        .flatten()
+        .map(|claim| &claim.path)
+        .collect();
+    let selective_disclosure = supports_selective_disclosure(&credential_query.format) && !claim_paths.is_empty();
+    let concealable = match record.verifiable_credential.as_str() {
+        Some(sd_jwt) if selective_disclosure => concealable_claims(sd_jwt, &claim_paths),
+        _ => vec![false; claim_paths.len()],
+    };
+    let credential_json = credential_data(credential_query, record).unwrap_or_default();
+    let claims = claim_paths
+        .iter()
+        .zip(concealable)
+        .map(|(path, concealable)| {
+            let mut values = path.get_values_from_json(&credential_json);
+            let value = match values.len() {
+                0 => Value::Null,
+                1 => values.remove(0),
+                _ => Value::Array(values),
+            };
+            OptionClaim { value, concealable }
+        })
+        .collect();
+
+    CredentialOption {
+        id: record.display_credential.id.clone(),
+        state: option_state(record),
+        selective_disclosure,
+        claims,
     }
 }
 
@@ -172,7 +242,7 @@ pub fn satisfies_credential_query(
     }
 }
 
-fn credential_data(
+pub fn credential_data(
     credential_query: &CredentialQuery,
     verifiable_credential_record: &VerifiableCredentialRecord,
 ) -> Option<Value> {

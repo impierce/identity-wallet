@@ -293,7 +293,10 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
 
                         // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
                         let ClientMetadata {
-                            client_name, logo_uri, ..
+                            client_name,
+                            logo_uri,
+                            connection_url,
+                            ..
                         } = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
 
                         info!("Interactive OID4VP client metadata: client_name={client_name:?}, logo_uri={logo_uri:?}");
@@ -325,6 +328,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                                 client_name,
                                 logo_uri,
+                                connection_url: Some(connection_url),
+                                domain_validation: None,
                                 requested_credentials,
                                 is_interactive: true,
                             }),
