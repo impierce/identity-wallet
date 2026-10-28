@@ -1,7 +1,9 @@
 import { writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
+import type { Action } from '@bindings/actions/Action';
 import type { AppState } from '@bindings/AppState';
+import type { InteractionKind } from '@bindings/interaction_result/InteractionKind';
 
 interface OnboardingState {
   name?: string;
@@ -46,6 +48,7 @@ const empty_state: AppState = {
   show_dev_mode_setting: false,
   is_unlocked: false,
   dev_mode: 'Off',
+  interaction_result: null,
 };
 
 /**
@@ -81,3 +84,16 @@ export const pageTitleStore = writable<string>();
  * Stores the direction of the last navigation. Used for page transition animations that create the sense of moving up and down a hierarchy.
  */
 export const navigationDirection = writable<'up' | 'down' | null>(null);
+
+/**
+ * An issuance or presentation that the user just confirmed and whose outcome is not known yet.
+ * Set by the prompt pages right before dispatching the action; the result pop-up shows its progress.
+ */
+export interface PendingInteraction {
+  kind: InteractionKind;
+  counterparty: string;
+  /** The action to dispatch again when the user taps "Try again" after the request could not be sent. */
+  retry?: Action;
+}
+
+export const pendingInteraction = writable<PendingInteraction | undefined>(undefined);

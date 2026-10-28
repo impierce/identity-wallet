@@ -12,7 +12,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, SealCheckFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
-  import { error, state } from '$lib/stores';
+  import { error, pendingInteraction, state } from '$lib/stores';
   import { formatDateWithWrittenMonth, hash } from '$lib/utils';
 
   import CredentialDetails from '../../credentials/[id]/CredentialDetails.svelte';
@@ -63,6 +63,11 @@
     requested_credentials.map((r) => [r.query_id, defaultSelection(r)]),
   );
 
+  // The result sheet clears the pending interaction once the outcome is handled or the sheet is dismissed: restore the
+  // controls. Minimizing keeps it set while the request is still in flight.
+  // Interactive requests never set a pending interaction and continue with another prompt instead.
+  $: if (!is_interactive && !$pendingInteraction) loading = false;
+
   $: selections = requested_credentials
     .filter((r) => selection[r.query_id].length > 0)
     .map((r) => ({ query_id: r.query_id, credential_uuids: selection[r.query_id] }));
@@ -110,13 +115,16 @@
 
   function share() {
     loading = true;
-    dispatch({
+    const action = {
       type: '[Authenticate] Credentials selected',
       payload: {
         selections,
         is_interactive,
       },
-    });
+    } as const;
+    // Interactive requests continue with another prompt instead of a result.
+    if (!is_interactive) pendingInteraction.set({ kind: 'presentation', counterparty: client_name, retry: action });
+    dispatch(action);
   }
 
   function approve() {
