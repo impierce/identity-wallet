@@ -66,7 +66,7 @@
 <!--
 @component
 A requested credential type on the share screen: the chosen credential with the fields that will be shared, which
-collapse into a summary, and a "Change" button when there are more options.
+collapse into a count, and a "Change" button when there are more options.
 -->
 <div class="flex flex-col overflow-hidden rounded-xl border border-grey bg-white dark:border-slate-600 dark:bg-dark">
   <button
