@@ -228,6 +228,12 @@ pub fn satisfies_credential_query(
     let Some(credential_object) = credential_data.as_object() else {
         return false;
     };
+    // `evaluate_credential_query` skips the `meta` check when the query requests no claims.
+    if credential_query.claims.as_deref().unwrap_or_default().is_empty()
+        && !matches_meta(credential_query, &credential_data)
+    {
+        return false;
+    }
     match DecodedPresentations::try_new(vec![credential_object.clone()]) {
         Ok(decoded_presentations) => evaluate_credential_query(credential_query, &decoded_presentations),
         Err(e) => {
@@ -275,6 +281,26 @@ pub fn credential_data(
     }
 }
 
+fn matches_meta(credential_query: &CredentialQuery, credential_data: &Value) -> bool {
+    match &credential_query.meta {
+        MetaTypes::SdJwtMeta { vct_values } => credential_data
+            .get("vct")
+            .and_then(Value::as_str)
+            .is_some_and(|vct| vct_values.iter().any(|value| value == vct)),
+        MetaTypes::W3CFormatMeta { type_values } => {
+            let types: Vec<&str> = credential_data
+                .get("type")
+                .and_then(Value::as_array)
+                .map(|types| types.iter().filter_map(Value::as_str).collect())
+                .unwrap_or_default();
+            type_values
+                .iter()
+                .any(|option| option.iter().all(|required| types.contains(&required.as_str())))
+        }
+        MetaTypes::MsoMdocMeta { .. } => true,
+    }
+}
+
 fn requested_types(credential_query: &CredentialQuery) -> Vec<String> {
     match &credential_query.meta {
         MetaTypes::SdJwtMeta { vct_values } => vct_values.clone(),
@@ -282,5 +308,35 @@ fn requested_types(credential_query: &CredentialQuery) -> Vec<String> {
             type_values.iter().filter_map(|types| types.last().cloned()).collect()
         }
         MetaTypes::MsoMdocMeta { doctype_value } => vec![doctype_value.clone()],
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    fn query(meta: Value) -> CredentialQuery {
+        serde_json::from_value(json!({ "id": "badge", "format": "vc+sd-jwt", "meta": meta })).unwrap()
+    }
+
+    #[test]
+    fn matches_meta_requires_all_types_of_one_option() {
+        let badge = query(json!({ "type_values": [["VerifiableCredential", "OpenBadgeCredential"]] }));
+
+        assert!(matches_meta(
+            &badge,
+            &json!({ "type": ["VerifiableCredential", "OpenBadgeCredential"] })
+        ));
+        assert!(!matches_meta(&badge, &json!({ "type": ["VerifiableCredential"] })));
+        assert!(!matches_meta(&badge, &json!({})));
+    }
+
+    #[test]
+    fn matches_meta_compares_vct() {
+        let pid = query(json!({ "vct_values": ["urn:eudi:pid:1"] }));
+
+        assert!(matches_meta(&pid, &json!({ "vct": "urn:eudi:pid:1" })));
+        assert!(!matches_meta(&pid, &json!({ "vct": "urn:example:email" })));
     }
 }
