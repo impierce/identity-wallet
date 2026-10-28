@@ -200,7 +200,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             credentials.retain(|display_credential| display_credential.id != vcr.display_credential.id);
         }
 
-        credentials.push(vcr.display_credential); // TODO: this is unsorted
+        credentials.push(vcr.display_credential);
 
         let redirect_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
