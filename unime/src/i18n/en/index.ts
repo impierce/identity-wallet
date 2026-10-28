@@ -357,7 +357,6 @@ const en = {
       CHANGE: 'Change',
       ISSUED: 'Issued {date:string}',
       WANTS_TO_SEE: '{name:string} wants to see',
-      REQUESTED_COUNT: 'Requested · {count:number} {{credential|credentials}}',
       REVIEW_AND_SHARE: 'Review and share',
       DECLINE: 'Decline',
       CLAIMS: {

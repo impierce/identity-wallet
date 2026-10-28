@@ -10,7 +10,7 @@
 
   import { ActionSheet, Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { SealCheckFillIcon, WarningCircleFillIcon } from '$lib/icons';
+  import { WarningCircleFillIcon } from '$lib/icons';
   import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
   import { error, state } from '$lib/stores';
   import { formatDateWithWrittenMonth } from '$lib/utils';
@@ -295,13 +295,6 @@
         connectionUrl={connection_url}
         domainValidation={domain_validation}
       />
-
-      <div class="flex items-center gap-1.5">
-        <SealCheckFillIcon class="size-4 text-primary" />
-        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-          {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED_COUNT({ count: requested_credentials.length })}
-        </p>
-      </div>
 
       <div class="flex w-full flex-col space-y-4">
         {#each requested_credentials as requested (requested.query_id)}

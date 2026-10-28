@@ -358,7 +358,6 @@ const de_DE = {
       CHANGE: 'Ändern',
       ISSUED: 'Ausgestellt am {date}',
       WANTS_TO_SEE: '{name} möchte sehen',
-      REQUESTED_COUNT: 'Angefragt · {count} {{Nachweis|Nachweise}}',
       REVIEW_AND_SHARE: 'Prüfen und teilen',
       DECLINE: 'Ablehnen',
       CLAIMS: {

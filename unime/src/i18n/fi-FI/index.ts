@@ -359,7 +359,6 @@ const fi_FI = {
       CHANGE: 'Vaihda',
       ISSUED: 'Myönnetty {date}',
       WANTS_TO_SEE: '{name} haluaa nähdä',
-      REQUESTED_COUNT: 'Pyydetty · {count} {{valtuus|valtuutta}}',
       REVIEW_AND_SHARE: 'Tarkista ja jaa',
       DECLINE: 'Hylkää',
       CLAIMS: {

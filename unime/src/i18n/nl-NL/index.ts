@@ -358,7 +358,6 @@ const nl_NL = {
       CHANGE: 'Wijzigen',
       ISSUED: 'Uitgegeven op {date}',
       WANTS_TO_SEE: '{name} wil zien',
-      REQUESTED_COUNT: 'Aangevraagd · {count} {{credential|credentials}}',
       REVIEW_AND_SHARE: 'Controleren en delen',
       DECLINE: 'Weigeren',
       CLAIMS: {

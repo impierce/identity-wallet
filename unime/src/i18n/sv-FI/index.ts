@@ -358,7 +358,6 @@ const sv_FI = {
       CHANGE: 'Ändra',
       ISSUED: 'Utfärdat {date}',
       WANTS_TO_SEE: '{name} vill se',
-      REQUESTED_COUNT: 'Begärt · {count} {{intyg|intyg}}',
       REVIEW_AND_SHARE: 'Granska och dela',
       DECLINE: 'Avböj',
       CLAIMS: {

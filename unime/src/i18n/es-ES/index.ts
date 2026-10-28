@@ -359,7 +359,6 @@ const es_ES = {
       CHANGE: 'Cambiar',
       ISSUED: 'Emitida el {date}',
       WANTS_TO_SEE: '{name} quiere ver',
-      REQUESTED_COUNT: 'Solicitadas · {count} {{credencial|credenciales}}',
       REVIEW_AND_SHARE: 'Revisa y comparte',
       DECLINE: 'Rechaza',
       CLAIMS: {

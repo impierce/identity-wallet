@@ -977,11 +977,6 @@ type RootTranslation = {
 			 */
 			WANTS_TO_SEE: RequiredParams<'name'>
 			/**
-			 * R​e​q​u​e​s​t​e​d​ ​·​ ​{​c​o​u​n​t​}​ ​{​{​c​r​e​d​e​n​t​i​a​l​|​c​r​e​d​e​n​t​i​a​l​s​}​}
-			 * @param {number} count
-			 */
-			REQUESTED_COUNT: RequiredParams<'count'>
-			/**
 			 * R​e​v​i​e​w​ ​a​n​d​ ​s​h​a​r​e
 			 */
 			REVIEW_AND_SHARE: string
@@ -2843,10 +2838,6 @@ export type TranslationFunctions = {
 			 * {name} wants to see
 			 */
 			WANTS_TO_SEE: (arg: { name: string }) => LocalizedString
-			/**
-			 * Requested · {count} {{credential|credentials}}
-			 */
-			REQUESTED_COUNT: (arg: { count: number }) => LocalizedString
 			/**
 			 * Review and share
 			 */
