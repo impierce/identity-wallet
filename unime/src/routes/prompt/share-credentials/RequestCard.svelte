@@ -46,11 +46,14 @@ options.
 -->
 <div class="flex flex-col rounded-xl border border-grey bg-white dark:border-slate-600 dark:bg-dark">
   <div class="flex items-center gap-3 p-3">
-    <ListItemImage
-      id={first?.id ?? requested.query_id}
-      type={first && isBadge(first) ? 'badge' : 'data'}
-      icon={first?.metadata.icon}
-    />
+    <!-- The image loads its logo once, so remount it when another credential is chosen. -->
+    {#key first?.id}
+      <ListItemImage
+        id={first?.id ?? requested.query_id}
+        type={first && isBadge(first) ? 'badge' : 'data'}
+        icon={first?.metadata.icon}
+      />
+    {/key}
     <div class="flex min-w-0 grow flex-col gap-0.5">
       <p class="truncate text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">
         {first?.display_name ?? typeLabel(requested)}
