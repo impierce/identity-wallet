@@ -3,6 +3,7 @@ import type { ClientMetadata } from "./ClientMetadata";
 import type { ConnectionData } from "./ConnectionData";
 import type { EcosystemProfile } from "./EcosystemProfile";
 import type { LinkedVerifiableCredentialData } from "./LinkedVerifiableCredentialData";
+import type { RequestedCredential } from "./RequestedCredential";
 import type { ValidationResult } from "./ValidationResult";
 
-export type CurrentUserPrompt = { "type": "redirect", target: string, } | { "type": "password-required" } | { "type": "accept-connection", client_metadata: ClientMetadata, connection_data?: ConnectionData, domain_validation: ValidationResult, linked_verifiable_presentations?: Array<LinkedVerifiableCredentialData>, ecosystems?: Array<EcosystemProfile>, } | { "type": "credential-offer", issuer_name: string, logo_uri?: string, credential_configurations: Record<string, any>, tx_code?: { input_mode?: 'numeric' | 'text'; length?: number }, } | { "type": "share-credentials", client_name: string, logo_uri?: string, options: Array<string>, is_interactive: boolean, };
+export type CurrentUserPrompt = { "type": "redirect", target: string, } | { "type": "password-required" } | { "type": "accept-connection", client_metadata: ClientMetadata, connection_data?: ConnectionData, domain_validation: ValidationResult, linked_verifiable_presentations?: Array<LinkedVerifiableCredentialData>, ecosystems?: Array<EcosystemProfile>, } | { "type": "credential-offer", issuer_name: string, logo_uri?: string, credential_configurations: Record<string, any>, tx_code?: { input_mode?: 'numeric' | 'text'; length?: number }, } | { "type": "share-credentials", client_name: string, logo_uri?: string, requested_credentials: Array<RequestedCredential>, is_interactive: boolean, };

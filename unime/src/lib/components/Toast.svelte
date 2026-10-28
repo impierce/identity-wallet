@@ -18,9 +18,10 @@
 
   onMount(() => {
     if (autoDismissAfterMs > 0) {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         ondismissed?.();
       }, autoDismissAfterMs);
+      return () => clearTimeout(timeout);
     }
   });
 </script>

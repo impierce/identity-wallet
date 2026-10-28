@@ -1,8 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import { Image } from '$lib/components';
-  import { ensureLightIcon } from '$lib/utils/image';
+  import ListItemImage from './ListItemImage.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -13,8 +12,6 @@
   export let isTempAsset = false;
   export let icon: string | undefined = undefined;
   export let isInvalid = false;
-
-  let useFallback = false;
 </script>
 
 <!--
@@ -46,16 +43,8 @@ Can be used for credentials, connections, etc.
   <!-- min-h-[64px] needed? -->
   <!-- Image or icon -->
   <slot name="image">
-    <div
-      class={`mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg p-1 ${useFallback ? 'bg-silver dark:bg-navy' : 'bg-white'}`}
-    >
-      <!-- useFallback from <Image> (child) is bound to a local variable in <ListItemCard> (parent) with the same name to determine which background color to display -->
-      <Image
-        {id}
-        iconFallback={ensureLightIcon(icon) ?? (type === 'data' ? 'UserLight' : 'CertificateLight')}
-        {isTempAsset}
-        bind:useFallback
-      />
+    <div class="mr-4">
+      <ListItemImage {id} {type} {icon} {isTempAsset} />
     </div>
   </slot>
   <!-- Text -->

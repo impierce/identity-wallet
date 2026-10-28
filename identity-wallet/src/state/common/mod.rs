@@ -21,7 +21,7 @@ mod tests {
         let current_user_prompt = Some(CurrentUserPrompt::ShareCredentials {
             client_name: "Impierce Technologies".to_string(),
             logo_uri: Some("logo.png".to_string()),
-            options: vec![],
+            requested_credentials: vec![],
             is_interactive: false,
         });
 

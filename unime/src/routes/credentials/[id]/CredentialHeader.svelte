@@ -14,6 +14,8 @@
   const dispatchEvent = createEventDispatcher();
 
   export let credential: DisplayCredential;
+  // Hides the favorite button and the menu, e.g. when the credential is inspected while sharing.
+  export let actions = true;
 
   // Url to cached credential logo (if available).
   let credentialLogoUrl: string | null = null;
@@ -50,29 +52,31 @@
 
   <slot />
 
-  <button
-    class="absolute top-0 left-0 mt-4 ml-2 p-1.5"
-    on:click={() =>
-      dispatch({
-        type: '[Credential Metadata] Update',
-        payload: {
-          id: credential.id,
-          is_favorite: !credential.metadata.is_favorite,
-        },
-      })}
-  >
-    {#if credential.metadata.is_favorite}
-      <HeartStraightFillIcon class="h-6 w-6 dark:text-white" />
-    {:else}
-      <HeartStraightRegularIcon class="h-6 w-6 dark:text-white" />
-    {/if}
-  </button>
+  {#if actions}
+    <button
+      class="absolute top-0 left-0 mt-4 ml-2 p-1.5"
+      on:click={() =>
+        dispatch({
+          type: '[Credential Metadata] Update',
+          payload: {
+            id: credential.id,
+            is_favorite: !credential.metadata.is_favorite,
+          },
+        })}
+    >
+      {#if credential.metadata.is_favorite}
+        <HeartStraightFillIcon class="h-6 w-6 dark:text-white" />
+      {:else}
+        <HeartStraightRegularIcon class="h-6 w-6 dark:text-white" />
+      {/if}
+    </button>
 
-  <div class="absolute top-0 right-0 mt-4 mr-2">
-    <CredentialHeaderMenu
-      id={credential.id}
-      on:edit={() => dispatchEvent('edit')}
-      on:showRawData={() => dispatchEvent('showRawData')}
-    />
-  </div>
+    <div class="absolute top-0 right-0 mt-4 mr-2">
+      <CredentialHeaderMenu
+        id={credential.id}
+        on:edit={() => dispatchEvent('edit')}
+        on:showRawData={() => dispatchEvent('showRawData')}
+      />
+    </div>
+  {/if}
 </div>

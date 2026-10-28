@@ -37,7 +37,7 @@ impl Default for ProfileSettings {
                 .collect(),
             sorting_preferences: SortingPreferences {
                 credentials: Preferences {
-                    sort_method: CredentialSortMethod::NameAZ,
+                    sort_method: CredentialSortMethod::AddedDateNewOld,
                     reverse: false,
                 },
                 connections: Preferences {
