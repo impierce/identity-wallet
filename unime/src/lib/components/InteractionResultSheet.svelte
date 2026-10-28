@@ -190,8 +190,9 @@
   function close() {
     open = false;
     if (phase === 'waiting') {
-      // Keep waiting in the background.
+      // Keep waiting in the background. The prompt page gets its controls back; the outcome arrives as a toast.
       minimized = true;
+      pendingInteraction.set(undefined);
       toast = {
         variant: 'info',
         title: $LL.INTERACTION_RESULT.STILL_WAITING_TITLE({ name }),

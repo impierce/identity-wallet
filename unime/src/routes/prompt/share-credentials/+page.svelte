@@ -63,6 +63,10 @@
     requested_credentials.map((r) => [r.query_id, defaultSelection(r)]),
   );
 
+  // The result sheet clears the pending interaction when it is dismissed or minimized: restore the controls.
+  // Interactive requests never set a pending interaction and continue with another prompt instead.
+  $: if (!is_interactive && !$pendingInteraction) loading = false;
+
   $: selections = requested_credentials
     .filter((r) => selection[r.query_id].length > 0)
     .map((r) => ({ query_id: r.query_id, credential_uuids: selection[r.query_id] }));
