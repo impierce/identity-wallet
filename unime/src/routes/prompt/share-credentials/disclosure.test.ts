@@ -57,6 +57,15 @@ describe('claimRows', () => {
       { label: 'City', value: 'Utrecht', required: true },
     ]);
   });
+
+  test('makes raw claim names readable', () => {
+    const rows = claimRows(pid, option(['Anna', '1990-03-12', 'NL', null]), {
+      ...credential,
+      display_claims: [{ path: ['given_name'], key: 'given_name', value: 'Anna' }],
+    } as unknown as DisplayCredential);
+
+    expect(rows[0].label).toBe('Given name');
+  });
 });
 
 describe('defaultDisclosure', () => {

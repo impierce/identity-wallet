@@ -7,7 +7,7 @@
   import type { RequestedCredential } from '@bindings/user_prompt/RequestedCredential';
 
   import { CredentialValidityLine, ListItemImage } from '$lib/components';
-  import { CaretDownBoldIcon, CaretUpBoldIcon, EyeSlashRegularIcon } from '$lib/icons';
+  import { CaretDownBoldIcon, CaretUpBoldIcon, EyeRegularIcon, EyeSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateWithWrittenMonth } from '$lib/utils';
 
@@ -130,7 +130,10 @@ collapse into a summary, and a "Change" button when there are more options.
         {/each}
       </div>
       <div class="flex items-center gap-1.5 bg-silver px-[14px] py-2 dark:bg-navy">
-        <EyeSlashRegularIcon class="size-3 shrink-0 text-slate-500 dark:text-slate-300" />
+        <svelte:component
+          this={selective && optionalOff > 0 ? EyeSlashRegularIcon : EyeRegularIcon}
+          class="size-3 shrink-0 text-slate-500 dark:text-slate-300"
+        />
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">{footer}</p>
       </div>
     {:else}

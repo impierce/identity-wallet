@@ -29,8 +29,9 @@ export function humanize(name: string): string {
 
 function claimLabel(path: ClaimPath, credential: DisplayCredential): string {
   const known = credential.display_claims.find((claim) => samePath(claim.path as ClaimPath, path));
-  if (known?.key) return known.key;
   const name = [...path].reverse().find((element): element is string => typeof element === 'string');
+  // Without display metadata from the issuer, the key is the raw claim name.
+  if (known?.key && known.key !== name) return known.key;
   return name ? humanize(name) : '';
 }
 

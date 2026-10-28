@@ -140,7 +140,8 @@ fn presentation_builder(sd_jwt: SdJwt) -> Result<SdJwtPresentationBuilder, AppEr
         .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))
 }
 
-/// For each claim path, whether the holder can leave it out of a presentation of `sd_jwt`.
+/// For each claim path, whether the holder can leave it out of a presentation of `sd_jwt` while still disclosing all
+/// other claims. A claim inside a disclosure that also holds other claims cannot be left out on its own.
 pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Vec<bool> {
     let Ok(sd_jwt) = sd_jwt.parse::<SdJwt>() else {
         return vec![false; claim_paths.len()];
@@ -148,11 +149,31 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
     let (Ok(decoded), Ok(builder)) = (decoded_object(&sd_jwt), presentation_builder(sd_jwt)) else {
         return vec![false; claim_paths.len()];
     };
-    claim_paths
-        .iter()
-        .map(|claim_path| {
-            let paths = concrete_paths(claim_path, &decoded);
-            !paths.is_empty() && paths.iter().all(|path| builder.clone().conceal(&pointer(path)).is_ok())
+    let value_counts = |value: &Value| -> Vec<usize> {
+        claim_paths
+            .iter()
+            .map(|claim_path| claim_path.get_values_from_json(value).len())
+            .collect()
+    };
+    let before = value_counts(&decoded);
+
+    (0..claim_paths.len())
+        .map(|index| {
+            let paths = concrete_paths(claim_paths[index], &decoded);
+            if paths.is_empty() {
+                return false;
+            }
+            let concealed = paths
+                .iter()
+                .try_fold(builder.clone(), |builder, path| builder.conceal(&pointer(path)));
+            let Ok(after) = concealed
+                .map(|builder| builder.finish().0)
+                .and_then(|sd_jwt| sd_jwt.into_disclosed_object(&Sha256Hasher::new()).map(Value::Object))
+            else {
+                return false;
+            };
+            let after = value_counts(&after);
+            after[index] == 0 && (0..claim_paths.len()).all(|other| other == index || after[other] == before[other])
         })
         .collect()
 }
@@ -319,6 +340,48 @@ mod tests {
 
         let presented = conceal_unrequested_claims(DC_SD_JWT, &Format::DcSdJwt, &[]).unwrap();
         assert!(disclosed_claim_names(&presented).is_empty());
+    }
+
+    struct UnsignedSigner;
+
+    #[async_trait::async_trait]
+    impl sd_jwt::JwsSigner for UnsignedSigner {
+        type Error = String;
+        async fn sign(&self, header: &sd_jwt::JsonObject, payload: &sd_jwt::JsonObject) -> Result<Vec<u8>, String> {
+            use base64::Engine as _;
+            let encode = |object: &sd_jwt::JsonObject| {
+                base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(serde_json::to_vec(object).unwrap())
+            };
+            Ok(format!("{}.{}.c2lnbmF0dXJl", encode(header), encode(payload)).into_bytes())
+        }
+    }
+
+    #[tokio::test]
+    async fn concealable_claims_rejects_claims_that_share_a_disclosure() {
+        let sd_jwt = sd_jwt::SdJwtBuilder::new(json!({
+            "credentialSubject": { "achievement": { "name": "Badge", "description": "First" }, "nickname": "Ferris" }
+        }))
+        .unwrap()
+        .make_concealable("/credentialSubject/achievement")
+        .unwrap()
+        .make_concealable("/credentialSubject/nickname")
+        .unwrap()
+        .finish(&UnsignedSigner, "ES256")
+        .await
+        .unwrap()
+        .to_string();
+
+        assert_eq!(
+            concealable_claims(
+                &sd_jwt,
+                &[
+                    &path(json!(["credentialSubject", "achievement", "name"])),
+                    &path(json!(["credentialSubject", "achievement", "description"])),
+                    &path(json!(["credentialSubject", "nickname"]))
+                ]
+            ),
+            vec![false, false, true]
+        );
     }
 
     #[test]
