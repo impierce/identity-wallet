@@ -261,7 +261,12 @@ fn presented_credential(
     disclosed_claims: Option<&[usize]>,
 ) -> Result<Value, AppError> {
     let verifiable_credential = &record.verifiable_credential;
-    if !supports_selective_disclosure(&credential_query.format) {
+    // Without requested claims the share screen offers the whole credential, so nothing is concealed.
+    let requests_claims = credential_query
+        .claims
+        .as_ref()
+        .is_some_and(|claims| !claims.is_empty());
+    if !supports_selective_disclosure(&credential_query.format) || !requests_claims {
         return Ok(verifiable_credential.clone());
     }
     let sd_jwt = verifiable_credential

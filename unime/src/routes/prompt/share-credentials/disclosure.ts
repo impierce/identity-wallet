@@ -27,11 +27,10 @@ export function humanize(name: string): string {
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
-function claimLabel(path: ClaimPath, credential: DisplayCredential): string {
-  const known = credential.display_claims.find((claim) => samePath(claim.path as ClaimPath, path));
+function claimLabel(path: ClaimPath, key?: string): string {
   const name = [...path].reverse().find((element): element is string => typeof element === 'string');
   // Without display metadata from the issuer, the key is the raw claim name.
-  if (known?.key && known.key !== name) return known.key;
+  if (key && key !== name) return key;
   return name ? humanize(name) : '';
 }
 
@@ -87,7 +86,11 @@ export function claimRows(
 ): ClaimRow[] {
   if (!option.selective_disclosure) {
     if (credential.display_claims.length > 0) {
-      return credential.display_claims.map((claim) => ({ label: claim.key, value: claim.value, required: true }));
+      return credential.display_claims.map((claim) => ({
+        label: claimLabel(claim.path as ClaimPath, claim.key),
+        value: claim.value,
+        required: true,
+      }));
     }
     return subjectRows(credential.data?.credentialSubject);
   }
@@ -96,7 +99,7 @@ export function claimRows(
   return requested.claims
     .map((path, index) => ({
       index,
-      label: claimLabel(path, credential),
+      label: claimLabel(path, credential.display_claims.find((claim) => samePath(claim.path as ClaimPath, path))?.key),
       value: option.claims[index]?.value,
       required: required.has(index),
     }))
