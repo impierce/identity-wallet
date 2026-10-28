@@ -16,6 +16,7 @@ use super::{
 
 use log::info;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
@@ -37,7 +38,7 @@ impl Connections {
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
-    ) -> &Connection {
+    ) -> &mut Connection {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
@@ -70,7 +71,7 @@ impl Connections {
             self.0.len() - 1
         };
 
-        &self.0[connection_index]
+        &mut self.0[connection_index]
     }
 }
 
@@ -104,6 +105,10 @@ pub struct Connection {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
+    /// The ids of the credentials last shared with this connection, keyed by the requested credential types.
+    #[ts(skip)]
+    #[serde(skip_serializing_if = "HashMap::is_empty")]
+    pub last_shared_credentials: HashMap<String, Vec<String>>,
 }
 
 impl Connection {
@@ -129,6 +134,7 @@ impl Connection {
             linked_verifiable_presentations,
             ecosystems,
             domain_validation,
+            last_shared_credentials: HashMap::new(),
         }
     }
 

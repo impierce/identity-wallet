@@ -26,12 +26,15 @@ pub async fn send_interactive_authorization_request_follow_up(
     state: AppState,
     action: Action,
 ) -> Result<AppState, AppError> {
-    if let Some(credential_uuids) = listen::<CredentialsSelected>(action)
-        .and_then(|payload| payload.is_interactive.then_some(payload.credential_uuids))
+    if let Some(selections) =
+        listen::<CredentialsSelected>(action).and_then(|payload| payload.is_interactive.then_some(payload.selections))
     {
         info!(
             "Sending interactive authorization follow-up with {} credential(s)",
-            credential_uuids.len()
+            selections
+                .iter()
+                .map(|selection| selection.credential_uuids.len())
+                .sum::<usize>()
         );
 
         let state_guard = state.core_utils.managers.lock().await;
@@ -84,13 +87,9 @@ pub async fn send_interactive_authorization_request_follow_up(
 
         let auth_session = auth_session.ok_or(AppError::Error("Active auth session is missing".to_string()))?;
 
-        let (vp_token_payload, history_credentials) = build_oid4vp_vp_token_and_history_credentials(
-            &state,
-            stronghold_manager,
-            identity_manager,
-            credential_uuids,
-        )
-        .await?;
+        let (vp_token_payload, history_credentials, last_shared) =
+            build_oid4vp_vp_token_and_history_credentials(&state, stronghold_manager, identity_manager, selections)
+                .await?;
 
         let openid4vp_response = provider_manager
             .generate_response(&oid4vp_authorization_request, vp_token_payload)
@@ -131,6 +130,7 @@ pub async fn send_interactive_authorization_request_follow_up(
 
         update_history_and_connections(
             history_credentials,
+            last_shared,
             &pending_connection_data,
             &mut connections,
             &mut history,

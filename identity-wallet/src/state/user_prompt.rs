@@ -7,6 +7,7 @@ use ts_rs::TS;
 
 use crate::state::{core_utils::history_event::HistoryEvent, did::validate_domain_linkage::ValidationResult};
 
+use super::credentials::credential_query_matching::RequestedCredential;
 use super::did::validate_linked_verifiable_presentations::LinkedVerifiableCredentialData;
 
 /// "User prompts" are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -54,7 +55,7 @@ pub enum CurrentUserPrompt {
         client_name: String,
         #[ts(optional)]
         logo_uri: Option<String>,
-        options: Vec<String>,
+        requested_credentials: Vec<RequestedCredential>,
         // If this is set to `true`, then this means that the credentials being requested are required during an
         // OID4VCI Interactive Authorization flow.
         #[serde(default)]

@@ -4,20 +4,12 @@ use crate::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,
         core_utils::{ActiveFlow, CoreUtils},
+        credentials::credential_query_matching::{ensure_shareable, match_credential_queries, with_last_shared},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
-use sd_jwt::{SdJwt, Sha256Hasher};
-use serde_json::Value;
-
-use identity_credential::sd_jwt_vc::SdJwtVc;
-use log::{debug, info, warn};
-use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
-use oid4vc::oid4vp::{dcql::dcql_query::Format, token::vp_token_validator::DecodedPresentations};
-use oid4vc::{
-    oid4vci::credential_format_profiles::CredentialFormats, oid4vp::dcql_evaluation::evaluate_credential_query,
-};
+use log::{info, warn};
 
 /// Reads the active OID4VP request from the active flow after the `AcceptConnection` prompt is accepted and the `ConnectionAccepted` action is send back from the Frontend.
 /// This function validates the request, and sets the next CurrentUserPrompt to non-interactive `ShareCredentials`.
@@ -43,107 +35,39 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
         let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
         info!("verifiable credentials: {verifiable_credentials:?}");
 
-        // TODO: Move most of this logic to `openid4vc` crates.
         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
-        let uuids: Vec<String> = dcql_query
-            .credentials
-            .iter()
-            .filter_map(|credential_query_from_request| {
-                verifiable_credentials.iter().find_map(|verifiable_credential_record| {
-                    let credential_data: Value = if credential_query_from_request.format == Format::DcSdJwt
-                        && verifiable_credential_record.display_credential.format == CredentialFormats::DcSdJwt(())
-                    {
-                        serde_json::json!(verifiable_credential_record
-                            .verifiable_credential
-                            .as_str()?
-                            .parse::<SdJwtVc>()
-                            .ok()?
-                            .into_disclosed_object(&Sha256Hasher::new())
-                            .ok()?)
-                    } else if credential_query_from_request.format == Format::VcSdJwt
-                        && verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
-                    {
-                        serde_json::json!(verifiable_credential_record
-                            .verifiable_credential
-                            .as_str()?
-                            .parse::<SdJwt>()
-                            .ok()?
-                            .into_disclosed_object(&Sha256Hasher::new())
-                            .ok()?)
-                    } else if credential_query_from_request.format == Format::JwtVcJson
-                        && verifiable_credential_record.display_credential.format
-                            == CredentialFormats::JwtVcJson(())
-                    {
-                        let full_jwt_payload =
-                            get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                                .unwrap_or_default();
-                        // JWT_VC_JSON must be accessed from the vc values.
-                        full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
-                            debug!(
-                                "JWT-VC-JSON is missing `vc` claims or is not a valid JSON value: {:?}",
-                                full_jwt_payload
-                            );
-                            serde_json::json!({})
-                        })
-                    } else {
-                        debug!(
-                            "Unhandled credential format: {:?}",
-                            verifiable_credential_record.display_credential.format
-                        );
-                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                            .unwrap_or_default()
-                    };
-
-                    let credential_object = credential_data.as_object()?.clone();
-                    let decoded_presentations =
-                        match DecodedPresentations::try_new(vec![credential_object]) {
-                            Ok(decoded) => decoded,
-                            Err(e) => {
-                                debug!(
-                                    "Failed to decode credential into DecodedPresentations; id: {:?}, format: {:?}, error: {:?}",
-                                    verifiable_credential_record.display_credential.id,
-                                    verifiable_credential_record.display_credential.format,
-                                    e
-                                );
-                                return None;
-                            }
-                        };
-
-                    let credential_query_satisfied =
-                        evaluate_credential_query(credential_query_from_request, &decoded_presentations);
-                    credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
-                })
-            })
-            .collect();
-
-        info!("uuids of VCs that can fulfill the request: {uuids:?}");
+        let requested_credentials = match_credential_queries(dcql_query, &verifiable_credentials);
+        info!("credentials that can fulfill the request: {requested_credentials:?}");
 
         drop(state_guard);
         let pending_connection_data = state.core_utils.pending_connection_data.clone();
 
         if let Some(pending_connection_data) = &pending_connection_data {
             let client_metadata = pending_connection_data.client_metadata.clone();
-            // TODO: communicate when no credentials are available.
-            if !uuids.is_empty() {
-                Ok(AppState {
-                    core_utils: CoreUtils {
-                        active_flow: Some(ActiveFlow::Oid4vp {
-                            authorization_request: oid4vp_authorization_request.clone(),
-                            is_interactive: false,
-                        }),
-                        ..state.core_utils
-                    },
-                    current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
-                        client_name: client_metadata.client_name,
-                        logo_uri: client_metadata.logo_uri,
-                        options: uuids,
+            let client_id = client_metadata.client_id.to_string();
+            let connection = state
+                .connections
+                .0
+                .iter()
+                .find(|connection| connection.did == client_id);
+            let requested_credentials = with_last_shared(requested_credentials, connection);
+            ensure_shareable(&requested_credentials)?;
+            Ok(AppState {
+                core_utils: CoreUtils {
+                    active_flow: Some(ActiveFlow::Oid4vp {
+                        authorization_request: oid4vp_authorization_request.clone(),
                         is_interactive: false,
                     }),
-                    ..state
-                })
-            } else {
-                Err(NoMatchingCredentialError)
-            }
+                    ..state.core_utils
+                },
+                current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
+                    client_name: client_metadata.client_name,
+                    logo_uri: client_metadata.logo_uri,
+                    requested_credentials,
+                    is_interactive: false,
+                }),
+                ..state
+            })
         } else {
             warn!("Unexpected state: No pending connection data found when reading authorization request");
             Ok(state)
