@@ -3,7 +3,8 @@ use crate::{
     state::{
         core_utils::helpers::{download_logo, get_issuer_document},
         credentials::{
-            reducers::send_token_request::get_credential_status, DisplayCredential, VerifiableCredentialRecord,
+            reducers::send_token_request::{get_credential_status, has_token_status_list_claim},
+            CredentialStatus, DisplayCredential, VerifiableCredentialRecord,
         },
         did::validate_domain_linkage::{ValidationResult, Verifier},
     },
@@ -24,6 +25,7 @@ use identity_iota::{
     document::{CoreDocument, Service},
 };
 use log::{debug, info, warn};
+use oauth_tsl::status_list::StatusType;
 use oid4vc::oid4vci::{
     credential_format_profiles::CredentialFormats,
     credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
@@ -174,7 +176,9 @@ async fn validate_linked_verifiable_presentation(
         })
 }
 
-/// Validate the linked verifiable credentials in the linked verifiable presentation. Skips invalid credentials or credentials with invalid domain linkage.
+/// Validate the linked verifiable credentials in the linked verifiable presentation. Skips invalid credentials (including
+/// revoked or suspended ones, or ones whose OAuth Token Status List status cannot be fetched) or credentials with
+/// invalid domain linkage.
 /// Since anyone can host a linked verifiable presentation, it is important to validate the linked verifiable
 /// credentials. The `issuer` field in the linked verifiable credential is used to resolve the issuer document and which
 /// is then used to retrieve the linked domains. The linked domains then are used to validate the domain linkage.
@@ -245,7 +249,22 @@ async fn get_validated_linked_credential_data(
 
                         // The .unwrap_or_default() calls here default to an empty string, we don't want to throw a full error here.
                         // It's simply the issuer's responsibility to have it's display data in order, this shouldnt break the flow.
-                        verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
+                        let credential_status = get_credential_status(&verifiable_credential_record, subject).await;
+
+                        // Expired credentials are already rejected by the validator above. A credential with an
+                        // OAuth Token Status List status is only shown when that status is fetched and valid.
+                        // UniMe cannot check other status mechanisms, so such a credential is shown like one
+                        // without a status, as the validator above does with `StatusCheck::SkipUnsupported`.
+                        match &credential_status {
+                            Some(CredentialStatus { status: StatusType::VALID, .. }) => {}
+                            None if !has_token_status_list_claim(&verifiable_credential_record) => {}
+                            _ => {
+                                warn!("Skipping linked verifiable credential that is not valid: {credential_status:?}");
+                                return None;
+                            }
+                        }
+
+                        verifiable_credential_record.display_credential.credential_status = credential_status;
                         verifiable_credential_record.display_credential.display_name = credential_name.unwrap_or_default();
                         verifiable_credential_record.display_credential.metadata.icon = credential_logo_uri;
                         verifiable_credential_record.display_credential.issuer_name = issuer_name.unwrap_or_default();
@@ -320,6 +339,8 @@ async fn get_validated_linked_domains(
 }
 
 /// Get the linked domains from the issuer document. It returns a list of URLs if the service type is `LinkedDomains`.
+/// The service endpoint can be an object with `origins`, a single URL or a set of URLs:
+/// https://identity.foundation/.well-known/resources/did-configuration/#linked-domain-service-endpoint
 async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
     issuer_document
         .service()
@@ -331,21 +352,23 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
                 .then(|| service.service_endpoint())
                 .and_then(|service_endpoint| service_endpoint.to_json_value().ok())
                 .and_then(|linked_domain| {
-                    linked_domain.get("origins").and_then(|origins| {
-                        origins.as_array().and_then(|origins| {
-                            origins
-                                .iter()
-                                .map(|origin| {
-                                    origin.as_str().and_then(|origin| {
-                                        origin
-                                            .parse()
-                                            .inspect_err(|err| warn!("Failed to parse linked domain: {err:#?}"))
-                                            .ok()
-                                    })
-                                })
-                                .collect::<Option<Vec<Url>>>()
+                    let origins = match &linked_domain {
+                        Value::Object(_) => linked_domain.get("origins")?.as_array()?.clone(),
+                        Value::Array(origins) => origins.clone(),
+                        Value::String(_) => vec![linked_domain.clone()],
+                        _ => return None,
+                    };
+                    origins
+                        .iter()
+                        .map(|origin| {
+                            origin.as_str().and_then(|origin| {
+                                origin
+                                    .parse()
+                                    .inspect_err(|err| warn!("Failed to parse linked domain: {err:#?}"))
+                                    .ok()
+                            })
                         })
-                    })
+                        .collect::<Option<Vec<Url>>>()
                 })
         })
         .flatten()
@@ -632,6 +655,18 @@ mod tests {
 
         // 'Issues' a Credential Jwt to a subject.
         async fn issue_credential(&mut self, subject_id: &str, credential_name: &str, credential_logo: Url) -> Jwt {
+            self.issue_credential_with(subject_id, credential_name, credential_logo, |_| {})
+                .await
+        }
+
+        /// Like `issue_credential`, with `edit_payload` applied to the JWT payload before it is signed.
+        async fn issue_credential_with(
+            &mut self,
+            subject_id: &str,
+            credential_name: &str,
+            credential_logo: Url,
+            edit_payload: impl FnOnce(&mut Value),
+        ) -> Jwt {
             let subject = identity_credential::credential::Subject::from_json_value(json!({
                 "id": subject_id,
             }))
@@ -653,8 +688,11 @@ mod tests {
                 .build()
                 .unwrap();
 
-            self.generate_jwt(credential.serialize_jwt(Default::default()).unwrap())
-                .await
+            let mut payload: Value =
+                serde_json::from_str(&credential.serialize_jwt(Default::default()).unwrap()).unwrap();
+            edit_payload(&mut payload);
+
+            self.generate_jwt(payload.to_string()).await
         }
 
         // Generates a JWT with the given payload.
@@ -877,6 +915,35 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn get_issuer_linked_domains_supports_all_service_endpoint_forms() {
+        let mut issuer = TestEntity::new().await;
+        let domain_a: url::Url = "https://a.example.com/".parse().unwrap();
+        let domain_b: url::Url = "https://b.example.com/".parse().unwrap();
+        let domain_c: url::Url = "https://c.example.com/".parse().unwrap();
+
+        for (service_id, service_endpoint) in [
+            ("origins", json!({ "origins": [domain_a] })),
+            ("url", json!(domain_b)),
+            ("urls", json!([domain_c])),
+        ] {
+            let service = Service::builder(Default::default())
+                .id(format!("{}#{service_id}", issuer.did_document.id()).parse().unwrap())
+                .type_("LinkedDomains")
+                .service_endpoint(serde_json::from_value::<ServiceEndpoint>(service_endpoint).unwrap())
+                .build()
+                .unwrap();
+            issuer.did_document.insert_service(service).unwrap();
+        }
+
+        let linked_domains = get_issuer_linked_domains(&issuer.did_document).await;
+
+        assert_eq!(linked_domains.len(), 3);
+        assert!([domain_a, domain_b, domain_c]
+            .iter()
+            .all(|domain| linked_domains.contains(domain)));
+    }
+
+    #[tokio::test]
     async fn get_validated_linked_credential_data_successfully_returns_linked_verifiable_credential_data() {
         let mut issuer = TestEntity::new().await;
 
@@ -930,6 +997,98 @@ mod tests {
         assert_eq!(item.credential.metadata.icon, Some(issuer_logo));
         assert_eq!(item.issuer_domain_validations.len(), 1);
         assert_eq!(item.issuer_domain_validations[0].url, issuer.domain);
+    }
+
+    /// Validates a linked verifiable presentation holding one credential of an issuer with a valid domain linkage.
+    /// `edit_payload` is applied to the credential's JWT payload, with the issuer's domain, which serves no status list.
+    async fn validated_linked_credential_data(
+        edit_payload: impl FnOnce(&mut Value, &url::Url),
+    ) -> Vec<LinkedVerifiableCredentialData> {
+        let mut issuer = TestEntity::new().await;
+        issuer
+            .add_well_known_did_configuration_json("linked-domain", &[issuer.domain.clone().into()])
+            .await;
+        issuer.add_well_known_did_json().await;
+
+        let mut holder = TestEntity::new().await;
+
+        let issuer_domain = issuer.domain.clone();
+        let verifiable_credential_jwt = issuer
+            .issue_credential_with(
+                holder.did_document.id().to_string().as_str(),
+                "Webshop",
+                format!("{issuer_domain}logo.png").parse().unwrap(),
+                |payload| edit_payload(payload, &issuer_domain),
+            )
+            .await;
+
+        let linked_verifiable_presentation_endpoint = "linked-verifiable-presentation.jwt";
+        holder
+            .add_linked_verifiable_presentation(
+                "linked-verifiable-presentation",
+                vec![(
+                    linked_verifiable_presentation_endpoint.to_string(),
+                    vec![verifiable_credential_jwt],
+                )],
+            )
+            .await;
+
+        get_validated_linked_presentation_data(
+            &holder.subject,
+            &holder.did_document,
+            holder.domain.join(linked_verifiable_presentation_endpoint).unwrap(),
+        )
+        .await
+        .unwrap()
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_skips_credentials_whose_status_claim_cannot_be_checked() {
+        let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
+            payload["status"] = json!({
+                "status_list": { "idx": 0, "uri": issuer_domain.join("status-lists/1").unwrap() }
+            });
+        })
+        .await;
+
+        assert!(validated_linked_credential_data.is_empty());
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_skips_credentials_with_a_malformed_status_claim() {
+        let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
+            payload["status"] = json!({
+                "status_list": { "idx": "0", "uri": issuer_domain.join("status-lists/1").unwrap() }
+            });
+        })
+        .await;
+
+        assert!(validated_linked_credential_data.is_empty());
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_keeps_credentials_with_an_unsupported_status_mechanism() {
+        let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
+            payload["vc"]["credentialStatus"] = json!({
+                "id": issuer_domain.join("status-lists/1#0").unwrap(),
+                "type": "BitstringStatusListEntry",
+                "statusPurpose": "revocation",
+                "statusListIndex": "0",
+                "statusListCredential": issuer_domain.join("status-lists/1").unwrap(),
+            });
+        })
+        .await;
+
+        assert_eq!(validated_linked_credential_data.len(), 1);
+        assert_eq!(validated_linked_credential_data[0].credential.credential_status, None);
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_keeps_credentials_without_a_status() {
+        let validated_linked_credential_data = validated_linked_credential_data(|_, _| {}).await;
+
+        assert_eq!(validated_linked_credential_data.len(), 1);
+        assert_eq!(validated_linked_credential_data[0].credential.display_name, "Webshop");
     }
 
     #[tokio::test]

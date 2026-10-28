@@ -851,6 +851,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b281d307588d634de920874890732659e2e7672f72b5e10e81badc1a8a83621e"
 dependencies = [
  "aws-lc-sys",
+ "untrusted 0.7.1",
  "zeroize",
 ]
 
@@ -1073,6 +1074,12 @@ name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+
+[[package]]
+name = "base64"
+version = "0.23.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
 
 [[package]]
 name = "base64ct"
@@ -5463,7 +5470,7 @@ dependencies = [
  "iota_stronghold",
  "itertools 0.10.5",
  "jsonschema 0.29.1",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "lazy_static",
  "log",
  "oauth_tsl",
@@ -7432,6 +7439,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "jsonwebtoken"
+version = "11.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e75fe14a82d81e5f5af639997db37d8b96045938a7ac6ab18cdbe1c7467e05e1"
+dependencies = [
+ "aws-lc-rs",
+ "base64 0.22.1",
+ "getrandom 0.2.16",
+ "js-sys",
+ "pem",
+ "serde",
+ "serde_json",
+ "signature 2.2.0",
+ "simple_asn1 0.6.3",
+ "zeroize",
+]
+
+[[package]]
 name = "k256"
 version = "0.13.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8887,7 +8912,7 @@ dependencies = [
  "base64 0.22.1",
  "chrono",
  "flate2",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "serde",
  "thiserror 1.0.69",
  "url",
@@ -9377,7 +9402,7 @@ dependencies = [
  "identity_jose",
  "identity_verification",
  "is_empty",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "lazy_static",
  "nutype",
  "rand 0.8.5",
@@ -9405,7 +9430,7 @@ dependencies = [
  "futures",
  "getset",
  "identity_credential",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "lazy_static",
  "oid4vc-core",
  "oid4vci",
@@ -9433,7 +9458,7 @@ dependencies = [
  "derivative",
  "getset",
  "http 1.3.1",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "lazy_static",
  "nutype",
  "oid4vc-core",
@@ -9467,7 +9492,7 @@ dependencies = [
  "identity_jose",
  "identity_verification",
  "is_empty",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "lazy_static",
  "monostate",
  "nutype",
@@ -9517,17 +9542,18 @@ dependencies = [
 
 [[package]]
 name = "openid-federation"
-version = "0.1.0"
-source = "git+https://github.com/impierce/openid-federation?rev=a76b12f#a76b12fc2ce4b6c51d6e209b7783d254beabf16e"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6694be64b67a14614a9046125b96859f6154c9ffee822914aa219dacfbfdf25"
 dependencies = [
  "async-trait",
- "base64 0.21.7",
+ "base64 0.23.1",
  "chrono",
- "jsonwebtoken",
+ "jsonwebtoken 11.1.0",
  "reqwest 0.13.4",
  "serde",
  "serde_json",
- "thiserror 1.0.69",
+ "thiserror 2.0.16",
  "tokio",
  "url",
 ]
@@ -11381,7 +11407,7 @@ dependencies = [
  "cfg-if",
  "getrandom 0.2.16",
  "libc",
- "untrusted",
+ "untrusted 0.9.0",
  "windows-sys 0.52.0",
 ]
 
@@ -11738,7 +11764,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b6275d1ee7a1cd780b64aca7726599a1dbc893b1e64144529e55c3c2f745765"
 dependencies = [
  "ring",
- "untrusted",
+ "untrusted 0.9.0",
 ]
 
 [[package]]
@@ -11750,7 +11776,7 @@ dependencies = [
  "aws-lc-rs",
  "ring",
  "rustls-pki-types",
- "untrusted",
+ "untrusted 0.9.0",
 ]
 
 [[package]]
@@ -11880,7 +11906,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da046153aa2352493d6cb7da4b6e5c0c057d8a1d0a9aa8560baffdd945acd414"
 dependencies = [
  "ring",
- "untrusted",
+ "untrusted 0.9.0",
 ]
 
 [[package]]
@@ -12593,7 +12619,7 @@ dependencies = [
  "futures",
  "getset",
  "is_empty",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "monostate",
  "oid4vc-core",
  "reqwest 0.11.27",
@@ -14827,7 +14853,7 @@ dependencies = [
  "identity-wallet",
  "iota-sdk 1.22.0-alpha",
  "jni",
- "jsonwebtoken",
+ "jsonwebtoken 9.3.1",
  "log",
  "oauth_tsl",
  "oid4vc",
@@ -14880,6 +14906,12 @@ name = "unsigned-varint"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb066959b24b5196ae73cb057f45598450d2c5f71460e98c49b738086eff9c06"
+
+[[package]]
+name = "untrusted"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a156c684c91ea7d62626509bce3cb4e1d9ed5c4d978f7b4352658f96a4c26b4a"
 
 [[package]]
 name = "untrusted"
@@ -16474,9 +16506,9 @@ dependencies = [
 
 [[package]]
 name = "zeroize"
-version = "1.8.1"
+version = "1.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ced3678a2879b30306d323f4542626697a464a97c0a07c9aebf7ebca65cd4dde"
+checksum = "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879"
 dependencies = [
  "serde",
  "zeroize_derive",
@@ -16484,9 +16516,9 @@ dependencies = [
 
 [[package]]
 name = "zeroize_derive"
-version = "1.4.2"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
+checksum = "3c50655cbb0fe3fc43170059e702f1ce5e19b84cec58dc87b037a09935c2f328"
 dependencies = [
  "proc-macro2",
  "quote",
