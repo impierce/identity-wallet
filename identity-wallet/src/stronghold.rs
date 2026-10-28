@@ -1,4 +1,7 @@
-use crate::{persistence::STRONGHOLD, state::credentials::VerifiableCredentialRecord};
+use crate::{
+    persistence::STRONGHOLD,
+    state::credentials::{valid_from, VerifiableCredentialRecord},
+};
 
 use iota_stronghold::{
     procedures::{GenerateKey, KeyType, StrongholdProcedure},
@@ -161,9 +164,10 @@ impl StrongholdManager {
                     .get(key)
                     .map(|value| value.map(|value| serde_json::from_slice(&value)))
             })
-            .collect::<Result<Option<serde_json::Result<_>>, _>>()?
+            .collect::<Result<Option<serde_json::Result<Vec<VerifiableCredentialRecord>>>, _>>()?
             .transpose()
             .map_err(|e| anyhow::anyhow!(e))
+            .map(|records| records.map(|records| records.into_iter().map(with_valid_from).collect()))
     }
 
     pub fn remove(&self, key: Uuid) -> anyhow::Result<Option<Vec<u8>>> {
@@ -172,6 +176,15 @@ impl StrongholdManager {
 
         Ok(value)
     }
+}
+
+/// Credentials stored before `valid_from` existed get it from their raw credential.
+fn with_valid_from(mut record: VerifiableCredentialRecord) -> VerifiableCredentialRecord {
+    if record.display_credential.metadata.valid_from.is_none() {
+        record.display_credential.metadata.valid_from =
+            valid_from(&record.display_credential.format, &record.verifiable_credential);
+    }
+    record
 }
 
 #[cfg(test)]

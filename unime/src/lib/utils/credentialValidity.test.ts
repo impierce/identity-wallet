@@ -5,12 +5,18 @@ import { getCredentialValidity } from './credentialValidity';
 const now = new Date('2026-06-01T00:00:00Z');
 
 function credential(
-  date_issued: string,
+  valid_from: string,
   expiration_date?: string,
   status?: CredentialStatus['status'],
 ): Parameters<typeof getCredentialValidity>[0] {
   return {
-    metadata: { is_favorite: false, date_added: '2026-01-01T00:00:00Z', date_issued, expiration_date },
+    metadata: {
+      is_favorite: false,
+      date_added: '2026-01-01T00:00:00Z',
+      date_issued: '2020-01-01T00:00:00Z',
+      valid_from,
+      expiration_date,
+    },
     credential_status: status ? { status, last_checked: '2026-01-01T00:00:00Z' } : undefined,
   };
 }
@@ -39,6 +45,17 @@ describe('getCredentialValidity', () => {
       state: 'not_yet_valid',
       validFrom: '2027-01-01T00:00:00Z',
     });
+  });
+
+  test('is valid when only the issuance date is in the future', () => {
+    expect(
+      getCredentialValidity(
+        {
+          metadata: { is_favorite: false, date_added: '2026-01-01T00:00:00Z', date_issued: '2027-01-01T00:00:00Z' },
+        },
+        now,
+      ),
+    ).toEqual({ state: 'valid' });
   });
 
   test('revocation wins over the validity period', () => {
