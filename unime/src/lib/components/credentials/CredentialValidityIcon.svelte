@@ -3,6 +3,9 @@
   import type { CredentialValidity } from '$lib/utils/credentialValidity';
 
   export let validity: CredentialValidity;
+
+  let className = 'mr-3 size-6';
+  export { className as class };
 </script>
 
 <!--
@@ -11,11 +14,12 @@ The icon on a credential list entry for a credential that cannot be used right n
 
 ### Props
 - validity
+- class: size and spacing of the icon
 -->
 {#if validity.state === 'revoked' || validity.state === 'suspended'}
-  <XCircleFillIcon class="mr-3 size-6 text-red-600 dark:text-red-500" />
+  <XCircleFillIcon class="{className} text-red-600 dark:text-red-500" />
 {:else if validity.state === 'expired'}
-  <WarningCircleFillIcon class="mr-3 size-6 text-orange-600 dark:text-orange-500" />
+  <WarningCircleFillIcon class="{className} text-orange-600 dark:text-orange-500" />
 {:else if validity.state === 'not_yet_valid'}
-  <CalendarPlusFillIcon class="mr-3 size-6 text-ex-grey-1 dark:text-text-alt" />
+  <CalendarPlusFillIcon class="{className} text-ex-grey-1 dark:text-text-alt" />
 {/if}

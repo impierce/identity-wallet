@@ -31,7 +31,7 @@ const empty_state: AppState = {
         reverse: false,
       },
       credentials: {
-        sort_method: 'name_az',
+        sort_method: 'added_date_new_old',
         reverse: false,
       },
     },

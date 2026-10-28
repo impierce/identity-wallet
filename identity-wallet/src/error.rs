@@ -48,6 +48,8 @@ pub enum AppError {
     InvalidCredentialOffer(#[source] serde_json::Error),
     #[error("No credential in the wallet matched the DCQL query")]
     NoMatchingCredentialError,
+    #[error("Missing required credentials: {0}")]
+    MissingRequiredCredentialError(String),
     #[error("Failed to generate authorization response")]
     GenerateAuthorizationResponseError(#[source] anyhow::Error),
     #[error("Failed to send authorization response")]

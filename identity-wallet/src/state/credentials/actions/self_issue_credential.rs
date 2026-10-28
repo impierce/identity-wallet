@@ -1,5 +1,6 @@
 use crate::reducer;
 use crate::state::credentials::reducers::self_issue_credential::self_issue_credential;
+use crate::state::profile_settings::reducers::update_sorting_preference::sort_credentials;
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
@@ -22,7 +23,7 @@ pub struct SelfIssueCredential {
 #[typetag::serde(name = "[Credential] Self Issue")]
 impl ActionTrait for SelfIssueCredential {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(self_issue_credential)]
+        vec![reducer!(self_issue_credential), reducer!(sort_credentials)]
     }
 }
 
