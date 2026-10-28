@@ -50,6 +50,9 @@ use std::str::FromStr as _;
 use std::sync::Arc;
 use uuid::Uuid;
 
+/// The ids of the shared credentials per credential types key, as remembered on the connection.
+pub type LastShared = Vec<(String, Vec<String>)>;
+
 /// Handles the non-interactive `CredentialsSelected` action, which is triggered by accepting the `ShareCredentials` prompt set by `read_oid4vp_authorization_request`.
 /// Sends the authorization response including the verifiable credentials.
 /// This fn completes the OID4VP authorization flow, therefore the active flow and pending connection data are cleared at the end and the user is redirected to the "me" page.
@@ -144,7 +147,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     stronghold_manager: &StrongholdManager,
     identity_manager: &IdentityManager,
     selections: Vec<CredentialSelection>,
-) -> Result<(VpToken, Vec<HistoryCredential>, Vec<(String, Vec<String>)>), AppError> {
+) -> Result<(VpToken, Vec<HistoryCredential>, LastShared), AppError> {
     let oid4vp_authorization_request = match state.core_utils.active_flow.clone() {
         Some(ActiveFlow::Oid4vp {
             authorization_request, ..
@@ -247,7 +250,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
 #[tracing::instrument(skip_all)]
 pub async fn update_history_and_connections(
     history_credentials: Vec<HistoryCredential>,
-    last_shared: Vec<(String, Vec<String>)>,
+    last_shared: LastShared,
     pending_connection_data: &PendingConnectionData,
     connections: &mut Connections,
     history: &mut Vec<HistoryEvent>,
