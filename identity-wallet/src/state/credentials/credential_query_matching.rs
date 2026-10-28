@@ -100,8 +100,12 @@ fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
         .credential_status
         .as_ref()
         .is_some_and(|status| matches!(status.status, StatusType::INVALID | StatusType::SUSPENDED));
-    let not_yet_valid =
-        DateTime::parse_from_rfc3339(&display_credential.metadata.date_issued).is_ok_and(|valid_from| valid_from > now);
+    let not_yet_valid = display_credential
+        .metadata
+        .valid_from
+        .as_deref()
+        .and_then(|valid_from| DateTime::parse_from_rfc3339(valid_from).ok())
+        .is_some_and(|valid_from| valid_from > now);
     let expired = display_credential
         .metadata
         .expiration_date
@@ -212,5 +216,46 @@ fn requested_types(credential_query: &CredentialQuery) -> Vec<String> {
             type_values.iter().filter_map(|types| types.last().cloned()).collect()
         }
         MetaTypes::MsoMdocMeta { doctype_value } => vec![doctype_value.clone()],
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::credentials::{CredentialMetadata, DisplayCredential};
+
+    fn record(date_issued: &str, valid_from: Option<&str>) -> VerifiableCredentialRecord {
+        VerifiableCredentialRecord {
+            verifiable_credential: serde_json::Value::Null,
+            display_credential: DisplayCredential {
+                metadata: CredentialMetadata {
+                    date_issued: date_issued.to_string(),
+                    valid_from: valid_from.map(ToString::to_string),
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+        }
+    }
+
+    #[test]
+    fn option_state_uses_valid_from_for_not_yet_valid() {
+        assert_eq!(
+            option_state(&record("2020-01-01T00:00:00Z", Some("2100-01-01T00:00:00Z"))),
+            OptionState::Unavailable
+        );
+        assert_eq!(
+            option_state(&record("2020-01-01T00:00:00Z", Some("2020-01-01T00:00:00Z"))),
+            OptionState::Valid
+        );
+    }
+
+    #[test]
+    fn option_state_ignores_the_issuance_date() {
+        assert_eq!(option_state(&record("2100-01-01T00:00:00Z", None)), OptionState::Valid);
+        assert_eq!(
+            option_state(&record("2100-01-01T00:00:00Z", Some("not a date"))),
+            OptionState::Valid
+        );
     }
 }
