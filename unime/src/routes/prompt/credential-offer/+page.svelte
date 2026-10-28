@@ -10,7 +10,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { DownloadSimpleFillIcon } from '$lib/icons';
   import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
-  import { state as appState, error } from '$lib/stores';
+  import { state as appState, error, pendingInteraction } from '$lib/stores';
   import { hash } from '$lib/utils';
 
   // TypeScript does not know that the `current_user_prompt` is of type `credential-offer`.
@@ -145,6 +145,7 @@
       disabled={tx_code && !complete}
       on:click={() => {
         loading = true;
+        pendingInteraction.set({ kind: 'issuance', counterparty: issuer_name });
         dispatch({
           type: '[Credential Offer] Selected',
           payload: {

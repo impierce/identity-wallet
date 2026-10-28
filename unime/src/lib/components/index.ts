@@ -11,6 +11,7 @@ export { default as ExternalLink } from './ExternalLink.svelte';
 export { default as Favorites } from './credentials/Favorites.svelte';
 export { default as History } from './history/History.svelte';
 export { default as IconMessage } from './IconMessage.svelte';
+export { default as InteractionResultSheet } from './InteractionResultSheet.svelte';
 export { default as Image } from './image/Image.svelte';
 export { default as ListItemCard } from './ListItemCard.svelte';
 export { default as ListItemImage } from './ListItemImage.svelte';

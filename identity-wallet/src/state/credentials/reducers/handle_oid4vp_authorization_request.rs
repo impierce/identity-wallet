@@ -2,6 +2,8 @@ use crate::state::connections::Connections;
 use crate::state::core_utils::IdentityManager;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::state::credentials::Sha256Hasher;
+#[cfg(not(feature = "test_utils"))]
+use crate::state::interaction_result::send_authorization_response;
 use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
 use crate::{
@@ -19,6 +21,7 @@ use crate::{
             selective_disclosure::{claims_to_disclose, conceal_unrequested_claims, supports_selective_disclosure},
             VerifiableCredentialRecord,
         },
+        interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -102,18 +105,52 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .map_err(GenerateAuthorizationResponseError)?;
         debug!("Generated OID4VP authorization response: {response:?}");
 
-        #[cfg(not(feature = "test_utils"))]
-        if provider_manager.send_response(&response).await.is_err() {
-            log::warn!("Failed to send OID4VP authorization response to verifier");
-            return Err(SendAuthorizationResponseError);
-        }
-        info!("OID4VP presentation response successfully sent to verifier");
-
-        let mut connections = state.connections;
-        let mut history = state.history;
         let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::Error("Expected pending connection data for OID4VP authorization request".to_string())
         })?;
+        let interaction_result = |outcome| {
+            Some(InteractionResult {
+                kind: InteractionKind::Presentation,
+                counterparty: pending_connection_data.client_metadata.client_name.clone(),
+                outcome,
+            })
+        };
+
+        #[cfg(not(feature = "test_utils"))]
+        match send_authorization_response(&response).await {
+            InteractionOutcome::Approved => {}
+            // Nothing was shared: keep the flow so the user can try again.
+            outcome @ InteractionOutcome::NotSent { .. } => {
+                log::warn!("Failed to send OID4VP authorization response to verifier: {outcome:?}");
+                drop(state_guard);
+                return Ok(AppState {
+                    interaction_result: interaction_result(outcome),
+                    ..state
+                });
+            }
+            // The verifier refused the presentation: end the flow without recording a share.
+            outcome @ InteractionOutcome::Rejected { .. } => {
+                log::warn!("Verifier rejected the OID4VP authorization response: {outcome:?}");
+                drop(state_guard);
+                return Ok(AppState {
+                    core_utils: CoreUtils {
+                        active_flow: None,
+                        pending_connection_data: None,
+                        ..state.core_utils
+                    },
+                    current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                        target: "me".to_string(),
+                    }),
+                    interaction_result: interaction_result(outcome),
+                    ..state
+                });
+            }
+        }
+        info!("OID4VP presentation response accepted by verifier");
+
+        let interaction_result = interaction_result(InteractionOutcome::Approved);
+        let mut connections = state.connections;
+        let mut history = state.history;
 
         update_history_and_connections(
             history_credentials,
@@ -136,6 +173,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 target: "me".to_string(),
             }),
             history,
+            interaction_result,
             ..state
         });
     }
