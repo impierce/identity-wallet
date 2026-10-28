@@ -178,6 +178,71 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
         .collect()
 }
 
+// The fields of `value` as shown to the holder: scalars, and arrays of scalars as one field.
+fn fields(path: Vec<String>, value: &Value, fields_found: &mut Vec<(Vec<String>, Value)>) {
+    match value {
+        Value::Object(object) => {
+            for (key, child) in object {
+                let mut child_path = path.clone();
+                child_path.push(key.clone());
+                fields(child_path, child, fields_found);
+            }
+        }
+        Value::Array(array) if array.iter().any(|item| item.is_object() || item.is_array()) => {
+            for (index, child) in array.iter().enumerate() {
+                let mut child_path = path.clone();
+                child_path.push(index.to_string());
+                fields(child_path, child, fields_found);
+            }
+        }
+        Value::Null => {}
+        _ => fields_found.push((path, value.clone())),
+    }
+}
+
+fn presented_fields(
+    sd_jwt: &str,
+    format: &Format,
+    claim_paths: &[&ClaimPathPointer],
+) -> Option<Vec<(Vec<String>, Value)>> {
+    let presentation = conceal_unrequested_claims(sd_jwt, format, claim_paths).ok()?;
+    let decoded = decoded_object(&presentation.parse::<SdJwt>().ok()?).ok()?;
+    let mut found = vec![];
+    fields(vec![], &decoded, &mut found);
+    Some(found)
+}
+
+/// For each claim path, the other fields of `sd_jwt` that a presentation disclosing that claim reveals as well, because
+/// they are in the same disclosure. Fields that every presentation reveals are left out.
+pub fn fields_shared_alongside(
+    sd_jwt: &str,
+    format: &Format,
+    claim_paths: &[&ClaimPathPointer],
+) -> Vec<Vec<(Vec<String>, Value)>> {
+    let (Some(always), Some(decoded)) = (
+        presented_fields(sd_jwt, format, &[]),
+        sd_jwt
+            .parse::<SdJwt>()
+            .ok()
+            .and_then(|sd_jwt| decoded_object(&sd_jwt).ok()),
+    ) else {
+        return vec![vec![]; claim_paths.len()];
+    };
+
+    claim_paths
+        .iter()
+        .map(|claim_path| {
+            let own = concrete_paths(claim_path, &decoded);
+            presented_fields(sd_jwt, format, &[claim_path])
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|(path, _)| !always.iter().any(|(always_path, _)| always_path == path))
+                .filter(|(path, _)| !own.iter().any(|own| path.starts_with(own) || own.starts_with(path)))
+                .collect()
+        })
+        .collect()
+}
+
 /// Presents `sd_jwt` with only the disclosures needed to reveal the claims at `claim_paths`. For a VCDM 2.0 SD-JWT
 /// everything outside `credentialSubject`, and the subject's `id`, stays disclosed.
 pub fn conceal_unrequested_claims(
@@ -381,6 +446,45 @@ mod tests {
                 ]
             ),
             vec![false, false, true]
+        );
+    }
+
+    #[tokio::test]
+    async fn fields_shared_alongside_lists_fields_in_the_same_disclosure() {
+        let sd_jwt = sd_jwt::SdJwtBuilder::new(json!({
+            "issuer": "did:example:issuer",
+            "credentialSubject": { "achievement": { "name": "Badge", "description": "First" }, "nickname": "Ferris" }
+        }))
+        .unwrap()
+        .make_concealable("/credentialSubject/achievement")
+        .unwrap()
+        .make_concealable("/credentialSubject/nickname")
+        .unwrap()
+        .finish(&UnsignedSigner, "ES256")
+        .await
+        .unwrap()
+        .to_string();
+
+        assert_eq!(
+            fields_shared_alongside(
+                &sd_jwt,
+                &Format::VcSdJwt,
+                &[
+                    &path(json!(["credentialSubject", "achievement", "description"])),
+                    &path(json!(["credentialSubject", "nickname"]))
+                ]
+            ),
+            vec![
+                vec![(
+                    vec![
+                        "credentialSubject".to_string(),
+                        "achievement".to_string(),
+                        "name".to_string()
+                    ],
+                    json!("Badge")
+                )],
+                vec![]
+            ]
         );
     }
 

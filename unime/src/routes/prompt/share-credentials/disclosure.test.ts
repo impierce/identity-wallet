@@ -2,7 +2,7 @@ import type { DisplayCredential } from '@bindings/credentials/DisplayCredential'
 import type { CredentialOption } from '@bindings/user_prompt/CredentialOption';
 import type { RequestedCredential } from '@bindings/user_prompt/RequestedCredential';
 
-import { claimRows, claimText, defaultDisclosure, humanize, satisfiesRequest } from './disclosure';
+import { claimRows, claimText, defaultDisclosure, humanize, satisfiesRequest, sharedAlongside } from './disclosure';
 
 const pid: RequestedCredential = {
   query_id: 'pid',
@@ -22,7 +22,7 @@ const option = (values: unknown[], selective_disclosure = true): CredentialOptio
   id: 'credential',
   state: 'valid',
   selective_disclosure,
-  claims: values.map((value) => ({ value, concealable: true })),
+  claims: values.map((value) => ({ value, concealable: true, shared_alongside: [] })),
 });
 
 const credential = {
@@ -87,6 +87,21 @@ describe('satisfiesRequest', () => {
     expect(satisfiesRequest(pid, credentialOption, [0, 1, 2])).toBe(true);
     expect(satisfiesRequest(pid, credentialOption, [0, 2])).toBe(false);
     expect(satisfiesRequest(pid, credentialOption, [0, 3])).toBe(false);
+  });
+});
+
+describe('sharedAlongside', () => {
+  test('lists unrequested fields that are shared with the disclosed claims', () => {
+    const credentialOption = option(['Anna', '1990-03-12', 'NL', null]);
+    credentialOption.claims[2].shared_alongside = [
+      { path: ['birth_date'], value: '1990-03-12' },
+      { path: ['place_of_birth'], value: 'Utrecht' },
+    ];
+
+    expect(sharedAlongside(pid, credentialOption, credential, [0, 1])).toEqual([]);
+    expect(sharedAlongside(pid, credentialOption, credential, [0, 1, 2])).toEqual([
+      { label: 'Place of birth', value: 'Utrecht', required: true },
+    ]);
   });
 });
 

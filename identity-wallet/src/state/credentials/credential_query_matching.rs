@@ -2,7 +2,9 @@ use crate::error::AppError;
 use crate::state::{
     connections::Connection,
     credentials::{
-        selective_disclosure::{claim_sets, concealable_claims, supports_selective_disclosure},
+        selective_disclosure::{
+            claim_sets, concealable_claims, fields_shared_alongside, supports_selective_disclosure,
+        },
         VerifiableCredentialRecord,
     },
 };
@@ -67,6 +69,17 @@ pub struct OptionClaim {
     pub value: Value,
     /// Whether the claim can be left out of the presentation.
     pub concealable: bool,
+    /// Other fields of the credential that are shared whenever this claim is, because they are disclosed together.
+    #[serde(default)]
+    pub shared_alongside: Vec<SharedField>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/SharedField.ts")]
+pub struct SharedField {
+    pub path: Vec<String>,
+    #[ts(type = "any")]
+    pub value: Value,
 }
 
 /// Whether a stored credential can be shared: valid ones are preselected, expired ones can be chosen after a warning,
@@ -136,22 +149,32 @@ fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCred
         .map(|claim| &claim.path)
         .collect();
     let selective_disclosure = supports_selective_disclosure(&credential_query.format) && !claim_paths.is_empty();
-    let concealable = match record.verifiable_credential.as_str() {
-        Some(sd_jwt) if selective_disclosure => concealable_claims(sd_jwt, &claim_paths),
-        _ => vec![false; claim_paths.len()],
+    let (concealable, shared_alongside) = match record.verifiable_credential.as_str() {
+        Some(sd_jwt) if selective_disclosure => (
+            concealable_claims(sd_jwt, &claim_paths),
+            fields_shared_alongside(sd_jwt, &credential_query.format, &claim_paths),
+        ),
+        _ => (vec![false; claim_paths.len()], vec![vec![]; claim_paths.len()]),
     };
     let credential_json = credential_data(credential_query, record).unwrap_or_default();
     let claims = claim_paths
         .iter()
-        .zip(concealable)
-        .map(|(path, concealable)| {
+        .zip(concealable.into_iter().zip(shared_alongside))
+        .map(|(path, (concealable, shared_alongside))| {
             let mut values = path.get_values_from_json(&credential_json);
             let value = match values.len() {
                 0 => Value::Null,
                 1 => values.remove(0),
                 _ => Value::Array(values),
             };
-            OptionClaim { value, concealable }
+            OptionClaim {
+                value,
+                concealable,
+                shared_alongside: shared_alongside
+                    .into_iter()
+                    .map(|(path, value)| SharedField { path, value })
+                    .collect(),
+            }
         })
         .collect();
 
