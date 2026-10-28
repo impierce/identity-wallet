@@ -39,11 +39,6 @@
   $: selective = option?.selective_disclosure ?? false;
   $: satisfied = !option || satisfiesRequest(requested, option, disclosed);
 
-  $: summary =
-    sharedRows.length === 1
-      ? `${sharedRows[0].label}: ${claimText(sharedRows[0].value, locale)}`
-      : sharedRows.map((row) => row.label).join(', ');
-
   $: counts = !selective
     ? $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.WHOLE_CREDENTIAL()
     : rows.length === 0
@@ -137,14 +132,11 @@ collapse into a summary, and a "Change" button when there are more options.
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">{footer}</p>
       </div>
     {:else}
-      <div class="flex flex-col gap-0.5 border-t border-grey px-[14px] py-[10px] dark:border-slate-600">
-        {#if summary}
-          <p class="line-clamp-2 text-[13px]/[24px] font-medium break-words text-slate-700 dark:text-grey">
-            {summary}
-          </p>
-        {/if}
-        <p class="text-[12px]/[20px] font-medium text-slate-400">{counts}</p>
-      </div>
+      <p
+        class="border-t border-grey px-[14px] py-2 text-[12px]/[20px] font-medium text-slate-500 dark:border-slate-600 dark:text-slate-300"
+      >
+        {counts}
+      </p>
     {/if}
     {#if !satisfied}
       <p
