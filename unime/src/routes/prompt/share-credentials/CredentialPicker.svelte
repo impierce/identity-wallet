@@ -9,7 +9,7 @@
   import { Button, CredentialValidityLine, ListItemImage, SelectionIndicator, TopNavBar } from '$lib/components';
   import { CaretRightBoldIcon, ClockCounterClockwiseIcon, EyeRegularIcon, MagnifyingGlassIcon } from '$lib/icons';
 
-  import { isBadge, isSelectable } from './utils';
+  import { distinguishingClaim, isBadge, isSelectable } from './utils';
 
   export let requested: RequestedCredential;
   // All options of the request, in display order.
@@ -132,6 +132,11 @@ Lets the user choose which of the matching credentials to share for one requeste
             >
               {credential.display_name}
             </p>
+            {#if distinguishingClaim(credential, candidates)}
+              <p class="truncate text-[12px]/[20px] font-medium text-slate-700 dark:text-slate-300">
+                {distinguishingClaim(credential, candidates)}
+              </p>
+            {/if}
             <p class="text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">{credential.issuer_name}</p>
             <CredentialValidityLine {credential} />
             {#if requested.last_shared.includes(credential.id)}
