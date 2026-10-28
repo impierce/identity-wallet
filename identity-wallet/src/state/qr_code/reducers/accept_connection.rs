@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    http_client::get_http_client,
+    http_client::{fetch_public_destination, get_http_client, PublicDestinationHttpClient},
     state::{
         actions::{listen, Action},
         core_utils::{
@@ -11,7 +11,7 @@ use crate::{
             validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
-        user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile},
+        user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
         AppState,
     },
 };
@@ -26,7 +26,7 @@ use oid4vc::{
     oid4vci::credential_offer::CredentialOffer,
 };
 use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
-use openid_federation::{FederationClient, ReqwestHttpClient};
+use openid_federation::{EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata};
 use serde_json::Value;
 
 /// The kind of request encoded in a scanned QR-code.
@@ -421,15 +421,19 @@ fn strip_client_id_prefix(client_id: &str) -> String {
 const MAX_TRUST_ANCHORS: usize = 10;
 
 /// Discovers every OpenID Federation trust chain reachable from `entity_id` which is equal to the `client_metadata.connection_url`.
-/// Then it fetches the ecosystem profile hosted by each chain's trust anchor. Returns `None` if no trust chains are found
-/// or none of their trust anchors expose an ecosystem profile.
+/// Then it resolves the ecosystem profile of each chain's trust anchor (see `resolve_ecosystem_profile`). Returns `None`
+/// if no trust chains are found.
 ///
 /// Anchors are deduplicated first: the prompt shows one card per ecosystem, not one per path to it.
 async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>> {
-    // In the future this must be more flexible to support other types of clients.
-    let federation_client = FederationClient::with_http_client(ReqwestHttpClient::with_client(get_http_client().await));
+    // Every entity configuration and federation endpoint on the way is named by a remote party, see
+    // `PublicDestinationHttpClient`.
+    let federation_client = FederationClient::with_http_client(PublicDestinationHttpClient);
 
-    let trust_chains = match federation_client.discover_all_trust_chains(entity_id).await {
+    let trust_chains = match federation_client
+        .discover_all_trust_chains(&EntityId::from(entity_id.clone()))
+        .await
+    {
         Ok(trust_chains) => trust_chains,
         Err(e) => {
             warn!("Failed to discover trust chains for entity ID {entity_id}: {e}");
@@ -438,33 +442,34 @@ async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>>
     };
 
     // Discovery order is kept so the prompt lists the shortest chains' anchors first.
-    let mut trust_anchor_ids: Vec<url::Url> = Vec::new();
+    let mut trust_anchors: Vec<(EntityId, EntityConfiguration)> = Vec::new();
     for trust_chain in &trust_chains {
-        let Ok((trust_anchor_id, _)) = trust_chain.trust_anchor_entity_id_and_configuration() else {
+        let Ok((trust_anchor_id, trust_anchor_configuration)) = trust_chain.trust_anchor_entity_id_and_configuration()
+        else {
             warn!(
                 "Failed to get trust anchor entity ID from trust chain, which should not be possible: {trust_chain:?}"
             );
             continue;
         };
 
-        if trust_anchor_ids.contains(&trust_anchor_id) {
+        if trust_anchors.iter().any(|(id, _)| *id == trust_anchor_id) {
             continue;
         }
 
-        if trust_anchor_ids.len() == MAX_TRUST_ANCHORS {
+        if trust_anchors.len() == MAX_TRUST_ANCHORS {
             warn!("More than {MAX_TRUST_ANCHORS} trust anchors for entity ID {entity_id}, ignoring the rest");
             break;
         }
 
-        trust_anchor_ids.push(trust_anchor_id);
+        trust_anchors.push((trust_anchor_id, trust_anchor_configuration));
     }
 
-    let ecosystems: Vec<EcosystemProfile> =
-        futures::future::join_all(trust_anchor_ids.iter().map(fetch_ecosystem_profile))
-            .await
-            .into_iter()
-            .flatten()
-            .collect();
+    let ecosystems: Vec<EcosystemProfile> = futures::future::join_all(
+        trust_anchors
+            .iter()
+            .map(|(id, configuration)| resolve_ecosystem_profile(&federation_client, id, configuration)),
+    )
+    .await;
 
     info!("Fetched ecosystems for entity ID {entity_id}: {ecosystems:?}");
 
@@ -472,6 +477,22 @@ async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>>
         vec if !vec.is_empty() => Some(vec),
         _ => None,
     }
+}
+
+/// Prefers the proprietary profile a trust anchor hosts at `/public/ecosystem-profile`. Trust anchors that do not host
+/// one are described through the standardized OpenID Federation endpoints instead (see `federation_ecosystem_profile`).
+async fn resolve_ecosystem_profile(
+    federation_client: &FederationClient,
+    trust_anchor_id: &EntityId,
+    trust_anchor_configuration: &EntityConfiguration,
+) -> EcosystemProfile {
+    let ecosystem_profile = match fetch_ecosystem_profile(trust_anchor_id.as_url()).await {
+        Some(ecosystem_profile) => ecosystem_profile,
+        None => federation_ecosystem_profile(federation_client, trust_anchor_id, trust_anchor_configuration).await,
+    };
+
+    download_profile_logos(&ecosystem_profile).await;
+    ecosystem_profile
 }
 
 /// The member list has no length limit, so logo downloads are throttled rather than fired off at
@@ -505,7 +526,7 @@ async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<Ec
         }
     };
 
-    let response = match get_http_client().await.get(ecosystem_profile_url.clone()).send().await {
+    let response = match fetch_public_destination(ecosystem_profile_url.clone()).await {
         Ok(response) => response,
         Err(e) => {
             warn!("Failed to fetch ecosystem profile from {ecosystem_profile_url}: {e}");
@@ -522,14 +543,93 @@ async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<Ec
     }
 
     match response.json::<EcosystemProfile>().await {
-        Ok(ecosystem_profile) => {
-            download_profile_logos(&ecosystem_profile).await;
-            Some(ecosystem_profile)
-        }
+        Ok(ecosystem_profile) => Some(ecosystem_profile),
         Err(e) => {
             warn!("Failed to parse ecosystem profile from {ecosystem_profile_url}: {e}");
             None
         }
+    }
+}
+
+/// The prompt waits on the members' entity configurations, so only the first ones are resolved;
+/// `member_count` still reports the full list.
+const MAX_FEDERATION_MEMBERS: usize = 20;
+
+/// Describes an ecosystem through the standardized OpenID Federation endpoints only: the trust anchor's own
+/// `federation_entity` metadata names the ecosystem and its leader, and the trust anchor's federation list endpoint
+/// enumerates its members (its immediate subordinates).
+///
+/// Reference: OpenID Federation 1.0 - Section 5.1.1 Federation Entity, Section 5.2.2 Informational Metadata
+/// Parameters, Section 8.3 Subordinate Listing
+async fn federation_ecosystem_profile(
+    federation_client: &FederationClient,
+    trust_anchor_id: &EntityId,
+    trust_anchor_configuration: &EntityConfiguration,
+) -> EcosystemProfile {
+    let federation_entity = federation_entity_metadata(trust_anchor_configuration);
+    let ecosystem_leader = federation_member(trust_anchor_id, federation_entity);
+
+    let member_ids = match federation_entity.and_then(|metadata| metadata.federation_list_endpoint.as_ref()) {
+        Some(list_endpoint) => federation_client
+            .list_entities(list_endpoint)
+            .await
+            .inspect_err(|e| warn!("Failed to list the subordinates of trust anchor {trust_anchor_id}: {e}"))
+            .unwrap_or_default(),
+        None => Vec::new(),
+    };
+
+    let members = futures::future::join_all(
+        member_ids
+            .iter()
+            .take(MAX_FEDERATION_MEMBERS)
+            .map(|member_id| resolve_federation_member(federation_client, member_id)),
+    )
+    .await;
+
+    EcosystemProfile {
+        logo_uri: ecosystem_leader.logo_uri.clone(),
+        name: ecosystem_leader.name.clone(),
+        description: ecosystem_leader.description.clone(),
+        ecosystem_leader,
+        member_count: member_ids.len(),
+        members,
+    }
+}
+
+/// A member that cannot be resolved is still listed by its entity identifier: the trust anchor's
+/// list endpoint is what makes it a member, its own configuration only describes it.
+async fn resolve_federation_member(federation_client: &FederationClient, member_id: &EntityId) -> Member {
+    match federation_client.resolve_entity_configuration(member_id).await {
+        Ok((_, configuration)) => federation_member(member_id, federation_entity_metadata(&configuration)),
+        Err(e) => {
+            warn!("Failed to resolve the entity configuration of ecosystem member {member_id}: {e}");
+            federation_member(member_id, None)
+        }
+    }
+}
+
+fn federation_entity_metadata(configuration: &EntityConfiguration) -> Option<&FederationEntityMetadata> {
+    configuration
+        .metadata
+        .as_ref()
+        .and_then(|metadata| metadata.federation_entity.as_ref())
+}
+
+/// Names an entity by its organization, falling back to its display name and finally its host, since a
+/// `federation_entity` may omit every informational parameter.
+fn federation_member(entity_id: &EntityId, federation_entity: Option<&FederationEntityMetadata>) -> Member {
+    // The parameters are optional, and an empty one names nothing.
+    let non_empty = |name: &Option<String>| name.clone().filter(|name| !name.trim().is_empty());
+    let name = federation_entity
+        .and_then(|metadata| non_empty(&metadata.organization_name).or_else(|| non_empty(&metadata.display_name)))
+        .or(entity_id.as_url().host_str().map(str::to_string))
+        .unwrap_or_else(|| entity_id.to_string());
+
+    Member {
+        logo_uri: federation_entity.and_then(|metadata| metadata.logo_uri.as_ref().map(url::Url::to_string)),
+        name,
+        description: federation_entity.and_then(|metadata| metadata.description.clone()),
+        identifier: Some(entity_id.to_string()),
     }
 }
 
@@ -909,26 +1009,30 @@ mod tests {
         let mut metadata = EntityMetadata::new();
         metadata.federation_entity = Some(FederationEntityMetadata {
             organization_name: Some(organization_name.to_string()),
-            homepage_uri: None,
-            policy_uri: None,
-            logo_uri: None,
+            display_name: None,
+            description: None,
+            keywords: None,
             contacts: None,
+            logo_uri: None,
+            policy_uri: None,
+            information_uri: None,
+            organization_uri: None,
             federation_fetch_endpoint: Some(entity_id.join("/federation-fetch").unwrap()),
-            federation_list_endpoint: None,
+            federation_list_endpoint: Some(entity_id.join("/federation-list").unwrap()),
             federation_resolve_endpoint: None,
             federation_trust_mark_status_endpoint: None,
             federation_historical_keys_endpoint: None,
         });
 
         let mut config = EntityConfiguration::new(
-            entity_id.clone(),
+            EntityId::from(entity_id.clone()),
             jwks,
             expires_in(chrono::Duration::hours(1)),
             chrono::Utc::now().timestamp(),
         )
         .with_metadata(metadata);
         if !authority_hints.is_empty() {
-            config = config.with_authority_hints(authority_hints);
+            config = config.with_authority_hints(authority_hints.into_iter().map(EntityId::from).collect());
         }
 
         Mock::given(method("GET"))
@@ -953,8 +1057,8 @@ mod tests {
         jwks.add_key(federation_test_key());
 
         let statement = SubordinateStatement::new(
-            trust_anchor_id.clone(),
-            subject_entity_id.clone(),
+            EntityId::from(trust_anchor_id.clone()),
+            EntityId::from(subject_entity_id.clone()),
             expires_in(chrono::Duration::hours(1)),
             chrono::Utc::now().timestamp(),
             jwks,
@@ -968,6 +1072,15 @@ mod tests {
                     .set_body_string(encode_entity_statement(&statement))
                     .insert_header("content-type", "application/entity-statement+jwt"),
             )
+            .mount(trust_anchor_server)
+            .await;
+    }
+
+    /// Mounts the federation list endpoint through which a trust anchor enumerates its subordinates.
+    async fn mount_subordinate_listing(trust_anchor_server: &MockServer, subordinate_ids: &[&url::Url]) {
+        Mock::given(method("GET"))
+            .and(path("/federation-list"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!(subordinate_ids)))
             .mount(trust_anchor_server)
             .await;
     }
@@ -1103,7 +1216,8 @@ mod tests {
         let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
 
         // Subordinate to both, so discovery finds `leaf -> intermediate -> anchor` and
-        // `leaf -> anchor`, ending at the same anchor.
+        // `leaf -> anchor`, ending at the same anchor. `leaf -> intermediate` ends a chain too,
+        // since a superior with superiors of its own may still be a trust anchor.
         mount_entity_configuration(
             &leaf_server,
             &leaf_id,
@@ -1127,8 +1241,8 @@ mod tests {
 
         let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
 
-        assert_eq!(ecosystems.len(), 1);
-        assert_eq!(ecosystems[0].name, "Ecosystem One");
+        let names: Vec<_> = ecosystems.iter().map(|profile| profile.name.as_str()).collect();
+        assert_eq!(names, vec!["Intermediate", "Ecosystem One"]);
     }
 
     #[tokio::test]
@@ -1153,6 +1267,61 @@ mod tests {
         assert_eq!(
             ecosystems[0].ecosystem_leader.identifier.as_deref(),
             Some(trust_anchor_server.uri().as_str())
+        );
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_describes_a_trust_anchor_without_an_ecosystem_profile_by_its_federation_endpoints() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+        // Listed by the trust anchor, but serves no entity configuration.
+        let unreachable_member_id: url::Url = "http://127.0.0.1:1".parse().unwrap();
+
+        mount_entity_configuration(&leaf_server, &leaf_id, "Leaf", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+        mount_subordinate_listing(&trust_anchor_server, &[&leaf_id, &unreachable_member_id]).await;
+
+        let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        assert_eq!(ecosystems[0].name, "Trust Anchor");
+        assert_eq!(ecosystems[0].ecosystem_leader.name, "Trust Anchor");
+        assert_eq!(
+            ecosystems[0].ecosystem_leader.identifier.as_deref(),
+            Some(trust_anchor_id.as_str())
+        );
+        assert_eq!(ecosystems[0].member_count, 2);
+        let members: Vec<_> = ecosystems[0]
+            .members
+            .iter()
+            .map(|member| (member.name.as_str(), member.identifier.as_deref()))
+            .collect();
+        assert_eq!(
+            members,
+            vec![
+                ("Leaf", Some(leaf_id.as_str())),
+                ("127.0.0.1", Some(unreachable_member_id.as_str()))
+            ]
+        );
+    }
+
+    #[test]
+    fn federation_member_skips_empty_names() {
+        let entity_id = EntityId::from(url::Url::parse("https://member.example.com").unwrap());
+
+        let metadata: FederationEntityMetadata =
+            serde_json::from_value(json!({ "organization_name": " ", "display_name": "Member" })).unwrap();
+        assert_eq!(federation_member(&entity_id, Some(&metadata)).name, "Member");
+
+        let metadata: FederationEntityMetadata =
+            serde_json::from_value(json!({ "organization_name": "", "display_name": "" })).unwrap();
+        assert_eq!(
+            federation_member(&entity_id, Some(&metadata)).name,
+            "member.example.com"
         );
     }
 }

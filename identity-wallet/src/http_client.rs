@@ -1,5 +1,7 @@
 use std::net::IpAddr;
 
+use async_trait::async_trait;
+use openid_federation::{FederationError, FederationResult, HttpClient};
 use reqwest::{Client, Url};
 use tokio::sync::OnceCell;
 
@@ -7,7 +9,7 @@ use crate::error::AppError;
 use crate::state::core_utils::tls_config;
 
 static HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
-static ASSET_HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
+static PUBLIC_DESTINATION_HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
 
 pub fn get_http_client_builder() -> reqwest::ClientBuilder {
     reqwest::Client::builder()
@@ -28,23 +30,81 @@ pub async fn get_http_client() -> Client {
         .clone()
 }
 
-/// Returns a globally shared `reqwest::Client` for assets fetched from remote-supplied URLs.
+/// Returns a globally shared `reqwest::Client` for requests to remote-supplied URLs, see
+/// [`fetch_public_destination`].
 ///
-/// Follows no redirects: the caller follows them by hand so every hop passes
+/// Follows no redirects: [`fetch_public_destination`] follows them by hand so every hop passes
 /// [`assert_public_destination`]. A default client would follow ten of them unchecked.
-pub async fn get_asset_http_client() -> Result<Client, AppError> {
-    ASSET_HTTP_CLIENT
+async fn get_public_destination_http_client() -> Result<Client, AppError> {
+    PUBLIC_DESTINATION_HTTP_CLIENT
         .get_or_try_init(|| async {
             get_http_client_builder()
                 .redirect(reqwest::redirect::Policy::none())
                 .build()
                 .map_err(|err| {
-                    log::error!("Failed to build reqwest client for assets: {err}");
-                    AppError::DownloadAborted("asset HTTP client could not be built")
+                    log::error!("Failed to build reqwest client for remote-supplied URLs: {err}");
+                    AppError::DownloadAborted("HTTP client for remote-supplied URLs could not be built")
                 })
         })
         .await
         .cloned()
+}
+
+const MAX_REDIRECTS: usize = 5;
+
+/// Requests a remote-supplied `url`, following redirects by hand so each hop passes
+/// [`assert_public_destination`] first. `reqwest`'s redirect policy is synchronous and cannot resolve a host.
+pub async fn fetch_public_destination(mut url: Url) -> Result<reqwest::Response, AppError> {
+    let client = get_public_destination_http_client().await?;
+
+    for _ in 0..=MAX_REDIRECTS {
+        assert_public_destination(&url).await?;
+
+        let response = client.get(url.clone()).send().await?;
+        if !response.status().is_redirection() {
+            return Ok(response);
+        }
+
+        let location = response
+            .headers()
+            .get(reqwest::header::LOCATION)
+            .and_then(|location| location.to_str().ok())
+            .ok_or(AppError::DownloadAborted("redirect without a usable location"))?;
+
+        url = url
+            .join(location)
+            .map_err(|_| AppError::DownloadAborted("redirect to an unparseable location"))?;
+    }
+
+    Err(AppError::DownloadAborted("too many redirects"))
+}
+
+/// An `openid-federation` HTTP client that only requests public destinations, see [`fetch_public_destination`].
+///
+/// Entity identifiers, authority hints and federation endpoints all come from remote entity configurations, and the
+/// wallet requests them while it builds a connection prompt, before the user has accepted anything.
+pub struct PublicDestinationHttpClient;
+
+#[async_trait]
+impl HttpClient for PublicDestinationHttpClient {
+    async fn fetch_text(&self, url: Url) -> FederationResult<String> {
+        let response = fetch_public_destination(url.clone()).await.map_err(|err| match err {
+            AppError::DownloadFailed(err) => FederationError::Http(err),
+            AppError::DownloadAborted(reason) => {
+                FederationError::EntityResolution(format!("Refused to fetch {url}: {reason}"))
+            }
+            err => FederationError::EntityResolution(format!("Failed to fetch {url}: {err}")),
+        })?;
+
+        if !response.status().is_success() {
+            return Err(FederationError::EntityResolution(format!(
+                "Failed to fetch response from {url}: HTTP {}",
+                response.status()
+            )));
+        }
+
+        response.text().await.map_err(FederationError::from)
+    }
 }
 
 /// Allowed in debug builds so the app and its tests can reach a local issuer or `wiremock`.
@@ -135,6 +195,10 @@ fn is_public(ip: &IpAddr) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wiremock::{
+        matchers::{method, path},
+        Mock, MockServer, ResponseTemplate,
+    };
 
     fn ip(address: &str) -> IpAddr {
         address.parse().unwrap()
@@ -176,5 +240,47 @@ mod tests {
     async fn non_http_schemes_are_rejected() {
         let url = Url::parse("file:///etc/passwd").unwrap();
         assert!(assert_public_destination(&url).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn public_destination_http_client_follows_redirects() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/moved"))
+            .respond_with(ResponseTemplate::new(302).insert_header("location", "/entity-configuration"))
+            .mount(&server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/entity-configuration"))
+            .respond_with(ResponseTemplate::new(200).set_body_string("entity-configuration"))
+            .mount(&server)
+            .await;
+
+        let url = Url::parse(&format!("{}/moved", server.uri())).unwrap();
+
+        assert_eq!(
+            PublicDestinationHttpClient.fetch_text(url).await.unwrap(),
+            "entity-configuration"
+        );
+    }
+
+    #[tokio::test]
+    async fn public_destination_http_client_refuses_redirect_loops() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/loop"))
+            .respond_with(ResponseTemplate::new(302).insert_header("location", "/loop"))
+            .mount(&server)
+            .await;
+
+        let url = Url::parse(&format!("{}/loop", server.uri())).unwrap();
+
+        assert!(PublicDestinationHttpClient.fetch_text(url).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn public_destination_http_client_rejects_non_http_schemes() {
+        let url = Url::parse("file:///etc/passwd").unwrap();
+        assert!(PublicDestinationHttpClient.fetch_text(url).await.is_err());
     }
 }

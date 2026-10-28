@@ -13,7 +13,7 @@ use crate::{
             validate_domain_linkage::{ValidationResult, ValidationStatus},
             validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
         },
-        profile_settings::{AppTheme, Profile},
+        profile_settings::{AppTheme, CredentialSortMethod, Profile},
         trust_list::TrustList,
         user_prompt::{CurrentUserPrompt, EcosystemProfile, Member},
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
@@ -95,6 +95,8 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         theme: AppTheme::System,
     };
     state.profile_settings.profile.replace(profile);
+    // Ferris lists credentials alphabetically, independent of the default sorting preference.
+    state.profile_settings.sorting_preferences.credentials.sort_method = CredentialSortMethod::NameAZ;
 
     let provider_manager = ProviderManager::new(
         subject.clone(),
