@@ -63,7 +63,8 @@
     requested_credentials.map((r) => [r.query_id, defaultSelection(r)]),
   );
 
-  // The result sheet clears the pending interaction when it is dismissed or minimized: restore the controls.
+  // The result sheet clears the pending interaction once the outcome is handled or the sheet is dismissed: restore the
+  // controls. Minimizing keeps it set while the request is still in flight.
   // Interactive requests never set a pending interaction and continue with another prompt instead.
   $: if (!is_interactive && !$pendingInteraction) loading = false;
 

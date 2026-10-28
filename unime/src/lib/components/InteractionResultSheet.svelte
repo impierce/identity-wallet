@@ -190,9 +190,9 @@
   function close() {
     open = false;
     if (phase === 'waiting') {
-      // Keep waiting in the background. The prompt page gets its controls back; the outcome arrives as a toast.
+      // Keep waiting in the background; the outcome arrives as a toast. The pending interaction stays set until then,
+      // so the prompt page keeps its controls disabled while the request is still in flight.
       minimized = true;
-      pendingInteraction.set(undefined);
       toast = {
         variant: 'info',
         title: $LL.INTERACTION_RESULT.STILL_WAITING_TITLE({ name }),
@@ -388,15 +388,18 @@
 {/if}
 
 {#if toast}
-  <div class="fixed right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] z-50 w-[calc(100%-32px)]">
-    <Toast
-      variant={toast.variant}
-      title={toast.title}
-      detail={toast.detail}
-      autoDismissAfterMs={5_000}
-      ondismissed={() => (toast = undefined)}
-    />
-  </div>
+  <!-- Remount for every new toast so its auto-dismiss timer starts over. -->
+  {#key toast}
+    <div class="fixed right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] z-50 w-[calc(100%-32px)]">
+      <Toast
+        variant={toast.variant}
+        title={toast.title}
+        detail={toast.detail}
+        autoDismissAfterMs={5_000}
+        ondismissed={() => (toast = undefined)}
+      />
+    </div>
+  {/key}
 {/if}
 
 <style>
