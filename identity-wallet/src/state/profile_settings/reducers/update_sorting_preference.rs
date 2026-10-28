@@ -309,6 +309,108 @@ mod tests {
         );
     }
 
+    #[tokio::test]
+    async fn test_credentials_sorting_issue() {
+        let state = init_credential_issuance_dates(
+            "2020-00-00T00:00:00Z".to_string(),
+            "2022-00-00T00:00:00Z".to_string(),
+            "2019-00-00T00:00:00Z".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference {
+            credential_sorting: Some(CredentialSortMethod::IssueDateNewOld),
+            reverse: Some(false),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .credentials
+                .iter()
+                .map(|x| x.metadata.date_issued.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "2022-00-00T00:00:00Z".to_string(),
+                "2020-00-00T00:00:00Z".to_string(),
+                "2019-00-00T00:00:00Z".to_string()
+            ]
+        );
+    }
+
+    // Credentials without an issue date go to the bottom, sorted alphabetically, in both directions.
+    #[tokio::test]
+    async fn test_credentials_sorting_issue_without_date_last() {
+        for reverse in [false, true] {
+            let credential = |display_name: &str, date_issued: &str| DisplayCredential {
+                display_name: display_name.to_string(),
+                metadata: CredentialMetadata {
+                    date_issued: date_issued.to_string(),
+                    ..Default::default()
+                },
+                ..Default::default()
+            };
+            let state = AppState {
+                credentials: vec![
+                    credential("C", ""),
+                    credential("Old", "2019-00-00T00:00:00Z"),
+                    credential("A", ""),
+                    credential("New", "2022-00-00T00:00:00Z"),
+                ],
+                ..Default::default()
+            };
+            let action = Arc::new(UpdateSortingPreference {
+                credential_sorting: Some(CredentialSortMethod::IssueDateNewOld),
+                reverse: Some(reverse),
+                ..Default::default()
+            });
+
+            let result = update_sorting_preference(state, action.clone()).await.unwrap();
+            let result = sort_credentials(result, action).await.unwrap();
+
+            let with_date = if reverse { ["Old", "New"] } else { ["New", "Old"] };
+            assert_eq!(
+                result
+                    .credentials
+                    .iter()
+                    .map(|x| x.display_name.clone())
+                    .collect::<Vec<String>>(),
+                vec![with_date[0], with_date[1], "A", "C"]
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn test_credentials_sorting_added_reverse() {
+        let state = init_credential_added_dates(
+            "2020-00-00T00:00:00Z".to_string(),
+            "2022-00-00T00:00:00Z".to_string(),
+            "2019-00-00T00:00:00Z".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference {
+            credential_sorting: Some(CredentialSortMethod::AddedDateNewOld),
+            reverse: Some(true),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .credentials
+                .iter()
+                .map(|x| x.metadata.date_added.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "2019-00-00T00:00:00Z".to_string(),
+                "2020-00-00T00:00:00Z".to_string(),
+                "2022-00-00T00:00:00Z".to_string()
+            ]
+        );
+    }
+
     // sort_connections tests //
 
     #[tokio::test]
