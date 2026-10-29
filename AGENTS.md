@@ -90,6 +90,10 @@ MCP port to the Tauri MCP server's `driver_session` tool to drive that instance.
 `pnpm tauri:mcp` are unchanged, and also honour `UNIME_DEV_PORT` (Vite) and `UNIME_MCP_PORT` (bridge base port) when
 set by hand. Every checkout has its own `target/` directory, so the first build in a new checkout takes a while.
 
+Closing the app window ends the whole instance. Killing only the launcher (a closed shell or agent task) leaves Vite,
+esbuild, cargo and the app running on Windows, so `pnpm dev:instance` also starts a hidden watchdog that stops them
+once the launcher is gone. `pnpm dev:stop` ends every process started from the current checkout.
+
 Mobile commands are `pnpm tauri android init|dev|build` and `pnpm tauri ios init|dev|build`. Do not initialize or
 regenerate a mobile project unless the task calls for it. Tracked platform customizations live under
 `unime/src-tauri/gen-static/`; `scripts/override-generated-mobile-files.sh` overwrites the matching files in Tauri's

@@ -13,6 +13,8 @@ import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 
+import { stopProcessTree } from './dev-stop.mjs';
+
 const { values } = parseArgs({
   options: {
     name: { type: 'string' },
@@ -102,6 +104,35 @@ const forwardAndWatch = (input, output) => {
 };
 forwardAndWatch(child.stdout, process.stdout);
 forwardAndWatch(child.stderr, process.stderr);
+
+// Windows does not end child processes with their parent, so this stops the instance if the launcher is killed.
+const watchdog = spawn(
+  process.execPath,
+  [
+    join(root, 'scripts', 'dev-stop.mjs'),
+    '--after-exit-of',
+    String(process.pid),
+    '--started-at',
+    // Whole seconds, the precision of process start times on macOS and Linux.
+    String(Math.floor(performance.timeOrigin / 1000) * 1000),
+  ],
+  {
+    detached: true,
+    stdio: 'ignore',
+    windowsHide: true,
+  },
+);
+watchdog.unref();
+
 child.on('close', (code) => {
+  watchdog.kill();
   process.exitCode = code ?? 1;
 });
+
+// Handling a signal replaces Node's default of exiting, which would leave the processes below running.
+for (const signal of ['SIGINT', 'SIGBREAK', 'SIGTERM', 'SIGHUP']) {
+  process.once(signal, () => {
+    stopProcessTree(process.pid);
+    process.exit(1);
+  });
+}
