@@ -7,53 +7,80 @@
   import type { RequestedCredential } from '@bindings/user_prompt/RequestedCredential';
 
   import { CredentialValidityLine, ListItemImage } from '$lib/components';
+  import { CaretDownBoldIcon, CaretUpBoldIcon, EyeRegularIcon, EyeSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateWithWrittenMonth } from '$lib/utils';
 
-  import { isBadge, typeLabel } from './utils';
+  import ClaimRow from './ClaimRow.svelte';
+  import { claimRows, claimText, satisfiesRequest } from './disclosure';
+  import { distinguishingClaim, isBadge, typeLabel } from './utils';
 
   export let requested: RequestedCredential;
   // All options of the request, in the order they are shown in the picker.
   export let candidates: DisplayCredential[];
   export let selected: DisplayCredential[];
+  // The requested claims (by index) that are shared.
+  export let disclosed: number[];
+  export let expanded: boolean;
 
-  const dispatch = createEventDispatcher<{ change: void }>();
-
-  const claimText = (value: unknown) => (typeof value === 'string' || typeof value === 'number' ? String(value) : '');
-
-  // The first claim whose value differs between the options, which tells otherwise identical credentials apart.
-  function distinguishingClaim(credential: DisplayCredential): string | undefined {
-    const others = candidates.filter((c) => c.id !== credential.id);
-    if (others.length === 0) return undefined;
-    const claim = credential.display_claims.find((claim) => {
-      const value = claimText(claim.value);
-      const samePath = (c: DisplayCredential) =>
-        c.display_claims.find((other) => other.path.join('/') === claim.path.join('/'));
-      return value && value !== credential.display_name && others.some((c) => claimText(samePath(c)?.value) !== value);
-    });
-    return claim ? claimText(claim.value) : undefined;
-  }
+  const dispatch = createEventDispatcher<{ change: void; disclose: number[] }>();
 
   $: first = selected[0];
-  $: detail = first && selected.length === 1 ? distinguishingClaim(first) : undefined;
-  $: expired = first && requested.options.some((option) => option.id === first.id && option.state === 'expired');
+  $: option = first && requested.options.find((option) => option.id === first.id);
+  $: detail = first && selected.length === 1 ? distinguishingClaim(first, candidates) : undefined;
+  $: expired = option?.state === 'expired';
+
+  $: locale = $state.profile_settings.locale;
+  $: rows = first && option ? claimRows(requested, option, first) : [];
+  $: isShared = (row: (typeof rows)[number]) =>
+    row.required || (row.index !== undefined && disclosed.includes(row.index));
+  $: sharedRows = rows.filter(isShared);
+  $: optionalOff = rows.length - sharedRows.length;
+  $: selective = option?.selective_disclosure ?? false;
+  $: satisfied = !option || satisfiesRequest(requested, option, disclosed);
+
+  $: counts = !selective
+    ? $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.WHOLE_CREDENTIAL()
+    : rows.length === 0
+      ? $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.NONE_REQUESTED()
+      : [
+          $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.SHARED_SUMMARY({ shared: sharedRows.length, total: rows.length }),
+          ...(optionalOff > 0 ? [$LL.SCAN.SHARE_CREDENTIALS.CLAIMS.OPTIONAL_OFF({ count: optionalOff })] : []),
+        ].join(' · ');
+
+  $: footer = !selective
+    ? $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.WHOLE_CREDENTIAL()
+    : rows.length === 0
+      ? $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.NONE_REQUESTED()
+      : $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.SHARING({ shared: sharedRows.length, total: rows.length });
+
+  function toggle(index: number | undefined, on: boolean) {
+    if (index === undefined) return;
+    dispatch(
+      'disclose',
+      on ? [...disclosed, index].sort((a, b) => a - b) : disclosed.filter((disclosedIndex) => disclosedIndex !== index),
+    );
+  }
 </script>
 
 <!--
 @component
-A requested credential type on the share screen: the chosen credential, and a "Change" button when there are more
-options.
+A requested credential type on the share screen: the chosen credential with the fields that will be shared, which
+collapse into a count, and a "Change" button when there are more options.
 -->
-<div class="flex flex-col rounded-xl border border-grey bg-white dark:border-slate-600 dark:bg-dark">
-  <div class="flex items-center gap-3 p-3">
-    <!-- The image loads its logo once, so remount it when another credential is chosen. -->
-    {#key first?.id}
-      <ListItemImage
-        id={first?.id ?? requested.query_id}
-        type={first && isBadge(first) ? 'badge' : 'data'}
-        icon={first?.metadata.icon}
-      />
-    {/key}
+<div class="flex flex-col overflow-hidden rounded-xl border border-grey bg-white dark:border-slate-600 dark:bg-dark">
+  <button
+    class="flex items-center gap-3 p-3 text-left"
+    disabled={!first}
+    aria-expanded={expanded}
+    aria-label={expanded ? $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.COLLAPSE() : $LL.SCAN.SHARE_CREDENTIALS.CLAIMS.EXPAND()}
+    on:click={() => (expanded = !expanded)}
+  >
+    <ListItemImage
+      id={first?.id ?? requested.query_id}
+      type={first && isBadge(first) ? 'badge' : 'data'}
+      icon={first?.metadata.icon}
+    />
     <div class="flex min-w-0 grow flex-col gap-0.5">
       <p class="truncate text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">
         {first?.display_name ?? typeLabel(requested)}
@@ -66,10 +93,10 @@ options.
         <p class="truncate text-[12px]/[20px] font-medium text-slate-700 dark:text-slate-300">{detail}</p>
       {/if}
       {#if first}
-        <p class="truncate text-[12px]/[20px] font-medium text-slate-400">
+        <p class="text-[12px]/[20px] font-medium break-words text-slate-400">
           {first.issuer_name}{first.metadata.date_issued && selected.length === 1
             ? ` · ${$LL.SCAN.SHARE_CREDENTIALS.ISSUED({
-                date: formatDateWithWrittenMonth(first.metadata.date_issued, $state.profile_settings.locale),
+                date: formatDateWithWrittenMonth(first.metadata.date_issued, locale),
               })}`
             : ''}
         </p>
@@ -78,7 +105,47 @@ options.
         {/if}
       {/if}
     </div>
-  </div>
+    {#if first}
+      <span class="grid size-6 shrink-0 place-items-center text-slate-500 dark:text-slate-300">
+        <svelte:component this={expanded ? CaretUpBoldIcon : CaretDownBoldIcon} class="size-[14px]" />
+      </span>
+    {/if}
+  </button>
+  {#if first}
+    {#if expanded}
+      <div class="border-t border-grey dark:border-slate-600">
+        {#each rows as row, position (row.index ?? `position-${position}`)}
+          <ClaimRow
+            label={row.label}
+            value={claimText(row.value, locale)}
+            required={row.required}
+            shared={isShared(row)}
+            on:toggle={({ detail }) => toggle(row.index, detail)}
+          />
+        {/each}
+      </div>
+      <div class="flex items-center gap-1.5 bg-silver px-[14px] py-2 dark:bg-navy">
+        <svelte:component
+          this={selective && optionalOff > 0 ? EyeSlashRegularIcon : EyeRegularIcon}
+          class="size-3 shrink-0 text-slate-500 dark:text-slate-300"
+        />
+        <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">{footer}</p>
+      </div>
+    {:else}
+      <p
+        class="border-t border-grey px-[14px] py-2 text-[12px]/[20px] font-medium text-slate-500 dark:border-slate-600 dark:text-slate-300"
+      >
+        {counts}
+      </p>
+    {/if}
+    {#if !satisfied}
+      <p
+        class="border-t border-grey px-[14px] py-2 text-[12px]/[20px] font-medium text-rose-700 dark:border-slate-600 dark:text-rose-300"
+      >
+        {$LL.SCAN.SHARE_CREDENTIALS.CLAIMS.NOT_ENOUGH()}
+      </p>
+    {/if}
+  {/if}
   {#if candidates.length > 1 || selected.length === 0}
     <div class="flex items-center gap-2 border-t border-grey py-2 pr-[10px] pl-[14px] dark:border-slate-600">
       <p class="grow text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">

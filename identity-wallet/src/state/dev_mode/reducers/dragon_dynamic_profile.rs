@@ -229,10 +229,7 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
 
 async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
     if let Some(CurrentUserPrompt::ShareCredentials {
-        client_name: _,
-        logo_uri: _,
-        requested_credentials,
-        is_interactive: _,
+        requested_credentials, ..
     }) = &state.current_user_prompt
     {
         let selections = requested_credentials
@@ -242,6 +239,7 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
                 Some(CredentialSelection {
                     query_id: requested.query_id.clone(),
                     credential_uuids: vec![Uuid::parse_str(uuid_str).unwrap()],
+                    disclosed_claims: None,
                 })
             })
             .collect();

@@ -22,6 +22,11 @@ pub struct CredentialSelection {
     pub query_id: String,
     #[ts(type = "Array<string>")]
     pub credential_uuids: Vec<uuid::Uuid>,
+    /// The requested claims (by index) to disclose from selectively disclosable credentials. When absent, all
+    /// requested claims are disclosed, or the first claim set the credential satisfies.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub disclosed_claims: Option<Vec<usize>>,
 }
 
 #[typetag::serde(name = "[Authenticate] Credentials selected")]
