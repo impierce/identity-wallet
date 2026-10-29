@@ -113,10 +113,12 @@ fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
         .and_then(|valid_until| DateTime::parse_from_rfc3339(valid_until).ok())
         .is_some_and(|valid_until| valid_until <= now);
 
-    if revoked_or_suspended || not_yet_valid {
+    if revoked_or_suspended {
         OptionState::Unavailable
     } else if expired {
         OptionState::Expired
+    } else if not_yet_valid {
+        OptionState::Unavailable
     } else {
         OptionState::Valid
     }
@@ -248,6 +250,14 @@ mod tests {
             option_state(&record("2020-01-01T00:00:00Z", Some("2020-01-01T00:00:00Z"))),
             OptionState::Valid
         );
+    }
+
+    #[test]
+    fn option_state_checks_expiry_before_valid_from() {
+        let mut expired_and_not_yet_valid = record("2020-01-01T00:00:00Z", Some("2100-01-01T00:00:00Z"));
+        expired_and_not_yet_valid.display_credential.metadata.expiration_date =
+            Some("2021-01-01T00:00:00Z".to_string());
+        assert_eq!(option_state(&expired_and_not_yet_valid), OptionState::Expired);
     }
 
     #[test]
