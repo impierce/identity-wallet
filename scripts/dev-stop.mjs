@@ -2,7 +2,7 @@
 // Ends the dev processes started from this checkout: the Tauri CLI, Vite, esbuild, cargo and rustc, and the app.
 //
 // Usage: pnpm dev:stop
-//        node scripts/dev-stop.mjs --after-exit-of <pid>
+//        node scripts/dev-stop.mjs --after-exit-of <pid> --started-at <epoch ms>
 //
 // `pnpm dev:instance` starts the second form as a hidden watchdog. Windows does not end child processes together with
 // their parent, so when only the launcher is killed (a closed shell or agent task), the watchdog stops what is left.
@@ -43,11 +43,12 @@ const listProcesses = () => {
     .filter(Boolean)
     .map(([, pid, ppid, started, command]) => {
       const [, weekday, month, day, time, year] = started.match(/(\w+) (\w+)\s+(\d+) ([\d:]+) (\d+)/);
-      const path = command.split(' ')[0];
+      // `args` does not separate the executable from its arguments, so a path into this checkout may contain spaces.
+      const path = normalize(command).startsWith(rootPrefix) ? command : command.split(' ')[0];
       return {
         pid: Number(pid),
         ppid: Number(ppid),
-        name: basename(path),
+        name: basename(command.split(' ')[0]),
         path,
         command,
         started: new Date(`${weekday} ${month} ${day} ${year} ${time}`),
@@ -119,25 +120,24 @@ const stopProcesses = (targets) => {
 
 export const stopProcessTree = (parentPid) => stopProcesses(findProcesses(listProcesses(), { parentPid }));
 
-const watchUntilExit = async (launcherPid) => {
+const watchUntilExit = async (launcherPid, launcherStarted) => {
   const byPid = new Map(listProcesses().map((entry) => [entry.pid, entry]));
-  const launcher = byPid.get(launcherPid);
-  if (!launcher) return;
-  // The launcher and the `pnpm dev:instance` wrappers around it (pnpm, cmd, sh), but not the terminal shell.
+  // The launcher and the `pnpm dev:instance` wrappers around it (pnpm, cmd, sh), but not the terminal shell. If the
+  // launcher is already gone, the chain is just its id, which is no longer running.
   const chain = [launcherPid];
-  for (let parent = byPid.get(launcher.ppid); parent; parent = byPid.get(parent.ppid)) {
+  for (let parent = byPid.get(byPid.get(launcherPid)?.ppid); parent; parent = byPid.get(parent.ppid)) {
     if (chain.includes(parent.pid) || !/dev[:-]instance/.test(parent.command ?? '')) break;
     chain.push(parent.pid);
   }
   while (chain.every(isRunning)) await new Promise((wake) => setTimeout(wake, 1000));
   // The instance's processes may have lost their parents, so they are found by checkout and start time instead.
-  stopProcesses(findProcesses(listProcesses(), { startedAfter: launcher.started, startedBefore: new Date() }));
+  stopProcesses(findProcesses(listProcesses(), { startedAfter: launcherStarted, startedBefore: new Date() }));
 };
 
 if (process.argv[1] && normalize(resolve(process.argv[1])) === normalize(fileURLToPath(import.meta.url))) {
-  const { values } = parseArgs({ options: { 'after-exit-of': { type: 'string' } } });
+  const { values } = parseArgs({ options: { 'after-exit-of': { type: 'string' }, 'started-at': { type: 'string' } } });
   if (values['after-exit-of']) {
-    await watchUntilExit(Number(values['after-exit-of']));
+    await watchUntilExit(Number(values['after-exit-of']), new Date(Number(values['started-at'] ?? Date.now())));
   } else {
     const stopped = findProcesses(listProcesses());
     stopProcesses(stopped);

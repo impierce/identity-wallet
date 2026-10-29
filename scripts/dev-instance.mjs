@@ -108,7 +108,14 @@ forwardAndWatch(child.stderr, process.stderr);
 // Windows does not end child processes with their parent, so this stops the instance if the launcher is killed.
 const watchdog = spawn(
   process.execPath,
-  [join(root, 'scripts', 'dev-stop.mjs'), '--after-exit-of', String(process.pid)],
+  [
+    join(root, 'scripts', 'dev-stop.mjs'),
+    '--after-exit-of',
+    String(process.pid),
+    '--started-at',
+    // Whole seconds, the precision of process start times on macOS and Linux.
+    String(Math.floor(performance.timeOrigin / 1000) * 1000),
+  ],
   {
     detached: true,
     stdio: 'ignore',
