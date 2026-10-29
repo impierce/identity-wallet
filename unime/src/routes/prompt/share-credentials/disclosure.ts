@@ -126,35 +126,3 @@ export function satisfiesRequest(
   if (!option.selective_disclosure) return true;
   return satisfiableSets(requested, option).some((set) => set.every((index) => disclosed.includes(index)));
 }
-
-// Whether `path` is the field a claim path points to, or lies inside it.
-const covers = (claimPath: ClaimPath, path: string[]) =>
-  claimPath.length <= path.length &&
-  claimPath.every((element, index) => (element === null ? /^\d+$/.test(path[index]) : String(element) === path[index]));
-
-/**
- * Fields that are not requested but are shared anyway with the claims at `disclosed`, because the credential discloses
- * them together.
- */
-export function sharedAlongside(
-  requested: RequestedCredential,
-  option: CredentialOption,
-  credential: DisplayCredential,
-  disclosed: number[],
-): ClaimRow[] {
-  if (!option.selective_disclosure) return [];
-  const shared = requested.claims
-    .map((_, index) => index)
-    .filter((index) => disclosed.includes(index) || requiredClaims(requested, option).has(index));
-  const fields = new Map<string, { path: string[]; value: unknown }>();
-  for (const index of shared) {
-    for (const field of option.claims[index]?.shared_alongside ?? []) fields.set(JSON.stringify(field.path), field);
-  }
-  return [...fields.values()]
-    .filter(({ path }) => !shared.some((index) => covers(requested.claims[index], path)))
-    .map(({ path, value }) => ({
-      label: claimLabel(path, credential.display_claims.find((claim) => samePath(claim.path as ClaimPath, path))?.key),
-      value,
-      required: true,
-    }));
-}

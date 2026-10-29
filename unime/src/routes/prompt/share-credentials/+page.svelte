@@ -17,7 +17,7 @@
 
   import CredentialDetails from '../../credentials/[id]/CredentialDetails.svelte';
   import CredentialPicker from './CredentialPicker.svelte';
-  import { claimRows, claimText, defaultDisclosure, satisfiesRequest, sharedAlongside } from './disclosure';
+  import { claimRows, claimText, defaultDisclosure, satisfiesRequest } from './disclosure';
   import RequestCard from './RequestCard.svelte';
   import ReviewShare from './ReviewShare.svelte';
   import { distinguishingClaim, isSelectable } from './utils';
@@ -129,13 +129,9 @@
       selection[r.query_id].flatMap((id) => {
         const credential = credentialsById.get(id);
         if (!credential) return [];
-        const option = optionOf(r, id);
-        const fields = [
-          ...rowsOf(r, [id]).filter(
-            (row) => row.required || (row.index !== undefined && disclosure[r.query_id].includes(row.index)),
-          ),
-          ...(option ? sharedAlongside(r, option, credential, disclosure[r.query_id]) : []),
-        ].map((row) => ({ label: row.label, value: claimText(row.value, locale) }));
+        const fields = rowsOf(r, [id])
+          .filter((row) => row.required || (row.index !== undefined && disclosure[r.query_id].includes(row.index)))
+          .map((row) => ({ label: row.label, value: claimText(row.value, locale) }));
         return [{ credential, fields }];
       }),
     );
