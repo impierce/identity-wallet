@@ -108,6 +108,22 @@ pub enum AppError {
     StateFileDeletionError(#[source] anyhow::Error),
     #[error("Failed to find TrustList with ID `{0}`")]
     TrustListNotFoundError(String),
+    #[error("Failed to reach the email verification service")]
+    EmailVerificationServiceError(#[source] reqwest::Error),
+    #[error("The email verification service responded with HTTP {0}")]
+    EmailVerificationServiceStatus(u16),
+    #[error("Not supported: {0}")]
+    UnsupportedError(String),
+    #[error("Not trusted: {0}")]
+    UntrustedError(String),
+    #[error("No active flow: {0}")]
+    FlowExpiredError(String),
+    #[error("Invalid input: {0}")]
+    InvalidInputError(String),
+    #[error("Invalid credential: {0}")]
+    InvalidCredentialError(String),
+    #[error("Failed to open the browser: {0}")]
+    BrowserUnavailableError(String),
     #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
     AppStateMigrationError(u32, u32, String),
 }

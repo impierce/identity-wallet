@@ -145,7 +145,7 @@
       disabled={tx_code && !complete}
       on:click={() => {
         loading = true;
-        pendingInteraction.set({ kind: 'issuance', counterparty: issuer_name });
+        pendingInteraction.set({ kind: 'issuance', counterparty: issuer_name, txCodeEntered: !!tx_code });
         dispatch({
           type: '[Credential Offer] Selected',
           payload: {

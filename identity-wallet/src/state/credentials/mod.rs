@@ -139,7 +139,7 @@ impl VerifiableCredentialRecord {
                     let expiration_date = sd_jwt_vc.claims().exp.map(|exp| exp.to_rfc3339());
 
                     if sd_jwt_vc.headers().get("typ").and_then(|typ| typ.as_str()) != Some("dc+sd-jwt") {
-                        return Err(AppError::Error(
+                        return Err(AppError::UnsupportedError(
                             "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'dc+sd-jwt'"
                                 .to_string(),
                         ));
@@ -186,7 +186,7 @@ impl VerifiableCredentialRecord {
                         .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this as fn to_unescaped_string from UniCore, once we implement UniCore in UniMe.
 
                     if vcdm2_sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
-                        return Err(AppError::Error(
+                        return Err(AppError::UnsupportedError(
                             "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'vc+sd-jwt'"
                                 .to_string(),
                         ));
@@ -263,7 +263,7 @@ impl VerifiableCredentialRecord {
                     (id, data, issuance_date, expiration_date, display_claims)
                 }
                 _ => {
-                    return Err(AppError::Error(
+                    return Err(AppError::UnsupportedError(
                     "Failed to create a VerifiableCredentialRecord: provided verifiable credential format is not supported"
                         .to_string(),
                 ));

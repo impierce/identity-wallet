@@ -32,9 +32,6 @@ const en_GB = extendLanguage(en, {
   ADD_CREDENTIALS: {
     FAVORITES_TOGGLE_LABEL: 'Add to favourites',
   },
-  ERROR: {
-    TITLE: 'Oh dear!',
-  },
 }) as Translation;
 // TODO: this should be `satisfies Translation` (which currently produces a type error)
 // We should consider using just one "base english" (without extensions) or use a different i18n library altogether.

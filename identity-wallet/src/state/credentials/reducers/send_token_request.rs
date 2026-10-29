@@ -112,7 +112,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 logo_uri,
             }) => (stage, *credential_offer, logo_uri),
             _ => {
-                return Err(AppError::Error(
+                return Err(AppError::FlowExpiredError(
                     "Cannot find Credential Offer in the backend state".to_string(),
                 ));
             }
@@ -125,13 +125,13 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             };
 
             if wallet_state != expected_wallet_state {
-                return Err(AppError::Error(
+                return Err(AppError::FlowExpiredError(
                     "The state parameter in the authorization response does not match the active wallet state."
                         .to_string(),
                 ));
             }
         } else if !is_interactive && !is_pre_authorized && wallet_state.is_none() {
-            return Err(AppError::Error(
+            return Err(AppError::FlowExpiredError(
                 "The state parameter is missing in the authorization response.".to_string(),
             ));
         }
@@ -181,7 +181,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                     .authorization_servers
                     .contains(specified_authorization_server)
             {
-                return Err(AppError::Error(format!(
+                return Err(AppError::UntrustedError(format!(
                         "The specified authorization server {specified_authorization_server} is not listed in the credential issuer metadata."
                     )));
             }
@@ -216,9 +216,9 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             let code_verifier = match stage {
                 Oid4vciStage::AuthorizationCode { code_verifier, .. }
                 | Oid4vciStage::InteractiveAuthorization { code_verifier, .. } => String::from_utf8(code_verifier)
-                    .map_err(|_| AppError::Error("Missing code verifier".to_string()))?,
+                    .map_err(|_| AppError::FlowExpiredError("Missing code verifier".to_string()))?,
                 _ => {
-                    return Err(AppError::Error("Missing code verifier".to_string()));
+                    return Err(AppError::FlowExpiredError("Missing code verifier".to_string()));
                 }
             };
 
@@ -281,10 +281,9 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
         // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
         // Create or update the connection.
-        let pending_connection_data =
-            state.core_utils.pending_connection_data.clone().ok_or_else(|| {
-                AppError::Error("Expected pending connection data for OID4VCI token request".to_string())
-            })?;
+        let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
+            AppError::FlowExpiredError("Expected pending connection data for OID4VCI token request".to_string())
+        })?;
         let previously_connected = state
             .connections
             .contains(pending_connection_data.client_metadata.client_id.as_str());
@@ -351,7 +350,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                     )
                 }
                 CredentialResponseType::Deferred { .. } => {
-                    return Err(AppError::Error(
+                    return Err(AppError::UnsupportedError(
                         "Deferred credential response is not supported yet.".to_string(),
                     ))
                 }

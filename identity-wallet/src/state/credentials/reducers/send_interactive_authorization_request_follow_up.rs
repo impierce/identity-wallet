@@ -79,13 +79,14 @@ pub async fn send_interactive_authorization_request_follow_up(
                 logo_uri,
             ),
             _ => {
-                return Err(AppError::Error(
+                return Err(AppError::FlowExpiredError(
                     "Cannot find active interactive OID4VCI flow context in the backend state".to_string(),
                 ));
             }
         };
 
-        let auth_session = auth_session.ok_or(AppError::Error("Active auth session is missing".to_string()))?;
+        let auth_session =
+            auth_session.ok_or(AppError::FlowExpiredError("Active auth session is missing".to_string()))?;
 
         let (vp_token_payload, history_credentials, last_shared) =
             build_oid4vp_vp_token_and_history_credentials(&state, stronghold_manager, identity_manager, selections)
@@ -123,7 +124,9 @@ pub async fn send_interactive_authorization_request_follow_up(
         ))?;
 
         let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
-            AppError::Error("Expected pending connection data for interactive OID4VP authorization".to_string())
+            AppError::FlowExpiredError(
+                "Expected pending connection data for interactive OID4VP authorization".to_string(),
+            )
         })?;
         let mut connections = state.connections;
         let mut history = state.history;
