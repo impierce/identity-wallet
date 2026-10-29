@@ -22,7 +22,10 @@ lazy_static! {
     pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
-pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 2] = ["svg", "png"];
+/// The largest asset (logo) that is stored, in bytes.
+const MAX_ASSET_SIZE: usize = 1_024 * 1_024 * 2;
+
+pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 3] = ["svg", "png", "jpg"];
 
 /// Initialize the storage file paths.
 pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError> {
@@ -167,7 +170,7 @@ pub fn clear_all_assets() -> Result<(), AppError> {
 ///
 /// Restrictions:
 /// - max. file size: 2 MB
-/// - supported file types: `.png`, `.svg`
+/// - supported file types: `.png`, `.jpg`, `.svg`
 /// - the URL, and every redirect it takes, has to point at a public host
 /// - a `data:` URL is decoded locally instead of being requested
 pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError> {
@@ -196,7 +199,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
     let mut content = Cursor::new(bytes);
 
     // Abort download if file size is bigger than 2 MB
-    if content.get_ref().len() > 1_024 * 1_024 * 2 {
+    if content.get_ref().len() > MAX_ASSET_SIZE {
         return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
     }
 
@@ -232,6 +235,11 @@ fn file_extension_for(media_type: &str) -> Result<&'static str, AppError> {
 /// Only the image types accepted for downloads are supported. The image is shown through an `<img>` element like any
 /// downloaded asset, so an SVG's scripts don't run.
 fn decode_data_url(data_url: &str) -> Result<(&'static str, Vec<u8>), AppError> {
+    // Percent-encoding at most triples the size of the 2 MB asset, so anything longer is rejected before it's decoded.
+    if data_url.len() > MAX_ASSET_SIZE * 3 {
+        return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
+    }
+
     let (header, payload) = data_url
         .strip_prefix("data:")
         .and_then(|rest| rest.split_once(','))
@@ -243,12 +251,21 @@ fn decode_data_url(data_url: &str) -> Result<(&'static str, Vec<u8>), AppError> 
 
     let percent_decoded = urlencoding::decode_binary(payload.as_bytes()).into_owned();
     let bytes = if is_base64 {
-        use base64::{engine::general_purpose::STANDARD, Engine};
+        use base64::{
+            alphabet::STANDARD,
+            engine::{DecodePaddingMode, GeneralPurpose, GeneralPurposeConfig},
+            Engine,
+        };
+        // Like browsers, accept Base64 with or without padding.
+        const BASE64: GeneralPurpose = GeneralPurpose::new(
+            &STANDARD,
+            GeneralPurposeConfig::new().with_decode_padding_mode(DecodePaddingMode::Indifferent),
+        );
         let base64: Vec<u8> = percent_decoded
             .into_iter()
             .filter(|byte| !byte.is_ascii_whitespace())
             .collect();
-        STANDARD
+        BASE64
             .decode(base64)
             .map_err(|_| AppError::DownloadAborted("data URL is not valid base64"))?
     } else {
@@ -347,6 +364,30 @@ mod tests {
 
         assert_eq!(extension, "png");
         assert_eq!(bytes, b"\x89PNG\r\n\x1a\n");
+
+        // Browsers accept Base64 without padding too.
+        let (_, unpadded) = decode_data_url("data:image/png;base64,iVBORw0KGgo").unwrap();
+        assert_eq!(unpadded, bytes);
+    }
+
+    #[test]
+    fn decode_data_url_rejects_oversized_urls() {
+        let data_url = format!("data:image/svg+xml,{}", "a".repeat(MAX_ASSET_SIZE * 3));
+
+        assert!(decode_data_url(&data_url).is_err());
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn persist_asset_moves_jpeg() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        fs::write(assets_dir.join("tmp").join("logo-hash.jpg"), b"jpeg-logo").unwrap();
+
+        persist_asset("logo-hash", "credential-123").unwrap();
+
+        assert_eq!(fs::read(assets_dir.join("credential-123.jpg")).unwrap(), b"jpeg-logo");
     }
 
     #[test]

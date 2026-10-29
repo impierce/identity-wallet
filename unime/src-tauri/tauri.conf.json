@@ -12,10 +12,7 @@
       },
       "assetProtocol": {
         "enable": true,
-        "scope": [
-          "$APPDATA/assets/**/*.png",
-          "$APPDATA/assets/**/*.svg"
-        ]
+        "scope": ["$APPDATA/assets/**/*.png", "$APPDATA/assets/**/*.svg", "$APPDATA/assets/**/*.jpg"]
       }
     },
     "windows": [
@@ -36,13 +33,7 @@
   },
   "bundle": {
     "active": true,
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
     "iOS": {
       "developmentTeam": "Impierce Technologies B.V."
     },
@@ -51,17 +42,15 @@
         "desktopTemplate": "../UniMe.desktop"
       }
     },
-    "resources": [
-      "resources/*"
-    ]
+    "resources": ["resources/*"]
   },
   "plugins": {
     "deep-link": {
       "mobile": [
-        { "scheme": [ "unime" ] },
-        { "scheme": [ "openid" ] },
-        { "scheme": [ "openid4vp" ] },
-        { "scheme": [ "openid-credential-offer" ] }
+        { "scheme": ["unime"] },
+        { "scheme": ["openid"] },
+        { "scheme": ["openid4vp"] },
+        { "scheme": ["openid-credential-offer"] }
       ],
       "desktop": {
         "schemes": ["unime", "openid", "openid4vp", "openid-credential-offer"]

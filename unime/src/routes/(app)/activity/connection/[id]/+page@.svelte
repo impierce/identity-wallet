@@ -18,8 +18,11 @@
   let connection: Connection = $state.connections.find((c) => c.id === page.params.id)!;
   $: connection = $state.connections.find((c) => c.id === page.params.id)!;
 
-  let triggers = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.ACTIVITY()];
-  let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
+  let triggers: string[] = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.ACTIVITY()];
+  // A history entry may still hold a tab that no longer exists (such as the removed Data tab).
+  let activeTab: Writable<string> = writable(
+    page.state.tab && triggers.includes(page.state.tab) ? page.state.tab : triggers[0],
+  );
   const detailsOpen = writable(false);
 
   const navigateUp = useParentRoute(() => returnRoute('/activity'));

@@ -20,7 +20,7 @@ import { platform } from '@tauri-apps/plugin-os';
 export const getImageAsset = async (id: string, tmp = false): Promise<string | null> => {
   const appDataDirPath = await appDataDir();
 
-  const extensions = ['svg', 'png'];
+  const extensions = ['svg', 'png', 'jpg'];
 
   if (tmp) {
     for (const extension of extensions) {

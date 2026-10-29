@@ -23,6 +23,10 @@
   const birthDate = $derived.by(() => {
     const date = new Date(subject.birth_date);
     if (isNaN(date.getTime())) return subject.birth_date;
+    // Some engines roll an impossible date-only value (such as 2014-02-30) over into the next month, so such a value
+    // is shown as it is.
+    const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(subject.birth_date);
+    if (dateOnly && date.toISOString().slice(0, 10) !== subject.birth_date) return subject.birth_date;
     return new Intl.DateTimeFormat($appState.profile_settings.locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
       date,
     );
