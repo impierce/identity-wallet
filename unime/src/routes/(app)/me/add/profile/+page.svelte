@@ -25,12 +25,12 @@
     family_name: '',
     given_name: '',
     middle_name: '',
-    birth_date: new Date(),
+    birth_date: '',
     birth_place: '',
     nationality: [],
   };
 
-  const { form, allErrors } = superForm(init, {
+  const { form } = superForm(init, {
     validators: zod4(naturalPerson),
   });
 
@@ -62,17 +62,31 @@
     $form.nationality = nationalities;
   });
 
-  function createProfile() {
-    loading = true;
-
+  // The claims as they are issued: trimmed, and without an empty middle name.
+  const credentialSubject = $derived.by(() => {
     const { middle_name, ...claims } = $form;
-    const credentialSubject = {
+    return {
       ...claims,
+      given_name: claims.given_name.trim(),
+      family_name: claims.family_name.trim(),
+      birth_place: claims.birth_place.trim(),
       ...(middle_name?.trim() ? { middle_name: middle_name.trim() } : {}),
     };
+  });
 
+  const isValid = $derived(naturalPerson.safeParse(credentialSubject).success);
+
+  // The latest date of birth the date picker allows.
+  const today = new Date().toISOString().slice(0, 10);
+
+  function createProfile() {
     const validationResult = naturalPerson.safeParse(credentialSubject);
-    info(`Validation result: ${JSON.stringify(validationResult)}`);
+    if (!validationResult.success) {
+      info(`Profile not created, validation failed: ${JSON.stringify(validationResult.error.issues)}`);
+      return;
+    }
+
+    loading = true;
 
     let name = profileName;
     if (profileName.trim().length === 0) {
@@ -102,7 +116,7 @@
       $form = {
         given_name: 'Ferris',
         family_name: 'Rustacean',
-        birth_date: new Date('2023-04-01'),
+        birth_date: '2023-04-01',
         birth_place: 'Atlantic Ocean',
         nationality: ['NL', 'BQ-BO'],
       };
@@ -153,6 +167,7 @@
         label={$LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_LABEL()}
         placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_PLACEHOLDER()}
         bind:value={$form.given_name}
+        required
       />
 
       <TextInput
@@ -167,17 +182,25 @@
         label={$LL.ADD_CREDENTIALS.PROFILE.ADD.LAST_NAME_LABEL()}
         placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.LAST_NAME_PLACEHOLDER()}
         bind:value={$form.family_name}
+        required
       />
 
-      <!-- birth_date -->
-      <!-- TODO: use proper date picker -->
-      <!-- <DateField label={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_DATE_LABEL()} /> -->
+      <TextInput
+        id="birth_date"
+        type="date"
+        max={today}
+        label={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_DATE_LABEL()}
+        placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_DATE_PLACEHOLDER()}
+        bind:value={$form.birth_date}
+        required
+      />
 
       <TextInput
         id="birth_place"
         label={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_PLACE_LABEL()}
         placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_PLACE_PLACEHOLDER()}
         bind:value={$form.birth_place}
+        required
       />
 
       <div class="flex w-full flex-col items-center gap-4">
@@ -217,7 +240,7 @@
   </Switch>
   <Button
     label={$LL.ADD_CREDENTIALS.PROFILE.ADD.CREATE_BUTTON()}
-    disabled={$allErrors.length > 0}
+    disabled={!isValid}
     {loading}
     on:click={() => createProfile()}
   />

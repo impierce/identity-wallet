@@ -7,6 +7,7 @@
   import Icon from '@iconify/svelte';
 
   import { naturalPerson as schema } from '$lib/schemas/pid';
+  import { state as appState } from '$lib/stores';
 
   import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
 
@@ -16,6 +17,16 @@
   const residence = schema(get(LL));
 
   const subject = $derived(credential.data.credentialSubject as z.infer<typeof residence>);
+
+  // A date of birth is a calendar date (older profiles stored it as midnight UTC), so it's shown in UTC to avoid
+  // showing the day before in time zones west of UTC.
+  const birthDate = $derived.by(() => {
+    const date = new Date(subject.birth_date);
+    if (isNaN(date.getTime())) return subject.birth_date;
+    return new Intl.DateTimeFormat($appState.profile_settings.locale, { dateStyle: 'medium', timeZone: 'UTC' }).format(
+      date,
+    );
+  });
 </script>
 
 <div class="grid w-full grid-cols-2 gap-4">
@@ -33,11 +44,9 @@
       {/each}
     </div>
   </div>
-  <!-- TODO: temporarily hide birth_date field while there is no proper input for it (date picker) -->
-  <!-- <TextFieldRenderer
-    key={$LL.CREDENTIAL.RENDERER.PID.BIRTH_DATE()}
-    value={formatDate(subject.birth_date, $appState.profile_settings.locale)}
-  /> -->
+  {#if subject.birth_date}
+    <TextFieldRenderer key={$LL.CREDENTIAL.RENDERER.PID.BIRTH_DATE()} value={birthDate} />
+  {/if}
   <TextFieldRenderer key={$LL.CREDENTIAL.RENDERER.PID.BIRTH_PLACE()} value={subject.birth_place} />
   <!-- <TextFieldRenderer key={'family_name_birth'} value={subject.family_name_birth ?? '-'} />
   <TextFieldRenderer key={'sex'} value={subject.sex?.toString() ?? '-'} /> -->

@@ -411,7 +411,6 @@ const en = {
   CONNECTION: {
     TABS: {
       SUMMARY: 'Summary',
-      DATA: 'Data',
       ACTIVITY: 'Activity',
     },
     SUMMARY: {
@@ -421,9 +420,6 @@ const en = {
       LAST_CONNECTED: 'Last connected',
       FIRST_CONNECTED_TIME: 'First connected: {duration:string}',
       LAST_CONNECTED_TIME: 'Last connected: {duration:string}',
-    },
-    DATA: {
-      EMPTY: 'No data yet.',
     },
     ACTIONS: {
       MENU_LABEL: 'Open connection menu',
@@ -602,7 +598,7 @@ const en = {
             'Your UniMe profile acts like a digital ID. Use it to auto-fill details instantly on supported sites, cutting the clutter from your online life.',
         },
         ITEM_1: {
-          TITLE: 'Instant, sharing',
+          TITLE: 'Instant sharing',
           DESCRIPTION:
             'When your details are requested, simply scan a QR code or tap ‘Connect’, check exactly which information is being requested, and approve. You’re done in seconds.',
         },

@@ -685,17 +685,20 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if $errorState}
       {@const { title, detail } = describeError($errorState, $LL)}
       <div class="absolute right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] w-[calc(100%-32px)]">
-        <Toast
-          variant="error"
-          {title}
-          {detail}
-          technicalDetail={$appState?.dev_mode !== 'Off' ? $errorState.detail : undefined}
-          ondismissed={() => {
-            // After the toast fires the "dismissed" event, we reset $errorStore.
-            errorState.set(undefined);
-          }}
-          autoDismissAfterMs={$appState?.dev_mode !== 'Off' ? 0 : 8_000}
-        />
+        <!-- A new error mounts a new toast, so its auto-dismiss timer starts over. -->
+        {#key $errorState}
+          <Toast
+            variant="error"
+            {title}
+            {detail}
+            technicalDetail={$appState?.dev_mode !== 'Off' ? $errorState.detail : undefined}
+            ondismissed={() => {
+              // After the toast fires the "dismissed" event, we reset $errorStore.
+              errorState.set(undefined);
+            }}
+            autoDismissAfterMs={$appState?.dev_mode !== 'Off' ? 0 : 8_000}
+          />
+        {/key}
       </div>
     {/if}
   </div>

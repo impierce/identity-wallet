@@ -413,7 +413,6 @@ const es_ES = {
   CONNECTION: {
     TABS: {
       SUMMARY: 'Resumen',
-      DATA: 'Datos',
       ACTIVITY: 'Actividad',
     },
     SUMMARY: {
@@ -423,9 +422,6 @@ const es_ES = {
       LAST_CONNECTED: 'Último conectado',
       FIRST_CONNECTED_TIME: 'Primera conexión: {duration}',
       LAST_CONNECTED_TIME: 'Última conexión: {duration}',
-    },
-    DATA: {
-      EMPTY: 'Todavía sin datos.',
     },
     ACTIONS: {
       MENU_LABEL: 'Abrir menú de conexión',

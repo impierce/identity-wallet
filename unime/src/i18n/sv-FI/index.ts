@@ -411,7 +411,6 @@ const sv_FI = {
   CONNECTION: {
     TABS: {
       SUMMARY: 'Översikt',
-      DATA: 'Data',
       ACTIVITY: 'Aktivitet',
     },
     SUMMARY: {
@@ -421,9 +420,6 @@ const sv_FI = {
       LAST_CONNECTED: 'Senast ansluten',
       FIRST_CONNECTED_TIME: 'Först ansluten: {duration}',
       LAST_CONNECTED_TIME: 'Senast ansluten: {duration}',
-    },
-    DATA: {
-      EMPTY: 'Ingen data ännu.',
     },
     ACTIONS: {
       MENU_LABEL: 'Öppna anslutningsmenyn',

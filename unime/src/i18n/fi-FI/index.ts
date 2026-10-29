@@ -412,7 +412,6 @@ const fi_FI = {
   CONNECTION: {
     TABS: {
       SUMMARY: 'Yhteenveto',
-      DATA: 'Data',
       ACTIVITY: 'Aktiviteetti',
     },
     SUMMARY: {
@@ -422,9 +421,6 @@ const fi_FI = {
       LAST_CONNECTED: 'Viimeksi yhdistetty',
       FIRST_CONNECTED_TIME: 'Yhdistetty ensimmäisen kerran: {duration}',
       LAST_CONNECTED_TIME: 'Yhdistetty viimeksi: {duration}',
-    },
-    DATA: {
-      EMPTY: 'Ei vielä dataa.',
     },
     ACTIONS: {
       MENU_LABEL: 'Avaa yhteysvalikko',

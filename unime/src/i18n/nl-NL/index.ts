@@ -260,10 +260,10 @@ const nl_NL = {
     PASSWORD: {
       POLICY: {
         TITLE: 'Wachtwoord',
-        UPPERCASE_LETTER: 'Hoofdletters',
-        LOWERCASE_LETTER: 'Kleine letters',
-        NUMBER: 'Nummers',
-        CHARACTERS: 'Karakters',
+        UPPERCASE_LETTER: 'hoofdletter',
+        LOWERCASE_LETTER: 'kleine letter',
+        NUMBER: 'cijfer',
+        CHARACTERS: 'tekens',
       },
     },
     RESET_APP: {
@@ -412,7 +412,6 @@ const nl_NL = {
   CONNECTION: {
     TABS: {
       SUMMARY: 'Overzicht',
-      DATA: 'Data',
       ACTIVITY: 'Activiteit',
     },
     SUMMARY: {
@@ -422,9 +421,6 @@ const nl_NL = {
       LAST_CONNECTED: 'Laatst gebruikt',
       FIRST_CONNECTED_TIME: 'Eerste verbinding: {duration}',
       LAST_CONNECTED_TIME: 'Laatste verbinding: {duration}',
-    },
-    DATA: {
-      EMPTY: 'Nog geen data.',
     },
     ACTIONS: {
       MENU_LABEL: 'Verbindingsmenu openen',

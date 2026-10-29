@@ -169,6 +169,7 @@ pub fn clear_all_assets() -> Result<(), AppError> {
 /// - max. file size: 2 MB
 /// - supported file types: `.png`, `.svg`
 /// - the URL, and every redirect it takes, has to point at a public host
+/// - a `data:` URL is decoded locally instead of being requested
 pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
@@ -178,23 +179,21 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         std::fs::create_dir(&tmp_dir)?;
     }
 
-    let response = fetch_public_destination(url).await?;
+    let (file_extension, bytes) = if url.scheme() == "data" {
+        decode_data_url(url.as_str())?
+    } else {
+        let response = fetch_public_destination(url).await?;
 
-    let file_extension = response
-        .headers()
-        .get("content-type")
-        .map(|header_value| match header_value.to_str().unwrap() {
-            "image/png" => Ok("png"),
-            "image/jpeg" | "image/jpg" => Ok("jpg"),
-            "image/svg+xml" => Ok("svg"),
-            _ => {
-                warn!("content_type is not supported: {header_value:?}");
-                Err(AppError::DownloadAborted("content-type is not supported"))
-            }
-        })
-        .unwrap_or(Err(AppError::DownloadAborted("content-type is not set")))?;
+        let file_extension = response
+            .headers()
+            .get("content-type")
+            .map(|header_value| file_extension_for(header_value.to_str().unwrap_or_default()))
+            .unwrap_or(Err(AppError::DownloadAborted("content-type is not set")))?;
 
-    let mut content = Cursor::new(response.bytes().await?);
+        (file_extension, response.bytes().await?.to_vec())
+    };
+
+    let mut content = Cursor::new(bytes);
 
     // Abort download if file size is bigger than 2 MB
     if content.get_ref().len() > 1_024 * 1_024 * 2 {
@@ -206,6 +205,57 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
     copy(&mut content, &mut file)?;
 
     Ok(())
+}
+
+/// Maps the media type of a downloaded asset to the extension it is stored with.
+fn file_extension_for(media_type: &str) -> Result<&'static str, AppError> {
+    match media_type
+        .split(';')
+        .next()
+        .unwrap_or_default()
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "image/png" => Ok("png"),
+        "image/jpeg" | "image/jpg" => Ok("jpg"),
+        "image/svg+xml" => Ok("svg"),
+        _ => {
+            warn!("content_type is not supported: {media_type:?}");
+            Err(AppError::DownloadAborted("content-type is not supported"))
+        }
+    }
+}
+
+/// Decodes a `data:` URL (RFC 2397), such as an inline SVG logo in issuer metadata, into its extension and bytes.
+///
+/// Only the image types accepted for downloads are supported. The image is shown through an `<img>` element like any
+/// downloaded asset, so an SVG's scripts don't run.
+fn decode_data_url(data_url: &str) -> Result<(&'static str, Vec<u8>), AppError> {
+    let (header, payload) = data_url
+        .strip_prefix("data:")
+        .and_then(|rest| rest.split_once(','))
+        .ok_or(AppError::DownloadAborted("data URL is malformed"))?;
+
+    let mut parameters = header.split(';');
+    let file_extension = file_extension_for(parameters.next().unwrap_or_default())?;
+    let is_base64 = parameters.any(|parameter| parameter.trim().eq_ignore_ascii_case("base64"));
+
+    let percent_decoded = urlencoding::decode_binary(payload.as_bytes()).into_owned();
+    let bytes = if is_base64 {
+        use base64::{engine::general_purpose::STANDARD, Engine};
+        let base64: Vec<u8> = percent_decoded
+            .into_iter()
+            .filter(|byte| !byte.is_ascii_whitespace())
+            .collect();
+        STANDARD
+            .decode(base64)
+            .map_err(|_| AppError::DownloadAborted("data URL is not valid base64"))?
+    } else {
+        percent_decoded
+    };
+
+    Ok((file_extension, bytes))
 }
 
 /// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.
@@ -279,5 +329,30 @@ mod tests {
         assert!(persist_asset("logo-hash", "conn-123").is_err());
 
         assert_eq!(fs::read(assets_dir.join("conn-123.svg")).unwrap(), b"old-logo");
+    }
+
+    #[test]
+    fn decode_data_url_reads_percent_encoded_svg() {
+        let (extension, bytes) =
+            decode_data_url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E")
+                .unwrap();
+
+        assert_eq!(extension, "svg");
+        assert_eq!(bytes, br#"<svg xmlns="http://www.w3.org/2000/svg"/>"#);
+    }
+
+    #[test]
+    fn decode_data_url_reads_base64_png() {
+        let (extension, bytes) = decode_data_url("data:image/png;base64,iVBORw0KGgo=").unwrap();
+
+        assert_eq!(extension, "png");
+        assert_eq!(bytes, b"\x89PNG\r\n\x1a\n");
+    }
+
+    #[test]
+    fn decode_data_url_rejects_other_media_types_and_malformed_urls() {
+        assert!(decode_data_url("data:text/html,%3Cscript%3Ealert(1)%3C%2Fscript%3E").is_err());
+        assert!(decode_data_url("data:image/svg+xml").is_err());
+        assert!(decode_data_url("data:image/png;base64,not base64!").is_err());
     }
 }

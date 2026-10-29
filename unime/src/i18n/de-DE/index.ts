@@ -412,7 +412,6 @@ const de_DE = {
   CONNECTION: {
     TABS: {
       SUMMARY: 'Übersicht',
-      DATA: 'Daten',
       ACTIVITY: 'Verlauf',
     },
     SUMMARY: {
@@ -422,9 +421,6 @@ const de_DE = {
       FIRST_CONNECTED_TIME: 'Erstmalig verbunden: {duration}',
       LAST_CONNECTED_TIME: 'Zuletzt verbunden: {duration}',
       EMPTY: 'Noch keine Verbindungen.',
-    },
-    DATA: {
-      EMPTY: 'Noch keine Daten.',
     },
     ACTIONS: {
       MENU_LABEL: 'Verbindungsmenü öffnen',

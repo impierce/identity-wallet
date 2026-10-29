@@ -1165,10 +1165,6 @@ type RootTranslation = {
 			 */
 			SUMMARY: string
 			/**
-			 * D​a​t​a
-			 */
-			DATA: string
-			/**
 			 * A​c​t​i​v​i​t​y
 			 */
 			ACTIVITY: string
@@ -1200,12 +1196,6 @@ type RootTranslation = {
 			 * @param {string} duration
 			 */
 			LAST_CONNECTED_TIME: RequiredParams<'duration'>
-		}
-		DATA: {
-			/**
-			 * N​o​ ​d​a​t​a​ ​y​e​t​.
-			 */
-			EMPTY: string
 		}
 		ACTIONS: {
 			/**
@@ -1710,7 +1700,7 @@ type RootTranslation = {
 				}
 				ITEM_1: {
 					/**
-					 * I​n​s​t​a​n​t​,​ ​s​h​a​r​i​n​g
+					 * I​n​s​t​a​n​t​ ​s​h​a​r​i​n​g
 					 */
 					TITLE: string
 					/**
@@ -3377,10 +3367,6 @@ export type TranslationFunctions = {
 			 */
 			SUMMARY: () => LocalizedString
 			/**
-			 * Data
-			 */
-			DATA: () => LocalizedString
-			/**
 			 * Activity
 			 */
 			ACTIVITY: () => LocalizedString
@@ -3410,12 +3396,6 @@ export type TranslationFunctions = {
 			 * Last connected: {duration}
 			 */
 			LAST_CONNECTED_TIME: (arg: { duration: string }) => LocalizedString
-		}
-		DATA: {
-			/**
-			 * No data yet.
-			 */
-			EMPTY: () => LocalizedString
 		}
 		ACTIONS: {
 			/**
@@ -3917,7 +3897,7 @@ export type TranslationFunctions = {
 				}
 				ITEM_1: {
 					/**
-					 * Instant, sharing
+					 * Instant sharing
 					 */
 					TITLE: () => LocalizedString
 					/**
