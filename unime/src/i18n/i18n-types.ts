@@ -953,17 +953,209 @@ type RootTranslation = {
 			 */
 			NAVBAR_TITLE: string
 			/**
-			 * r​e​q​u​e​s​t​s​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
+			 * {​c​o​u​n​t​}​ ​s​e​l​e​c​t​e​d
+			 * @param {number} count
 			 */
-			DESCRIPTION: string
+			SELECTED_COUNT: RequiredParams<'count'>
 			/**
-			 * R​e​q​u​e​s​t​e​d
+			 * {​c​o​u​n​t​}​ ​{​{​O​p​t​i​o​n​|​O​p​t​i​o​n​s​}​}​ ​A​v​a​i​l​a​b​l​e
+			 * @param {number} count
 			 */
-			REQUESTED: string
+			OPTIONS_AVAILABLE: RequiredParams<'count'>
 			/**
-			 * A​p​p​r​o​v​e​ ​r​e​q​u​e​s​t
+			 * C​h​a​n​g​e
 			 */
-			APPROVE: string
+			CHANGE: string
+			/**
+			 * I​s​s​u​e​d​ ​{​d​a​t​e​}
+			 * @param {string} date
+			 */
+			ISSUED: RequiredParams<'date'>
+			/**
+			 * {​n​a​m​e​}​ ​w​a​n​t​s​ ​t​o​ ​s​e​e
+			 * @param {string} name
+			 */
+			WANTS_TO_SEE: RequiredParams<'name'>
+			/**
+			 * R​e​v​i​e​w​ ​a​n​d​ ​s​h​a​r​e
+			 */
+			REVIEW_AND_SHARE: string
+			/**
+			 * D​e​c​l​i​n​e
+			 */
+			DECLINE: string
+			CLAIMS: {
+				/**
+				 * R​e​q​u​i​r​e​d
+				 */
+				REQUIRED: string
+				/**
+				 * O​p​t​i​o​n​a​l
+				 */
+				OPTIONAL: string
+				/**
+				 * S​h​a​r​i​n​g​ ​{​s​h​a​r​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​r​e​q​u​e​s​t​e​d​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}
+				 * @param {number} shared
+				 * @param {number} total
+				 */
+				SHARING: RequiredParams<'shared' | 'total'>
+				/**
+				 * {​s​h​a​r​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​r​e​q​u​e​s​t​e​d​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}​ ​s​h​a​r​e​d
+				 * @param {number} shared
+				 * @param {number} total
+				 */
+				SHARED_SUMMARY: RequiredParams<'shared' | 'total'>
+				/**
+				 * {​c​o​u​n​t​}​ ​o​p​t​i​o​n​a​l​ ​o​f​f
+				 * @param {number} count
+				 */
+				OPTIONAL_OFF: RequiredParams<'count'>
+				/**
+				 * T​h​e​ ​w​h​o​l​e​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​s​h​a​r​e​d
+				 */
+				WHOLE_CREDENTIAL: string
+				/**
+				 * N​o​ ​f​i​e​l​d​s​ ​a​r​e​ ​r​e​q​u​e​s​t​e​d​ ​f​r​o​m​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				NONE_REQUESTED: string
+				/**
+				 * T​u​r​n​ ​o​n​ ​m​o​r​e​ ​f​i​e​l​d​s​ ​t​o​ ​s​h​a​r​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				NOT_ENOUGH: string
+				/**
+				 * S​h​o​w​ ​f​i​e​l​d​s
+				 */
+				EXPAND: string
+				/**
+				 * H​i​d​e​ ​f​i​e​l​d​s
+				 */
+				COLLAPSE: string
+			}
+			REVIEW: {
+				/**
+				 * R​e​v​i​e​w
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * Y​o​u​ ​a​r​e​ ​s​h​a​r​i​n​g​ ​w​i​t​h​ ​{​n​a​m​e​}
+				 * @param {string} name
+				 */
+				SHARING_WITH: RequiredParams<'name'>
+				/**
+				 * W​i​l​l​ ​b​e​ ​s​h​a​r​e​d​ ​·​ ​{​c​o​u​n​t​}​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}
+				 * @param {number} count
+				 */
+				WILL_BE_SHARED: RequiredParams<'count'>
+				/**
+				 * N​o​t​ ​s​h​a​r​e​d
+				 */
+				NOT_SHARED: string
+				/**
+				 * N​o​t​ ​c​h​o​s​e​n
+				 */
+				NOT_CHOSEN: string
+				/**
+				 * S​h​a​r​e​ ​w​i​t​h​ ​{​n​a​m​e​}
+				 * @param {string} name
+				 */
+				SHARE: RequiredParams<'name'>
+			}
+			PICKER: {
+				/**
+				 * C​h​o​o​s​e​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * C​h​o​o​s​e​ ​c​r​e​d​e​n​t​i​a​l​s
+				 */
+				NAVBAR_TITLE_MULTIPLE: string
+				/**
+				 * C​h​o​o​s​e​ ​1
+				 */
+				CHOOSE_ONE: string
+				/**
+				 * C​h​o​o​s​e​ ​m​u​l​t​i​p​l​e
+				 */
+				CHOOSE_MULTIPLE: string
+				/**
+				 * S​e​a​r​c​h​ ​{​c​o​u​n​t​}​ ​c​r​e​d​e​n​t​i​a​l​s
+				 * @param {number} count
+				 */
+				SEARCH: RequiredParams<'count'>
+				/**
+				 * S​e​l​e​c​t​ ​a​l​l
+				 */
+				SELECT_ALL: string
+				/**
+				 * S​h​a​r​e​d​ ​w​i​t​h​ ​{​n​a​m​e​}​ ​l​a​s​t​ ​t​i​m​e
+				 * @param {string} name
+				 */
+				LAST_SHARED: RequiredParams<'name'>
+				/**
+				 * V​i​e​w​ ​d​e​t​a​i​l​s
+				 */
+				VIEW_DETAILS: string
+				/**
+				 * U​s​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				USE_ONE: string
+				/**
+				 * U​s​e​ ​{​s​e​l​e​c​t​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​c​r​e​d​e​n​t​i​a​l​s
+				 * @param {number} selected
+				 * @param {number} total
+				 */
+				USE_MULTIPLE: RequiredParams<'selected' | 'total'>
+				/**
+				 * C​h​o​o​s​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				CHOOSE_THIS: string
+			}
+			VALIDITY: {
+				/**
+				 * V​a​l​i​d​ ​u​n​t​i​l​ ​{​d​a​t​e​}
+				 * @param {string} date
+				 */
+				VALID_UNTIL: RequiredParams<'date'>
+				/**
+				 * E​x​p​i​r​e​d​ ​o​n​ ​{​d​a​t​e​}
+				 * @param {string} date
+				 */
+				EXPIRED_ON: RequiredParams<'date'>
+				/**
+				 * R​e​v​o​k​e​d​ ​b​y​ ​t​h​e​ ​i​s​s​u​e​r
+				 */
+				REVOKED: string
+				/**
+				 * S​u​s​p​e​n​d​e​d​ ​b​y​ ​t​h​e​ ​i​s​s​u​e​r
+				 */
+				SUSPENDED: string
+				/**
+				 * V​a​l​i​d​ ​f​r​o​m​ ​{​d​a​t​e​}
+				 * @param {string} date
+				 */
+				VALID_FROM: RequiredParams<'date'>
+			}
+			EXPIRED_WARNING: {
+				/**
+				 * Y​o​u​ ​a​r​e​ ​s​h​a​r​i​n​g​ ​a​n​ ​e​x​p​i​r​e​d​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				TITLE: string
+				/**
+				 * {​n​a​m​e​}​ ​e​x​p​i​r​e​d​ ​o​n​ ​{​d​a​t​e​}​.​ ​{​v​e​r​i​f​i​e​r​}​ ​m​a​y​ ​n​o​t​ ​a​c​c​e​p​t​ ​i​t​.​ ​A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​h​a​r​e​ ​i​t​?
+				 * @param {string} date
+				 * @param {string} name
+				 * @param {string} verifier
+				 */
+				DESCRIPTION: RequiredParams<'date' | 'name' | 'verifier'>
+				/**
+				 * S​h​a​r​e​ ​a​n​y​w​a​y
+				 */
+				CONFIRM: string
+				/**
+				 * C​h​o​o​s​e​ ​a​n​o​t​h​e​r
+				 */
+				CANCEL: string
+			}
 		}
 	}
 	CONNECTION: {
@@ -1656,6 +1848,174 @@ type RootTranslation = {
 		 * U​n​v​e​r​i​f​i​e​d​ ​D​o​m​a​i​n
 		 */
 		PILL_UNVERIFIED: string
+	}
+	INTERACTION_RESULT: {
+		PRESENTATION: {
+			/**
+			 * S​e​n​d​i​n​g​ ​t​o​ ​{​n​a​m​e​}​…
+			 * @param {string} name
+			 */
+			SENDING_TITLE: RequiredParams<'name'>
+			/**
+			 * S​e​n​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND: RequiredParams<'name'>
+			/**
+			 * S​e​n​d​i​n​g​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SENDING: RequiredParams<'name'>
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​e​n​d​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND_FAILED: RequiredParams<'name'>
+			/**
+			 * A​p​p​r​o​v​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_APPROVE: RequiredParams<'name'>
+			/**
+			 * R​e​j​e​c​t​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_REJECTED: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​a​c​c​e​p​t​e​d​ ​y​o​u​r​ ​d​a​t​a​.
+			 * @param {string} name
+			 */
+			APPROVED_BODY: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​d​i​d​n​'​t​ ​a​c​c​e​p​t​ ​t​h​i​s
+			 * @param {string} name
+			 */
+			REJECTED_TITLE: RequiredParams<'name'>
+			/**
+			 * C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​ ​N​o​t​h​i​n​g​ ​w​a​s​ ​s​h​a​r​e​d​.
+			 */
+			NOT_SENT_BODY: string
+		}
+		ISSUANCE: {
+			/**
+			 * R​e​q​u​e​s​t​i​n​g​ ​f​r​o​m​ ​{​n​a​m​e​}​…
+			 * @param {string} name
+			 */
+			SENDING_TITLE: RequiredParams<'name'>
+			/**
+			 * R​e​q​u​e​s​t​ ​s​e​n​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND: RequiredParams<'name'>
+			/**
+			 * S​e​n​d​i​n​g​ ​r​e​q​u​e​s​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SENDING: RequiredParams<'name'>
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​e​n​d​ ​r​e​q​u​e​s​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND_FAILED: RequiredParams<'name'>
+			/**
+			 * I​s​s​u​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_APPROVE: RequiredParams<'name'>
+			/**
+			 * R​e​f​u​s​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_REJECTED: RequiredParams<'name'>
+			/**
+			 * Y​o​u​r​ ​n​e​w​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​{​n​a​m​e​}​ ​i​s​ ​i​n​ ​y​o​u​r​ ​w​a​l​l​e​t​.
+			 * @param {string} name
+			 */
+			APPROVED_BODY: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​d​i​d​n​'​t​ ​i​s​s​u​e​ ​t​h​i​s
+			 * @param {string} name
+			 */
+			REJECTED_TITLE: RequiredParams<'name'>
+			/**
+			 * C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​ ​N​o​t​h​i​n​g​ ​w​a​s​ ​r​e​c​e​i​v​e​d​.
+			 */
+			NOT_SENT_BODY: string
+		}
+		/**
+		 * T​h​i​s​ ​u​s​u​a​l​l​y​ ​t​a​k​e​s​ ​a​ ​f​e​w​ ​s​e​c​o​n​d​s​.​ ​Y​o​u​ ​c​a​n​ ​c​l​o​s​e​ ​t​h​i​s​,​ ​w​e​'​l​l​ ​k​e​e​p​ ​g​o​i​n​g​ ​i​n​ ​t​h​e​ ​b​a​c​k​g​r​o​u​n​d​.
+		 */
+		SENDING_BODY: string
+		/**
+		 * A​l​l​ ​d​o​n​e​!
+		 */
+		APPROVED_TITLE: string
+		/**
+		 * C​o​u​l​d​n​'​t​ ​r​e​a​c​h​ ​{​n​a​m​e​}
+		 * @param {string} name
+		 */
+		NOT_SENT_TITLE: RequiredParams<'name'>
+		/**
+		 * T​h​e​ ​r​e​q​u​e​s​t​ ​w​a​s​ ​r​e​f​u​s​e​d​.
+		 */
+		REJECTED_BODY: string
+		/**
+		 * E​r​r​o​r​ ​c​o​d​e
+		 */
+		ERROR_CODE: string
+		/**
+		 * H​T​T​P​ ​{​s​t​a​t​u​s​}
+		 * @param {number} status
+		 */
+		HTTP_STATUS: RequiredParams<'status'>
+		/**
+		 * N​o​ ​r​e​s​p​o​n​s​e
+		 */
+		NO_RESPONSE: string
+		/**
+		 * u​n​k​n​o​w​n​_​e​r​r​o​r
+		 */
+		UNKNOWN_ERROR: string
+		/**
+		 * C​l​o​s​i​n​g​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​i​n​ ​{​s​e​c​o​n​d​s​}​ ​s
+		 * @param {number} seconds
+		 */
+		AUTO_CLOSE: RequiredParams<'seconds'>
+		/**
+		 * D​o​n​e
+		 */
+		DONE: string
+		/**
+		 * T​r​y​ ​a​g​a​i​n
+		 */
+		TRY_AGAIN: string
+		/**
+		 * C​o​p​y​ ​e​r​r​o​r​ ​d​e​t​a​i​l​s
+		 */
+		COPY_DETAILS: string
+		/**
+		 * C​o​p​i​e​d
+		 */
+		COPIED: string
+		/**
+		 * S​t​i​l​l​ ​w​a​i​t​i​n​g​ ​f​o​r​ ​{​n​a​m​e​}
+		 * @param {string} name
+		 */
+		STILL_WAITING_TITLE: RequiredParams<'name'>
+		/**
+		 * W​e​'​l​l​ ​l​e​t​ ​y​o​u​ ​k​n​o​w​ ​w​h​e​n​ ​t​h​e​y​ ​r​e​s​p​o​n​d​.
+		 */
+		STILL_WAITING_DETAIL: string
+		/**
+		 * {​n​a​m​e​}​ ​a​c​c​e​p​t​e​d
+		 * @param {string} name
+		 */
+		LATER_APPROVED_TITLE: RequiredParams<'name'>
+		/**
+		 * {​n​a​m​e​}​ ​d​i​d​n​'​t​ ​a​c​c​e​p​t
+		 * @param {string} name
+		 */
+		LATER_FAILED_TITLE: RequiredParams<'name'>
 	}
 	ERROR: {
 		/**
@@ -2627,17 +2987,187 @@ export type TranslationFunctions = {
 			 */
 			NAVBAR_TITLE: () => LocalizedString
 			/**
-			 * requests the following credentials
+			 * {count} selected
 			 */
-			DESCRIPTION: () => LocalizedString
+			SELECTED_COUNT: (arg: { count: number }) => LocalizedString
 			/**
-			 * Requested
+			 * {count} {{Option|Options}} Available
 			 */
-			REQUESTED: () => LocalizedString
+			OPTIONS_AVAILABLE: (arg: { count: number }) => LocalizedString
 			/**
-			 * Approve request
+			 * Change
 			 */
-			APPROVE: () => LocalizedString
+			CHANGE: () => LocalizedString
+			/**
+			 * Issued {date}
+			 */
+			ISSUED: (arg: { date: string }) => LocalizedString
+			/**
+			 * {name} wants to see
+			 */
+			WANTS_TO_SEE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Review and share
+			 */
+			REVIEW_AND_SHARE: () => LocalizedString
+			/**
+			 * Decline
+			 */
+			DECLINE: () => LocalizedString
+			CLAIMS: {
+				/**
+				 * Required
+				 */
+				REQUIRED: () => LocalizedString
+				/**
+				 * Optional
+				 */
+				OPTIONAL: () => LocalizedString
+				/**
+				 * Sharing {shared} of {total} requested {{field|fields}}
+				 */
+				SHARING: (arg: { shared: number, total: number }) => LocalizedString
+				/**
+				 * {shared} of {total} requested {{field|fields}} shared
+				 */
+				SHARED_SUMMARY: (arg: { shared: number, total: number }) => LocalizedString
+				/**
+				 * {count} optional off
+				 */
+				OPTIONAL_OFF: (arg: { count: number }) => LocalizedString
+				/**
+				 * The whole credential is shared
+				 */
+				WHOLE_CREDENTIAL: () => LocalizedString
+				/**
+				 * No fields are requested from this credential
+				 */
+				NONE_REQUESTED: () => LocalizedString
+				/**
+				 * Turn on more fields to share this credential
+				 */
+				NOT_ENOUGH: () => LocalizedString
+				/**
+				 * Show fields
+				 */
+				EXPAND: () => LocalizedString
+				/**
+				 * Hide fields
+				 */
+				COLLAPSE: () => LocalizedString
+			}
+			REVIEW: {
+				/**
+				 * Review
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * You are sharing with {name}
+				 */
+				SHARING_WITH: (arg: { name: string }) => LocalizedString
+				/**
+				 * Will be shared · {count} {{field|fields}}
+				 */
+				WILL_BE_SHARED: (arg: { count: number }) => LocalizedString
+				/**
+				 * Not shared
+				 */
+				NOT_SHARED: () => LocalizedString
+				/**
+				 * Not chosen
+				 */
+				NOT_CHOSEN: () => LocalizedString
+				/**
+				 * Share with {name}
+				 */
+				SHARE: (arg: { name: string }) => LocalizedString
+			}
+			PICKER: {
+				/**
+				 * Choose credential
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Choose credentials
+				 */
+				NAVBAR_TITLE_MULTIPLE: () => LocalizedString
+				/**
+				 * Choose 1
+				 */
+				CHOOSE_ONE: () => LocalizedString
+				/**
+				 * Choose multiple
+				 */
+				CHOOSE_MULTIPLE: () => LocalizedString
+				/**
+				 * Search {count} credentials
+				 */
+				SEARCH: (arg: { count: number }) => LocalizedString
+				/**
+				 * Select all
+				 */
+				SELECT_ALL: () => LocalizedString
+				/**
+				 * Shared with {name} last time
+				 */
+				LAST_SHARED: (arg: { name: string }) => LocalizedString
+				/**
+				 * View details
+				 */
+				VIEW_DETAILS: () => LocalizedString
+				/**
+				 * Use this credential
+				 */
+				USE_ONE: () => LocalizedString
+				/**
+				 * Use {selected} of {total} credentials
+				 */
+				USE_MULTIPLE: (arg: { selected: number, total: number }) => LocalizedString
+				/**
+				 * Choose this credential
+				 */
+				CHOOSE_THIS: () => LocalizedString
+			}
+			VALIDITY: {
+				/**
+				 * Valid until {date}
+				 */
+				VALID_UNTIL: (arg: { date: string }) => LocalizedString
+				/**
+				 * Expired on {date}
+				 */
+				EXPIRED_ON: (arg: { date: string }) => LocalizedString
+				/**
+				 * Revoked by the issuer
+				 */
+				REVOKED: () => LocalizedString
+				/**
+				 * Suspended by the issuer
+				 */
+				SUSPENDED: () => LocalizedString
+				/**
+				 * Valid from {date}
+				 */
+				VALID_FROM: (arg: { date: string }) => LocalizedString
+			}
+			EXPIRED_WARNING: {
+				/**
+				 * You are sharing an expired credential
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * {name} expired on {date}. {verifier} may not accept it. Are you sure you want to share it?
+				 */
+				DESCRIPTION: (arg: { date: string, name: string, verifier: string }) => LocalizedString
+				/**
+				 * Share anyway
+				 */
+				CONFIRM: () => LocalizedString
+				/**
+				 * Choose another
+				 */
+				CANCEL: () => LocalizedString
+			}
 		}
 	}
 	CONNECTION: {
@@ -3325,6 +3855,152 @@ export type TranslationFunctions = {
 		 * Unverified Domain
 		 */
 		PILL_UNVERIFIED: () => LocalizedString
+	}
+	INTERACTION_RESULT: {
+		PRESENTATION: {
+			/**
+			 * Sending to {name}…
+			 */
+			SENDING_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Sent to {name}
+			 */
+			STEP_SEND: (arg: { name: string }) => LocalizedString
+			/**
+			 * Sending to {name}
+			 */
+			STEP_SENDING: (arg: { name: string }) => LocalizedString
+			/**
+			 * Couldn't send to {name}
+			 */
+			STEP_SEND_FAILED: (arg: { name: string }) => LocalizedString
+			/**
+			 * Approved by {name}
+			 */
+			STEP_APPROVE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Rejected by {name}
+			 */
+			STEP_REJECTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} accepted your data.
+			 */
+			APPROVED_BODY: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} didn't accept this
+			 */
+			REJECTED_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Check your internet connection and try again. Nothing was shared.
+			 */
+			NOT_SENT_BODY: () => LocalizedString
+		}
+		ISSUANCE: {
+			/**
+			 * Requesting from {name}…
+			 */
+			SENDING_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Request sent to {name}
+			 */
+			STEP_SEND: (arg: { name: string }) => LocalizedString
+			/**
+			 * Sending request to {name}
+			 */
+			STEP_SENDING: (arg: { name: string }) => LocalizedString
+			/**
+			 * Couldn't send request to {name}
+			 */
+			STEP_SEND_FAILED: (arg: { name: string }) => LocalizedString
+			/**
+			 * Issued by {name}
+			 */
+			STEP_APPROVE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Refused by {name}
+			 */
+			STEP_REJECTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * Your new credential from {name} is in your wallet.
+			 */
+			APPROVED_BODY: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} didn't issue this
+			 */
+			REJECTED_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Check your internet connection and try again. Nothing was received.
+			 */
+			NOT_SENT_BODY: () => LocalizedString
+		}
+		/**
+		 * This usually takes a few seconds. You can close this, we'll keep going in the background.
+		 */
+		SENDING_BODY: () => LocalizedString
+		/**
+		 * All done!
+		 */
+		APPROVED_TITLE: () => LocalizedString
+		/**
+		 * Couldn't reach {name}
+		 */
+		NOT_SENT_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * The request was refused.
+		 */
+		REJECTED_BODY: () => LocalizedString
+		/**
+		 * Error code
+		 */
+		ERROR_CODE: () => LocalizedString
+		/**
+		 * HTTP {status}
+		 */
+		HTTP_STATUS: (arg: { status: number }) => LocalizedString
+		/**
+		 * No response
+		 */
+		NO_RESPONSE: () => LocalizedString
+		/**
+		 * unknown_error
+		 */
+		UNKNOWN_ERROR: () => LocalizedString
+		/**
+		 * Closing automatically in {seconds} s
+		 */
+		AUTO_CLOSE: (arg: { seconds: number }) => LocalizedString
+		/**
+		 * Done
+		 */
+		DONE: () => LocalizedString
+		/**
+		 * Try again
+		 */
+		TRY_AGAIN: () => LocalizedString
+		/**
+		 * Copy error details
+		 */
+		COPY_DETAILS: () => LocalizedString
+		/**
+		 * Copied
+		 */
+		COPIED: () => LocalizedString
+		/**
+		 * Still waiting for {name}
+		 */
+		STILL_WAITING_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * We'll let you know when they respond.
+		 */
+		STILL_WAITING_DETAIL: () => LocalizedString
+		/**
+		 * {name} accepted
+		 */
+		LATER_APPROVED_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * {name} didn't accept
+		 */
+		LATER_FAILED_TITLE: (arg: { name: string }) => LocalizedString
 	}
 	ERROR: {
 		/**

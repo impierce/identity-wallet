@@ -1,5 +1,7 @@
 pub mod actions;
+pub mod credential_query_matching;
 pub mod reducers;
+pub mod selective_disclosure;
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
@@ -95,6 +97,11 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
+    /// The moment from which the credential is valid (`validFrom`, VCDM 1.1 `issuanceDate` or `nbf`), if it states one.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[derivative(PartialEq = "ignore")]
+    pub valid_from: Option<String>,
     // TODO: use this expiration date in the frontend to display
     #[ts(optional)]
     #[derivative(PartialEq = "ignore")]
@@ -262,6 +269,8 @@ impl VerifiableCredentialRecord {
                 }
             };
 
+            let valid_from = valid_from(&format, &verifiable_credential);
+
             DisplayCredential {
                 id,
                 format,
@@ -271,6 +280,7 @@ impl VerifiableCredentialRecord {
                     is_favorite: false,
                     date_added: DateUtils::new_date_string(),
                     date_issued: issuance_date,
+                    valid_from,
                     expiration_date,
                     icon: None,
                 },
@@ -291,6 +301,56 @@ impl VerifiableCredentialRecord {
             display_credential,
         })
     }
+}
+
+/// The latest of the credential's `validFrom` (or VCDM 1.1 `issuanceDate`) and its JWT `nbf`. The issuance time (`iat`)
+/// says when the credential was signed, not from when it is valid, so it is not used.
+pub fn valid_from(format: &CredentialFormats, verifiable_credential: &serde_json::Value) -> Option<String> {
+    let timestamp = |value: &serde_json::Value| match value {
+        serde_json::Value::Number(secs) => {
+            chrono::DateTime::from_timestamp(secs.as_i64()?, 0).map(|date| date.to_rfc3339())
+        }
+        serde_json::Value::String(date) => Some(date.clone()),
+        _ => None,
+    };
+
+    let candidates: Vec<String> = match format {
+        CredentialFormats::DcSdJwt(()) => {
+            let sd_jwt_vc = verifiable_credential.as_str()?.parse::<SdJwtVc>().ok()?;
+            sd_jwt_vc.claims().nbf.map(|nbf| nbf.to_rfc3339()).into_iter().collect()
+        }
+        CredentialFormats::VcSdJwt(()) => {
+            let sd_jwt = verifiable_credential.as_str()?.parse::<SdJwt>().ok()?;
+            ["validFrom", "nbf"]
+                .iter()
+                .filter_map(|key| sd_jwt.claims().get(*key).and_then(timestamp))
+                .collect()
+        }
+        CredentialFormats::JwtVcJson(()) => {
+            let claims = get_unverified_jwt_claims(verifiable_credential).ok()?;
+            let vc = claims.get("vc");
+            [
+                vc.and_then(|vc| vc.get("validFrom")),
+                vc.and_then(|vc| vc.get("issuanceDate")),
+                claims.get("nbf"),
+            ]
+            .into_iter()
+            .flatten()
+            .filter_map(timestamp)
+            .collect()
+        }
+        _ => vec![],
+    };
+
+    candidates
+        .into_iter()
+        .filter_map(|date| {
+            chrono::DateTime::parse_from_rfc3339(&date)
+                .ok()
+                .map(|parsed| (parsed, date))
+        })
+        .max_by_key(|(parsed, _)| *parsed)
+        .map(|(_, date)| date)
 }
 
 fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_json::Value) -> Vec<DisplayClaim> {
@@ -406,6 +466,14 @@ mod tests {
             verifiable_credential_record.display_credential.metadata.date_issued,
             "2022-01-01T00:00:00Z"
         );
+        assert_eq!(
+            verifiable_credential_record
+                .display_credential
+                .metadata
+                .valid_from
+                .as_deref(),
+            Some("2022-01-01T00:00:00Z")
+        );
     }
 
     #[test]
@@ -442,6 +510,14 @@ mod tests {
         assert_eq!(
             verifiable_credential_record.display_credential.metadata.date_issued,
             "2026-02-03T20:12:45Z"
+        );
+        assert_eq!(
+            verifiable_credential_record
+                .display_credential
+                .metadata
+                .valid_from
+                .as_deref(),
+            Some("2026-02-03T20:12:45Z")
         );
     }
 
@@ -487,6 +563,34 @@ mod tests {
         assert_eq!(
             verifiable_credential_record.display_credential.metadata.date_issued,
             "2026-02-03T20:11:18Z"
+        );
+        assert_eq!(
+            verifiable_credential_record
+                .display_credential
+                .metadata
+                .valid_from
+                .as_deref(),
+            Some("2026-02-03T20:11:18Z")
+        );
+    }
+
+    #[test]
+    fn test_valid_from_uses_the_latest_of_issuance_date_and_nbf_but_not_iat() {
+        let jwt_vc_json = json!("eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpYXQiOjAsIm5iZiI6NDEwMjQ0NDgwMCwidmMiOnsiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoifX0.sig");
+
+        assert_eq!(
+            valid_from(&CredentialFormats::JwtVcJson(()), &jwt_vc_json).as_deref(),
+            Some("2100-01-01T00:00:00+00:00")
+        );
+    }
+
+    #[test]
+    fn test_valid_from_uses_the_issuance_date_when_valid_from_is_invalid() {
+        let jwt_vc_json = json!("eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ2YyI6eyJ2YWxpZEZyb20iOiJub3QgYSBkYXRlIiwiaXNzdWFuY2VEYXRlIjoiMjEwMC0wMS0wMVQwMDowMDowMFoifX0.sig");
+
+        assert_eq!(
+            valid_from(&CredentialFormats::JwtVcJson(()), &jwt_vc_json).as_deref(),
+            Some("2100-01-01T00:00:00Z")
         );
     }
 }

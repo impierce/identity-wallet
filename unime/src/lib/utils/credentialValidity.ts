@@ -16,7 +16,7 @@ function parseDate(isoDate: string | undefined): Date | undefined {
 }
 
 /**
- * `date_issued` holds `issuanceDate`/`validFrom` (or `nbf`/`iat`), which is when the credential starts being valid.
+ * `valid_from` holds `validFrom` (VCDM 1.1: `issuanceDate`) or `nbf`, when the credential says from when it is valid.
  */
 export function getCredentialValidity(
   credential: Pick<DisplayCredential, 'credential_status' | 'metadata'>,
@@ -30,16 +30,16 @@ export function getCredentialValidity(
     return { state: 'suspended' };
   }
 
-  const { date_issued, expiration_date } = credential.metadata;
+  const { valid_from, expiration_date } = credential.metadata;
 
   const validUntil = parseDate(expiration_date);
   if (expiration_date && validUntil && validUntil <= now) {
     return { state: 'expired', validUntil: expiration_date };
   }
 
-  const validFrom = parseDate(date_issued);
-  if (validFrom && validFrom > now) {
-    return { state: 'not_yet_valid', validFrom: date_issued };
+  const validFrom = parseDate(valid_from);
+  if (valid_from && validFrom && validFrom > now) {
+    return { state: 'not_yet_valid', validFrom: valid_from };
   }
 
   return validUntil ? { state: 'valid', validUntil: expiration_date } : { state: 'valid' };

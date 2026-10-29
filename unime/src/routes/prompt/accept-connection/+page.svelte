@@ -19,6 +19,7 @@
 
   import CertificationCard from './CertificationCard.svelte';
   import CertificationsSummary from './CertificationsSummary.svelte';
+  import DomainName from './DomainName.svelte';
   import DomainPill from './DomainPill.svelte';
   import EcosystemCard from './EcosystemCard.svelte';
   import EcosystemsSummary from './EcosystemsSummary.svelte';
@@ -99,9 +100,7 @@
         {client_name}
       </p>
       {#if domain}
-        <p class="pt-[10px] text-[13px]/[20px] font-normal text-text-alt">
-          {domain}
-        </p>
+        <DomainName {domain} status={domain_validation.status} class="pt-[10px]" />
       {/if}
       <div class="flex justify-center pt-[6px]">
         <DomainPill status={domain_validation.status} />

@@ -8,10 +8,11 @@ use jni::{
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     use identity_wallet::{
-        persistence::{clear_assets_tmp_folder, initialize_storage},
+        persistence::{clear_assets_tmp_folder, initialize_storage, ASSETS_DIR},
         state::AppStateContainer,
     };
     use log::{info, LevelFilter};
+    use tauri::Manager;
     use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
     let mut builder = tauri::Builder::default();
@@ -39,19 +40,30 @@ pub fn run() {
         );
     }
 
+    // Registered on the builder: from `setup`, `AppHandle::plugin` holds the plugin lock while the Android
+    // plugin waits for the main thread, which can be blocked on that lock in the WebView's navigation hook.
+    #[cfg(mobile)]
+    {
+        builder = builder
+            .plugin(tauri_plugin_barcode_scanner::init())
+            .plugin(tauri_plugin_biometric::init())
+            .plugin(tauri_plugin_keystore::init());
+    }
+
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
-            initialize_storage(app.handle()).ok();
+            let storage_initialized = initialize_storage(app.handle()).is_ok();
             clear_assets_tmp_folder().ok();
-            dotenvy::dotenv().ok();
-            #[cfg(mobile)]
-            {
-                app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
-                app.handle().plugin(tauri_plugin_biometric::init())?;
-                app.handle().plugin(tauri_plugin_keystore::init())?;
+            // The asset protocol scope from the config does not match an assets folder that did not exist yet at
+            // startup (e.g. on first launch), so allow the folder again now that it exists. Without initialized
+            // storage, `ASSETS_DIR` is empty and would allow every path.
+            if storage_initialized {
+                let assets_dir = ASSETS_DIR.lock().unwrap().clone();
+                app.asset_protocol_scope().allow_directory(&assets_dir, true)?;
             }
+            dotenvy::dotenv().ok();
             Ok(())
         })
         .manage(AppStateContainer(Default::default()))

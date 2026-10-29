@@ -132,6 +132,8 @@ mod bindings {
         ClearDebugLog,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
+        #[serde(rename = "[Interaction Result] Dismiss")]
+        DismissInteractionResult,
         #[serde(rename = "[Credential Offer] Selected")]
         CredentialOffersSelected { payload: CredentialOffersSelected },
         #[serde(rename = "[Credential Offer] Code received")]

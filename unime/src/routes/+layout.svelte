@@ -20,7 +20,7 @@
   import { getCurrent, onOpenUrl } from '@tauri-apps/plugin-deep-link';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { DeprecatedSwitch, Toast } from '$lib/components';
+  import { DeprecatedSwitch, InteractionResultSheet, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -674,6 +674,9 @@ Stacking context: We have to deviate from the DOM-sequence.
     {/if}
 
     <slot />
+
+    <!-- Progress and outcome of an issuance or presentation. -->
+    <InteractionResultSheet />
 
     <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}

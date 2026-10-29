@@ -5,6 +5,7 @@ pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
 pub mod did;
+pub mod interaction_result;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
@@ -20,6 +21,7 @@ use self::{
 };
 use crate::state::core_utils::history_event::HistoryEvent;
 use crate::state::credentials::DisplayCredential;
+use crate::state::interaction_result::InteractionResult;
 use crate::{error::AppError, state::connections::Connections};
 
 use derivative::Derivative;
@@ -123,6 +125,9 @@ pub struct AppState {
     pub show_dev_mode_setting: bool,
     pub is_unlocked: bool,
     pub dev_mode: DevMode,
+    /// The outcome of the last issuance or presentation, shown in the result pop-up until dismissed. Cleared when the
+    /// state is loaded from disk.
+    pub interaction_result: Option<InteractionResult>,
 }
 
 impl AppState {

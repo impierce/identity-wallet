@@ -5,8 +5,8 @@
 
   import type { Connection } from '@bindings/connections/Connection';
   import { createDialog, melt } from '@melt-ui/svelte';
-  import { open as openExternal } from '@tauri-apps/plugin-shell';
 
+  import { ExternalLink } from '$lib/components';
   import { ArrowSquareOutBoldIcon, XBoldIcon } from '$lib/icons';
 
   import { buildIotaExplorerSearchLink } from '../../utils';
@@ -19,10 +19,6 @@
   } = createDialog({ open, portal: '#portal' });
 
   $: explorerLink = connection.did.startsWith('did:iota') ? buildIotaExplorerSearchLink(connection.did) : undefined;
-
-  async function openExplorer() {
-    if (explorerLink) await openExternal(explorerLink);
-  }
 </script>
 
 <div use:melt={$portalled}>
@@ -47,14 +43,13 @@
       </div>
 
       {#if explorerLink}
-        <button
-          type="button"
+        <ExternalLink
+          href={explorerLink}
           class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-[13px]/[20px] font-medium text-primary dark:border-slate-600"
-          on:click={openExplorer}
         >
           {$LL.CONNECTION.DETAILS.VIEW_ON_EXPLORER()}
           <ArrowSquareOutBoldIcon class="size-4" />
-        </button>
+        </ExternalLink>
       {/if}
 
       <button

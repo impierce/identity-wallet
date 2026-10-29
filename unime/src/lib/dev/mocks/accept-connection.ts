@@ -264,7 +264,7 @@ export const mocks = {
     ...base,
     linked_verifiable_presentations: [
       withMetadata(certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org'), {
-        date_issued: '2099-01-01T00:00:00Z',
+        valid_from: '2099-01-01T00:00:00Z',
       }),
     ],
   },

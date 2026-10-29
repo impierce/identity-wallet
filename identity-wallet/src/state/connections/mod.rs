@@ -16,6 +16,7 @@ use super::{
 
 use log::info;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
@@ -31,12 +32,13 @@ impl Connections {
         self.0.iter().any(|connection| connection.did == did)
     }
 
-    /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, updates
-    /// the last interaction time and returns a reference to the connection.
+    /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
+    /// its display data with what was just fetched, updates the last interaction time and returns a reference to the
+    /// connection.
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
-    ) -> &Connection {
+    ) -> &mut Connection {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
@@ -45,9 +47,16 @@ impl Connections {
 
         // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
         let connection_index = if let Some(index) = self.0.iter().position(|connection| connection.did == did_string) {
-            info!("Updating last interaction time for existing connection: {did}");
-            // TODO: what to do here when any information has changed except for the DID since we only match against that as the true identifier for a connection?
-            self.0[index].update_last_interaction_time();
+            info!("Updating existing connection: {name}, {url}, {did}");
+            let connection = &mut self.0[index];
+            // The `id` is kept even if the name or url changed, since history events and credentials refer to it.
+            connection.name = name.to_string();
+            connection.url = url.to_string();
+            connection.domain_validation = pending_connection_data.domain_validation.clone();
+            connection.linked_verifiable_presentations =
+                pending_connection_data.linked_verifiable_presentations.clone();
+            connection.ecosystems = pending_connection_data.ecosystems.clone();
+            connection.update_last_interaction_time();
             index
         } else {
             info!("Inserting new connection: {name}, {url}, {did}");
@@ -62,7 +71,7 @@ impl Connections {
             self.0.len() - 1
         };
 
-        &self.0[connection_index]
+        &mut self.0[connection_index]
     }
 }
 
@@ -96,6 +105,10 @@ pub struct Connection {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
+    /// The ids of the credentials last shared with this connection, keyed by the requested credential types.
+    #[ts(skip)]
+    #[serde(skip_serializing_if = "HashMap::is_empty")]
+    pub last_shared_credentials: HashMap<String, Vec<String>>,
 }
 
 impl Connection {
@@ -121,6 +134,7 @@ impl Connection {
             linked_verifiable_presentations,
             ecosystems,
             domain_validation,
+            last_shared_credentials: HashMap::new(),
         }
     }
 
@@ -182,6 +196,33 @@ mod tests {
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
         assert_ne!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 1);
+    }
+
+    #[test]
+    fn test_update_or_insert_refreshes_display_data_of_existing_connection() {
+        let mut connections = Connections::new();
+        let did = CoreDID::from_str("did:example:123").unwrap();
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(
+                "https://example.com",
+                "Old name",
+                did.clone(),
+            ))
+            .clone();
+
+        let mut refreshed = pending_connection_data("https://new.example.com", "New name", did.clone());
+        refreshed.domain_validation = Some((ValidationStatus::Success, DateUtils::new_date_string()));
+        let updated = connections.update_last_interaction_or_insert_new(&refreshed);
+
+        assert_eq!(updated.id, connection.id);
+        assert_eq!(updated.first_interacted, connection.first_interacted);
+        assert_eq!(updated.name, "New name");
+        assert_eq!(updated.url, "https://new.example.com");
+        assert!(matches!(
+            updated.domain_validation,
+            Some((ValidationStatus::Success, _))
+        ));
         assert_eq!(connections.0.len(), 1);
     }
 

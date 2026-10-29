@@ -6,7 +6,8 @@ use crate::{
         common::actions::reset::Reset,
         connections::actions::connection_accepted::ConnectionAccepted,
         credentials::actions::{
-            credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
+            credential_offers_selected::CredentialOffersSelected,
+            credentials_selected::{CredentialSelection, CredentialsSelected},
         },
         dev_mode::{
             actions::dev_profile::{DevProfile, ProfileSteps},
@@ -228,19 +229,23 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
 
 async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
     if let Some(CurrentUserPrompt::ShareCredentials {
-        client_name: _,
-        logo_uri: _,
-        options,
-        is_interactive: _,
+        requested_credentials, ..
     }) = &state.current_user_prompt
     {
-        let credential_uuids: Vec<Uuid> = options
+        let selections = requested_credentials
             .iter()
-            .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
+            .filter_map(|requested| {
+                let uuid_str = &requested.options.first()?.id;
+                Some(CredentialSelection {
+                    query_id: requested.query_id.clone(),
+                    credential_uuids: vec![Uuid::parse_str(uuid_str).unwrap()],
+                    disclosed_claims: None,
+                })
+            })
             .collect();
 
         let cr_selected = CredentialsSelected {
-            credential_uuids,
+            selections,
             is_interactive: false,
         };
 

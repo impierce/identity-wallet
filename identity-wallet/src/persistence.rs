@@ -1,4 +1,4 @@
-use crate::http_client::{assert_public_destination, get_asset_http_client};
+use crate::http_client::fetch_public_destination;
 use crate::migrations::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
@@ -93,7 +93,11 @@ pub async fn load_state() -> Result<AppState, AppError> {
         }
     };
 
-    Ok(app_state)
+    // A result pop-up belongs to the session it happened in.
+    Ok(AppState {
+        interaction_result: None,
+        ..app_state
+    })
 }
 
 /// Persists a [AppState] to the app's data directory.
@@ -174,7 +178,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         std::fs::create_dir(&tmp_dir)?;
     }
 
-    let response = fetch_asset(url).await?;
+    let response = fetch_public_destination(url).await?;
 
     let file_extension = response
         .headers()
@@ -204,35 +208,6 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
     Ok(())
 }
 
-const MAX_ASSET_REDIRECTS: usize = 5;
-
-/// Requests `url`, following redirects by hand so each hop passes [`assert_public_destination`]
-/// first. `reqwest`'s redirect policy is synchronous and cannot resolve a host.
-async fn fetch_asset(mut url: reqwest::Url) -> Result<reqwest::Response, AppError> {
-    let client = get_asset_http_client().await?;
-
-    for _ in 0..=MAX_ASSET_REDIRECTS {
-        assert_public_destination(&url).await?;
-
-        let response = client.get(url.clone()).send().await?;
-        if !response.status().is_redirection() {
-            return Ok(response);
-        }
-
-        let location = response
-            .headers()
-            .get(reqwest::header::LOCATION)
-            .and_then(|location| location.to_str().ok())
-            .ok_or(AppError::DownloadAborted("redirect without a usable location"))?;
-
-        url = url
-            .join(location)
-            .map_err(|_| AppError::DownloadAborted("redirect to an unparseable location"))?;
-    }
-
-    Err(AppError::DownloadAborted("too many redirects"))
-}
-
 /// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
@@ -247,6 +222,15 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
             tmp_dir.join(format!("{file_name}.{extension}")),
             assets_dir.join(&new_file_name),
         )?;
+
+        // The frontend picks the first extension it finds, so a stale asset with another extension would shadow this one.
+        for stale_extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS.iter().filter(|&e| e != extension) {
+            let stale_file = assets_dir.join(format!("{id}.{stale_extension}"));
+            if stale_file.exists() {
+                std::fs::remove_file(stale_file)?;
+            }
+        }
+
         debug!("Successfully persisted asset `{file_name}` --> `{new_file_name}`.");
     } else {
         warn!("No asset found for file_name: `{file_name}`")
@@ -259,4 +243,41 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 /// Used for temporary asset file names in `/assets/tmp` to prevent unintended frontend image caching.
 pub fn hash(url: &str) -> String {
     sha256::digest(url).to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    #[serial_test::serial]
+    fn persist_asset_replaces_asset_with_other_extension() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        fs::write(assets_dir.join("conn-123.svg"), b"old-logo").unwrap();
+        fs::write(assets_dir.join("tmp").join("logo-hash.png"), b"new-logo").unwrap();
+
+        persist_asset("logo-hash", "conn-123").unwrap();
+
+        assert!(!assets_dir.join("conn-123.svg").exists());
+        assert_eq!(fs::read(assets_dir.join("conn-123.png")).unwrap(), b"new-logo");
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn persist_asset_keeps_existing_asset_when_rename_fails() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        fs::write(assets_dir.join("conn-123.svg"), b"old-logo").unwrap();
+        fs::write(assets_dir.join("tmp").join("logo-hash.png"), b"new-logo").unwrap();
+        // A non-empty directory at the destination makes the rename fail on every platform.
+        fs::create_dir_all(assets_dir.join("conn-123.png").join("blocker")).unwrap();
+
+        assert!(persist_asset("logo-hash", "conn-123").is_err());
+
+        assert_eq!(fs::read(assets_dir.join("conn-123.svg")).unwrap(), b"old-logo");
+    }
 }
