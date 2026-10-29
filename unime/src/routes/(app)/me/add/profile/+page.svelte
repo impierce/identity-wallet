@@ -24,6 +24,7 @@
   const init: z.infer<typeof naturalPerson> = {
     family_name: '',
     given_name: '',
+    middle_name: '',
     birth_date: new Date(),
     birth_place: '',
     nationality: [],
@@ -64,8 +65,10 @@
   function createProfile() {
     loading = true;
 
+    const { middle_name, ...claims } = $form;
     const credentialSubject = {
-      ...$form,
+      ...claims,
+      ...(middle_name?.trim() ? { middle_name: middle_name.trim() } : {}),
     };
 
     const validationResult = naturalPerson.safeParse(credentialSubject);
@@ -150,6 +153,13 @@
         label={$LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_LABEL()}
         placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_PLACEHOLDER()}
         bind:value={$form.given_name}
+      />
+
+      <TextInput
+        id="middle_name"
+        label={$LL.ADD_CREDENTIALS.PROFILE.ADD.MIDDLE_NAME_LABEL()}
+        placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.MIDDLE_NAME_PLACEHOLDER()}
+        bind:value={$form.middle_name}
       />
 
       <TextInput

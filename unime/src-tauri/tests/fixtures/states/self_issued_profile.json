@@ -20,6 +20,7 @@
         "issuer": "did:example:ebfeb1f712ebc6f1c276e12ec21",
         "credentialSubject": {
           "given_name": "Ferris",
+          "middle_name": "the",
           "family_name": "Crabman",
           "birth_date": "1990-01-01",
           "id": "did:example:ebfeb1f712ebc6f1c276e12ec21"

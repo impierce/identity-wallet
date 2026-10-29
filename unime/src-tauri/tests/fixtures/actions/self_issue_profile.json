@@ -6,6 +6,7 @@
       "name": "My Profile",
       "credentialSubject": {
         "given_name": "Ferris",
+        "middle_name": "the",
         "family_name": "Crabman",
         "birth_date": "1990-01-01"
       }
