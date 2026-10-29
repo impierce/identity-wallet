@@ -739,8 +739,7 @@ const de_DE = {
         'Dieser QR-Code ist keine Anfrage, die UniMe verarbeiten kann. Scanne einen QR-Code zum Empfangen oder Teilen von Nachweisen.',
       UNSUPPORTED: 'UniMe unterstützt diese Art von Nachweis oder Anfrage noch nicht.',
       MISSING_CREDENTIALS: 'Du hast nicht die Nachweise, die für {name} nötig sind, daher wurde nichts geteilt.',
-      UNTRUSTED:
-        'UniMe konnte {name} nicht verifizieren und hat zum Schutz deiner Daten abgebrochen.',
+      UNTRUSTED: 'UniMe konnte {name} nicht verifizieren und hat zum Schutz deiner Daten abgebrochen.',
       FLOW_EXPIRED: 'Diese Anfrage ist nicht mehr aktiv. Scanne den QR-Code erneut, um neu zu beginnen.',
       INVALID_INPUT: 'Einige deiner Angaben sind ungültig. Prüfe sie und versuche es noch einmal.',
       WRONG_PASSWORD: 'Das Passwort ist nicht richtig. Prüfe es und versuche es noch einmal.',
