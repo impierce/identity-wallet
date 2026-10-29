@@ -7,9 +7,13 @@ use identity_wallet::{
         self_issued_migration::migrate_self_issued_credentials, CredentialMetadata, DisplayCredential,
         VerifiableCredentialRecord,
     },
+    stronghold::StrongholdManager,
 };
 use serde_json::{json, Value};
 
+use super::profile_fixture::{
+    get_state, handle_actions, setup_profile_fixture, unlock_storage, PROFILE_V0_18_0, PROFILE_V0_18_0_PASSWORD,
+};
 use crate::common::test_managers;
 
 const ISSUER_DID: &str = "did:example:ebfeb1f712ebc6f1c276e12ec21";
@@ -25,20 +29,26 @@ fn decode(segment: &str) -> Value {
 
 /// A record as UniMe up to 0.18 stored it after self-issuing, with nothing concealed. The signature is not checked by
 /// the migration.
-fn legacy_record(id: &str, vct: &str, credential_type: &str, credential_subject: Value) -> VerifiableCredentialRecord {
-    let header = json!({ "typ": "dc+sd-jwt", "alg": "EdDSA", "kid": format!("{ISSUER_DID}#0") });
+fn legacy_record(
+    id: &str,
+    issuer: &str,
+    vct: &str,
+    credential_type: &str,
+    credential_subject: Value,
+) -> VerifiableCredentialRecord {
+    let header = json!({ "typ": "dc+sd-jwt", "alg": "EdDSA", "kid": format!("{issuer}#0") });
     let data = json!({
         "type": ["VerifiableCredential", credential_type],
         "issuanceDate": "2026-10-01T10:00:00.000Z",
         "name": "My Profile",
         "credentialSubject": credential_subject,
-        "issuer": ISSUER_DID,
+        "issuer": issuer,
     });
     let mut payload = data.clone();
     payload["vct"] = json!(vct);
     payload["iat"] = json!(1790848800);
-    payload["iss"] = json!(ISSUER_DID);
-    payload["cnf"] = json!({ "kid": format!("{ISSUER_DID}#0") });
+    payload["iss"] = json!(issuer);
+    payload["cnf"] = json!({ "kid": format!("{issuer}#0") });
 
     VerifiableCredentialRecord {
         verifiable_credential: json!(format!("{}.{}.c2lnbmF0dXJl~", encode(header), encode(payload))),
@@ -74,6 +84,7 @@ async fn test_migrate_self_issued_credentials() {
     });
     let legacy_profile = legacy_record(
         profile_id,
+        ISSUER_DID,
         LEGACY_VCT,
         "NaturalPersonCredential",
         credential_subject.clone(),
@@ -81,6 +92,7 @@ async fn test_migrate_self_issued_credentials() {
     // A `dc+sd-jwt` that was not self-issued by UniMe stays untouched.
     let other = legacy_record(
         other_id,
+        ISSUER_DID,
         "https://example.com/vct",
         "NaturalPersonCredential",
         credential_subject.clone(),
@@ -154,4 +166,44 @@ async fn test_migrate_self_issued_credentials() {
     let records = stronghold_manager.values().unwrap().unwrap();
     let again = records.iter().find(|r| r.display_credential.id == profile_id).unwrap();
     assert_eq!(again.verifiable_credential, migrated.verifiable_credential);
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_unlock_migrates_self_issued_credentials() {
+    let data_dir = setup_profile_fixture(PROFILE_V0_18_0);
+    let state_file = std::fs::File::open(data_dir.path().join("state.json")).unwrap();
+    let state_json: Value = serde_json::from_reader(state_file).unwrap();
+    let holder_did = state_json["dids"]["did:jwk"].as_str().unwrap();
+
+    let profile_id = "2db2ea17-337b-4ebb-bd56-d89229a9c9bd";
+    let legacy_profile = legacy_record(
+        profile_id,
+        holder_did,
+        LEGACY_VCT,
+        "NaturalPersonCredential",
+        json!({ "given_name": "Ferris", "family_name": "Rustacean" }),
+    );
+    let stronghold_manager = StrongholdManager::load(PROFILE_V0_18_0_PASSWORD).unwrap();
+    stronghold_manager
+        .insert(
+            profile_id.parse().unwrap(),
+            json!(legacy_profile).to_string().into_bytes(),
+        )
+        .unwrap();
+    drop(stronghold_manager);
+
+    let state = handle_actions(vec![get_state(), unlock_storage(PROFILE_V0_18_0_PASSWORD)]).await;
+
+    assert!(state.is_unlocked);
+    assert_eq!(state.credentials.len(), 6);
+    let migrated = state
+        .credentials
+        .iter()
+        .find(|credential| credential.id == profile_id)
+        .unwrap();
+    assert_eq!(migrated.format, CredentialFormats::VcSdJwt(()));
+    assert_eq!(migrated.display_name, "My Profile");
+    assert!(migrated.metadata.is_favorite);
+    assert_eq!(migrated.data["credentialSubject"]["id"], holder_did);
 }
