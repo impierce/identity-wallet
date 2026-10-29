@@ -683,6 +683,8 @@ const de_DE = {
       '{name} konnte die Anfrage nicht annehmen. Versuche es noch einmal oder wende dich an {name}, wenn das weiterhin passiert.',
     REJECTED_REASON: {
       OFFER_EXPIRED: 'Dieses Angebot ist abgelaufen oder wurde bereits verwendet. Bitte {name} um ein neues.',
+      WRONG_TX_CODE:
+        'Der Code ist nicht richtig oder das Angebot ist abgelaufen. Prüfe den Code und versuche es erneut.',
       ACCESS_DENIED: '{name} hat die Anfrage abgelehnt.',
       INVALID_PROOF:
         '{name} konnte nicht bestätigen, dass die Anfrage von deiner Wallet kam. Bitte versuche es noch einmal.',

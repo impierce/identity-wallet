@@ -120,6 +120,8 @@ pub enum AppError {
     FlowExpiredError(String),
     #[error("Invalid input: {0}")]
     InvalidInputError(String),
+    #[error("Invalid credential: {0}")]
+    InvalidCredentialError(String),
     #[error("Failed to open the browser: {0}")]
     BrowserUnavailableError(String),
     #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]

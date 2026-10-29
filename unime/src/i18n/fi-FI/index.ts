@@ -680,6 +680,7 @@ const fi_FI = {
     REJECTED_BODY: 'Pyyntöä ei hyväksytty ({name}). Yritä uudelleen tai ota yhteyttä, jos ongelma toistuu.',
     REJECTED_REASON: {
       OFFER_EXPIRED: 'Tämä tarjous on vanhentunut tai jo käytetty. Pyydä uusi: {name}.',
+      WRONG_TX_CODE: 'Koodi ei ole oikea tai tarjous on vanhentunut. Tarkista koodi ja yritä uudelleen.',
       ACCESS_DENIED: 'Pyyntö hylättiin ({name}).',
       INVALID_PROOF: 'Ei voitu vahvistaa, että pyyntö tuli lompakostasi ({name}). Yritä uudelleen.',
       CREDENTIAL_REVOKED: 'Myöntäjä on peruuttanut yhden jakamistasi todisteista.',

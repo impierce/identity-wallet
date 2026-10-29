@@ -684,6 +684,7 @@ const nl_NL = {
       '{name} kon het verzoek niet accepteren. Probeer het opnieuw, of neem contact met hen op als dit blijft gebeuren.',
     REJECTED_REASON: {
       OFFER_EXPIRED: 'Dit aanbod is verlopen of al gebruikt. Vraag {name} om een nieuw aanbod.',
+      WRONG_TX_CODE: 'Die code klopt niet, of het aanbod is verlopen. Controleer de code en probeer het opnieuw.',
       ACCESS_DENIED: '{name} heeft het verzoek afgewezen.',
       INVALID_PROOF: '{name} kon niet bevestigen dat het verzoek van jouw wallet kwam. Probeer het opnieuw.',
       CREDENTIAL_REVOKED: 'Een van de gedeelde credentials is ingetrokken door de uitgever.',

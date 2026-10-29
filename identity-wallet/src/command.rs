@@ -1,6 +1,7 @@
 use crate::error::AppError;
 use crate::persistence::save_state;
 use crate::state::actions::{listen, Action};
+use crate::state::credentials::actions::credential_offers_selected::CredentialOffersSelected;
 use crate::state::qr_code::actions::qrcode_scanned::QrCodeScanned;
 use crate::state::{AppState, AppStateContainer};
 use crate::user_error::{host_of_scanned_request, UserError};
@@ -61,6 +62,8 @@ pub async fn main_exec(
     let action_type = action.typetag_name();
     let scanned_host = listen::<QrCodeScanned>(action.clone())
         .and_then(|qr_code_scanned| host_of_scanned_request(&qr_code_scanned.form_urlencoded));
+    let tx_code_entered = listen::<CredentialOffersSelected>(action.clone())
+        .is_some_and(|credential_offers_selected| credential_offers_selected.tx_code.is_some());
     info!("Dispatching action: `{action:?}`");
 
     let mut guard = container.0.lock().await;
@@ -92,7 +95,11 @@ pub async fn main_exec(
                     .as_ref()
                     .map(|data| data.client_metadata.client_name.clone())
                     .or(scanned_host);
-                let _ = emit_error(&window, &UserError::new(&error, action_type, counterparty));
+                let mut user_error = UserError::new(&error, action_type, counterparty);
+                if tx_code_entered {
+                    user_error = user_error.after_tx_code_entered();
+                }
+                let _ = emit_error(&window, &user_error);
             }
             error!("State update failed after {:?}: {error}", start.elapsed());
         }

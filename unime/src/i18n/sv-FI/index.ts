@@ -682,6 +682,7 @@ const sv_FI = {
       '{name} kunde inte godkänna begäran. Försök igen, eller kontakta {name} om det fortsätter att hända.',
     REJECTED_REASON: {
       OFFER_EXPIRED: 'Erbjudandet har gått ut eller har redan använts. Be {name} om ett nytt.',
+      WRONG_TX_CODE: 'Koden är inte rätt eller så har erbjudandet gått ut. Kontrollera koden och försök igen.',
       ACCESS_DENIED: '{name} avböjde begäran.',
       INVALID_PROOF: '{name} kunde inte bekräfta att begäran kom från din plånbok. Försök igen.',
       CREDENTIAL_REVOKED: 'Ett av intygen du delade har återkallats av utfärdaren.',

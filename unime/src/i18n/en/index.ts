@@ -682,6 +682,7 @@ const en = {
     // Explanations for error codes that issuers and verifiers commonly answer with.
     REJECTED_REASON: {
       OFFER_EXPIRED: 'This offer has expired or has already been used. Ask {name:string} for a new one.',
+      WRONG_TX_CODE: "That code isn't right, or the offer has expired. Check the code and try again.",
       ACCESS_DENIED: '{name:string} declined the request.',
       INVALID_PROOF: "{name:string} couldn't confirm that the request came from your wallet. Please try again.",
       CREDENTIAL_REVOKED: 'One of the credentials you shared has been revoked by its issuer.',

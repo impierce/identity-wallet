@@ -95,6 +95,8 @@ export interface PendingInteraction {
   counterparty: string;
   /** The action to dispatch again when the user taps "Try again" after the request could not be sent. */
   retry?: Action;
+  /** The user entered a transaction code, which the issuer refuses with the same error as an expired offer. */
+  txCodeEntered?: boolean;
 }
 
 export const pendingInteraction = writable<PendingInteraction | undefined>(undefined);

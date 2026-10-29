@@ -684,6 +684,7 @@ const es_ES = {
       '{name} no pudo aceptar la solicitud. Vuelve a intentarlo o ponte en contacto con {name} si sigue ocurriendo.',
     REJECTED_REASON: {
       OFFER_EXPIRED: 'Esta oferta ha caducado o ya se ha utilizado. Pide una nueva a {name}.',
+      WRONG_TX_CODE: 'El código no es correcto o la oferta ha caducado. Revisa el código e inténtalo de nuevo.',
       ACCESS_DENIED: '{name} ha denegado la solicitud.',
       INVALID_PROOF: '{name} no pudo confirmar que la solicitud venía de tu cartera. Vuelve a intentarlo.',
       CREDENTIAL_REVOKED: 'Una de las credenciales compartidas ha sido revocada por su emisor.',

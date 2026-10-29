@@ -213,7 +213,8 @@ impl ErrorCause {
             | GetBatchCredentialError(_)
             | SendAuthorizationResponseError
             | EmailVerificationServiceError(_) => Unreachable,
-            EmailVerificationServiceStatus(status) => Self::from_http_status(*status, ""),
+            EmailVerificationServiceStatus(500..) => ServerError,
+            EmailVerificationServiceStatus(_) => Rejected,
             InvalidCredentialFormatError | InvalidCredentialStatusFormatError | UnsupportedError(_) => Unsupported,
             NoMatchingCredentialError | MissingRequiredCredentialError(_) => MissingCredentials,
             UntrustedError(_) | DidParseError => Untrusted,
@@ -231,7 +232,7 @@ impl ErrorCause {
             | WriteFailed(_)
             | AppStateMigrationError(..) => Storage,
             BrowserUnavailableError(_) => BrowserUnavailable,
-            GetCredentialStatusError => InvalidResponse,
+            GetCredentialStatusError | InvalidCredentialError(_) => InvalidResponse,
             _ => Unknown,
         }
     }
@@ -263,6 +264,15 @@ impl UserError {
             counterparty,
             detail: format!("{error:?}").trim_end().to_string(),
         }
+    }
+
+    /// An issuer refuses a wrong transaction code the same way as an expired offer (`invalid_grant`), and a typo is
+    /// the more likely reason.
+    pub fn after_tx_code_entered(mut self) -> Self {
+        if self.cause == ErrorCause::OfferExpired {
+            self.cause = ErrorCause::InvalidInput;
+        }
+        self
     }
 
     pub fn timeout(action_type: &str, counterparty: Option<String>) -> Self {
@@ -355,6 +365,31 @@ mod tests {
         assert_eq!(
             UserError::new(&error, "[Credential] Delete", None).cause,
             ErrorCause::Storage
+        );
+    }
+
+    #[test]
+    fn treats_a_refused_tx_code_as_wrong_input() {
+        let invalid_grant = GetAccessTokenError(anyhow::anyhow!(
+            r#"Token request failed (HTTP 400 Bad Request): {{"error":"invalid_grant"}}"#
+        ));
+        let user_error = UserError::new(&invalid_grant, "[Credential Offer] Selected", None);
+        assert_eq!(user_error.after_tx_code_entered().cause, ErrorCause::InvalidInput);
+
+        let server_error = GetAccessTokenError(anyhow::anyhow!(
+            "Token request failed (HTTP 500 Internal Server Error): oops"
+        ));
+        let user_error = UserError::new(&server_error, "[Credential Offer] Selected", None);
+        assert_eq!(user_error.after_tx_code_entered().cause, ErrorCause::ServerError);
+    }
+
+    #[test]
+    fn classifies_email_verification_and_credential_errors() {
+        assert_eq!(cause(EmailVerificationServiceStatus(404)), ErrorCause::Rejected);
+        assert_eq!(cause(EmailVerificationServiceStatus(503)), ErrorCause::ServerError);
+        assert_eq!(
+            cause(InvalidCredentialError("does not match its schema".to_string())),
+            ErrorCause::InvalidResponse
         );
     }
 

@@ -1971,6 +1971,10 @@ type RootTranslation = {
 			 */
 			OFFER_EXPIRED: RequiredParams<'name'>
 			/**
+			 * T​h​a​t​ ​c​o​d​e​ ​i​s​n​'​t​ ​r​i​g​h​t​,​ ​o​r​ ​t​h​e​ ​o​f​f​e​r​ ​h​a​s​ ​e​x​p​i​r​e​d​.​ ​C​h​e​c​k​ ​t​h​e​ ​c​o​d​e​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+			 */
+			WRONG_TX_CODE: string
+			/**
 			 * {​n​a​m​e​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​ ​r​e​q​u​e​s​t​.
 			 * @param {string} name
 			 */
@@ -4154,6 +4158,10 @@ export type TranslationFunctions = {
 			 * This offer has expired or has already been used. Ask {name} for a new one.
 			 */
 			OFFER_EXPIRED: (arg: { name: string }) => LocalizedString
+			/**
+			 * That code isn't right, or the offer has expired. Check the code and try again.
+			 */
+			WRONG_TX_CODE: () => LocalizedString
 			/**
 			 * {name} declined the request.
 			 */

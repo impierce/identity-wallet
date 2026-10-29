@@ -91,6 +91,7 @@
     const reasons = $LL.INTERACTION_RESULT.REJECTED_REASON;
     switch (errorCode?.toLowerCase()) {
       case 'invalid_grant':
+        return $pendingInteraction?.txCodeEntered ? reasons.WRONG_TX_CODE() : reasons.OFFER_EXPIRED({ name });
       case 'expired_token':
       case 'credential-offer-not-found':
       case 'credential-offer-not-pending':
