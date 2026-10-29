@@ -5,6 +5,7 @@
   import { SettingsCaretLink, SettingsSwitch, SettingsValueLink, TopNavBar } from '$lib/components';
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
+  import { frontendError } from '$lib/errors';
   import {
     CodeBoldIcon,
     FilesFillIcon,
@@ -84,7 +85,7 @@
             return next;
           } catch (e) {
             if (e instanceof Error) {
-              $error = e.message;
+              $error = frontendError('settings', e);
             }
             return curr;
           }

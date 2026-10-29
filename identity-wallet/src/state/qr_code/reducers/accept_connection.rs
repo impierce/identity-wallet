@@ -262,8 +262,8 @@ async fn get_siopv2_client_metadata(
     let connection_url = normalize_connection_url(&redirect_uri);
 
     let client_id = strip_client_id_prefix(&siopv2_authorization_request.body.client_id);
-    let client_id =
-        CoreDID::parse(&client_id).map_err(|e| AppError::Error(format!("Failed to parse client_id as DID: {e}")))?;
+    let client_id = CoreDID::parse(&client_id)
+        .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?;
 
     Ok(match &siopv2_authorization_request.body.extension.client_metadata {
         ClientMetadataResource::ClientMetadata {
@@ -289,7 +289,7 @@ async fn get_siopv2_client_metadata(
             }
         }
         ClientMetadataResource::ClientMetadataUri(_) => {
-            return Err(Error("Client metadata URI not supported".to_string()));
+            return Err(UnsupportedError("Client metadata URI not supported".to_string()));
         }
     })
 }
@@ -300,7 +300,7 @@ pub(crate) async fn get_oid4vp_client_metadata(
     let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
     let connection_url = normalize_connection_url(&redirect_uri);
     let client_id = CoreDID::parse(strip_client_id_prefix(&oid4vp_authorization_request.body.client_id))
-        .map_err(|error| AppError::Error(format!("Failed to parse client_id as DID: {error}")))?;
+        .map_err(|error| AppError::UntrustedError(format!("Failed to parse client_id as DID: {error}")))?;
 
     Ok(match &oid4vp_authorization_request.body.extension.client_metadata {
         ClientMetadataResource::ClientMetadata {
@@ -326,7 +326,7 @@ pub(crate) async fn get_oid4vp_client_metadata(
             }
         }
         ClientMetadataResource::ClientMetadataUri(_) => {
-            return Err(Error("Client metadata URI not supported".to_string()));
+            return Err(UnsupportedError("Client metadata URI not supported".to_string()));
         }
     })
 }
@@ -396,8 +396,8 @@ async fn get_oid4vci_client_metadata(
         .and_then(Value::as_str)
         .ok_or(AppError::DidParseError)?
         .to_string();
-    let client_id =
-        CoreDID::parse(&client_id).map_err(|e| AppError::Error(format!("Failed to parse client_id as DID: {e}")))?;
+    let client_id = CoreDID::parse(&client_id)
+        .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?;
 
     Ok(ClientMetadata {
         client_name: issuer_name,

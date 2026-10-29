@@ -314,7 +314,11 @@
       {#if showError && $appState.verified_data.email_verification?.error}
         <div class="mt-4 flex flex-col items-center">
           <div class="rounded-full bg-rose-100 px-4 py-3 text-sm font-semibold text-rose-500">
-            <span>{$appState.verified_data.email_verification?.error}</span>
+            <span>
+              {$appState.dev_mode !== 'Off'
+                ? $appState.verified_data.email_verification?.error
+                : $LL.ADD_CREDENTIALS.EMAIL.ADD.CODE_ERROR()}
+            </span>
           </div>
         </div>
       {/if}

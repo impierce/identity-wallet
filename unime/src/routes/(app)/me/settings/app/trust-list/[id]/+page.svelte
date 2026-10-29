@@ -6,6 +6,7 @@
 
   import { ActionSheet, Button, DeprecatedSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { frontendError } from '$lib/errors';
   import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, TrashRegularIcon } from '$lib/icons';
   import { useParentRoute } from '$lib/navigation';
   import { error, state } from '$lib/stores';
@@ -23,7 +24,7 @@
   let trust_list_id: string;
 
   if (!$page.params.id) {
-    $error = `No trust list id provided.`;
+    $error = frontendError('trust_list', 'No trust list id provided.');
     goto('/me/settings/app/trust-list');
   } else {
     trust_list_id = $page.params.id;

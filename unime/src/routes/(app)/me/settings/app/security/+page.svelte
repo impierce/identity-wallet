@@ -12,6 +12,7 @@
   import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
+  import { frontendError } from '$lib/errors';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { useParentRoute } from '$lib/navigation';
   import { state as appState, error as errorState, navigationDirection } from '$lib/stores';
@@ -86,7 +87,7 @@
       })
       .catch((error) => {
         warn(error);
-        errorState.set(error);
+        errorState.set(frontendError('biometrics', error));
       });
   };
 
@@ -101,7 +102,7 @@
       })
       .catch((error) => {
         warn(error);
-        errorState.set(error);
+        errorState.set(frontendError('biometrics', error));
       });
   };
 

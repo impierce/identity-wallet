@@ -91,7 +91,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 authorization_request, ..
             }) => authorization_request,
             _ => {
-                return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+                return Err(AppError::FlowExpiredError(
+                    "Expected OID4VP Authorization Request".to_string(),
+                ));
             }
         };
 
@@ -106,7 +108,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         debug!("Generated OID4VP authorization response: {response:?}");
 
         let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
-            AppError::Error("Expected pending connection data for OID4VP authorization request".to_string())
+            AppError::FlowExpiredError("Expected pending connection data for OID4VP authorization request".to_string())
         })?;
         let interaction_result = |outcome| {
             Some(InteractionResult {
@@ -199,7 +201,9 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
             ..
         }) => authorization_request,
         _ => {
-            return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+            return Err(AppError::FlowExpiredError(
+                "Expected OID4VP Authorization Request".to_string(),
+            ));
         }
     };
 
@@ -253,7 +257,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     }
 
     if selected_verifiable_credentials.is_empty() {
-        return Err(AppError::Error(
+        return Err(AppError::MissingRequiredCredentialError(
             "No credentials selected or found to fulfill the request".to_string(),
         ));
     }

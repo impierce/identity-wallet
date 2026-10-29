@@ -3,6 +3,7 @@ import { writable } from 'svelte/store';
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { Action } from '@bindings/actions/Action';
 import type { AppState } from '@bindings/AppState';
+import type { UserError } from '@bindings/error/UserError';
 import type { InteractionKind } from '@bindings/interaction_result/InteractionKind';
 
 interface OnboardingState {
@@ -61,9 +62,9 @@ export const state = writable<AppState>(empty_state);
 
 /**
  * This store contains errors to be displayed by an error toast.
- * It may be altered only by the `error` Tauri event listener.
+ * It is set by the `error` Tauri event listener, and by frontend code through `frontendError`.
  */
-export const error = writable<string | undefined>(undefined);
+export const error = writable<UserError | undefined>(undefined);
 
 /**
  * This store is only used by the frontend for storing state during onboarding.
@@ -94,6 +95,8 @@ export interface PendingInteraction {
   counterparty: string;
   /** The action to dispatch again when the user taps "Try again" after the request could not be sent. */
   retry?: Action;
+  /** The user entered a transaction code, which the issuer refuses with the same error as an expired offer. */
+  txCodeEntered?: boolean;
 }
 
 export const pendingInteraction = writable<PendingInteraction | undefined>(undefined);

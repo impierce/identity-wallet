@@ -69,7 +69,9 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                 ..
             }) => (*credential_offer, logo_uri),
             _ => {
-                return Err(AppError::Error("Missing active OID4VCI flow context".to_string()));
+                return Err(AppError::FlowExpiredError(
+                    "Missing active OID4VCI flow context".to_string(),
+                ));
             }
         };
 
@@ -136,7 +138,9 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                     let tx_code = selected_offer.tx_code;
 
                     if tx_code_required && tx_code.is_none() {
-                        return Err(AppError::Error("tx_code is required but not provided".to_string()));
+                        return Err(AppError::InvalidInputError(
+                            "tx_code is required but not provided".to_string(),
+                        ));
                     }
 
                     let action = CodeReceived {
@@ -178,7 +182,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                                 .authorization_servers
                                 .contains(specified_authorization_server)
                         {
-                            return Err(AppError::Error(format!(
+                            return Err(AppError::UntrustedError(format!(
                                 "The specified authorization server `{specified_authorization_server}` is not an accepted authorization server."
                             )));
                         }
@@ -386,7 +390,9 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         app_handle
                             .opener()
                             .open_url(authorization_endpoint, None::<&str>)
-                            .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+                            .map_err(|err| {
+                                AppError::BrowserUnavailableError(format!("Failed to open URL in browser: {err}"))
+                            })?;
 
                         drop(state_guard);
                         return Ok(AppState {
@@ -405,13 +411,13 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         });
                     }
                 } else {
-                    return Err(AppError::Error(
+                    return Err(AppError::UnsupportedError(
                         "Credential offer does not contain a supported grant".to_string(),
                     ));
                 }
             }
             None => {
-                return Err(AppError::Error(
+                return Err(AppError::UnsupportedError(
                     "Credential offer does not contain a supported grant".to_string(),
                 ));
             }
