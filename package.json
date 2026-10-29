@@ -5,6 +5,7 @@
     "check": "pnpm --filter=unime check",
     "checkout:branch": "node scripts/new-checkout.mjs",
     "dev:instance": "node scripts/dev-instance.mjs",
+    "dev:stop": "node scripts/dev-stop.mjs",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "pnpm --filter=unime lint",
