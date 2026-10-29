@@ -1,8 +1,9 @@
 use crate::error::AppError;
 use crate::persistence::save_state;
-use crate::state::actions::Action;
+use crate::state::actions::{listen, Action};
+use crate::state::qr_code::actions::qrcode_scanned::QrCodeScanned;
 use crate::state::{AppState, AppStateContainer};
-use crate::user_error::UserError;
+use crate::user_error::{host_of_scanned_request, UserError};
 use futures::StreamExt;
 use itertools::Itertools;
 use log::{debug, error, info};
@@ -58,6 +59,8 @@ pub async fn main_exec(
 ) -> Result<(), String> {
     let start = std::time::Instant::now();
     let action_type = action.typetag_name();
+    let scanned_host = listen::<QrCodeScanned>(action.clone())
+        .and_then(|qr_code_scanned| host_of_scanned_request(&qr_code_scanned.form_urlencoded));
     info!("Dispatching action: `{action:?}`");
 
     let mut guard = container.0.lock().await;
@@ -87,7 +90,8 @@ pub async fn main_exec(
                     .core_utils
                     .pending_connection_data
                     .as_ref()
-                    .map(|data| data.client_metadata.client_name.clone());
+                    .map(|data| data.client_metadata.client_name.clone())
+                    .or(scanned_host);
                 let _ = emit_error(&window, &UserError::new(&error, action_type, counterparty));
             }
             error!("State update failed after {:?}: {error}", start.elapsed());

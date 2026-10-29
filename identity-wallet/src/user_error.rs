@@ -237,6 +237,18 @@ impl ErrorCause {
     }
 }
 
+/// The host a scanned request points to, so an error that happens before the connection is known can still name it.
+pub fn host_of_scanned_request(form_urlencoded: &str) -> Option<String> {
+    let url = url::Url::parse(form_urlencoded).ok()?;
+    url.query_pairs()
+        .find(|(key, _)| {
+            ["credential_offer_uri", "request_uri", "response_uri", "redirect_uri"].contains(&key.as_ref())
+        })
+        .and_then(|(_, value)| url::Url::parse(&value).ok())
+        .or_else(|| url.has_host().then(|| url.clone()))
+        .and_then(|url| url.host_str().map(ToString::to_string))
+}
+
 impl UserError {
     pub fn new(error: &AppError, action_type: &str, counterparty: Option<String>) -> Self {
         let context = ErrorContext::from_action_type(action_type);
@@ -344,6 +356,21 @@ mod tests {
             UserError::new(&error, "[Credential] Delete", None).cause,
             ErrorCause::Storage
         );
+    }
+
+    #[test]
+    fn reads_the_host_of_a_scanned_request() {
+        assert_eq!(
+            host_of_scanned_request(
+                "openid-credential-offer://?credential_offer_uri=https%3A%2F%2Fmira.example.com%2Foffer%2F1"
+            ),
+            Some("mira.example.com".to_string())
+        );
+        assert_eq!(
+            host_of_scanned_request("openid4vp://?client_id=x&request_uri=https%3A%2F%2Fverifier.example%2Freq"),
+            Some("verifier.example".to_string())
+        );
+        assert_eq!(host_of_scanned_request("this is not a request"), None);
     }
 
     #[test]
