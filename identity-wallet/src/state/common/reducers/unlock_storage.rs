@@ -2,6 +2,7 @@ use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::unlock_storage::UnlockStorage;
 use crate::state::core_utils::IdentityManager;
+use crate::state::credentials::self_issued_migration::migrate_self_issued_credentials;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use crate::stronghold::StrongholdManager;
@@ -35,10 +36,12 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
         .map_err(OID4VCWalletError)?;
 
         state_guard.identity_manager.replace(IdentityManager {
-            subject,
+            subject: subject.clone(),
             provider_manager,
             wallet,
         });
+
+        migrate_self_issued_credentials(&stronghold_manager, subject, &state.dids).await;
 
         debug!("Loading credentials from Stronghold vault");
 

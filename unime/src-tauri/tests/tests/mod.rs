@@ -7,4 +7,5 @@ mod qr_code_scanned;
 mod refresh_credential_status;
 mod search_query;
 mod self_issue_credential;
+mod self_issued_migration;
 mod sorting;

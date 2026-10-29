@@ -2,6 +2,7 @@ pub mod actions;
 pub mod credential_query_matching;
 pub mod reducers;
 pub mod selective_disclosure;
+pub mod self_issued_migration;
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;

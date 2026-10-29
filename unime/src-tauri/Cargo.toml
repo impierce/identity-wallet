@@ -41,6 +41,7 @@ tauri-plugin-shell = { version = "2" }
 tauri = { workspace = true, features = ["test"] }
 unime = { path = ".", features = ["test_utils"] }
 
+base64 = "0.22"
 did_manager.workspace = true
 identity-wallet = { path = "../../identity-wallet", features = ["test_utils"] }
 jsonwebtoken.workspace = true
