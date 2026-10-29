@@ -17,7 +17,7 @@ pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<App
         let domain = Url::parse(&action.domain)
             // If the domain value does not contain a scheme, then apply the `https` scheme as the default scheme.
             .or_else(|_| Url::parse(&format!("https://{}", action.domain)))
-            .map_err(|_| AppError::Error(format!("Invalid domain value: `{}`", action.domain)))?;
+            .map_err(|_| AppError::InvalidInputError(format!("Invalid domain value: `{}`", action.domain)))?;
 
         let trust_list = trust_lists
             .get_mut(&action.trust_list_id)

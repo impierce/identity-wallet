@@ -1,7 +1,10 @@
 use crate::error::AppError;
 use crate::persistence::save_state;
-use crate::state::actions::Action;
+use crate::state::actions::{listen, Action};
+use crate::state::credentials::actions::credential_offers_selected::CredentialOffersSelected;
+use crate::state::qr_code::actions::qrcode_scanned::QrCodeScanned;
 use crate::state::{AppState, AppStateContainer};
+use crate::user_error::{host_of_scanned_request, UserError};
 use futures::StreamExt;
 use itertools::Itertools;
 use log::{debug, error, info};
@@ -56,6 +59,11 @@ pub async fn main_exec(
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
     let start = std::time::Instant::now();
+    let action_type = action.typetag_name();
+    let scanned_host = listen::<QrCodeScanned>(action.clone())
+        .and_then(|qr_code_scanned| host_of_scanned_request(&qr_code_scanned.form_urlencoded));
+    let tx_code_entered = listen::<CredentialOffersSelected>(action.clone())
+        .is_some_and(|credential_offers_selected| credential_offers_selected.tx_code.is_some());
     info!("Dispatching action: `{action:?}`");
 
     let mut guard = container.0.lock().await;
@@ -81,7 +89,17 @@ pub async fn main_exec(
                     chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
                     error
                 ));
-                let _ = emit_error(&window, error.to_string());
+                let counterparty = guard
+                    .core_utils
+                    .pending_connection_data
+                    .as_ref()
+                    .map(|data| data.client_metadata.client_name.clone())
+                    .or(scanned_host);
+                let mut user_error = UserError::new(&error, action_type, counterparty);
+                if tx_code_entered {
+                    user_error = user_error.after_tx_code_entered();
+                }
+                let _ = emit_error(&window, &user_error);
             }
             error!("State update failed after {:?}: {error}", start.elapsed());
         }
@@ -100,6 +118,7 @@ pub async fn handle_action(
     container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
+    let action_type = action.typetag_name();
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finished command invoke");
@@ -107,7 +126,7 @@ pub async fn handle_action(
         }
         _ = await_timeout() => {
             error!("Operation timed out after {TIMEOUT_SECS} seconds");
-            emit_error(&window, "Operation timed out".to_string()).ok();
+            emit_error(&window, &UserError::timeout(action_type, None)).ok();
             Err("Operation timed out".to_string())
         }
     }
@@ -146,10 +165,10 @@ pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyh
 }
 
 /// This function emits an error to the frontend.
-pub fn emit_error(window: &tauri::Window<Runtime>, error: String) -> anyhow::Result<()> {
+pub fn emit_error(window: &tauri::Window<Runtime>, error: &UserError) -> anyhow::Result<()> {
     const ERROR_EVENT: &str = "error";
-    window.emit(ERROR_EVENT, &error)?;
+    window.emit(ERROR_EVENT, error)?;
 
-    debug!("emitted error event `{ERROR_EVENT}` with payload:\n{error}");
+    debug!("emitted error event `{ERROR_EVENT}` with payload:\n{error:?}");
     Ok(())
 }

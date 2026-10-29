@@ -9,6 +9,7 @@
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
   import { ActionSheet, Button, TopNavBar } from '$lib/components';
+  import { frontendError } from '$lib/errors';
   import {
     EyeClosedRegularIcon,
     EyeRegularIcon,
@@ -52,7 +53,7 @@
         });
       });
     } else {
-      error.set('Biometrics enabled, but no password value provided');
+      error.set(frontendError('create_profile', 'Biometrics enabled, but no password value provided'));
     }
   };
 

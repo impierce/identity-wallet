@@ -16,12 +16,14 @@
 
   import type { AppState } from '@bindings/AppState';
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
+  import type { UserError } from '@bindings/error/UserError';
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { getCurrent, onOpenUrl } from '@tauri-apps/plugin-deep-link';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
   import { DeprecatedSwitch, InteractionResultSheet, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { describeError } from '$lib/errors';
   import {
     ArrowLeftRegularIcon,
     BugRegularIcon,
@@ -87,8 +89,9 @@
     loadAllLocales(); //TODO: performance: only load locale on user request
 
     unlistenError = await listen('error', (event) => {
-      error(`Error: ${event.payload}`);
-      errorState.set(event.payload as string);
+      const userError = event.payload as UserError;
+      error(`Error (${userError.context}, ${userError.cause}): ${userError.detail}`);
+      errorState.set(userError);
     });
 
     unlistenStateChanged = await listen('state-changed', (event) => {
@@ -678,18 +681,20 @@ Stacking context: We have to deviate from the DOM-sequence.
     <!-- Progress and outcome of an issuance or presentation. -->
     <InteractionResultSheet />
 
-    <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
+    <!-- The technical error message is only shown in dev mode. -->
     {#if $errorState}
+      {@const { title, detail } = describeError($errorState, $LL)}
       <div class="absolute right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] w-[calc(100%-32px)]">
         <Toast
           variant="error"
-          title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
-          detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
+          {title}
+          {detail}
+          technicalDetail={$appState?.dev_mode !== 'Off' ? $errorState.detail : undefined}
           ondismissed={() => {
             // After the toast fires the "dismissed" event, we reset $errorStore.
             errorState.set(undefined);
           }}
-          autoDismissAfterMs={$appState?.dev_mode !== 'Off' ? 0 : 5_000}
+          autoDismissAfterMs={$appState?.dev_mode !== 'Off' ? 0 : 8_000}
         />
       </div>
     {/if}
