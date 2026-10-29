@@ -53,7 +53,7 @@ The last check before sharing: exactly which fields go to the verifier, per cred
           {$LL.SCAN.SHARE_CREDENTIALS.REVIEW.WILL_BE_SHARED({ count: fieldCount })}
         </p>
       </div>
-      {#each shared as { credential, fields } (credential.id)}
+      {#each shared as { credential, fields }, position (`${credential.id}-${position}`)}
         <div class="flex items-center gap-2 px-[14px] pt-3 pb-1 text-slate-500 dark:text-slate-300">
           <IdentificationBadgeRegularIcon class="size-4 shrink-0" />
           <p class="truncate text-[12px]/[20px] font-medium">

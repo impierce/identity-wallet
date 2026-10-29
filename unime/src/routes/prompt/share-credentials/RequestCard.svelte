@@ -114,7 +114,7 @@ collapse into a count, and a "Change" button when there are more options.
   {#if first}
     {#if expanded}
       <div class="border-t border-grey dark:border-slate-600">
-        {#each rows as row (row.index ?? row.label)}
+        {#each rows as row, position (row.index ?? `position-${position}`)}
           <ClaimRow
             label={row.label}
             value={claimText(row.value, locale)}
