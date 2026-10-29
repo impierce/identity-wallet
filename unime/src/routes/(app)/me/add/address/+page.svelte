@@ -59,8 +59,6 @@
       payload: {
         type: 'address',
         data: {
-          type: ['VerifiableCredential', 'ResidenceCredential'],
-          issuanceDate: new Date().toISOString(), // TODO: this shouldn't be necessary anymore, use `metadata` instead
           name,
           credentialSubject,
         },

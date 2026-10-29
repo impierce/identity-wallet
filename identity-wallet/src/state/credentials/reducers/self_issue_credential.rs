@@ -2,13 +2,12 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use identity_credential::sd_jwt_vc::{SdJwtVcBuilder, SD_JWT_VC_TYP};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
 use log::{debug, info};
 use oid4vc::{oid4vc_core::Sign, oid4vci::credential_format_profiles::CredentialFormats};
-use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding};
+use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding, SdJwtBuilder};
 use serde_json::json;
 use uuid::Uuid;
 
@@ -16,7 +15,10 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        credentials::{actions::self_issue_credential::SelfIssueCredential, VerifiableCredentialRecord},
+        credentials::{
+            actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType},
+            VerifiableCredentialRecord,
+        },
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -59,9 +61,7 @@ impl JwsSigner for SubjectWrapper {
 #[tracing::instrument(skip_all, err)]
 pub async fn self_issue_credential(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(self_issue_credential) = listen::<SelfIssueCredential>(action) {
-        // TODO: autofill credentialSubject and a few other fields.
-
-        let data = &mut self_issue_credential.data.clone();
+        let data = &self_issue_credential.data;
 
         // Get preferred key type and convert it to jsonwebtoken::Algorithm
         let key_type = state
@@ -104,7 +104,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             "Failed to create a key id necessary to self-issue the credential".to_string(),
         ))?;
 
-        debug!("Self-issuing SD-JWT VC: issuer_did={issuer_did}, kid={kid}, alg={algorithm:?}");
+        debug!("Self-issuing VCDM 2.0 SD-JWT: issuer_did={issuer_did}, kid={kid}, alg={algorithm:?}");
 
         // Wrap subject with the SubjectWrapper to get the JwsSigner implementation
         let subject_wrapper = SubjectWrapper {
@@ -114,42 +114,64 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let now = Timestamp::now_utc();
 
-        let credential_data = data.as_object_mut().ok_or(AppError::Error(
-            "Invalid action payload for the self_issue_credential.data field".to_string(),
-        ))?;
+        let mut credential_subject = data
+            .get("credentialSubject")
+            .and_then(|credential_subject| credential_subject.as_object())
+            .cloned()
+            .ok_or(AppError::Error(
+                "Invalid action payload for the self_issue_credential.data.credentialSubject field".to_string(),
+            ))?;
+        let concealable_claims: Vec<String> = credential_subject.keys().cloned().collect();
+        credential_subject.insert("id".to_string(), json!(issuer_did));
 
-        credential_data.insert("issuer".to_string(), json!(issuer_did.to_string()));
+        let credential_type = match self_issue_credential._type {
+            SelfIssuedCredentialType::Profile => "NaturalPersonCredential",
+            SelfIssuedCredentialType::Address => "ResidenceCredential",
+        };
+        let types = json!(["VerifiableCredential", credential_type]);
 
-        let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
-            .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
-            .headers(JsonObject::from_iter(vec![
-                ("typ".to_string(), serde_json::Value::String(SD_JWT_VC_TYP.to_string())),
-                ("kid".to_string(), serde_json::Value::String(kid.clone())),
-            ]))
-            .vct(
-                "https://www.ietf.org/archive/id/draft-terbu-oauth-sd-jwt-vc-00.html"
-                    .parse::<Url>()
-                    .map_err(|_| AppError::Error("Failed to parse the vct into a <Url>".to_string()))?,
-            ) // TODO: make this specific to the credential type chosen and coherent with the JsonSchema used.
-            .iat(now)
-            .iss(issuer_did)
-            .require_key_binding(RequiredKeyBinding::Kid(kid))
-            // TODO: how to implement the fn make_concealable(), also when fields should only be known from the JsonSchema?
-            .finish::<SubjectWrapper>(&subject_wrapper, key_type)
+        // Same shape as the `vc+sd-jwt` credentials UniTrust issues, so that its verification flows can request
+        // every `credentialSubject` claim on its own.
+        let mut builder = SdJwtBuilder::new(json!({
+            "@context": ["https://www.w3.org/ns/credentials/v2"],
+            "type": types,
+            "issuer": issuer_did,
+            "validFrom": now.to_string(),
+            "credentialSubject": credential_subject,
+        }))
+        .and_then(|builder| builder.insert_claim("iss", issuer_did.to_string()))
+        .map_err(|e| AppError::Error(format!("Failed to create the SD-JWT builder: {e}")))?
+        .header("typ", "vc+sd-jwt")
+        .header("kid", kid.clone())
+        .require_key_binding(RequiredKeyBinding::Kid(kid));
+
+        for claim in &concealable_claims {
+            builder = builder
+                .make_concealable(&format!("/credentialSubject/{claim}"))
+                .map_err(|e| AppError::Error(format!("Failed to make `{claim}` selectively disclosable: {e}")))?;
+        }
+
+        let sd_jwt_credential = builder
+            .finish(&subject_wrapper, key_type)
             .await
-            .map_err(|_| AppError::Error("Failed to create the self-issued sd_jwt_credential".to_string()))?;
+            .map_err(|e| AppError::Error(format!("Failed to create the self-issued SD-JWT: {e}")))?;
 
         drop(managers);
 
         let signed_credential = json!(sd_jwt_credential.to_string());
 
         // Create and populate the VerifiableCredentialRecord
-        let mut vcr = VerifiableCredentialRecord::try_new(CredentialFormats::DcSdJwt(()), signed_credential, vec![])
+        let mut vcr = VerifiableCredentialRecord::try_new(CredentialFormats::VcSdJwt(()), signed_credential, vec![])
             .map_err(|_| {
                 AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
             })?;
 
-        vcr.display_credential.data = data.clone();
+        vcr.display_credential.data = json!({
+            "name": data.get("name"),
+            "type": types,
+            "issuer": issuer_did,
+            "credentialSubject": credential_subject,
+        });
         vcr.display_credential.issuer_name = state
             .profile_settings
             .profile

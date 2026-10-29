@@ -81,8 +81,6 @@
       payload: {
         type: 'profile',
         data: {
-          type: ['VerifiableCredential', 'NaturalPersonCredential'],
-          issuanceDate: new Date().toISOString(), // TODO: the backend should use `metadata` instead
           name,
           credentialSubject,
         },
