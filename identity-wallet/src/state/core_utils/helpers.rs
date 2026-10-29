@@ -162,7 +162,7 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
 
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
-        Err(AppError::Error(format!(
+        Err(AppError::InvalidInputError(format!(
             "The data is invalid according to the given JSON Schema: {errors:?}"
         )))
     } else {

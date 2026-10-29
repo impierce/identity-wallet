@@ -587,6 +587,7 @@ const de_DE = {
         BUTTON_SEND_AGAIN: 'E-Mail erneut senden',
         CHECK_EMAIL: 'Bitte schaue in dein E-Mail-Postfach und gib den Code unten ein.',
         EXPIRED_ERROR: 'Verifizierungscode abgelaufen',
+        CODE_ERROR: 'Dieser Code stimmt nicht. Prüfe die E-Mail und versuche es noch einmal.',
       },
     },
     PROFILE: {
@@ -678,7 +679,17 @@ const de_DE = {
     SENDING_BODY: 'Das dauert meist nur ein paar Sekunden. Du kannst dies schließen, wir machen im Hintergrund weiter.',
     APPROVED_TITLE: 'Erledigt!',
     NOT_SENT_TITLE: '{name} nicht erreichbar',
-    REJECTED_BODY: 'Die Anfrage wurde abgelehnt.',
+    REJECTED_BODY:
+      '{name} konnte die Anfrage nicht annehmen. Versuche es noch einmal oder wende dich an {name}, wenn das weiterhin passiert.',
+    REJECTED_REASON: {
+      OFFER_EXPIRED: 'Dieses Angebot ist abgelaufen oder wurde bereits verwendet. Bitte {name} um ein neues.',
+      ACCESS_DENIED: '{name} hat die Anfrage abgelehnt.',
+      INVALID_PROOF:
+        '{name} konnte nicht bestätigen, dass die Anfrage von deiner Wallet kam. Bitte versuche es noch einmal.',
+      CREDENTIAL_REVOKED: 'Einer der geteilten Nachweise wurde von seinem Aussteller widerrufen.',
+      CREDENTIAL_EXPIRED: 'Einer der geteilten Nachweise ist abgelaufen.',
+      UNSUPPORTED_FORMAT: 'UniMe und {name} unterstützen nicht dieselbe Art von Nachweis.',
+    },
     ERROR_CODE: 'Fehlercode',
     HTTP_STATUS: 'HTTP {status}',
     NO_RESPONSE: 'Keine Antwort',
@@ -694,8 +705,58 @@ const de_DE = {
     LATER_FAILED_TITLE: '{name} hat nicht akzeptiert',
   },
   ERROR: {
-    TITLE: 'Hoppla!',
-    DEFAULT_MESSAGE: 'Es ist ein Fehler aufgetreten. Bitte versuche es noch einmal.',
+    CONTEXT: {
+      UNLOCK: 'Wallet konnte nicht entsperrt werden',
+      CREATE_PROFILE: 'Wallet konnte nicht eingerichtet werden',
+      SCAN_QR_CODE: 'Anfrage konnte nicht geöffnet werden',
+      CONNECT: 'Verbindung fehlgeschlagen',
+      RECEIVE_CREDENTIAL: 'Nachweis konnte nicht hinzugefügt werden',
+      SHARE_CREDENTIAL: 'Daten konnten nicht geteilt werden',
+      DELETE_CREDENTIAL: 'Nachweis konnte nicht gelöscht werden',
+      UPDATE_CREDENTIAL: 'Änderungen konnten nicht gespeichert werden',
+      REFRESH_CREDENTIAL_STATUS: 'Status des Nachweises konnte nicht geprüft werden',
+      SELF_ISSUE_CREDENTIAL: 'Nachweis konnte nicht erstellt werden',
+      SHARE_PUBLIC_LINK: 'Öffentlicher Link konnte nicht erstellt werden',
+      DELETE_CONNECTION: 'Verbindung konnte nicht gelöscht werden',
+      VERIFY_EMAIL: 'E-Mail-Adresse konnte nicht verifiziert werden',
+      TRUST_LIST: 'Vertrauensliste konnte nicht aktualisiert werden',
+      SETTINGS: 'Einstellungen konnten nicht gespeichert werden',
+      BIOMETRICS: 'Biometrisches Entsperren konnte nicht geändert werden',
+      RESET_APP: 'UniMe konnte nicht zurückgesetzt werden',
+      GENERAL: 'Etwas ist schiefgelaufen',
+    },
+    CAUSE: {
+      UNREACHABLE: 'UniMe konnte {name} nicht erreichen. Prüfe deine Internetverbindung und versuche es noch einmal.',
+      TIMEOUT: 'Das hat zu lange gedauert. Prüfe deine Internetverbindung und versuche es noch einmal.',
+      REJECTED:
+        'Die Anfrage wurde abgelehnt. Versuche es noch einmal oder kontaktiere {name}, wenn das weiterhin passiert.',
+      SERVER_ERROR:
+        'Es gibt gerade ein technisches Problem. Bitte versuche es später noch einmal oder kontaktiere {name}.',
+      OFFER_EXPIRED: 'Dieses Angebot ist abgelaufen oder wurde bereits verwendet. Bitte {name} um ein neues.',
+      INVALID_RESPONSE:
+        'UniMe hat eine Antwort erhalten, die es nicht versteht. Kontaktiere {name}, wenn das weiterhin passiert.',
+      INVALID_QR_CODE:
+        'Dieser QR-Code ist keine Anfrage, die UniMe verarbeiten kann. Scanne einen QR-Code zum Empfangen oder Teilen von Nachweisen.',
+      UNSUPPORTED: 'UniMe unterstützt diese Art von Nachweis oder Anfrage noch nicht.',
+      MISSING_CREDENTIALS: 'Du hast nicht die Nachweise, die für {name} nötig sind, daher wurde nichts geteilt.',
+      UNTRUSTED:
+        'UniMe konnte {name} nicht verifizieren und hat zum Schutz deiner Daten abgebrochen.',
+      FLOW_EXPIRED: 'Diese Anfrage ist nicht mehr aktiv. Scanne den QR-Code erneut, um neu zu beginnen.',
+      INVALID_INPUT: 'Einige deiner Angaben sind ungültig. Prüfe sie und versuche es noch einmal.',
+      WRONG_PASSWORD: 'Das Passwort ist nicht richtig. Prüfe es und versuche es noch einmal.',
+      STORAGE:
+        'UniMe konnte deine Wallet-Daten nicht lesen oder speichern. Starte die App neu und versuche es noch einmal.',
+      BROWSER_UNAVAILABLE: 'UniMe konnte deinen Browser nicht öffnen. Prüfe, ob ein Standardbrowser eingerichtet ist.',
+      UNKNOWN:
+        'Etwas Unerwartetes ist passiert. Versuche es noch einmal und starte UniMe neu, wenn das weiterhin passiert.',
+    },
+    COUNTERPARTY: {
+      ISSUER: 'den Aussteller',
+      VERIFIER: 'den Prüfer',
+      EMAIL_SERVICE: 'den E-Mail-Verifizierungsdienst',
+      DEFAULT: 'den Dienst',
+    },
+    TECHNICAL_DETAILS: 'Technische Details',
   },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',

@@ -50,7 +50,7 @@ pub fn claims_to_disclose(
                     .any(|claim_set| claim_set.iter().all(|index| chosen.contains(index) && present(index)))
             };
             if !satisfied || chosen.iter().any(|index| *index >= claims.len()) {
-                return Err(AppError::Error(format!(
+                return Err(AppError::MissingRequiredCredentialError(format!(
                     "The chosen claims do not satisfy credential query {}",
                     credential_query.id.as_ref()
                 )));
@@ -62,7 +62,7 @@ pub fn claims_to_disclose(
             .into_iter()
             .find(|claim_set| claim_set.iter().all(present))
             .ok_or_else(|| {
-                AppError::Error(format!(
+                AppError::MissingRequiredCredentialError(format!(
                     "No claim set of credential query {} can be satisfied",
                     credential_query.id.as_ref()
                 ))

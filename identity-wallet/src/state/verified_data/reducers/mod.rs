@@ -37,17 +37,12 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
                     debug!("Email verification service is healthy (HTTP 200)");
                 } else {
                     warn!("Email verification service returned non-OK status: {}", resp.status());
-                    return Err(AppError::Error(format!(
-                        "email-verification-service responded with {}",
-                        resp.status()
-                    )));
+                    return Err(AppError::EmailVerificationServiceStatus(resp.status().as_u16()));
                 }
             }
             Err(err) => {
                 warn!("Failed to check service health: {err}");
-                return Err(AppError::Error(format!(
-                    "email-verification-service health could not be checked: {err}"
-                )));
+                return Err(AppError::EmailVerificationServiceError(err));
             }
         }
     }
@@ -82,8 +77,8 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
             .inspect_err(|err| {
                 warn!("Failed to send verification request: {err}");
             })
-            .map_err(|err| AppError::Error(err.to_string()))?;
-        let response: VerificationResponse = response.json().await.map_err(|err| AppError::Error(err.to_string()))?;
+            .map_err(AppError::EmailVerificationServiceError)?;
+        let response: VerificationResponse = response.json().await.map_err(AppError::EmailVerificationServiceError)?;
         info!("Successfully initiated email verification: id={}", response.id);
         return Ok(AppState {
             verified_data: VerifiedData {
@@ -111,7 +106,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .email_verification
             .as_ref()
             .and_then(|email_verification| email_verification.verification_id.clone())
-            .ok_or(AppError::Error(
+            .ok_or(AppError::FlowExpiredError(
                 "Tried to redeem a code without an active email verification flow".to_string(),
             ))?;
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify/{session_id}");
@@ -124,7 +119,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .json(&body)
             .send()
             .await
-            .map_err(|err| AppError::Error(format!("Failed to send verification code: {err}")))?;
+            .map_err(AppError::EmailVerificationServiceError)?;
 
         debug!("Received redeem response status: {}", response.status());
 

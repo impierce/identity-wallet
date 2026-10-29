@@ -1670,6 +1670,10 @@ type RootTranslation = {
 				 * V​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​ ​e​x​p​i​r​e​d
 				 */
 				EXPIRED_ERROR: string
+				/**
+				 * T​h​a​t​ ​c​o​d​e​ ​i​s​n​'​t​ ​r​i​g​h​t​.​ ​C​h​e​c​k​ ​t​h​e​ ​e​m​a​i​l​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+				 */
+				CODE_ERROR: string
 			}
 		}
 		PROFILE: {
@@ -1956,9 +1960,40 @@ type RootTranslation = {
 		 */
 		NOT_SENT_TITLE: RequiredParams<'name'>
 		/**
-		 * T​h​e​ ​r​e​q​u​e​s​t​ ​w​a​s​ ​r​e​f​u​s​e​d​.
+		 * {​n​a​m​e​}​ ​c​o​u​l​d​n​'​t​ ​a​c​c​e​p​t​ ​t​h​e​ ​r​e​q​u​e​s​t​.​ ​T​r​y​ ​a​g​a​i​n​,​ ​o​r​ ​c​o​n​t​a​c​t​ ​t​h​e​m​ ​i​f​ ​t​h​i​s​ ​k​e​e​p​s​ ​h​a​p​p​e​n​i​n​g​.
+		 * @param {string} name
 		 */
-		REJECTED_BODY: string
+		REJECTED_BODY: RequiredParams<'name'>
+		REJECTED_REASON: {
+			/**
+			 * T​h​i​s​ ​o​f​f​e​r​ ​h​a​s​ ​e​x​p​i​r​e​d​ ​o​r​ ​h​a​s​ ​a​l​r​e​a​d​y​ ​b​e​e​n​ ​u​s​e​d​.​ ​A​s​k​ ​{​n​a​m​e​}​ ​f​o​r​ ​a​ ​n​e​w​ ​o​n​e​.
+			 * @param {string} name
+			 */
+			OFFER_EXPIRED: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​d​e​c​l​i​n​e​d​ ​t​h​e​ ​r​e​q​u​e​s​t​.
+			 * @param {string} name
+			 */
+			ACCESS_DENIED: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​c​o​u​l​d​n​'​t​ ​c​o​n​f​i​r​m​ ​t​h​a​t​ ​t​h​e​ ​r​e​q​u​e​s​t​ ​c​a​m​e​ ​f​r​o​m​ ​y​o​u​r​ ​w​a​l​l​e​t​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
+			 * @param {string} name
+			 */
+			INVALID_PROOF: RequiredParams<'name'>
+			/**
+			 * O​n​e​ ​o​f​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​y​o​u​ ​s​h​a​r​e​d​ ​h​a​s​ ​b​e​e​n​ ​r​e​v​o​k​e​d​ ​b​y​ ​i​t​s​ ​i​s​s​u​e​r​.
+			 */
+			CREDENTIAL_REVOKED: string
+			/**
+			 * O​n​e​ ​o​f​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​y​o​u​ ​s​h​a​r​e​d​ ​h​a​s​ ​e​x​p​i​r​e​d​.
+			 */
+			CREDENTIAL_EXPIRED: string
+			/**
+			 * U​n​i​M​e​ ​a​n​d​ ​{​n​a​m​e​}​ ​d​o​n​'​t​ ​s​u​p​p​o​r​t​ ​t​h​e​ ​s​a​m​e​ ​t​y​p​e​ ​o​f​ ​c​r​e​d​e​n​t​i​a​l​.
+			 * @param {string} name
+			 */
+			UNSUPPORTED_FORMAT: RequiredParams<'name'>
+		}
 		/**
 		 * E​r​r​o​r​ ​c​o​d​e
 		 */
@@ -2018,14 +2053,175 @@ type RootTranslation = {
 		LATER_FAILED_TITLE: RequiredParams<'name'>
 	}
 	ERROR: {
+		CONTEXT: {
+			/**
+			 * C​o​u​l​d​n​'​t​ ​u​n​l​o​c​k​ ​y​o​u​r​ ​w​a​l​l​e​t
+			 */
+			UNLOCK: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​e​t​ ​u​p​ ​y​o​u​r​ ​w​a​l​l​e​t
+			 */
+			CREATE_PROFILE: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​o​p​e​n​ ​t​h​i​s​ ​r​e​q​u​e​s​t
+			 */
+			SCAN_QR_CODE: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​c​o​n​n​e​c​t
+			 */
+			CONNECT: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​a​d​d​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l
+			 */
+			RECEIVE_CREDENTIAL: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​h​a​r​e​ ​y​o​u​r​ ​d​a​t​a
+			 */
+			SHARE_CREDENTIAL: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​d​e​l​e​t​e​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l
+			 */
+			DELETE_CREDENTIAL: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​a​v​e​ ​y​o​u​r​ ​c​h​a​n​g​e​s
+			 */
+			UPDATE_CREDENTIAL: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​c​h​e​c​k​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l​'​s​ ​s​t​a​t​u​s
+			 */
+			REFRESH_CREDENTIAL_STATUS: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​c​r​e​a​t​e​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l
+			 */
+			SELF_ISSUE_CREDENTIAL: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​c​r​e​a​t​e​ ​a​ ​p​u​b​l​i​c​ ​l​i​n​k
+			 */
+			SHARE_PUBLIC_LINK: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​d​e​l​e​t​e​ ​t​h​e​ ​c​o​n​n​e​c​t​i​o​n
+			 */
+			DELETE_CONNECTION: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​v​e​r​i​f​y​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s
+			 */
+			VERIFY_EMAIL: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​u​p​d​a​t​e​ ​t​h​e​ ​t​r​u​s​t​ ​l​i​s​t
+			 */
+			TRUST_LIST: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​a​v​e​ ​y​o​u​r​ ​s​e​t​t​i​n​g​s
+			 */
+			SETTINGS: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​c​h​a​n​g​e​ ​b​i​o​m​e​t​r​i​c​ ​u​n​l​o​c​k
+			 */
+			BIOMETRICS: string
+			/**
+			 * C​o​u​l​d​n​'​t​ ​r​e​s​e​t​ ​U​n​i​M​e
+			 */
+			RESET_APP: string
+			/**
+			 * S​o​m​e​t​h​i​n​g​ ​w​e​n​t​ ​w​r​o​n​g
+			 */
+			GENERAL: string
+		}
+		CAUSE: {
+			/**
+			 * U​n​i​M​e​ ​c​o​u​l​d​n​'​t​ ​r​e​a​c​h​ ​{​n​a​m​e​}​.​ ​C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+			 * @param {string} name
+			 */
+			UNREACHABLE: RequiredParams<'name'>
+			/**
+			 * T​h​i​s​ ​t​o​o​k​ ​t​o​o​ ​l​o​n​g​.​ ​C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+			 */
+			TIMEOUT: string
+			/**
+			 * T​h​e​ ​r​e​q​u​e​s​t​ ​w​a​s​ ​r​e​f​u​s​e​d​ ​b​y​ ​{​n​a​m​e​}​.​ ​T​r​y​ ​a​g​a​i​n​,​ ​o​r​ ​c​o​n​t​a​c​t​ ​t​h​e​m​ ​i​f​ ​t​h​i​s​ ​k​e​e​p​s​ ​h​a​p​p​e​n​i​n​g​.
+			 * @param {string} name
+			 */
+			REJECTED: RequiredParams<'name'>
+			/**
+			 * T​h​e​r​e​'​s​ ​a​ ​t​e​c​h​n​i​c​a​l​ ​p​r​o​b​l​e​m​ ​a​t​ ​{​n​a​m​e​}​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​ ​l​a​t​e​r​.
+			 * @param {string} name
+			 */
+			SERVER_ERROR: RequiredParams<'name'>
+			/**
+			 * T​h​i​s​ ​o​f​f​e​r​ ​h​a​s​ ​e​x​p​i​r​e​d​ ​o​r​ ​h​a​s​ ​a​l​r​e​a​d​y​ ​b​e​e​n​ ​u​s​e​d​.​ ​A​s​k​ ​{​n​a​m​e​}​ ​f​o​r​ ​a​ ​n​e​w​ ​o​n​e​.
+			 * @param {string} name
+			 */
+			OFFER_EXPIRED: RequiredParams<'name'>
+			/**
+			 * U​n​i​M​e​ ​g​o​t​ ​a​n​ ​a​n​s​w​e​r​ ​f​r​o​m​ ​{​n​a​m​e​}​ ​t​h​a​t​ ​i​t​ ​c​o​u​l​d​n​'​t​ ​u​n​d​e​r​s​t​a​n​d​.​ ​C​o​n​t​a​c​t​ ​t​h​e​m​ ​i​f​ ​t​h​i​s​ ​k​e​e​p​s​ ​h​a​p​p​e​n​i​n​g​.
+			 * @param {string} name
+			 */
+			INVALID_RESPONSE: RequiredParams<'name'>
+			/**
+			 * T​h​i​s​ ​Q​R​ ​c​o​d​e​ ​i​s​n​'​t​ ​a​ ​r​e​q​u​e​s​t​ ​U​n​i​M​e​ ​c​a​n​ ​h​a​n​d​l​e​.​ ​S​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​ ​f​o​r​ ​r​e​c​e​i​v​i​n​g​ ​o​r​ ​s​h​a​r​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s​.
+			 */
+			INVALID_QR_CODE: string
+			/**
+			 * U​n​i​M​e​ ​d​o​e​s​n​'​t​ ​s​u​p​p​o​r​t​ ​t​h​i​s​ ​t​y​p​e​ ​o​f​ ​c​r​e​d​e​n​t​i​a​l​ ​o​r​ ​r​e​q​u​e​s​t​ ​y​e​t​.
+			 */
+			UNSUPPORTED: string
+			/**
+			 * Y​o​u​ ​d​o​n​'​t​ ​h​a​v​e​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​{​n​a​m​e​}​ ​a​s​k​e​d​ ​f​o​r​,​ ​s​o​ ​n​o​t​h​i​n​g​ ​w​a​s​ ​s​h​a​r​e​d​.
+			 * @param {string} name
+			 */
+			MISSING_CREDENTIALS: RequiredParams<'name'>
+			/**
+			 * U​n​i​M​e​ ​c​o​u​l​d​n​'​t​ ​v​e​r​i​f​y​ ​w​h​o​ ​{​n​a​m​e​}​ ​i​s​,​ ​s​o​ ​i​t​ ​s​t​o​p​p​e​d​ ​t​o​ ​k​e​e​p​ ​y​o​u​r​ ​d​a​t​a​ ​s​a​f​e​.
+			 * @param {string} name
+			 */
+			UNTRUSTED: RequiredParams<'name'>
+			/**
+			 * T​h​i​s​ ​r​e​q​u​e​s​t​ ​i​s​ ​n​o​ ​l​o​n​g​e​r​ ​a​c​t​i​v​e​.​ ​S​c​a​n​ ​t​h​e​ ​Q​R​ ​c​o​d​e​ ​a​g​a​i​n​ ​t​o​ ​s​t​a​r​t​ ​o​v​e​r​.
+			 */
+			FLOW_EXPIRED: string
+			/**
+			 * S​o​m​e​ ​o​f​ ​t​h​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​y​o​u​ ​e​n​t​e​r​e​d​ ​i​s​n​'​t​ ​v​a​l​i​d​.​ ​C​h​e​c​k​ ​i​t​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+			 */
+			INVALID_INPUT: string
+			/**
+			 * T​h​a​t​ ​p​a​s​s​w​o​r​d​ ​i​s​n​'​t​ ​r​i​g​h​t​.​ ​C​h​e​c​k​ ​i​t​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+			 */
+			WRONG_PASSWORD: string
+			/**
+			 * U​n​i​M​e​ ​c​o​u​l​d​n​'​t​ ​r​e​a​d​ ​o​r​ ​s​a​v​e​ ​y​o​u​r​ ​w​a​l​l​e​t​ ​d​a​t​a​.​ ​R​e​s​t​a​r​t​ ​t​h​e​ ​a​p​p​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.
+			 */
+			STORAGE: string
+			/**
+			 * U​n​i​M​e​ ​c​o​u​l​d​n​'​t​ ​o​p​e​n​ ​y​o​u​r​ ​b​r​o​w​s​e​r​ ​t​o​ ​c​o​n​t​i​n​u​e​.​ ​C​h​e​c​k​ ​t​h​a​t​ ​a​ ​d​e​f​a​u​l​t​ ​b​r​o​w​s​e​r​ ​i​s​ ​s​e​t​ ​u​p​.
+			 */
+			BROWSER_UNAVAILABLE: string
+			/**
+			 * S​o​m​e​t​h​i​n​g​ ​u​n​e​x​p​e​c​t​e​d​ ​h​a​p​p​e​n​e​d​.​ ​T​r​y​ ​a​g​a​i​n​,​ ​a​n​d​ ​r​e​s​t​a​r​t​ ​U​n​i​M​e​ ​i​f​ ​i​t​ ​k​e​e​p​s​ ​h​a​p​p​e​n​i​n​g​.
+			 */
+			UNKNOWN: string
+		}
+		COUNTERPARTY: {
+			/**
+			 * t​h​e​ ​i​s​s​u​e​r
+			 */
+			ISSUER: string
+			/**
+			 * t​h​e​ ​v​e​r​i​f​i​e​r
+			 */
+			VERIFIER: string
+			/**
+			 * t​h​e​ ​e​m​a​i​l​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​e​r​v​i​c​e
+			 */
+			EMAIL_SERVICE: string
+			/**
+			 * t​h​e​ ​s​e​r​v​i​c​e
+			 */
+			DEFAULT: string
+		}
 		/**
-		 * O​o​p​s​!
+		 * T​e​c​h​n​i​c​a​l​ ​d​e​t​a​i​l​s
 		 */
-		TITLE: string
-		/**
-		 * S​o​m​e​t​h​i​n​g​ ​w​e​n​t​ ​w​r​o​n​g​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
-		 */
-		DEFAULT_MESSAGE: string
+		TECHNICAL_DETAILS: string
 	}
 	/**
 	 * C​a​n​c​e​l
@@ -3677,6 +3873,10 @@ export type TranslationFunctions = {
 				 * Verification code expired
 				 */
 				EXPIRED_ERROR: () => LocalizedString
+				/**
+				 * That code isn't right. Check the email and try again.
+				 */
+				CODE_ERROR: () => LocalizedString
 			}
 		}
 		PROFILE: {
@@ -3946,9 +4146,35 @@ export type TranslationFunctions = {
 		 */
 		NOT_SENT_TITLE: (arg: { name: string }) => LocalizedString
 		/**
-		 * The request was refused.
+		 * {name} couldn't accept the request. Try again, or contact them if this keeps happening.
 		 */
-		REJECTED_BODY: () => LocalizedString
+		REJECTED_BODY: (arg: { name: string }) => LocalizedString
+		REJECTED_REASON: {
+			/**
+			 * This offer has expired or has already been used. Ask {name} for a new one.
+			 */
+			OFFER_EXPIRED: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} declined the request.
+			 */
+			ACCESS_DENIED: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} couldn't confirm that the request came from your wallet. Please try again.
+			 */
+			INVALID_PROOF: (arg: { name: string }) => LocalizedString
+			/**
+			 * One of the credentials you shared has been revoked by its issuer.
+			 */
+			CREDENTIAL_REVOKED: () => LocalizedString
+			/**
+			 * One of the credentials you shared has expired.
+			 */
+			CREDENTIAL_EXPIRED: () => LocalizedString
+			/**
+			 * UniMe and {name} don't support the same type of credential.
+			 */
+			UNSUPPORTED_FORMAT: (arg: { name: string }) => LocalizedString
+		}
 		/**
 		 * Error code
 		 */
@@ -4003,14 +4229,168 @@ export type TranslationFunctions = {
 		LATER_FAILED_TITLE: (arg: { name: string }) => LocalizedString
 	}
 	ERROR: {
+		CONTEXT: {
+			/**
+			 * Couldn't unlock your wallet
+			 */
+			UNLOCK: () => LocalizedString
+			/**
+			 * Couldn't set up your wallet
+			 */
+			CREATE_PROFILE: () => LocalizedString
+			/**
+			 * Couldn't open this request
+			 */
+			SCAN_QR_CODE: () => LocalizedString
+			/**
+			 * Couldn't connect
+			 */
+			CONNECT: () => LocalizedString
+			/**
+			 * Couldn't add the credential
+			 */
+			RECEIVE_CREDENTIAL: () => LocalizedString
+			/**
+			 * Couldn't share your data
+			 */
+			SHARE_CREDENTIAL: () => LocalizedString
+			/**
+			 * Couldn't delete the credential
+			 */
+			DELETE_CREDENTIAL: () => LocalizedString
+			/**
+			 * Couldn't save your changes
+			 */
+			UPDATE_CREDENTIAL: () => LocalizedString
+			/**
+			 * Couldn't check the credential's status
+			 */
+			REFRESH_CREDENTIAL_STATUS: () => LocalizedString
+			/**
+			 * Couldn't create the credential
+			 */
+			SELF_ISSUE_CREDENTIAL: () => LocalizedString
+			/**
+			 * Couldn't create a public link
+			 */
+			SHARE_PUBLIC_LINK: () => LocalizedString
+			/**
+			 * Couldn't delete the connection
+			 */
+			DELETE_CONNECTION: () => LocalizedString
+			/**
+			 * Couldn't verify your email address
+			 */
+			VERIFY_EMAIL: () => LocalizedString
+			/**
+			 * Couldn't update the trust list
+			 */
+			TRUST_LIST: () => LocalizedString
+			/**
+			 * Couldn't save your settings
+			 */
+			SETTINGS: () => LocalizedString
+			/**
+			 * Couldn't change biometric unlock
+			 */
+			BIOMETRICS: () => LocalizedString
+			/**
+			 * Couldn't reset UniMe
+			 */
+			RESET_APP: () => LocalizedString
+			/**
+			 * Something went wrong
+			 */
+			GENERAL: () => LocalizedString
+		}
+		CAUSE: {
+			/**
+			 * UniMe couldn't reach {name}. Check your internet connection and try again.
+			 */
+			UNREACHABLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * This took too long. Check your internet connection and try again.
+			 */
+			TIMEOUT: () => LocalizedString
+			/**
+			 * The request was refused by {name}. Try again, or contact them if this keeps happening.
+			 */
+			REJECTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * There's a technical problem at {name}. Please try again later.
+			 */
+			SERVER_ERROR: (arg: { name: string }) => LocalizedString
+			/**
+			 * This offer has expired or has already been used. Ask {name} for a new one.
+			 */
+			OFFER_EXPIRED: (arg: { name: string }) => LocalizedString
+			/**
+			 * UniMe got an answer from {name} that it couldn't understand. Contact them if this keeps happening.
+			 */
+			INVALID_RESPONSE: (arg: { name: string }) => LocalizedString
+			/**
+			 * This QR code isn't a request UniMe can handle. Scan a QR code for receiving or sharing credentials.
+			 */
+			INVALID_QR_CODE: () => LocalizedString
+			/**
+			 * UniMe doesn't support this type of credential or request yet.
+			 */
+			UNSUPPORTED: () => LocalizedString
+			/**
+			 * You don't have the credentials {name} asked for, so nothing was shared.
+			 */
+			MISSING_CREDENTIALS: (arg: { name: string }) => LocalizedString
+			/**
+			 * UniMe couldn't verify who {name} is, so it stopped to keep your data safe.
+			 */
+			UNTRUSTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * This request is no longer active. Scan the QR code again to start over.
+			 */
+			FLOW_EXPIRED: () => LocalizedString
+			/**
+			 * Some of the information you entered isn't valid. Check it and try again.
+			 */
+			INVALID_INPUT: () => LocalizedString
+			/**
+			 * That password isn't right. Check it and try again.
+			 */
+			WRONG_PASSWORD: () => LocalizedString
+			/**
+			 * UniMe couldn't read or save your wallet data. Restart the app and try again.
+			 */
+			STORAGE: () => LocalizedString
+			/**
+			 * UniMe couldn't open your browser to continue. Check that a default browser is set up.
+			 */
+			BROWSER_UNAVAILABLE: () => LocalizedString
+			/**
+			 * Something unexpected happened. Try again, and restart UniMe if it keeps happening.
+			 */
+			UNKNOWN: () => LocalizedString
+		}
+		COUNTERPARTY: {
+			/**
+			 * the issuer
+			 */
+			ISSUER: () => LocalizedString
+			/**
+			 * the verifier
+			 */
+			VERIFIER: () => LocalizedString
+			/**
+			 * the email verification service
+			 */
+			EMAIL_SERVICE: () => LocalizedString
+			/**
+			 * the service
+			 */
+			DEFAULT: () => LocalizedString
+		}
 		/**
-		 * Oops!
+		 * Technical details
 		 */
-		TITLE: () => LocalizedString
-		/**
-		 * Something went wrong. Please try again.
-		 */
-		DEFAULT_MESSAGE: () => LocalizedString
+		TECHNICAL_DETAILS: () => LocalizedString
 	}
 	/**
 	 * Cancel

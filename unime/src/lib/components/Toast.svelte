@@ -11,10 +11,20 @@
     autoDismissAfterMs?: number; // A value of 0 means the toast will never auto-dismiss
     title: string;
     detail?: string;
+    // Shown below the detail, in dev mode.
+    technicalDetail?: string;
     ondismissed?: () => void;
   }
 
-  let { variant, dismissible = true, autoDismissAfterMs = 0, title, detail, ondismissed }: Props = $props();
+  let {
+    variant,
+    dismissible = true,
+    autoDismissAfterMs = 0,
+    title,
+    detail,
+    technicalDetail,
+    ondismissed,
+  }: Props = $props();
 
   onMount(() => {
     if (autoDismissAfterMs > 0) {
@@ -41,7 +51,12 @@
       {title}
     </p>
     {#if detail}
-      <p class="line-clamp-2 text-[12px]/[16px] text-slate-800">{detail}</p>
+      <p class="line-clamp-4 text-[12px]/[16px] text-slate-800">{detail}</p>
+    {/if}
+    {#if technicalDetail}
+      <p class="mt-1 max-h-24 overflow-y-auto font-mono text-[10px]/[14px] whitespace-pre-wrap text-slate-600">
+        {technicalDetail}
+      </p>
     {/if}
   </div>
   {#if dismissible}

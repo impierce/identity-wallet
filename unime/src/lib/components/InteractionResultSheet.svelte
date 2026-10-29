@@ -4,9 +4,11 @@
   import LL from '$i18n/i18n-svelte';
   import { fade, fly } from 'svelte/transition';
 
+  import type { UserError } from '@bindings/error/UserError';
   import type { InteractionOutcome } from '@bindings/interaction_result/InteractionOutcome';
 
   import { dispatch } from '$lib/dispatcher';
+  import { describeError } from '$lib/errors';
   import { SealCheckFillIcon, WarningCircleFillIcon, XRegularIcon } from '$lib/icons';
   import { state as appState, error, pendingInteraction } from '$lib/stores';
 
@@ -22,7 +24,7 @@
   let open = $state(false);
   let minimized = $state(false);
   // Generic errors (not reported as an interaction result) that arrive while waiting.
-  let unexpectedError = $state<string | undefined>(undefined);
+  let unexpectedError = $state<UserError | undefined>(undefined);
   let secondStepRevealed = $state(false);
   let countdown = $state<number | undefined>(undefined);
   let copied = $state(false);
@@ -39,10 +41,12 @@
   const kind = $derived(result?.kind ?? $pendingInteraction?.kind ?? 'presentation');
   const name = $derived(result?.counterparty || $pendingInteraction?.counterparty || '');
   const outcome = $derived<InteractionOutcome | undefined>(
-    result?.outcome ?? (unexpectedError !== undefined ? { status: 'not_sent', reason: unexpectedError } : undefined),
+    result?.outcome ??
+      (unexpectedError !== undefined ? { status: 'not_sent', reason: unexpectedError.detail } : undefined),
   );
   const phase = $derived<Phase>(outcome?.status ?? 'waiting');
   const texts = $derived(kind === 'issuance' ? $LL.INTERACTION_RESULT.ISSUANCE : $LL.INTERACTION_RESULT.PRESENTATION);
+  const unexpected = $derived(unexpectedError && describeError(unexpectedError, $LL));
 
   const steps = $derived.by((): [StepState, string][] => {
     switch (phase) {
@@ -78,20 +82,52 @@
       case 'rejected':
         return texts.REJECTED_TITLE({ name });
       case 'not_sent':
-        return $LL.INTERACTION_RESULT.NOT_SENT_TITLE({ name });
+        return unexpected?.title ?? $LL.INTERACTION_RESULT.NOT_SENT_TITLE({ name });
     }
   });
 
+  // Explains the error codes that issuers and verifiers commonly answer with.
+  function rejectedReason(errorCode: string | null | undefined): string | undefined {
+    const reasons = $LL.INTERACTION_RESULT.REJECTED_REASON;
+    switch (errorCode?.toLowerCase()) {
+      case 'invalid_grant':
+      case 'expired_token':
+      case 'credential-offer-not-found':
+      case 'credential-offer-not-pending':
+        return reasons.OFFER_EXPIRED({ name });
+      case 'access_denied':
+      case 'credential_request_denied':
+        return reasons.ACCESS_DENIED({ name });
+      case 'invalid_proof':
+      case 'invalid_nonce':
+        return reasons.INVALID_PROOF({ name });
+      case 'credential-revoked':
+      case 'credential_revoked':
+        return reasons.CREDENTIAL_REVOKED();
+      case 'credential-expired':
+      case 'credential_expired':
+        return reasons.CREDENTIAL_EXPIRED();
+      case 'unsupported_credential_format':
+      case 'unsupported_credential_type':
+      case 'unsupported-credential-format':
+      case 'vp_formats_not_supported':
+        return reasons.UNSUPPORTED_FORMAT({ name });
+      default:
+        return undefined;
+    }
+  }
+
   const body = $derived.by(() => {
     if (outcome?.status === 'approved') return texts.APPROVED_BODY({ name });
-    if (outcome?.status === 'rejected') return outcome.error_description ?? $LL.INTERACTION_RESULT.REJECTED_BODY();
-    if (outcome?.status === 'not_sent') return texts.NOT_SENT_BODY();
+    if (outcome?.status === 'rejected')
+      return rejectedReason(outcome.error_code) ?? $LL.INTERACTION_RESULT.REJECTED_BODY({ name });
+    if (outcome?.status === 'not_sent') return unexpected?.detail ?? texts.NOT_SENT_BODY();
     return $LL.INTERACTION_RESULT.SENDING_BODY();
   });
 
   const errorCode = $derived.by(() => {
     if (outcome?.status === 'rejected') return outcome.error_code ?? $LL.INTERACTION_RESULT.UNKNOWN_ERROR();
-    if (outcome?.status === 'not_sent') return unexpectedError !== undefined ? 'unexpected_error' : 'network_error';
+    if (outcome?.status === 'not_sent') return unexpectedError?.cause ?? 'network_error';
     return undefined;
   });
 
@@ -100,6 +136,9 @@
       ? $LL.INTERACTION_RESULT.HTTP_STATUS({ status: outcome.http_status })
       : $LL.INTERACTION_RESULT.NO_RESPONSE(),
   );
+
+  // What the issuer or verifier said, in its own words. Usually technical, so it stays in the error details.
+  const counterpartyMessage = $derived(outcome?.status === 'rejected' ? outcome.error_description : undefined);
 
   // Only a presentation that could not be sent keeps its flow, so only that one can be retried.
   const canRetry = $derived(
@@ -162,7 +201,7 @@
           outcome.status === 'approved'
             ? $LL.INTERACTION_RESULT.LATER_APPROVED_TITLE({ name })
             : $LL.INTERACTION_RESULT.LATER_FAILED_TITLE({ name }),
-        detail: outcome.status === 'approved' ? texts.APPROVED_BODY({ name }) : errorCode,
+        detail: outcome.status === 'approved' ? texts.APPROVED_BODY({ name }) : body,
       };
       minimized = false;
       reset();
@@ -344,6 +383,9 @@
             {errorCode}
           </p>
         </div>
+        {#if counterpartyMessage}
+          <p class="text-[12px]/[16px] break-words text-rose-900/70 dark:text-rose-200/70">{counterpartyMessage}</p>
+        {/if}
         <p class="text-[12px]/[16px] text-rose-900/70 dark:text-rose-200/70">{errorMeta}</p>
       </div>
     {/if}

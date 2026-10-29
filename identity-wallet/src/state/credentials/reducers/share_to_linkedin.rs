@@ -81,7 +81,7 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
             app_handle
                 .opener()
                 .open_url(linkedin_url, None::<&str>)
-                .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+                .map_err(|err| AppError::BrowserUnavailableError(format!("Failed to open URL in browser: {err}")))?;
         }
 
         credential.public_link = Some(public_link);
@@ -265,7 +265,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
         .discover_all_trust_chains(&EntityId::from(issuer_url.clone()))
         .await
         .map_err(|e| {
-            AppError::Error(format!(
+            AppError::UntrustedError(format!(
                 "Failed to discover a trusted trust_anchor for Issuer {issuer_url} of credential to be shared: {e}"
             ))
         })?;
@@ -280,7 +280,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
                 .trust_anchor_entity_id_and_configuration()
                 .is_ok_and(|(_, configuration)| configuration.authority_hints.map_or(true, |hints| hints.is_empty()))
         })
-        .ok_or(AppError::Error(format!(
+        .ok_or(AppError::UntrustedError(format!(
             "No trust_anchor/trust_chain found for Issuer of credential to be shared: {issuer_did}"
         )))?;
     let (trust_anchor_url, _) = first_trust_chain
