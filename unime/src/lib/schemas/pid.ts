@@ -28,6 +28,7 @@ export const naturalPerson = (LL: TranslationFunctions) =>
     nationality: z.array(countryCode).min(1, 'At least one nationality is required'),
 
     // optional
+    middle_name: z.string().optional(),
     family_name_birth: z.string().optional(),
     // const sex = {
     //   0: 'not known',

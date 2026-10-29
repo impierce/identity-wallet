@@ -12,7 +12,7 @@ use ts_rs::TS;
 pub struct SelfIssueCredential {
     #[serde(rename = "type")]
     pub _type: SelfIssuedCredentialType,
-    #[ts(type = "object")]
+    #[ts(type = "{ name?: string, credentialSubject: Record<string, unknown> }")]
     pub data: serde_json::Value,
     #[serde(default)]
     pub is_favorite: bool,

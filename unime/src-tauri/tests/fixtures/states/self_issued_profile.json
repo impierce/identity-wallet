@@ -12,16 +12,21 @@
       "id": "dummy_value",
       "issuer_name": "Ferris",
       "format": {
-        "format": "dc+sd-jwt"
+        "format": "vc+sd-jwt"
       },
       "data": {
-        "gender": "Male",
-        "first name": "Ferris",
-        "last name": "Crabman",
-        "date of birth": "1990-01-01",
-        "issuer": "did:example:ebfeb1f712ebc6f1c276e12ec21"
+        "name": "My Profile",
+        "type": ["VerifiableCredential", "NaturalPersonCredential"],
+        "issuer": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "credentialSubject": {
+          "given_name": "Ferris",
+          "middle_name": "the",
+          "family_name": "Crabman",
+          "birth_date": "1990-01-01",
+          "id": "did:example:ebfeb1f712ebc6f1c276e12ec21"
+        }
       },
-      "display_name": "profile"
+      "display_name": "My Profile"
     }
   ],
   "current_user_prompt": {

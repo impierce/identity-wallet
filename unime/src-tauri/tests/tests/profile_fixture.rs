@@ -12,11 +12,11 @@ use tauri::Manager;
 use tempfile::TempDir;
 
 /// Profile created with UniMe 0.18.0 through the regular onboarding, see `tests/fixtures/profiles/v0.18.0/README.md`.
-const PROFILE_V0_18_0: &str = "tests/fixtures/profiles/v0.18.0";
-const PROFILE_V0_18_0_PASSWORD: &str = "Fixture123!";
+pub(crate) const PROFILE_V0_18_0: &str = "tests/fixtures/profiles/v0.18.0";
+pub(crate) const PROFILE_V0_18_0_PASSWORD: &str = "Fixture123!";
 
 /// Copies the profile fixture into a temporary data directory, since every handled action saves the state again.
-fn setup_profile_fixture(fixture_dir: &str) -> TempDir {
+pub(crate) fn setup_profile_fixture(fixture_dir: &str) -> TempDir {
     let data_dir = tempfile::tempdir().unwrap();
 
     for file in ["state.json", "stronghold.bin"] {
@@ -29,7 +29,7 @@ fn setup_profile_fixture(fixture_dir: &str) -> TempDir {
     data_dir
 }
 
-async fn handle_actions(actions: Vec<Action>) -> AppState {
+pub(crate) async fn handle_actions(actions: Vec<Action>) -> AppState {
     let app = tauri::test::mock_builder()
         .manage(AppStateContainer::default())
         .invoke_handler(tauri::generate_handler![unime::tauri_command::handle_action])
@@ -61,11 +61,11 @@ async fn handle_actions(actions: Vec<Action>) -> AppState {
     state
 }
 
-fn get_state() -> Action {
+pub(crate) fn get_state() -> Action {
     serde_json::from_value(json!({ "type": "[App] Get state" })).unwrap()
 }
 
-fn unlock_storage(password: &str) -> Action {
+pub(crate) fn unlock_storage(password: &str) -> Action {
     serde_json::from_value(json!({ "type": "[Storage] Unlock", "payload": { "password": password } })).unwrap()
 }
 

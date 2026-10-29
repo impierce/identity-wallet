@@ -19,7 +19,10 @@
 </script>
 
 <div class="grid w-full grid-cols-2 gap-4">
-  <TextFieldRenderer key={$LL.CREDENTIAL.RENDERER.PID.NAME()} value={`${subject.given_name} ${subject.family_name}`} />
+  <TextFieldRenderer
+    key={$LL.CREDENTIAL.RENDERER.PID.NAME()}
+    value={[subject.given_name, subject.middle_name, subject.family_name].filter(Boolean).join(' ')}
+  />
   <div class="flex flex-col rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
     <h2 class="font-medium text-text-alt">{$LL.CREDENTIAL.RENDERER.PID.NATIONALITY()}</h2>
     <div class="flex grow items-center gap-2">
