@@ -20,11 +20,14 @@ export const residence = (LL: TranslationFunctions) =>
 export const naturalPerson = (LL: TranslationFunctions) =>
   z.object({
     // mandatory
-    family_name: z.string({ message: LL.ADD_CREDENTIALS.VALUE_REQUIRED() }),
-    given_name: z.string(),
-    // birth_date: z.iso.date(), // TODO: available in zod/v4
-    birth_date: z.date(),
-    birth_place: countryCode, // TODO: should be arbitrary string?
+    family_name: z.string().trim().min(1, LL.ADD_CREDENTIALS.VALUE_REQUIRED()),
+    given_name: z.string().trim().min(1, LL.ADD_CREDENTIALS.VALUE_REQUIRED()),
+    // A full date (YYYY-MM-DD) that is not in the future.
+    birth_date: z.iso
+      .date(LL.ADD_CREDENTIALS.VALUE_REQUIRED())
+      .refine((date) => date <= new Date().toISOString().slice(0, 10), LL.ADD_CREDENTIALS.VALUE_REQUIRED()),
+    // The place of birth as written by the holder, such as a city.
+    birth_place: z.string().trim().min(1, LL.ADD_CREDENTIALS.VALUE_REQUIRED()),
     nationality: z.array(countryCode).min(1, 'At least one nationality is required'),
 
     // optional

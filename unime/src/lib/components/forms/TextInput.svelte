@@ -8,9 +8,21 @@
     value?: string;
     required?: boolean;
     ref?: HTMLInputElement;
+    type?: 'text' | 'date';
+    // The latest date a `date` input accepts (YYYY-MM-DD).
+    max?: string;
   }
 
-  let { id, label, placeholder, value = $bindable(), required = false, ref = $bindable() }: Props = $props();
+  let {
+    id,
+    label,
+    placeholder,
+    value = $bindable(),
+    required = false,
+    ref = $bindable(),
+    type = 'text',
+    max,
+  }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-1">
@@ -24,8 +36,10 @@
   </div>
   <input
     name={id}
-    type="text"
-    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+    {id}
+    {type}
+    {max}
+    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300 dark:[color-scheme:dark]"
     {placeholder}
     bind:value
     bind:this={ref}

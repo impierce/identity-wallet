@@ -14,7 +14,8 @@
         "enable": true,
         "scope": [
           "$APPDATA/assets/**/*.png",
-          "$APPDATA/assets/**/*.svg"
+          "$APPDATA/assets/**/*.svg",
+          "$APPDATA/assets/**/*.jpg"
         ]
       }
     },

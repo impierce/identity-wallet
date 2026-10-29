@@ -11,7 +11,6 @@
   import { returnRoute, useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
 
-  import ConnectionData from './ConnectionData.svelte';
   import ConnectionDetailsModal from './ConnectionDetailsModal.svelte';
   import ConnectionHeaderMenu from './ConnectionHeaderMenu.svelte';
   import ConnectionSummary from './ConnectionSummary.svelte';
@@ -19,8 +18,11 @@
   let connection: Connection = $state.connections.find((c) => c.id === page.params.id)!;
   $: connection = $state.connections.find((c) => c.id === page.params.id)!;
 
-  let triggers = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.DATA(), $LL.CONNECTION.TABS.ACTIVITY()];
-  let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
+  let triggers: string[] = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.ACTIVITY()];
+  // A history entry may still hold a tab that no longer exists (such as the removed Data tab).
+  let activeTab: Writable<string> = writable(
+    page.state.tab && triggers.includes(page.state.tab) ? page.state.tab : triggers[0],
+  );
   const detailsOpen = writable(false);
 
   const navigateUp = useParentRoute(() => returnRoute('/activity'));
@@ -43,11 +45,7 @@
       <div slot="0" class="h-full py-5">
         <ConnectionSummary {connection} />
       </div>
-      <div slot="1" class="h-full bg-silver py-5 dark:bg-navy">
-        <ConnectionData id={connection.id} />
-      </div>
-
-      <div slot="2" class="bg-silver pt-5 dark:bg-navy">
+      <div slot="1" class="bg-silver pt-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <History connectionId={connection.id} />
       </div>
