@@ -329,7 +329,8 @@ pub fn valid_from(format: &CredentialFormats, verifiable_credential: &serde_json
             let claims = get_unverified_jwt_claims(verifiable_credential).ok()?;
             let vc = claims.get("vc");
             [
-                vc.and_then(|vc| vc.get("validFrom").or_else(|| vc.get("issuanceDate"))),
+                vc.and_then(|vc| vc.get("validFrom")),
+                vc.and_then(|vc| vc.get("issuanceDate")),
                 claims.get("nbf"),
             ]
             .into_iter()
@@ -579,6 +580,16 @@ mod tests {
         assert_eq!(
             valid_from(&CredentialFormats::JwtVcJson(()), &jwt_vc_json).as_deref(),
             Some("2100-01-01T00:00:00+00:00")
+        );
+    }
+
+    #[test]
+    fn test_valid_from_uses_the_issuance_date_when_valid_from_is_invalid() {
+        let jwt_vc_json = json!("eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ2YyI6eyJ2YWxpZEZyb20iOiJub3QgYSBkYXRlIiwiaXNzdWFuY2VEYXRlIjoiMjEwMC0wMS0wMVQwMDowMDowMFoifX0.sig");
+
+        assert_eq!(
+            valid_from(&CredentialFormats::JwtVcJson(()), &jwt_vc_json).as_deref(),
+            Some("2100-01-01T00:00:00Z")
         );
     }
 }
