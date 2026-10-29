@@ -12,7 +12,11 @@
     "shell:allow-open",
     {
       "identifier": "fs:allow-exists",
-      "allow": [{ "path": "$APPDATA/assets/**/*.png" }, { "path": "$APPDATA/assets/**/*.svg" }, { "path": "$APPDATA/assets/**/*.jpg" }]
+      "allow": [
+        { "path": "$APPDATA/assets/**/*.png" },
+        { "path": "$APPDATA/assets/**/*.svg" },
+        { "path": "$APPDATA/assets/**/*.jpg" }
+      ]
     }
   ]
 }
