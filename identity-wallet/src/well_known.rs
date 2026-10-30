@@ -9,7 +9,7 @@ use log::debug;
 use oid4vc::oid4vci::credential_issuer::{
     authorization_server_metadata::AuthorizationServerMetadata, credential_issuer_metadata::CredentialIssuerMetadata,
 };
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Deserialize};
 use url::Url;
 
 use crate::http_client::get_http_client;
@@ -17,6 +17,13 @@ use crate::http_client::get_http_client;
 pub const OPENID_CREDENTIAL_ISSUER: &str = "openid-credential-issuer";
 const OAUTH_AUTHORIZATION_SERVER: &str = "oauth-authorization-server";
 const OPENID_CONFIGURATION: &str = "openid-configuration";
+const DID_JSON: &str = "did.json";
+
+/// Only the `id` is needed. Requiring it makes a JSON body that is not a DID document move on to the next candidate.
+#[derive(Deserialize)]
+struct DidDocumentId {
+    id: String,
+}
 
 /// The URLs at which the `.well-known/{suffix}` resource of `base` may live, in the order UniMe tries them: appended
 /// to the full URL, at the host only, and inserted between the host and the path.
@@ -64,6 +71,13 @@ pub async fn get_authorization_server_metadata(
         "authorization server metadata",
     )
     .await
+}
+
+/// Fetches the `id` of the DID document that `base` publishes at `.well-known/did.json`.
+pub async fn get_did_document_id(base: &Url) -> anyhow::Result<String> {
+    fetch_well_known::<DidDocumentId>(base, &[DID_JSON], "DID document")
+        .await
+        .map(|did_document| did_document.id)
 }
 
 /// Fetches the `.well-known` resource of `base` and parses it as `T`, trying every candidate URL of each suffix in
@@ -294,6 +308,49 @@ mod tests {
             format!("Failed to get credential issuer metadata from {issuer}/.well-known/openid-credential-issuer"),
         );
         assert!(error.chain().any(|cause| cause.is::<reqwest::Error>()), "{error:?}");
+    }
+
+    #[tokio::test]
+    async fn the_did_document_is_found_at_the_host_when_the_issuer_url_has_a_path() {
+        let mock_server = MockServer::start().await;
+        let issuer = format!("{}/oid4vci/summa", mock_server.uri());
+        Mock::given(method("GET"))
+            .and(path("/oid4vci/summa/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(404).set_body_string("<!doctype html><html></html>"))
+            .mount(&mock_server)
+            .await;
+        mount_json(
+            &mock_server,
+            "/.well-known/did.json",
+            json!({ "id": "did:web:issuer.example", "verificationMethod": [] }),
+        )
+        .await;
+
+        let did = get_did_document_id(&url(&issuer)).await.unwrap();
+
+        assert_eq!(did, "did:web:issuer.example");
+    }
+
+    #[tokio::test]
+    async fn json_without_an_id_is_not_taken_for_a_did_document() {
+        let mock_server = MockServer::start().await;
+        let issuer = format!("{}/tenant", mock_server.uri());
+        Mock::given(method("GET"))
+            .and(path("/tenant/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({ "error": "not_found" })))
+            .mount(&mock_server)
+            .await;
+        mount_json(
+            &mock_server,
+            "/.well-known/did.json",
+            json!({ "id": "did:web:issuer.example" }),
+        )
+        .await;
+
+        assert_eq!(
+            get_did_document_id(&url(&issuer)).await.unwrap(),
+            "did:web:issuer.example"
+        );
     }
 
     #[tokio::test]

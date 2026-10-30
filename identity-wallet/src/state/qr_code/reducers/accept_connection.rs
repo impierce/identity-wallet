@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    http_client::{fetch_public_destination, get_http_client, PublicDestinationHttpClient},
+    http_client::{fetch_public_destination, PublicDestinationHttpClient},
     state::{
         actions::{listen, Action},
         core_utils::{
@@ -14,7 +14,7 @@ use crate::{
         user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
         AppState,
     },
-    well_known::get_credential_issuer_metadata,
+    well_known::{get_credential_issuer_metadata, get_did_document_id},
 };
 use identity_iota::did::CoreDID;
 use log::{info, warn};
@@ -28,7 +28,6 @@ use oid4vc::{
 };
 use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
 use openid_federation::{EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata};
-use serde_json::Value;
 
 /// The kind of request encoded in a scanned QR-code.
 ///
@@ -366,22 +365,13 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
 
     // This fetching of the DID document means that our OID4VCI implementation only accepts did:web's as client IDs.
     // Read more about this design decision in ADR 0001.
-    let did_doc = get_http_client()
-        .await
-        .get(format!(
-            "{}/.well-known/did.json",
-            credential_issuer_url.to_string().trim_end_matches('/')
-        ))
-        .send()
-        .await?
-        .json::<Value>()
-        .await?;
-
-    let client_id = did_doc
-        .get("id")
-        .and_then(Value::as_str)
-        .ok_or(AppError::DidParseError)?
-        .to_string();
+    let client_id = get_did_document_id(&credential_issuer_url).await.map_err(|err| {
+        warn!("No DID document found for {credential_issuer_url}: {err:#}");
+        match err.downcast::<reqwest::Error>() {
+            Ok(reqwest_error) => AppError::DownloadFailed(reqwest_error),
+            Err(_) => AppError::DidParseError,
+        }
+    })?;
     let client_id = CoreDID::parse(&client_id)
         .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?;
 
