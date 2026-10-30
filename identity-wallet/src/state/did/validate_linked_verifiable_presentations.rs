@@ -9,6 +9,7 @@ use crate::{
         did::validate_domain_linkage::{ValidationResult, Verifier},
     },
     subject::Subject,
+    well_known::{well_known_candidates, OPENID_CREDENTIAL_ISSUER},
 };
 use did_manager::Resolver;
 use futures::{
@@ -406,14 +407,18 @@ async fn get_issuer_info(validated_linked_domains: &[Url]) -> (Option<String>, O
     let mut issuer_logo_uri = None;
 
     for domain in validated_linked_domains.iter() {
-        let well_known_endpoints = [
-            format!("{domain}.well-known/openid-credential-issuer"),
-            format!("{domain}oid4vci/.well-known/openid-credential-issuer"),
-        ];
+        let mut well_known_endpoints = well_known_candidates(domain, OPENID_CREDENTIAL_ISSUER);
+        if let Ok(oid4vci_issuer) = domain.join("oid4vci") {
+            for candidate in well_known_candidates(&oid4vci_issuer, OPENID_CREDENTIAL_ISSUER) {
+                if !well_known_endpoints.contains(&candidate) {
+                    well_known_endpoints.push(candidate);
+                }
+            }
+        }
 
         for well_known_endpoint in well_known_endpoints {
             debug!("Trying to fetch issuer info from {well_known_endpoint} endpoint");
-            if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
+            if let Ok(response) = get_http_client().await.get(well_known_endpoint.clone()).send().await {
                 debug!("Response from {well_known_endpoint}: {response:#?}");
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     debug!("Metadata from {well_known_endpoint}: {metadata:#?}");
