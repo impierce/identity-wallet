@@ -8,6 +8,7 @@ use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
 use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
 use crate::state::{UNIME_CLIENT_ID, UNIME_REDIRECT_URI};
+use crate::well_known::{get_authorization_server_metadata, get_credential_issuer_metadata};
 use crate::{
     error::AppError::{self, *},
     state::{
@@ -80,8 +81,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
         debug!("Credential issuer URL: {credential_issuer_url}");
 
         // Get the credential issuer metadata.
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
+        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
@@ -222,8 +222,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                     let wallet_state = Uuid::new_v4().to_string();
 
                     // Get the authorization server metadata.
-                    let authorization_server_metadata = wallet
-                        .get_authorization_server_metadata(authorization_server_url.clone())
+                    let authorization_server_metadata = get_authorization_server_metadata(&authorization_server_url)
                         .await
                         .map_err(GetAuthorizationServerMetadataError)?;
 
