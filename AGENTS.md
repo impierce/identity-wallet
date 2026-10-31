@@ -245,7 +245,8 @@ For a release:
    `unime/src-tauri/gen/apple/build/arm64/`. `scripts/copy-release-artifacts.sh` collects the `.aab` and `.ipa` into
    the git-ignored `out/` directory at the repository root for upload. The script points `AR` and `RANLIB` at the
    NDK's `llvm-ar` and `llvm-ranlib` for the Android build: Xcode 27's `ar` drops the Android objects from libsodium,
-   which leaves the app crashing on launch. Do the same when running `pnpm tauri android build` directly.
+   which leaves the app crashing on launch. It also runs `cargo clean` for `libsodium-sys-stable` first, because a
+   cached empty archive would otherwise be reused. Use the script rather than `pnpm tauri android build` directly.
 6. Upload the signed artifacts to their respective app stores and manually make the new builds available to the team
    through the stores' internal-testing channels.
 7. After the team has tested and approved both builds, manually submit them for store review and public release.

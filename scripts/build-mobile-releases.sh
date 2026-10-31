@@ -19,7 +19,14 @@ echo "==> Building the Android release bundle"
 # libsodium's `./configure` archives with the host `ar` and `ranlib`. Since Xcode 27 these silently drop non-Mach-O
 # objects, so libsodium.a ends up empty and the app crashes on launch with `sodium_free` undefined. Use the NDK's
 # LLVM tools instead, and rebuild libsodium because its build script does not rerun when `AR` changes.
-ndk_bin="${NDK_HOME:?Set NDK_HOME to the Android NDK directory}/toolchains/llvm/prebuilt/darwin-x86_64/bin"
+# Tauri builds with the last installed NDK in sort order and overwrites `NDK_HOME` with it, so take the same one.
+android_home="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-${HOME}/Library/Android/sdk}}"
+ndk_dir="$(find "${android_home}/ndk" -mindepth 1 -maxdepth 1 2>/dev/null | LC_ALL=C sort | tail -n 1)"
+if [[ -z "${ndk_dir}" ]]; then
+  echo "No Android NDK found in ${android_home}/ndk." >&2
+  exit 1
+fi
+ndk_bin="${ndk_dir}/toolchains/llvm/prebuilt/darwin-x86_64/bin"
 cargo clean --release --package libsodium-sys-stable --target aarch64-linux-android \
   --target armv7-linux-androideabi --target i686-linux-android --target x86_64-linux-android
 AR="${ndk_bin}/llvm-ar" RANLIB="${ndk_bin}/llvm-ranlib" pnpm tauri android build
