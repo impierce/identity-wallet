@@ -74,6 +74,10 @@ pnpm tauri ios dev
 > If you're on macOS, you do not need to set `CC` explicitly. Make sure to use `darwin-x86_64` (also for Apple Silicon).
 > Also make sure to have `bindgen` installed (via cargo).
 
+> [!NOTE]
+> For iOS builds with Xcode 27 or newer, install the `llvm-tools` rustup component (`rustup component add llvm-tools`).
+> Without it, the Swift part of the Tauri build cannot be linked.
+
 ## Contributing
 
 > [!NOTE]

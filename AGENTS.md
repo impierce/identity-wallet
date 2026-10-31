@@ -11,6 +11,8 @@ pnpm workspace and a Cargo workspace.
   version, but development and CI use stable.
 - The platform prerequisites from the Tauri 2 documentation. Linux needs WebKitGTK and related system libraries;
   mobile development additionally needs Android Studio/SDK/NDK or Xcode.
+- For iOS builds with Xcode 27 or newer, the `llvm-tools` rustup component (`rustup component add llvm-tools`).
+  `swift-rs` uses its `llvm-objcopy` to keep the Swift exports of Tauri's iOS library linkable.
 - Network access and Git credentials, when needed, because several Rust dependencies are pinned Git dependencies.
 
 ## Initial setup
