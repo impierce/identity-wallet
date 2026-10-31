@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
-    error::AppError::{self, *},
+    error::AppError,
     state::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,
@@ -9,6 +9,7 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState,
     },
+    well_known::get_credential_issuer_metadata,
 };
 
 use log::{debug, info, warn};
@@ -29,22 +30,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             _ => return Ok(state),
         };
 
-        let state_guard = state.core_utils.managers.lock().await;
-        let wallet = &state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .wallet;
-
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
 
         info!("credential issuer url: {credential_issuer_url:?}");
 
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .ok();
+        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
 
         info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
@@ -72,8 +63,6 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
 
         download_credential_logos(&credential_configurations).await;
-
-        drop(state_guard);
 
         if let Some(pending_connection_data) = &state.core_utils.pending_connection_data {
             let client_metadata = &pending_connection_data.client_metadata;

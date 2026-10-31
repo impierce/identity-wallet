@@ -7,6 +7,7 @@ pub mod state;
 pub mod stronghold;
 pub mod subject;
 pub mod user_error;
+pub mod well_known;
 
 // Re-exports
 pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};

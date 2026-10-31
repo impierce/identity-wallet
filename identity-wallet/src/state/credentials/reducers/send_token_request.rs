@@ -18,6 +18,7 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
     subject::Subject,
+    well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
 use identity_iota::did::DID;
 use log::{debug, info, warn};
@@ -155,8 +156,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         debug!("Credential issuer URL: {credential_issuer_url}");
 
         // Get the credential issuer metadata.
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
+        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
@@ -199,8 +199,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             .unwrap_or(credential_issuer_url.clone());
 
         // Get the authorization server metadata.
-        let authorization_server_metadata = wallet
-            .get_authorization_server_metadata(authorization_server_url.clone())
+        let authorization_server_metadata = get_authorization_server_metadata(&authorization_server_url)
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
