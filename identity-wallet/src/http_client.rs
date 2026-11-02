@@ -53,13 +53,6 @@ pub fn request_error(err: reqwest_middleware::Error) -> anyhow::Error {
     }
 }
 
-/// The timeout of each request to a remote-supplied URL, shorter than [`get_http_client_builder`]'s.
-///
-/// OpenID Federation discovery makes these requests one after another, superior by superior, and the ecosystem refresh
-/// of a credential has to finish all of them, logos included, within its own limit. A host that is slow to answer
-/// should cost one of those requests a fraction of that limit, not most of it.
-const PUBLIC_DESTINATION_TIMEOUT: std::time::Duration = std::time::Duration::from_secs(2);
-
 /// Returns a globally shared `reqwest::Client` for requests to remote-supplied URLs, see
 /// [`fetch_public_destination`].
 ///
@@ -69,7 +62,6 @@ async fn get_public_destination_http_client() -> Result<Client, AppError> {
     PUBLIC_DESTINATION_HTTP_CLIENT
         .get_or_try_init(|| async {
             get_http_client_builder()
-                .timeout(PUBLIC_DESTINATION_TIMEOUT)
                 .redirect(reqwest::redirect::Policy::none())
                 .build()
                 .map_err(|err| {
@@ -230,26 +222,6 @@ mod tests {
         matchers::{method, path},
         Mock, MockServer, ResponseTemplate,
     };
-
-    #[tokio::test]
-    async fn a_remote_supplied_url_that_answers_too_slowly_fails() {
-        let mock_server = MockServer::start().await;
-        Mock::given(method("GET"))
-            .and(path("/.well-known/openid-federation"))
-            .respond_with(ResponseTemplate::new(200).set_delay(PUBLIC_DESTINATION_TIMEOUT * 2))
-            .mount(&mock_server)
-            .await;
-        let url = Url::parse(&format!("{}/.well-known/openid-federation", mock_server.uri())).unwrap();
-
-        let started = std::time::Instant::now();
-        let result = fetch_public_destination(url).await;
-
-        assert!(
-            matches!(result, Err(AppError::DownloadFailed(ref err)) if err.is_timeout()),
-            "{result:?}"
-        );
-        assert!(started.elapsed() < PUBLIC_DESTINATION_TIMEOUT * 2);
-    }
 
     fn ip(address: &str) -> IpAddr {
         address.parse().unwrap()

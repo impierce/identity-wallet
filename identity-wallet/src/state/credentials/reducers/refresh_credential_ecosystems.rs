@@ -87,10 +87,10 @@ pub(crate) fn issuer_connection(state: &AppState, credential_id: &str) -> Option
         .map(|url| (connection.id.clone(), url))
 }
 
-/// Discovery stops here, short of the 10 seconds after which `handle_action` gives up on an action and reports an error.
-/// That limit also covers waiting for the state lock, e.g. behind the status refresh dispatched alongside. Each request
-/// on the way is bounded much tighter, see `PUBLIC_DESTINATION_TIMEOUT` in `http_client`.
-const ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(6);
+/// How long discovery may take in total. Its requests run one after another, superior by superior, and each may take up
+/// to the shared client's timeout, so a deep or slow federation needs several times that. Discovery runs in `prepare`,
+/// without the state lock, so the wait holds up nothing but the credential's own refresh indicator.
+pub(crate) const ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// Resolves the ecosystems of the issuer at `url`, and keeps the logos they show beyond this app session: credentials
 /// show them in the credential list, before any of them is opened again.
@@ -232,6 +232,17 @@ mod tests {
         let resolved = prepared.resolved.unwrap();
         assert_eq!(resolved.connection_id, CONNECTION_ID);
         assert_eq!(resolved.result, Ok(vec![]));
+    }
+
+    #[test]
+    fn the_refresh_is_allowed_to_outlast_discovery_and_the_default_action_time_limit() {
+        let action = RefreshCredentialEcosystems {
+            credential_id: CREDENTIAL_ID.to_string(),
+            resolved: None,
+        };
+
+        assert!(ECOSYSTEMS_TIMEOUT > crate::state::actions::DEFAULT_ACTION_TIME_LIMIT);
+        assert!(action.time_limit() > ECOSYSTEMS_TIMEOUT);
     }
 
     #[test]

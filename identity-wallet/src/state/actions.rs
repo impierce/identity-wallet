@@ -3,6 +3,11 @@ use super::{AppState, Reducer};
 use downcast_rs::{impl_downcast, DowncastSync};
 use futures::future::BoxFuture;
 use std::sync::Arc;
+use std::time::Duration;
+
+/// How long `handle_action` waits for an action unless the action sets its own `ActionTrait::time_limit`. An estimated
+/// guess; can be adjusted in case lower or higher limits are desired.
+pub const DEFAULT_ACTION_TIME_LIMIT: Duration = Duration::from_secs(10);
 
 /// A redux-like Action that the backend knows how to handle (reduce), with an optional payload
 /// See https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers
@@ -21,6 +26,13 @@ pub trait ActionTrait: Send + std::fmt::Debug + DowncastSync {
     /// `None`, the default, reduces this action as it is.
     fn prepare(&self, _state: &AppState) -> Option<BoxFuture<'static, Action>> {
         None
+    }
+
+    /// How long `handle_action` waits for this action, `prepare` included, before it gives up on it and reports a
+    /// timeout to the user. Actions that may take longer, such as ones whose `prepare` waits on slow remote parties,
+    /// raise it.
+    fn time_limit(&self) -> Duration {
+        DEFAULT_ACTION_TIME_LIMIT
     }
 }
 impl_downcast!(sync ActionTrait);

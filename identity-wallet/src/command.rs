@@ -8,7 +8,6 @@ use crate::user_error::{host_of_scanned_request, UserError};
 use futures::StreamExt;
 use itertools::Itertools;
 use log::{debug, error, info};
-use std::time::Duration;
 use tauri::Emitter;
 
 // TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
@@ -40,14 +39,6 @@ pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, 
             }
         })
         .await
-}
-
-// This value is based on an estimated guess. Can be adjusted in case lower/higher timeouts are desired.
-const TIMEOUT_SECS: u64 = 10;
-
-/// This function is used to prevent deadlocks in the backend. It will sleep for a certain amount of time and then return.
-async fn await_timeout() {
-    tokio::time::sleep(Duration::from_secs(TIMEOUT_SECS)).await;
 }
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -130,13 +121,15 @@ pub async fn handle_action(
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
     let action_type = action.typetag_name();
+    // Prevents deadlocks in the backend from hanging the frontend forever.
+    let time_limit = action.time_limit();
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finished command invoke");
             res
         }
-        _ = await_timeout() => {
-            error!("Operation timed out after {TIMEOUT_SECS} seconds");
+        _ = tokio::time::sleep(time_limit) => {
+            error!("Operation timed out after {time_limit:?}");
             emit_error(&window, &UserError::timeout(action_type, None)).ok();
             Err("Operation timed out".to_string())
         }
