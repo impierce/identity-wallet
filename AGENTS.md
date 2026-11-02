@@ -11,6 +11,8 @@ pnpm workspace and a Cargo workspace.
   version, but development and CI use stable.
 - The platform prerequisites from the Tauri 2 documentation. Linux needs WebKitGTK and related system libraries;
   mobile development additionally needs Android Studio/SDK/NDK or Xcode.
+- For iOS builds with Xcode 27 or newer, the `llvm-tools` rustup component (`rustup component add llvm-tools`).
+  `swift-rs` uses its `llvm-objcopy` to keep the Swift exports of Tauri's iOS library linkable.
 - Network access and Git credentials, when needed, because several Rust dependencies are pinned Git dependencies.
 
 ## Initial setup
@@ -241,7 +243,10 @@ For a release:
    `pnpm tauri ios build`. The Android outputs are under
    `unime/src-tauri/gen/android/app/build/outputs/`, and the iOS `.ipa` is under
    `unime/src-tauri/gen/apple/build/arm64/`. `scripts/copy-release-artifacts.sh` collects the `.aab` and `.ipa` into
-   the git-ignored `out/` directory at the repository root for upload.
+   the git-ignored `out/` directory at the repository root for upload. The script points `AR` and `RANLIB` at the
+   NDK's `llvm-ar` and `llvm-ranlib` for the Android build: Xcode 27's `ar` drops the Android objects from libsodium,
+   which leaves the app crashing on launch. It also runs `cargo clean` for `libsodium-sys-stable` first, because a
+   cached empty archive would otherwise be reused. Use the script rather than `pnpm tauri android build` directly.
 6. Upload the signed artifacts to their respective app stores and manually make the new builds available to the team
    through the stores' internal-testing channels.
 7. After the team has tested and approved both builds, manually submit them for store review and public release.

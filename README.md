@@ -74,6 +74,10 @@ pnpm tauri ios dev
 > If you're on macOS, you do not need to set `CC` explicitly. Make sure to use `darwin-x86_64` (also for Apple Silicon).
 > Also make sure to have `bindgen` installed (via cargo).
 
+> [!NOTE]
+> For iOS builds with Xcode 27 or newer, install the `llvm-tools` rustup component (`rustup component add llvm-tools`).
+> Without it, the Swift part of the Tauri build cannot be linked.
+
 ## Contributing
 
 > [!NOTE]
@@ -158,5 +162,5 @@ You can simulate safe area insets during development by overriding CSS variables
 4. To create a release build, there is a special tweak for the respective platform:
    - For **iOS**, open Xcode and open the root file `unime.xcodeproj`. Go to `Signing & Capabilities`, disable `Automatically manage signing` and select the `Provisioning Profile` manually.
    - For **Android**, create a `keystore.properties` file in `unime/src-tauri/gen/android` which contains the secrets required in `build.gradle.kts` (such as `keyAlias`, etc.).
-5. Run `scripts/build-mobile-releases.sh` to build both apps, which wraps `pnpm tauri android build` and `pnpm tauri ios build`. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
+5. Run `scripts/build-mobile-releases.sh` to build both apps, which wraps `pnpm tauri android build` and `pnpm tauri ios build`. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`. For Android, the script uses the NDK's `llvm-ar` and `llvm-ranlib`, because Xcode 27's `ar` drops the Android objects from libsodium and the app then crashes on launch.
 6. Run `scripts/copy-release-artifacts.sh` to collect the `.aab` and `.ipa` into the git-ignored `out/` folder at the repository root, ready to be uploaded to the app stores.
