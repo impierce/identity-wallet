@@ -11,6 +11,8 @@ use std::path::Path;
 use tauri::Manager;
 use tempfile::TempDir;
 
+use crate::common::mock_app;
+
 /// Profile created with UniMe 0.18.0 through the regular onboarding, see `tests/fixtures/profiles/v0.18.0/README.md`.
 pub(crate) const PROFILE_V0_18_0: &str = "tests/fixtures/profiles/v0.18.0";
 pub(crate) const PROFILE_V0_18_0_PASSWORD: &str = "Fixture123!";
@@ -30,11 +32,7 @@ pub(crate) fn setup_profile_fixture(fixture_dir: &str) -> TempDir {
 }
 
 pub(crate) async fn handle_actions(actions: Vec<Action>) -> AppState {
-    let app = tauri::test::mock_builder()
-        .manage(AppStateContainer::default())
-        .invoke_handler(tauri::generate_handler![unime::tauri_command::handle_action])
-        .build(tauri::generate_context!())
-        .unwrap();
+    let app = mock_app(AppStateContainer::default());
 
     let window = tauri::webview::WebviewWindowBuilder::new(&app, "main", Default::default())
         .build()

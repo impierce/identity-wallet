@@ -5,7 +5,7 @@ use serde_json::json;
 
 use crate::{
     error::AppError,
-    http_client::get_http_client,
+    http_client::{get_http_client, request_error},
     state::{
         actions::{listen, Action},
         qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::accept_connection::accept_connection},
@@ -42,7 +42,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
             }
             Err(err) => {
                 warn!("Failed to check service health: {err}");
-                return Err(AppError::EmailVerificationServiceError(err));
+                return Err(AppError::EmailVerificationServiceError(request_error(err)));
             }
         }
     }
@@ -77,8 +77,11 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
             .inspect_err(|err| {
                 warn!("Failed to send verification request: {err}");
             })
-            .map_err(AppError::EmailVerificationServiceError)?;
-        let response: VerificationResponse = response.json().await.map_err(AppError::EmailVerificationServiceError)?;
+            .map_err(|err| AppError::EmailVerificationServiceError(request_error(err)))?;
+        let response: VerificationResponse = response
+            .json()
+            .await
+            .map_err(|err| AppError::EmailVerificationServiceError(err.into()))?;
         info!("Successfully initiated email verification: id={}", response.id);
         return Ok(AppState {
             verified_data: VerifiedData {
@@ -119,7 +122,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .json(&body)
             .send()
             .await
-            .map_err(AppError::EmailVerificationServiceError)?;
+            .map_err(|err| AppError::EmailVerificationServiceError(request_error(err)))?;
 
         debug!("Received redeem response status: {}", response.status());
 

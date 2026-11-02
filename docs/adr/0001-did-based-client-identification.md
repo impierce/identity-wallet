@@ -16,10 +16,12 @@ OID4VCI credential offers do not. They only provide a credential issuer URL, so 
 
 All connections are identified by a DID. A client identifier that cannot be parsed as a DID is rejected.
 
-For OID4VCI, the issuer DID is discovered by fetching:
+For OID4VCI, the issuer DID is discovered by fetching the first of these that returns a DID document:
 
 ```text
 {credential_issuer_url}/.well-known/did.json
+{origin}/.well-known/did.json{path}
+{origin}/.well-known/did.json
 ```
 
 The DID document's `id` becomes the issuer DID in `ClientMetadata`. This makes `/.well-known/did.json` mandatory for every OID4VCI credential issuer accepted by UniMe.
