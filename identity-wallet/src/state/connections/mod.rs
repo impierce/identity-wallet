@@ -6,6 +6,7 @@ use crate::state::{
         validate_domain_linkage::ValidationStatus,
         validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
     },
+    qr_code::reducers::accept_connection::EcosystemsUnavailable,
     user_prompt::EcosystemProfile,
 };
 
@@ -55,7 +56,10 @@ impl Connections {
             connection.domain_validation = pending_connection_data.domain_validation.clone();
             connection.linked_verifiable_presentations =
                 pending_connection_data.linked_verifiable_presentations.clone();
-            connection.ecosystems = pending_connection_data.ecosystems.clone();
+            connection.update_ecosystems(
+                pending_connection_data.ecosystems.clone(),
+                pending_connection_data.ecosystems_check.clone(),
+            );
             connection.update_last_interaction_time();
             index
         } else {
@@ -68,7 +72,9 @@ impl Connections {
                 pending_connection_data.linked_verifiable_presentations.clone(),
                 pending_connection_data.ecosystems.clone(),
             ));
-            self.0.len() - 1
+            let index = self.0.len() - 1;
+            self.0[index].ecosystems_check = pending_connection_data.ecosystems_check.clone();
+            index
         };
 
         &mut self.0[connection_index]
@@ -102,6 +108,10 @@ pub struct Connection {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ecosystems: Option<Vec<EcosystemProfile>>,
+    /// The outcome of the last attempt to resolve `ecosystems`. Absent for connections stored before it was recorded.
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ecosystems_check: Option<EcosystemsCheck>,
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
@@ -133,6 +143,7 @@ impl Connection {
             last_interacted: current_datetime,
             linked_verifiable_presentations,
             ecosystems,
+            ecosystems_check: None,
             domain_validation,
             last_shared_credentials: HashMap::new(),
         }
@@ -140,6 +151,70 @@ impl Connection {
 
     pub fn update_last_interaction_time(&mut self) {
         self.last_interacted = DateUtils::new_date_string();
+    }
+
+    /// Records a new attempt to resolve the connection's ecosystems. A failed attempt keeps the ecosystems found
+    /// before, so they stay on display, marked as unconfirmed by `ecosystems_check`.
+    pub fn update_ecosystems(&mut self, ecosystems: Option<Vec<EcosystemProfile>>, check: Option<EcosystemsCheck>) {
+        let Some(check) = check else {
+            self.ecosystems = ecosystems;
+            return;
+        };
+
+        if check.resolved {
+            self.ecosystems = ecosystems;
+        }
+
+        let last_resolved = check
+            .last_resolved
+            .clone()
+            .or_else(|| self.ecosystems_check.as_ref()?.last_resolved.clone());
+        self.ecosystems_check = Some(EcosystemsCheck { last_resolved, ..check });
+    }
+}
+
+/// The outcome of the last attempt to resolve a connection's ecosystems.
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/connections/EcosystemsCheck.ts")]
+pub struct EcosystemsCheck {
+    /// Whether the attempt determined the ecosystems, including that there are none. When it did not, the connection
+    /// keeps the ecosystems of the last attempt that did.
+    pub resolved: bool,
+    /// When the last attempt ran (RFC 3339).
+    pub last_checked: String,
+    /// When an attempt last determined the ecosystems (RFC 3339).
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_resolved: Option<String>,
+}
+
+impl EcosystemsCheck {
+    /// Splits a discovery result into the ecosystems to show, `None` for none, and the check that produced them.
+    pub fn outcome(
+        result: Result<Vec<EcosystemProfile>, EcosystemsUnavailable>,
+    ) -> (Option<Vec<EcosystemProfile>>, EcosystemsCheck) {
+        let now = DateUtils::new_date_string();
+        match result {
+            Ok(ecosystems) => (
+                Some(ecosystems).filter(|ecosystems| !ecosystems.is_empty()),
+                EcosystemsCheck {
+                    resolved: true,
+                    last_checked: now.clone(),
+                    last_resolved: Some(now),
+                },
+            ),
+            Err(e) => {
+                log::warn!("Failed to resolve ecosystems: {e}");
+                (
+                    None,
+                    EcosystemsCheck {
+                        resolved: false,
+                        last_checked: now,
+                        last_resolved: None,
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -173,6 +248,7 @@ mod tests {
             domain_validation: None,
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
         }
     }
 
@@ -250,5 +326,55 @@ mod tests {
         assert_eq!(connections.0.len(), 2);
         assert!(connections.contains(did.as_str()));
         assert!(connections.contains(other_did.as_str()));
+    }
+
+    fn ecosystem(name: &str) -> EcosystemProfile {
+        EcosystemProfile {
+            logo_uri: None,
+            name: name.to_string(),
+            description: None,
+            ecosystem_leader: crate::state::user_prompt::Member {
+                logo_uri: None,
+                name: name.to_string(),
+                description: None,
+                identifier: None,
+            },
+            member_count: 0,
+            members: vec![],
+            trust_chain: vec![],
+        }
+    }
+
+    #[test]
+    fn a_failed_ecosystems_check_keeps_the_ecosystems_found_before() {
+        let mut connection = Connection::default();
+
+        let (ecosystems, check) = EcosystemsCheck::outcome(Ok(vec![ecosystem("Ecosystem One")]));
+        connection.update_ecosystems(ecosystems, Some(check.clone()));
+        assert_eq!(connection.ecosystems, Some(vec![ecosystem("Ecosystem One")]));
+
+        let (ecosystems, failed_check) =
+            EcosystemsCheck::outcome(Err(EcosystemsUnavailable("unreachable".to_string())));
+        connection.update_ecosystems(ecosystems, Some(failed_check.clone()));
+
+        assert_eq!(connection.ecosystems, Some(vec![ecosystem("Ecosystem One")]));
+        let recorded = connection.ecosystems_check.unwrap();
+        assert!(!recorded.resolved);
+        assert_eq!(recorded.last_checked, failed_check.last_checked);
+        assert_eq!(recorded.last_resolved, check.last_resolved);
+    }
+
+    #[test]
+    fn a_resolved_ecosystems_check_without_ecosystems_clears_them() {
+        let mut connection = Connection {
+            ecosystems: Some(vec![ecosystem("Ecosystem One")]),
+            ..Default::default()
+        };
+
+        let (ecosystems, check) = EcosystemsCheck::outcome(Ok(vec![]));
+        connection.update_ecosystems(ecosystems, Some(check));
+
+        assert_eq!(connection.ecosystems, None);
+        assert!(connection.ecosystems_check.unwrap().resolved);
     }
 }

@@ -68,6 +68,17 @@ pub async fn main_exec(
 
     let mut guard = container.0.lock().await;
 
+    // Slow work runs without the lock, so it does not hold up other actions.
+    let action = match action.prepare(&guard) {
+        Some(preparation) => {
+            drop(guard);
+            let action = preparation.await;
+            guard = container.0.lock().await;
+            action
+        }
+        None => action,
+    };
+
     guard.core_utils.app_handle = Some(app_handle);
 
     // Get a copy of the current state and pass it to the root reducer.

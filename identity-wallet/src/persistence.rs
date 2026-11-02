@@ -277,6 +277,20 @@ fn decode_data_url(data_url: &str) -> Result<(&'static str, Vec<u8>), AppError> 
 
 /// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
+    store_asset(file_name, id, |from, to| std::fs::rename(from, to))
+}
+
+/// Copies an asset from the `/assets/tmp` folder to the `/assets` folder under the same name, so it outlives the app
+/// session. Unlike `persist_asset`, the temporary file stays for whatever still shows it from there.
+pub fn keep_asset(file_name: &str) -> Result<(), AppError> {
+    store_asset(file_name, file_name, |from, to| std::fs::copy(from, to).map(|_| ()))
+}
+
+fn store_asset(
+    file_name: &str,
+    id: &str,
+    transfer: fn(&std::path::Path, &std::path::Path) -> std::io::Result<()>,
+) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
@@ -285,9 +299,9 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
         .find(|&e| tmp_dir.join(format!("{file_name}.{e}")).exists())
     {
         let new_file_name = format!("{id}.{extension}");
-        std::fs::rename(
-            tmp_dir.join(format!("{file_name}.{extension}")),
-            assets_dir.join(&new_file_name),
+        transfer(
+            &tmp_dir.join(format!("{file_name}.{extension}")),
+            &assets_dir.join(&new_file_name),
         )?;
 
         // The frontend picks the first extension it finds, so a stale asset with another extension would shadow this one.
@@ -298,7 +312,7 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
             }
         }
 
-        debug!("Successfully persisted asset `{file_name}` --> `{new_file_name}`.");
+        debug!("Successfully stored asset `{file_name}` --> `{new_file_name}`.");
     } else {
         warn!("No asset found for file_name: `{file_name}`")
     };

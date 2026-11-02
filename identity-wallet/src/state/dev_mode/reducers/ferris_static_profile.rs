@@ -2,7 +2,7 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::{Connection, Connections},
+        connections::{Connection, Connections, EcosystemsCheck},
         core_utils::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
             IdentityManager,
@@ -331,6 +331,13 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
     ];
 
+    let impierce_demo_portal = Member {
+        logo_uri: None,
+        name: "Impierce Demo Portal".to_string(),
+        description: None,
+        identifier: Some("https://demo.impierce.com".to_string()),
+    };
+
     let impierce_ecosystems = vec![
         EcosystemProfile {
             logo_uri: None,
@@ -360,6 +367,21 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                     identifier: Some("https://tanglelabs.io".to_string()),
                 },
             ],
+            trust_chain: vec![
+                impierce_demo_portal.clone(),
+                Member {
+                    logo_uri: None,
+                    name: "Dutch Digital Identity Coalition".to_string(),
+                    description: Some("Regional member organisation".to_string()),
+                    identifier: Some("https://digital-identity-coalition.example".to_string()),
+                },
+                Member {
+                    logo_uri: None,
+                    name: "European Digital Trust Foundation".to_string(),
+                    description: Some("Ecosystem coordinator".to_string()),
+                    identifier: Some("https://digital-trust.example".to_string()),
+                },
+            ],
         },
         EcosystemProfile {
             logo_uri: None,
@@ -378,6 +400,15 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 description: Some("Digital skills issuer".to_string()),
                 identifier: Some("https://academy.impierce.com".to_string()),
             }],
+            trust_chain: vec![
+                impierce_demo_portal,
+                Member {
+                    logo_uri: None,
+                    name: "Skills Europe".to_string(),
+                    description: Some("Alliance owner".to_string()),
+                    identifier: Some("https://skills.example".to_string()),
+                },
+            ],
         },
     ];
 
@@ -392,6 +423,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
             domain_validation: None,
             last_shared_credentials: HashMap::new(),
         },
@@ -402,9 +434,14 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             did: "did:iota:rms:0x42ad588322e58b3c07aa39e4948d021ee17ecb5747915e9e1f35f028d7ecaf90".to_string(),
             verified: true,
             first_interacted: impierce_first_interaction,
-            last_interacted: impierce_last_interaction,
+            last_interacted: impierce_last_interaction.clone(),
             linked_verifiable_presentations: Some(impierce_certifications),
             ecosystems: Some(impierce_ecosystems),
+            ecosystems_check: Some(EcosystemsCheck {
+                resolved: true,
+                last_checked: impierce_last_interaction.clone(),
+                last_resolved: Some(impierce_last_interaction.clone()),
+            }),
             domain_validation: Some(impierce_domain_validation),
             last_shared_credentials: HashMap::new(),
         },
@@ -418,6 +455,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
             domain_validation: None,
             last_shared_credentials: HashMap::new(),
         },
@@ -431,6 +469,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
             domain_validation: None,
             last_shared_credentials: HashMap::new(),
         },

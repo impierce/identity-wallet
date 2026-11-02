@@ -8,11 +8,11 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
+  import { tintFor } from '$lib/components/ecosystems/ecosystem';
+  import EcosystemAvatar from '$lib/components/ecosystems/EcosystemAvatar.svelte';
   import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
-  import { tintFor } from '../../../../../../prompt/accept-connection/ecosystem';
-  import EcosystemAvatar from '../../../../../../prompt/accept-connection/EcosystemAvatar.svelte';
   import MemberRow from '../../../../../../prompt/accept-connection/MemberRow.svelte';
 
   const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/ecosystems${page.url.search}`);

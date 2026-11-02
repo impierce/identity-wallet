@@ -482,6 +482,20 @@ const en = {
         VALUE: 'Grade',
       },
     },
+    REFRESH: 'Refresh',
+    REFRESHING: 'Updating…',
+    ECOSYSTEMS: {
+      TITLE: 'Endorsed by',
+      ENDORSED_BY: 'Endorsed by {names:string}',
+      UNCONFIRMED: 'These endorsements could not be confirmed just now.',
+      UNCONFIRMED_SINCE:
+        'These endorsements could not be confirmed just now. They were last confirmed on {date:string}.',
+      UNCHECKED: 'Could not check whether the issuer is endorsed by an ecosystem.',
+      ISSUER: 'Issuer',
+      ECOSYSTEM_LEADER: 'Ecosystem leader',
+      SHOW_TRUST_CHAIN: 'Show the trust chain of {name:string}',
+      TRUST_CHAIN_PENDING: 'The trust chain is shown after the next refresh.',
+    },
     RENDERER: {
       PID: {
         NAME: 'Name',

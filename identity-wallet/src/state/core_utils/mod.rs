@@ -6,6 +6,7 @@ use std::sync::Arc;
 use url::Url;
 
 use crate::command::Runtime;
+use crate::state::connections::EcosystemsCheck;
 use crate::state::did::{
     validate_domain_linkage::ValidationStatus, validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
 };
@@ -80,6 +81,7 @@ pub struct PendingConnectionData {
     pub domain_validation: Option<(ValidationStatus, String)>,
     pub linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
     pub ecosystems: Option<Vec<EcosystemProfile>>,
+    pub ecosystems_check: Option<EcosystemsCheck>,
 }
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.

@@ -1,6 +1,7 @@
-use super::Reducer;
+use super::{AppState, Reducer};
 
 use downcast_rs::{impl_downcast, DowncastSync};
+use futures::future::BoxFuture;
 use std::sync::Arc;
 
 /// A redux-like Action that the backend knows how to handle (reduce), with an optional payload
@@ -13,6 +14,14 @@ pub type Action = Arc<dyn ActionTrait>;
 pub trait ActionTrait: Send + std::fmt::Debug + DowncastSync {
     /// Returns the reducers that should be called when this action is dispatched.
     fn reducers<'a>(&self) -> Vec<Reducer<'a>>;
+
+    /// Slow work that does not need the state lock, such as network requests. `main_exec` calls this while it holds the
+    /// lock, releases the lock while the returned future runs, and then reduces the action the future yields in place of
+    /// this one. Other actions are reduced meanwhile, so reducers must not assume the state is still the one given here.
+    /// `None`, the default, reduces this action as it is.
+    fn prepare(&self, _state: &AppState) -> Option<BoxFuture<'static, Action>> {
+        None
+    }
 }
 impl_downcast!(sync ActionTrait);
 
@@ -73,6 +82,7 @@ mod bindings {
         credentials::actions::{
             authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
             credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
+            refresh_credential_ecosystems::RefreshCredentialEcosystems,
             refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
             share_to_linkedin::ShareToLinkedIn, update_credential_metadata::UpdateCredentialMetadata,
         },
@@ -144,6 +154,8 @@ mod bindings {
         DeleteCredential { payload: DeleteCredential },
         #[serde(rename = "[Credential] Refresh status")]
         RefreshCredentialStatus { payload: RefreshCredentialStatus },
+        #[serde(rename = "[Credential] Refresh ecosystems")]
+        RefreshCredentialEcosystems { payload: RefreshCredentialEcosystems },
         #[serde(rename = "[Credential] Refresh all statuses")]
         RefreshAllCredentialStatuses,
         #[serde(rename = "[User Journey] Cancel")]
