@@ -87,10 +87,11 @@ pub(crate) fn issuer_connection(state: &AppState, credential_id: &str) -> Option
         .map(|url| (connection.id.clone(), url))
 }
 
-/// How long discovery may take in total. Its requests run one after another, superior by superior, and each may take up
-/// to the shared client's timeout, so a deep or slow federation needs several times that. Discovery runs in `prepare`,
-/// without the state lock, so the wait holds up nothing but the credential's own refresh indicator.
-pub(crate) const ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(30);
+/// How long discovery may take in total, after which the ecosystems count as unconfirmed. Its requests run one after
+/// another, superior by superior, and each may take up to the shared client's timeout, so this allows a few slow ones;
+/// fast federations finish well within it. Discovery runs in `prepare`, without the state lock, so the wait holds up
+/// nothing but the credential's own refresh indicator.
+pub(crate) const ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(15);
 
 /// Resolves the ecosystems of the issuer at `url`, and keeps the logos they show beyond this app session: credentials
 /// show them in the credential list, before any of them is opened again.
