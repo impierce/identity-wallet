@@ -6,7 +6,7 @@ use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::persistence::STRONGHOLD;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
-use identity_wallet::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
+use identity_wallet::state::{AppStateContainer, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use identity_wallet::subject::Subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
@@ -23,6 +23,18 @@ use std::sync::Arc;
 
 const KEY_ID: &str = "ed25519-0";
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
+
+/// Builds a mock app that manages `state` and handles `handle_action`.
+///
+/// The only `tauri::generate_context!()` in the test crate: on macOS every expansion defines the same
+/// `_EMBED_INFO_PLIST` symbol, so a second one fails to compile.
+pub fn mock_app(state: AppStateContainer) -> tauri::App<tauri::test::MockRuntime> {
+    tauri::test::mock_builder()
+        .manage(state)
+        .invoke_handler(tauri::generate_handler![unime::tauri_command::handle_action])
+        .build(tauri::generate_context!())
+        .unwrap()
+}
 
 pub fn json_example<T>(path: &str) -> T
 where

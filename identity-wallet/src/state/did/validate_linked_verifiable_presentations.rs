@@ -408,11 +408,11 @@ async fn get_issuer_info(validated_linked_domains: &[Url]) -> (Option<String>, O
 
     for domain in validated_linked_domains.iter() {
         let mut well_known_endpoints = well_known_candidates(domain, OPENID_CREDENTIAL_ISSUER);
-        if let Ok(oid4vci_issuer) = domain.join("oid4vci") {
-            for candidate in well_known_candidates(&oid4vci_issuer, OPENID_CREDENTIAL_ISSUER) {
-                if !well_known_endpoints.contains(&candidate) {
-                    well_known_endpoints.push(candidate);
-                }
+        // TODO: this is bandaid code for an older demo, but since it is not documented well it is not sure yet if we can drop is.
+        let oid4vci_path = "oid4vci".to_string() + OPENID_CREDENTIAL_ISSUER;
+        for candidate in well_known_candidates(domain, oid4vci_path.as_str()) {
+            if !well_known_endpoints.contains(&candidate) {
+                well_known_endpoints.push(candidate);
             }
         }
 

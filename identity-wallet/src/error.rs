@@ -84,7 +84,7 @@ pub enum AppError {
     GetBatchCredentialError(#[source] anyhow::Error),
     #[error("Failed to find credential offer `{0}` in the credential issuer's metadata")]
     MissingCredentialOfferError(String),
-    #[error("No credential configuration available with ID {0}` in the credential issuer's metadata")]
+    #[error("No credential configuration available with ID `{0}` in the credential issuer's metadata")]
     UnknownCredentialConfigurationIdError(String),
     #[error("Invalid offer indices")]
     InvalidOfferIndicesError(#[source] serde_json::Error),
