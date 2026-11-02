@@ -3,31 +3,54 @@ use std::net::IpAddr;
 use async_trait::async_trait;
 use openid_federation::{FederationError, FederationResult, HttpClient};
 use reqwest::{Client, Url};
+use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
+use reqwest_retry::{policies::ExponentialBackoff, RetryError, RetryTransientMiddleware};
 use tokio::sync::OnceCell;
 
 use crate::error::AppError;
 use crate::state::core_utils::tls_config;
 
-static HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
+static HTTP_CLIENT: OnceCell<ClientWithMiddleware> = OnceCell::const_new();
 static PUBLIC_DESTINATION_HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
 
 pub fn get_http_client_builder() -> reqwest::ClientBuilder {
     reqwest::Client::builder()
         .use_preconfigured_tls(tls_config())
-        .timeout(std::time::Duration::from_secs(2))
+        .timeout(std::time::Duration::from_secs(5))
 }
 
-/// Returns a globally shared `reqwest::Client` configured with `webpki-roots` TLS.
-pub async fn get_http_client() -> Client {
+/// Returns a globally shared HTTP client configured with `webpki-roots` TLS, which retries transient failures up to
+/// two times, like the oid4vc `Wallet` client.
+///
+/// Retries apply to every method, so a request that is not idempotent may reach the server more than once.
+pub async fn get_http_client() -> ClientWithMiddleware {
     HTTP_CLIENT
         .get_or_init(|| async {
             // No `Client::new()` fallback: it drops the pinned `webpki-roots` anchors (#746).
-            get_http_client_builder()
+            let client = get_http_client_builder()
                 .build()
-                .expect("HTTP client with pinned roots could not be built")
+                .expect("HTTP client with pinned roots could not be built");
+            let retry_policy = ExponentialBackoff::builder().build_with_max_retries(2);
+            ClientBuilder::new(client)
+                .with(RetryTransientMiddleware::new_with_policy(retry_policy))
+                .build()
         })
         .await
         .clone()
+}
+
+/// The error of a failed [`get_http_client`] request, with the `reqwest::Error` at its root where there is one.
+///
+/// The retry middleware wraps every error, which hides the `reqwest::Error` from `downcast` and from the error chain
+/// that [`ErrorCause`](crate::user_error::ErrorCause) searches.
+pub fn request_error(err: reqwest_middleware::Error) -> anyhow::Error {
+    match err {
+        reqwest_middleware::Error::Reqwest(err) => anyhow::Error::new(err),
+        reqwest_middleware::Error::Middleware(err) => match err.downcast::<RetryError>() {
+            Ok(RetryError::WithRetries { err, .. } | RetryError::Error(err)) => request_error(err),
+            Err(err) => err,
+        },
+    }
 }
 
 /// Returns a globally shared `reqwest::Client` for requests to remote-supplied URLs, see

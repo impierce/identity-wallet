@@ -12,7 +12,7 @@ use oid4vc::oid4vci::credential_issuer::{
 use serde::{de::DeserializeOwned, Deserialize};
 use url::Url;
 
-use crate::http_client::get_http_client;
+use crate::http_client::{get_http_client, request_error};
 
 pub const OPENID_CREDENTIAL_ISSUER: &str = "openid-credential-issuer";
 const OAUTH_AUTHORIZATION_SERVER: &str = "oauth-authorization-server";
@@ -101,7 +101,7 @@ async fn fetch_well_known<T: DeserializeOwned>(base: &Url, suffixes: &[&str], re
             .get(url.clone())
             .send()
             .await
-            .map_err(|err| anyhow::Error::new(err).context(format!("Failed to get {resource} from {url}")))?;
+            .map_err(|err| request_error(err).context(format!("Failed to get {resource} from {url}")))?;
         let status = response.status();
         let text = response
             .text()

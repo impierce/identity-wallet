@@ -109,7 +109,7 @@ pub enum AppError {
     #[error("Failed to find TrustList with ID `{0}`")]
     TrustListNotFoundError(String),
     #[error("Failed to reach the email verification service")]
-    EmailVerificationServiceError(#[source] reqwest::Error),
+    EmailVerificationServiceError(#[source] anyhow::Error),
     #[error("The email verification service responded with HTTP {0}")]
     EmailVerificationServiceStatus(u16),
     #[error("Not supported: {0}")]
