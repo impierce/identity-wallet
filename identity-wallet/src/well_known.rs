@@ -26,15 +26,16 @@ struct DidDocumentId {
 }
 
 /// The URLs at which the `.well-known/{suffix}` resource of `base` may live, in the order UniMe tries them: appended
-/// to the full URL, at the host only, and inserted between the host and the path.
+/// to the full URL, inserted between the host and the path, and at the host only. The host-only URL is the least
+/// specific, since every path on the host shares it, so it comes last.
 ///
 /// The query and fragment of `base` are dropped, and duplicates are removed, so a `base` without a path gives one URL.
 pub fn well_known_candidates(base: &Url, suffix: &str) -> Vec<Url> {
     let path = base.path().trim_end_matches('/');
     let paths = [
         format!("{path}/.well-known/{suffix}"),
-        format!("/.well-known/{suffix}"),
         format!("/.well-known/{suffix}{path}"),
+        format!("/.well-known/{suffix}"),
     ];
 
     let mut candidates: Vec<Url> = Vec::with_capacity(paths.len());
@@ -150,7 +151,7 @@ mod tests {
     }
 
     #[test]
-    fn candidates_for_a_url_with_a_path_are_append_then_host_then_insert() {
+    fn candidates_for_a_url_with_a_path_are_append_then_insert_then_host() {
         assert_eq!(
             strings(well_known_candidates(
                 &url("https://issuer.example/tenant/a"),
@@ -158,8 +159,8 @@ mod tests {
             )),
             vec![
                 "https://issuer.example/tenant/a/.well-known/openid-credential-issuer",
-                "https://issuer.example/.well-known/openid-credential-issuer",
                 "https://issuer.example/.well-known/openid-credential-issuer/tenant/a",
+                "https://issuer.example/.well-known/openid-credential-issuer",
             ]
         );
     }
@@ -192,8 +193,8 @@ mod tests {
             )),
             vec![
                 "http://localhost:3033/oid4vci/.well-known/openid-credential-issuer",
-                "http://localhost:3033/.well-known/openid-credential-issuer",
                 "http://localhost:3033/.well-known/openid-credential-issuer/oid4vci",
+                "http://localhost:3033/.well-known/openid-credential-issuer",
             ]
         );
     }
@@ -219,8 +220,8 @@ mod tests {
     async fn finds_the_issuer_metadata_at_each_position_in_order() {
         for (position, at) in [
             ("append", "/tenant/.well-known/openid-credential-issuer"),
-            ("host", "/.well-known/openid-credential-issuer"),
             ("insert", "/.well-known/openid-credential-issuer/tenant"),
+            ("host", "/.well-known/openid-credential-issuer"),
         ] {
             let mock_server = MockServer::start().await;
             let issuer = format!("{}/tenant", mock_server.uri());
@@ -257,12 +258,12 @@ mod tests {
             .await;
         mount_json(
             &mock_server,
-            "/.well-known/openid-credential-issuer",
+            "/.well-known/openid-credential-issuer/tenant",
             credential_issuer_metadata(&issuer),
         )
         .await;
         Mock::given(method("GET"))
-            .and(path("/.well-known/openid-credential-issuer/tenant"))
+            .and(path("/.well-known/openid-credential-issuer"))
             .respond_with(ResponseTemplate::new(200).set_body_json(credential_issuer_metadata("https://other.example")))
             .expect(0)
             .mount(&mock_server)
@@ -282,9 +283,10 @@ mod tests {
 
         assert!(error.to_string().contains("(HTTP 404 Not Found)"), "{error}");
         assert!(
-            error
-                .to_string()
-                .contains("/.well-known/openid-credential-issuer/tenant"),
+            error.to_string().contains(&format!(
+                "{}/.well-known/openid-credential-issuer (HTTP 404",
+                mock_server.uri()
+            )),
             "{error}"
         );
         assert_eq!(mock_server.received_requests().await.unwrap().len(), 3);
@@ -359,7 +361,7 @@ mod tests {
         let authorization_server = format!("{}/tenant", mock_server.uri());
         mount_json(
             &mock_server,
-            "/.well-known/openid-configuration/tenant",
+            "/.well-known/openid-configuration",
             json!({ "issuer": authorization_server, "token_endpoint": format!("{authorization_server}/token") }),
         )
         .await;
@@ -378,11 +380,11 @@ mod tests {
             requested,
             vec![
                 "/tenant/.well-known/oauth-authorization-server",
-                "/.well-known/oauth-authorization-server",
                 "/.well-known/oauth-authorization-server/tenant",
+                "/.well-known/oauth-authorization-server",
                 "/tenant/.well-known/openid-configuration",
-                "/.well-known/openid-configuration",
                 "/.well-known/openid-configuration/tenant",
+                "/.well-known/openid-configuration",
             ]
         );
     }

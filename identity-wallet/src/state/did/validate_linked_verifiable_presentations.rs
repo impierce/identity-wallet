@@ -407,14 +407,7 @@ async fn get_issuer_info(validated_linked_domains: &[Url]) -> (Option<String>, O
     let mut issuer_logo_uri = None;
 
     for domain in validated_linked_domains.iter() {
-        let mut well_known_endpoints = well_known_candidates(domain, OPENID_CREDENTIAL_ISSUER);
-        // TODO: this is bandaid code for an older demo, but since it is not documented well it is not sure yet if we can drop is.
-        let oid4vci_path = "oid4vci".to_string() + OPENID_CREDENTIAL_ISSUER;
-        for candidate in well_known_candidates(domain, oid4vci_path.as_str()) {
-            if !well_known_endpoints.contains(&candidate) {
-                well_known_endpoints.push(candidate);
-            }
-        }
+        let well_known_endpoints = well_known_candidates(domain, OPENID_CREDENTIAL_ISSUER);
 
         for well_known_endpoint in well_known_endpoints {
             debug!("Trying to fetch issuer info from {well_known_endpoint} endpoint");
