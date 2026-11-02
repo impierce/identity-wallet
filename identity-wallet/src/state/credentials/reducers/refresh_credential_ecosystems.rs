@@ -88,7 +88,8 @@ pub(crate) fn issuer_connection(state: &AppState, credential_id: &str) -> Option
 }
 
 /// Discovery stops here, short of the 10 seconds after which `handle_action` gives up on an action and reports an error.
-/// That limit also covers waiting for the state lock, e.g. behind the status refresh dispatched alongside.
+/// That limit also covers waiting for the state lock, e.g. behind the status refresh dispatched alongside. Each request
+/// on the way is bounded much tighter, see `PUBLIC_DESTINATION_TIMEOUT` in `http_client`.
 const ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(6);
 
 /// Resolves the ecosystems of the issuer at `url`, and keeps the logos they show beyond this app session: credentials
