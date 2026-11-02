@@ -7,6 +7,7 @@ use tauri::Manager;
 use tempfile::NamedTempFile;
 
 use crate::common::extensions::CustomExtension;
+use crate::common::mock_app;
 
 /// Asserts that the state is updated as expected after the given action is handled.
 pub async fn assert_state_update(
@@ -22,11 +23,7 @@ pub async fn assert_state_update(
     }
 
     // Initialize the app with the given state and action handler.
-    let app = tauri::test::mock_builder()
-        .manage(current_state)
-        .invoke_handler(tauri::generate_handler![unime::tauri_command::handle_action])
-        .build(tauri::generate_context!())
-        .unwrap();
+    let app = mock_app(current_state);
 
     let window = tauri::webview::WebviewWindowBuilder::new(&app, "main", Default::default())
         .build()
