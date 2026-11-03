@@ -6,6 +6,7 @@
   import { ListItemCard } from '$lib/components';
   import { state } from '$lib/stores';
   import { formatRelativeDateTime } from '$lib/utils';
+  import { currentHistoryIssuerName } from '$lib/utils/issuer';
 
   export let title: string;
   export let date: string;
@@ -31,7 +32,7 @@
         <ListItemCard
           id={credential.id}
           title={credential.title}
-          description={credential.issuer_name}
+          description={currentHistoryIssuerName(credential, $state.credentials, $state.connections)}
           on:click={() => navigateToCredential(credential.id)}
         />
       {/each}

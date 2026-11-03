@@ -9,6 +9,7 @@
 
   import { DownloadSimpleFillIcon, PlugsConnectedFillIcon, ShareFatFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { currentConnectionName } from '$lib/utils/issuer';
 
   import HistoryEntry from './HistoryEntry.svelte';
 
@@ -31,6 +32,7 @@
 
   const events: DisplayEvent[] = filteredEvents.map((history) => {
     let title: string;
+    const connectionName = currentConnectionName(history.connection_id, history.connection_name, $state.connections);
     let icon: Component<SVGAttributes<SVGSVGElement>>;
 
     let date = history.date;
@@ -38,17 +40,17 @@
 
     switch (history.event_type) {
       case 'CredentialsAdded': {
-        title = $LL.HISTORY.DATA_RECEIVED() + ' ' + history.connection_name;
+        title = $LL.HISTORY.DATA_RECEIVED() + ' ' + connectionName;
         icon = DownloadSimpleFillIcon;
         break;
       }
       case 'CredentialsShared': {
-        title = $LL.HISTORY.DATA_SHARED() + ' ' + history.connection_name;
+        title = $LL.HISTORY.DATA_SHARED() + ' ' + connectionName;
         icon = ShareFatFillIcon;
         break;
       }
       case 'ConnectionAdded': {
-        title = $LL.HISTORY.CONNECTION_ADDED() + ' ' + history.connection_name;
+        title = $LL.HISTORY.CONNECTION_ADDED() + ' ' + connectionName;
         icon = PlugsConnectedFillIcon;
         break;
       }
