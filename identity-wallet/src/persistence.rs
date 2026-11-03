@@ -207,6 +207,18 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
 
     copy(&mut content, &mut file)?;
 
+    // `persist_asset` leaves downloads in `/tmp` and picks the first extension it finds, so an earlier download of this
+    // URL in another format would shadow this one.
+    for stale_extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS
+        .iter()
+        .filter(|&e| *e != file_extension)
+    {
+        let stale_file = tmp_dir.join(format!("{id}.{stale_extension}"));
+        if stale_file.exists() {
+            std::fs::remove_file(stale_file)?;
+        }
+    }
+
     Ok(())
 }
 
@@ -368,6 +380,24 @@ mod tests {
 
         assert_eq!(fs::read(assets_dir.join("credential-123.png")).unwrap(), b"new-logo");
         assert_eq!(fs::read(assets_dir.join("conn-123.png")).unwrap(), b"new-logo");
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn download_asset_replaces_earlier_download_in_another_format() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        // An earlier download of the same URL, from when it still served an SVG.
+        fs::write(assets_dir.join("tmp").join("logo-hash.svg"), b"<svg/>").unwrap();
+
+        let url = reqwest::Url::parse("data:image/png;base64,iVBORw0KGgo=").unwrap();
+        download_asset(url, "logo-hash").await.unwrap();
+        persist_asset("logo-hash", "conn-123").unwrap();
+
+        assert!(!assets_dir.join("tmp").join("logo-hash.svg").exists());
+        assert!(!assets_dir.join("conn-123.svg").exists());
+        assert_eq!(fs::read(assets_dir.join("conn-123.png")).unwrap(), b"\x89PNG\r\n\x1a\n");
     }
 
     #[test]
