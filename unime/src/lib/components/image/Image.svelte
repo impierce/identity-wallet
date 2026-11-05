@@ -31,7 +31,8 @@
 
   export let id: string;
   export let iconFallback: Icon = 'UserLight';
-  export let isTempAsset = false;
+  // `'fallback'` looks for a temporary asset when there is no persisted one.
+  export let isTempAsset: boolean | 'fallback' = false;
   let assetUrl: string | null = null;
 
   // useFallback is reactive since the assetUrl is updated onMount when the image is loaded from the backend
@@ -47,9 +48,8 @@
   }
 
   async function loadImage() {
-    getImageAsset(id, isTempAsset).then((url) => {
-      assetUrl = url;
-    });
+    const url = await getImageAsset(id, isTempAsset === true);
+    assetUrl = url ?? (isTempAsset === 'fallback' ? await getImageAsset(id, true) : null);
   }
 
   onMount(() => {
@@ -64,7 +64,7 @@ Displays an image (loaded from disk) or a fallback component.
 ### Props
 - id
 - iconFallback (_default_: `'UserLight'`)
-- isTempAsset (_default_: `false`)
+- isTempAsset (_default_: `false`; `'fallback'` tries the temporary assets when no persisted one exists)
 - isSquare (_bindable_, `true` once a loaded image has a square aspect ratio)
 - imgClass (_overwrite Tailwind classes, default size_: `100%`)
 - iconClass (_overwrite Tailwind classes, default size_: `18px`)

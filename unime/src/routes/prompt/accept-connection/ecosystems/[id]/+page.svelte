@@ -7,12 +7,12 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
+  import { tintFor } from '$lib/components/ecosystems/ecosystem';
+  import EcosystemAvatar from '$lib/components/ecosystems/EcosystemAvatar.svelte';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
-  import { tintFor } from '../../ecosystem';
-  import EcosystemAvatar from '../../EcosystemAvatar.svelte';
   import MemberRow from '../../MemberRow.svelte';
 
   const navigateUp = useParentRoute(() => `/prompt/accept-connection/ecosystems${page.url.search}`);

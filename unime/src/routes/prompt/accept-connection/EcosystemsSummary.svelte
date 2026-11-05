@@ -4,7 +4,7 @@
 
   import type { EcosystemProfile } from '@bindings/user_prompt/EcosystemProfile';
 
-  import EcosystemAvatar from './EcosystemAvatar.svelte';
+  import EcosystemAvatar from '$lib/components/ecosystems/EcosystemAvatar.svelte';
 
   export let ecosystems: EcosystemProfile[];
   export let href: string | undefined = undefined;

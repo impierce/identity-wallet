@@ -482,6 +482,19 @@ const de_DE = {
         VALUE: 'Note',
       },
     },
+    REFRESH: 'Aktualisieren',
+    REFRESHING: 'Wird aktualisiert…',
+    ECOSYSTEMS: {
+      TITLE: 'Anerkannt durch',
+      ENDORSED_BY: 'Anerkannt durch {names}',
+      UNCONFIRMED: 'Diese Anerkennungen konnten gerade nicht bestätigt werden.',
+      UNCONFIRMED_SINCE: 'Diese Anerkennungen konnten gerade nicht bestätigt werden. Zuletzt bestätigt am {date}.',
+      UNCHECKED: 'Es konnte nicht geprüft werden, ob der Aussteller von einem Ökosystem anerkannt ist.',
+      ISSUER: 'Aussteller',
+      ECOSYSTEM_LEADER: 'Ökosystem-Leiter',
+      SHOW_TRUST_CHAIN: 'Vertrauenskette von {name} anzeigen',
+      TRUST_CHAIN_PENDING: 'Die Vertrauenskette wird nach der nächsten Aktualisierung angezeigt.',
+    },
     RENDERER: {
       PID: {
         NAME: 'Name',

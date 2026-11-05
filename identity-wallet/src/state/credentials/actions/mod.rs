@@ -3,6 +3,7 @@ pub mod credential_offers_selected;
 pub mod credentials_selected;
 pub mod delete_credential;
 pub mod refresh_all_credential_statuses;
+pub mod refresh_credential_ecosystems;
 pub mod refresh_credential_status;
 pub mod self_issue_credential;
 pub mod share_to_linkedin;

@@ -1386,6 +1386,55 @@ type RootTranslation = {
 				VALUE: string
 			}
 		}
+		/**
+		 * R​e​f​r​e​s​h
+		 */
+		REFRESH: string
+		/**
+		 * U​p​d​a​t​i​n​g​…
+		 */
+		REFRESHING: string
+		ECOSYSTEMS: {
+			/**
+			 * E​n​d​o​r​s​e​d​ ​b​y
+			 */
+			TITLE: string
+			/**
+			 * E​n​d​o​r​s​e​d​ ​b​y​ ​{​n​a​m​e​s​}
+			 * @param {string} names
+			 */
+			ENDORSED_BY: RequiredParams<'names'>
+			/**
+			 * T​h​e​s​e​ ​e​n​d​o​r​s​e​m​e​n​t​s​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​c​o​n​f​i​r​m​e​d​ ​j​u​s​t​ ​n​o​w​.
+			 */
+			UNCONFIRMED: string
+			/**
+			 * T​h​e​s​e​ ​e​n​d​o​r​s​e​m​e​n​t​s​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​c​o​n​f​i​r​m​e​d​ ​j​u​s​t​ ​n​o​w​.​ ​T​h​e​y​ ​w​e​r​e​ ​l​a​s​t​ ​c​o​n​f​i​r​m​e​d​ ​o​n​ ​{​d​a​t​e​}​.
+			 * @param {string} date
+			 */
+			UNCONFIRMED_SINCE: RequiredParams<'date'>
+			/**
+			 * C​o​u​l​d​ ​n​o​t​ ​c​h​e​c​k​ ​w​h​e​t​h​e​r​ ​t​h​e​ ​i​s​s​u​e​r​ ​i​s​ ​e​n​d​o​r​s​e​d​ ​b​y​ ​a​n​ ​e​c​o​s​y​s​t​e​m​.
+			 */
+			UNCHECKED: string
+			/**
+			 * I​s​s​u​e​r
+			 */
+			ISSUER: string
+			/**
+			 * E​c​o​s​y​s​t​e​m​ ​l​e​a​d​e​r
+			 */
+			ECOSYSTEM_LEADER: string
+			/**
+			 * S​h​o​w​ ​t​h​e​ ​t​r​u​s​t​ ​c​h​a​i​n​ ​o​f​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			SHOW_TRUST_CHAIN: RequiredParams<'name'>
+			/**
+			 * T​h​e​ ​t​r​u​s​t​ ​c​h​a​i​n​ ​i​s​ ​s​h​o​w​n​ ​a​f​t​e​r​ ​t​h​e​ ​n​e​x​t​ ​r​e​f​r​e​s​h​.
+			 */
+			TRUST_CHAIN_PENDING: string
+		}
 		RENDERER: {
 			PID: {
 				/**
@@ -3582,6 +3631,52 @@ export type TranslationFunctions = {
 				 */
 				VALUE: () => LocalizedString
 			}
+		}
+		/**
+		 * Refresh
+		 */
+		REFRESH: () => LocalizedString
+		/**
+		 * Updating…
+		 */
+		REFRESHING: () => LocalizedString
+		ECOSYSTEMS: {
+			/**
+			 * Endorsed by
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Endorsed by {names}
+			 */
+			ENDORSED_BY: (arg: { names: string }) => LocalizedString
+			/**
+			 * These endorsements could not be confirmed just now.
+			 */
+			UNCONFIRMED: () => LocalizedString
+			/**
+			 * These endorsements could not be confirmed just now. They were last confirmed on {date}.
+			 */
+			UNCONFIRMED_SINCE: (arg: { date: string }) => LocalizedString
+			/**
+			 * Could not check whether the issuer is endorsed by an ecosystem.
+			 */
+			UNCHECKED: () => LocalizedString
+			/**
+			 * Issuer
+			 */
+			ISSUER: () => LocalizedString
+			/**
+			 * Ecosystem leader
+			 */
+			ECOSYSTEM_LEADER: () => LocalizedString
+			/**
+			 * Show the trust chain of {name}
+			 */
+			SHOW_TRUST_CHAIN: (arg: { name: string }) => LocalizedString
+			/**
+			 * The trust chain is shown after the next refresh.
+			 */
+			TRUST_CHAIN_PENDING: () => LocalizedString
 		}
 		RENDERER: {
 			PID: {

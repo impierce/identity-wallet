@@ -482,6 +482,19 @@ const fi_FI = {
         VALUE: 'Arvosana',
       },
     },
+    REFRESH: 'Päivitä',
+    REFRESHING: 'Päivitetään…',
+    ECOSYSTEMS: {
+      TITLE: 'Hyväksyjät',
+      ENDORSED_BY: 'Hyväksyjät: {names}',
+      UNCONFIRMED: 'Näitä hyväksyntöjä ei voitu vahvistaa juuri nyt.',
+      UNCONFIRMED_SINCE: 'Näitä hyväksyntöjä ei voitu vahvistaa juuri nyt. Ne vahvistettiin viimeksi {date}.',
+      UNCHECKED: 'Ei voitu tarkistaa, onko jokin ekosysteemi hyväksynyt myöntäjän.',
+      ISSUER: 'Myöntäjä',
+      ECOSYSTEM_LEADER: 'Ekosysteemin johtaja',
+      SHOW_TRUST_CHAIN: 'Näytä kohteen {name} luottamusketju',
+      TRUST_CHAIN_PENDING: 'Luottamusketju näytetään seuraavan päivityksen jälkeen.',
+    },
     RENDERER: {
       PID: {
         NAME: 'Nimi',

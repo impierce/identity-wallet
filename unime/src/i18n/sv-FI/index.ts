@@ -482,6 +482,19 @@ const sv_FI = {
         VALUE: 'Betyg',
       },
     },
+    REFRESH: 'Uppdatera',
+    REFRESHING: 'Uppdaterar…',
+    ECOSYSTEMS: {
+      TITLE: 'Godkänd av',
+      ENDORSED_BY: 'Godkänd av {names}',
+      UNCONFIRMED: 'Dessa godkännanden kunde inte bekräftas just nu.',
+      UNCONFIRMED_SINCE: 'Dessa godkännanden kunde inte bekräftas just nu. De bekräftades senast {date}.',
+      UNCHECKED: 'Det gick inte att kontrollera om utfärdaren är godkänd av ett ekosystem.',
+      ISSUER: 'Utfärdare',
+      ECOSYSTEM_LEADER: 'Ekosystemledare',
+      SHOW_TRUST_CHAIN: 'Visa förtroendekedjan för {name}',
+      TRUST_CHAIN_PENDING: 'Förtroendekedjan visas efter nästa uppdatering.',
+    },
     RENDERER: {
       PID: {
         NAME: 'Namn',

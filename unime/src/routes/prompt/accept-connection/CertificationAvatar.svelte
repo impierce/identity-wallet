@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
 
+  import LogoBadge from '$lib/components/ecosystems/LogoBadge.svelte';
   import { hashIndex } from '$lib/utils';
-
-  import LogoBadge from './LogoBadge.svelte';
 
   export let certification: LinkedVerifiableCredentialData;
   export let isTempAsset = true;
