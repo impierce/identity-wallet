@@ -265,13 +265,22 @@ external action. A successful local build is not by itself approval to release.
 ## Security and debugging
 
 Wallet state, credentials, protocol payloads, passwords, authorization codes, tokens, and key material are sensitive.
-Never add access-granting secrets to logs. Use redacted/manual `Debug` implementations for action payloads containing
-secrets, following `docs/adr/0002-logging-sensitive-information.md`. Do not add file or remote logging without
-revisiting that decision.
+Logging follows `docs/adr/0003-no-personal-data-in-logs.md`, in this repository and in the openid4vc library:
 
-In debug builds, state updates are written to `debug/state.json` by default. Set
-`LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The `debug/`, `.env`, build output,
-coverage, `out/`, `node_modules/`, and `target/` paths are local artifacts and must not be committed.
+- Log only IDs, credential types, counts, statuses, durations, and issuer/verifier names and hosts.
+- Never log credentials, claim values, credential offers, tokens, codes, nonces, `state`, request URIs, VP/ID/proof
+  JWTs, public links, profile data or other user input, QR code or deep link contents, action payloads, or app state.
+  Log a URL with `identity_wallet::logging::url_host` when its path or query can carry a secret.
+- Full payloads go only through `identity_wallet::log_payload!`, which logs at DEBUG in debug builds when
+  `LOG_FULL_PAYLOADS=true` is set in `unime/.env`, and never in release builds.
+- In the frontend, log the action type or a count, never a payload or a URL from a deep link or QR code.
+- Keep the manual `Debug` implementations that redact secrets in action payloads (`CheckPassword`, `UnlockStorage`,
+  `CreateNew`). Do not add file or remote logging without revisiting `docs/adr/0002-logging-sensitive-information.md`.
+
+Release builds log at INFO; DEBUG is only available in debug builds. In debug builds, state updates are written to
+`debug/state.json` by default. Set `LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The
+`debug/`, `.env`, build output, coverage, `out/`, `node_modules/`, and `target/` paths are local artifacts and must not
+be committed.
 
 ## Before handing off a change
 

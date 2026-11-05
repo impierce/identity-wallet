@@ -20,7 +20,7 @@ pub fn run() {
     #[cfg(desktop)]
     {
         builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
-            info!("New app instance opened via deep link: {argv:?}");
+            info!("New app instance opened with {} argument(s)", argv.len());
         }));
     }
 
@@ -50,6 +50,13 @@ pub fn run() {
             .plugin(tauri_plugin_keystore::init());
     }
 
+    // Release builds log at INFO; DEBUG is only available in debug builds. See `docs/adr/0003-no-personal-data-in-logs.md`.
+    let wallet_log_level = if cfg!(debug_assertions) {
+        LevelFilter::Debug
+    } else {
+        LevelFilter::Info
+    };
+
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
@@ -71,14 +78,14 @@ pub fn run() {
             tauri_plugin_log::Builder::new()
                 .targets([Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])
                 .level(LevelFilter::Info)
-                .level_for("unime", LevelFilter::Debug)
-                .level_for("identity_wallet", LevelFilter::Debug)
-                .level_for("oid4vc", LevelFilter::Debug)
-                .level_for("oid4vc_core", LevelFilter::Debug)
-                .level_for("oid4vci", LevelFilter::Debug)
-                .level_for("oid4vp", LevelFilter::Debug)
-                .level_for("siopv2", LevelFilter::Debug)
-                .level_for("oid4vc_manager", LevelFilter::Debug)
+                .level_for("unime", wallet_log_level)
+                .level_for("identity_wallet", wallet_log_level)
+                .level_for("oid4vc", wallet_log_level)
+                .level_for("oid4vc_core", wallet_log_level)
+                .level_for("oid4vci", wallet_log_level)
+                .level_for("oid4vp", wallet_log_level)
+                .level_for("siopv2", wallet_log_level)
+                .level_for("oid4vc_manager", wallet_log_level)
                 .with_colors(
                     ColoredLevelConfig::new()
                         .trace(Color::White)

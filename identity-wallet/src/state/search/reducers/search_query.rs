@@ -44,8 +44,7 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
         let match_count = search_results.current.len();
         let total_count = state.credentials.len();
         log::debug!(
-            "Credential search for `{}`: {} match(es) out of {} credentials",
-            query.search_term,
+            "Credential search: {} match(es) out of {} credentials",
             match_count,
             total_count
         );

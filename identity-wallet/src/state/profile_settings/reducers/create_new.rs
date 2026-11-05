@@ -30,7 +30,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         biometrics_enabled,
     }) = listen::<CreateNew>(action)
     {
-        info!("Creating new identity profile `{name}`");
+        info!("Creating new identity profile");
         let mut state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager

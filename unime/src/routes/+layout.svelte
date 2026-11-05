@@ -47,7 +47,7 @@
   const pendingDeepLinkUrl = writable<URL | undefined>();
 
   async function processDeepLink(url: URL) {
-    info(`App is ready, processing pending deep link: ${url}`);
+    info(`App is ready, processing pending deep link (${url.protocol})`);
 
     // Clear the URL from the store immediately to prevent it from being processed again.
     pendingDeepLinkUrl.set(undefined);
@@ -142,13 +142,13 @@
     // If the app is launched with a deep link, it is stored for later processing via the `state-changed` listener.
     const invocationUrls = await getCurrent();
     if (invocationUrls) {
-      info(`App launched with deep links: ${invocationUrls}`);
+      info(`App launched with ${invocationUrls.length} deep link(s)`);
       pendingDeepLinkUrl.set(new URL(invocationUrls[0]));
     }
 
     // If a deep link is received with the app already open, try processing it immediately.
     unlistenDeepLink = await onOpenUrl((urls) => {
-      info(`Received deep link while running, storing for processing: ${urls[0]}`);
+      info('Received deep link while running, storing for processing');
       const invocationUrl = new URL(urls[0]);
       pendingDeepLinkUrl.set(invocationUrl);
 

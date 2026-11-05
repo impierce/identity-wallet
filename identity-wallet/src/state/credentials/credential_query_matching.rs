@@ -194,6 +194,22 @@ fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
     }
 }
 
+/// Summarizes requested credentials for logging: query IDs, requested types, and the number of matching credentials.
+pub fn summarize_requested_credentials(requested_credentials: &[RequestedCredential]) -> String {
+    requested_credentials
+        .iter()
+        .map(|requested| {
+            format!(
+                "{} {:?}: {} option(s)",
+                requested.query_id,
+                requested.types,
+                requested.options.len()
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(", ")
+}
+
 /// Fills in `last_shared` from the credentials previously shared with this connection.
 pub fn with_last_shared(
     mut requested_credentials: Vec<RequestedCredential>,
@@ -278,7 +294,8 @@ pub fn credential_data(
         (Format::JwtVcJson, CredentialFormats::JwtVcJson(())) => {
             let full_jwt_payload = get_unverified_jwt_claims(verifiable_credential).unwrap_or_default();
             Some(full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
-                debug!("JWT-VC-JSON is missing `vc` claims or is not a valid JSON value: {full_jwt_payload:?}");
+                debug!("JWT-VC-JSON is missing `vc` claims or is not a valid JSON value");
+                crate::log_payload!("JWT-VC-JSON payload: {full_jwt_payload:?}");
                 serde_json::json!({})
             }))
         }

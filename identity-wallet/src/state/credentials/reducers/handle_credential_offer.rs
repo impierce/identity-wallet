@@ -1,8 +1,9 @@
+use crate::logging::url_host;
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
 use crate::state::credentials::credential_query_matching::{
-    ensure_shareable, match_credential_queries, with_last_shared,
+    ensure_shareable, match_credential_queries, summarize_requested_credentials, with_last_shared,
 };
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
@@ -292,7 +293,10 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             connection,
                         );
 
-                        debug!("Credentials matching interactive OID4VP request: {requested_credentials:?}");
+                        debug!(
+                            "Credentials matching interactive OID4VP request: {}",
+                            summarize_requested_credentials(&requested_credentials)
+                        );
 
                         // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
                         let ClientMetadata {
@@ -366,7 +370,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                                 AppError::Error(format!("Failed to get pushed authorization response: {}", err))
                             })?;
 
-                        info!("par_response: {:?}", par_response);
+                        info!("Received pushed authorization response");
 
                         let mut authorization_endpoint = authorization_server_metadata
                             .authorization_endpoint
@@ -380,7 +384,10 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             .append_pair("client_id", UNIME_CLIENT_ID)
                             .append_pair("request_uri", &par_response.request_uri.to_string());
 
-                        info!("Opening URL in browser: `{authorization_endpoint}`");
+                        info!(
+                            "Opening authorization endpoint of `{}` in browser",
+                            url_host(&authorization_endpoint)
+                        );
                         let app_handle = state
                             .core_utils
                             .app_handle
