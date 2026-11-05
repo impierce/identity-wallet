@@ -38,7 +38,7 @@ pub async fn assert_state_update(
                 cmd: "handle_action".into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
-                url: url::Url::parse("http://localhost").unwrap(),
+                url: url::Url::parse("tauri://localhost").unwrap(),
                 body: json!({ "action": action }).into(),
                 headers: Default::default(),
                 invoke_key: tauri::test::INVOKE_KEY.to_string(),
