@@ -5,6 +5,7 @@
 
   import { Image } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { haptics } from '$lib/haptics';
   import { CertificateLightIcon, HeartStraightFillIcon, HeartStraightRegularIcon, UserLightIcon } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
   import { ensureLightIcon } from '$lib/utils/image';
@@ -55,14 +56,16 @@
   {#if actions}
     <button
       class="absolute top-0 left-0 mt-4 ml-2 p-1.5"
-      on:click={() =>
+      on:click={() => {
+        haptics.selection();
         dispatch({
           type: '[Credential Metadata] Update',
           payload: {
             id: credential.id,
             is_favorite: !credential.metadata.is_favorite,
           },
-        })}
+        });
+      }}
     >
       {#if credential.metadata.is_favorite}
         <HeartStraightFillIcon class="h-6 w-6 dark:text-white" />

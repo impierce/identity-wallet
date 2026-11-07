@@ -18,6 +18,7 @@
 
   import { BottomNavBar, Button, LoadingSpinner } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { haptics } from '$lib/haptics';
   import { CameraSlashRegularIcon } from '$lib/icons';
   import { useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
@@ -32,6 +33,8 @@
 
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
+    // Confirms the code was read, so the phone can be lowered.
+    haptics.impact('medium');
     loading = true;
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
   }

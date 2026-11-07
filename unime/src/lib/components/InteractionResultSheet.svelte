@@ -9,6 +9,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { describeError } from '$lib/errors';
+  import { haptics } from '$lib/haptics';
   import { SealCheckFillIcon, WarningCircleFillIcon, XRegularIcon } from '$lib/icons';
   import { state as appState, error, pendingInteraction } from '$lib/stores';
 
@@ -196,6 +197,8 @@
 
   function showOutcome(outcome: InteractionOutcome) {
     if (minimized) {
+      if (outcome.status === 'approved') haptics.success();
+      else haptics.error();
       toast = {
         variant: outcome.status === 'approved' ? 'info' : 'error',
         title:
@@ -211,9 +214,15 @@
     open = true;
     if (outcome.status === 'approved') {
       secondStepRevealed = false;
-      later(() => (secondStepRevealed = true), 400);
+      // Felt together with the check mark of the last step, not when the outcome arrives.
+      later(() => {
+        secondStepRevealed = true;
+        haptics.success();
+      }, 400);
       later(() => (countdown = AUTO_CLOSE_SECONDS), 450);
       later(() => close(), 450 + AUTO_CLOSE_SECONDS * 1000);
+    } else {
+      haptics.error();
     }
   }
 
