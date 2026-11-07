@@ -33,7 +33,13 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
         // Build LinkedIn URL, all parameters must be URL percent-encoded, as specified by LinkedIn documentation: https://addtoprofile.linkedin.com/
         let mut linkedin_url = "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME".to_string();
         linkedin_url.push_str(format!("&name={}", urlencoding::encode(&credential.display_name)).as_str());
-        linkedin_url.push_str(format!("&organizationName={}", urlencoding::encode(&credential.issuer_name)).as_str());
+        linkedin_url.push_str(
+            format!(
+                "&organizationName={}",
+                urlencoding::encode(state.connections.current_issuer_name(credential))
+            )
+            .as_str(),
+        );
 
         let issue_date = DateTime::parse_from_rfc3339(&credential.metadata.date_issued)
             .map_err(|e| AppError::Error(format!("Failed to parse issue date: {}", e)))?;

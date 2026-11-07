@@ -8,6 +8,8 @@
 
   import { Button, CredentialValidityLine, ListItemImage, SelectionIndicator, TopNavBar } from '$lib/components';
   import { CaretRightBoldIcon, ClockCounterClockwiseIcon, EyeRegularIcon, MagnifyingGlassIcon } from '$lib/icons';
+  import { state } from '$lib/stores';
+  import { currentIssuerName } from '$lib/utils/issuer';
 
   import { isBadge, isSelectable } from './utils';
 
@@ -35,7 +37,7 @@
     if (!query) return true;
     return [
       credential.display_name,
-      credential.issuer_name,
+      currentIssuerName(credential, $state.connections),
       ...credential.display_claims.map((c) => claimText(c.value)),
     ]
       .filter(Boolean)
@@ -132,7 +134,9 @@ Lets the user choose which of the matching credentials to share for one requeste
             >
               {credential.display_name}
             </p>
-            <p class="text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">{credential.issuer_name}</p>
+            <p class="text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
+              {currentIssuerName(credential, $state.connections)}
+            </p>
             <CredentialValidityLine {credential} />
             {#if requested.last_shared.includes(credential.id)}
               <div class="pt-1">

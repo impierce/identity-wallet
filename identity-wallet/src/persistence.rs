@@ -207,6 +207,18 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
 
     copy(&mut content, &mut file)?;
 
+    // `persist_asset` leaves downloads in `/tmp` and picks the first extension it finds, so an earlier download of this
+    // URL in another format would shadow this one.
+    for stale_extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS
+        .iter()
+        .filter(|&e| *e != file_extension)
+    {
+        let stale_file = tmp_dir.join(format!("{id}.{stale_extension}"));
+        if stale_file.exists() {
+            std::fs::remove_file(stale_file)?;
+        }
+    }
+
     Ok(())
 }
 
@@ -276,6 +288,8 @@ fn decode_data_url(data_url: &str) -> Result<(&'static str, Vec<u8>), AppError> 
 }
 
 /// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.
+/// The downloaded asset stays in `/assets/tmp`, since several ids can share one logo (e.g. an issuer whose logo is also
+/// the logo of the credential it issues).
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
@@ -285,10 +299,13 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
         .find(|&e| tmp_dir.join(format!("{file_name}.{e}")).exists())
     {
         let new_file_name = format!("{id}.{extension}");
-        std::fs::rename(
-            tmp_dir.join(format!("{file_name}.{extension}")),
-            assets_dir.join(&new_file_name),
-        )?;
+        // Copy next to the source first and then rename, so a failed copy never leaves a half-written asset behind.
+        let copy = tmp_dir.join(format!("{new_file_name}.part"));
+        std::fs::copy(tmp_dir.join(format!("{file_name}.{extension}")), &copy)?;
+        if let Err(e) = std::fs::rename(&copy, assets_dir.join(&new_file_name)) {
+            std::fs::remove_file(&copy).ok();
+            return Err(e.into());
+        }
 
         // The frontend picks the first extension it finds, so a stale asset with another extension would shadow this one.
         for stale_extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS.iter().filter(|&e| e != extension) {
@@ -349,6 +366,41 @@ mod tests {
     }
 
     #[test]
+    #[serial_test::serial]
+    fn persist_asset_persists_one_asset_for_several_ids() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        fs::write(assets_dir.join("conn-123.png"), b"old-logo").unwrap();
+        fs::write(assets_dir.join("tmp").join("logo-hash.png"), b"new-logo").unwrap();
+
+        // The issuer's logo is also the logo of the credential, which is persisted first.
+        persist_asset("logo-hash", "credential-123").unwrap();
+        persist_asset("logo-hash", "conn-123").unwrap();
+
+        assert_eq!(fs::read(assets_dir.join("credential-123.png")).unwrap(), b"new-logo");
+        assert_eq!(fs::read(assets_dir.join("conn-123.png")).unwrap(), b"new-logo");
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn download_asset_replaces_earlier_download_in_another_format() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        // An earlier download of the same URL, from when it still served an SVG.
+        fs::write(assets_dir.join("tmp").join("logo-hash.svg"), b"<svg/>").unwrap();
+
+        let url = reqwest::Url::parse("data:image/png;base64,iVBORw0KGgo=").unwrap();
+        download_asset(url, "logo-hash").await.unwrap();
+        persist_asset("logo-hash", "conn-123").unwrap();
+
+        assert!(!assets_dir.join("tmp").join("logo-hash.svg").exists());
+        assert!(!assets_dir.join("conn-123.svg").exists());
+        assert_eq!(fs::read(assets_dir.join("conn-123.png")).unwrap(), b"\x89PNG\r\n\x1a\n");
+    }
+
+    #[test]
     fn decode_data_url_reads_percent_encoded_svg() {
         let (extension, bytes) =
             decode_data_url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E")
@@ -379,7 +431,7 @@ mod tests {
 
     #[test]
     #[serial_test::serial]
-    fn persist_asset_moves_jpeg() {
+    fn persist_asset_persists_jpeg() {
         let assets_dir = TempDir::new().unwrap().keep();
         *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
         fs::create_dir_all(assets_dir.join("tmp")).unwrap();

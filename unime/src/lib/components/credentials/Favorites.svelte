@@ -8,6 +8,7 @@
   import { HeartStraightFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { getCredentialValidity } from '$lib/utils/credentialValidity';
+  import { currentIssuerName } from '$lib/utils/issuer';
 
   import CredentialValidityIcon from './CredentialValidityIcon.svelte';
 
@@ -42,7 +43,7 @@
       <ListItemCard
         id={credential.id}
         title={credential.display_name}
-        description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+        description={currentIssuerName(credential, $state.connections)}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         icon={credential.metadata.icon}
         isInvalid={validity.state !== 'valid'}

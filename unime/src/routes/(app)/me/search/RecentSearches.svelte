@@ -7,6 +7,8 @@
   import { ListItemCard } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { XBoldIcon } from '$lib/icons';
+  import { state } from '$lib/stores';
+  import { currentIssuerName } from '$lib/utils/issuer';
 
   export let recentSearches: DisplayCredential[] = [];
 </script>
@@ -22,7 +24,7 @@
         <ListItemCard
           id={recentSearch.id}
           title={recentSearch.display_name}
-          description={recentSearch.issuer_name}
+          description={currentIssuerName(recentSearch, $state.connections)}
           on:click={() => {
             dispatch({ type: '[Search] Add recent', payload: { id: recentSearch.id } });
             if (recentSearch.data.type.includes('OpenBadgeCredential')) {

@@ -20,6 +20,7 @@
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDateWithWrittenMonth, getImageAsset } from '$lib/utils';
   import { getCredentialValidity } from '$lib/utils/credentialValidity';
+  import { currentConnectionName } from '$lib/utils/issuer';
 
   export let credential: DisplayCredential;
 
@@ -46,8 +47,13 @@
   }
 
   function determineIssuerName() {
-    if (credential.issuer_name) {
-      return credential.issuer_name;
+    const issuerName = currentConnectionName(
+      credential.connection_id ?? '',
+      credential.issuer_name,
+      $appState.connections,
+    );
+    if (issuerName) {
+      return issuerName;
     }
     if (isSelfIssued()) {
       return $LL.CREDENTIAL.DETAILS.SELF_SIGNED();

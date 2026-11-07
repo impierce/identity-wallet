@@ -10,6 +10,7 @@
   import { CaretDownBoldIcon, CaretUpBoldIcon, EyeRegularIcon, EyeSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateWithWrittenMonth } from '$lib/utils';
+  import { currentIssuerName } from '$lib/utils/issuer';
 
   import ClaimRow from './ClaimRow.svelte';
   import { claimRows, claimText, satisfiesRequest } from './disclosure';
@@ -94,7 +95,7 @@ collapse into a count, and a "Change" button when there are more options.
       {/if}
       {#if first}
         <p class="text-[12px]/[20px] font-medium break-words text-slate-400">
-          {first.issuer_name}{first.metadata.date_issued && selected.length === 1
+          {currentIssuerName(first, $state.connections)}{first.metadata.date_issued && selected.length === 1
             ? ` · ${$LL.SCAN.SHARE_CREDENTIALS.ISSUED({
                 date: formatDateWithWrittenMonth(first.metadata.date_issued, locale),
               })}`
