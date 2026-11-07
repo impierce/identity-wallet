@@ -151,6 +151,17 @@ impl StrongholdManager {
         self.commit()
     }
 
+    /// Inserts or replaces every entry, committing the snapshot once for all of them.
+    pub fn insert_all(&self, entries: impl IntoIterator<Item = (Uuid, Vec<u8>)>) -> anyhow::Result<()> {
+        for (key, value) in entries {
+            self.client
+                .store()
+                .insert(key.to_string().as_bytes().to_vec(), value, None)?;
+        }
+
+        self.commit()
+    }
+
     // TODO: fix this function's return type.
     pub fn values(&self) -> anyhow::Result<Option<Vec<VerifiableCredentialRecord>>> {
         let client = self.client.clone();

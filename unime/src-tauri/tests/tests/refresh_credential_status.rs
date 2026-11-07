@@ -118,7 +118,8 @@ async fn test_refresh_all_credential_statuses() {
                 .insert_header("Content-Encoding", "gzip")
                 .set_body_raw(response_bytes, "application/statuslist+jwt"),
         )
-        .expect(3)
+        // The three credentials share one status list, which is fetched once for all of them.
+        .expect(1)
         .mount(&mock_server)
         .await;
 
@@ -191,6 +192,17 @@ async fn test_refresh_all_credential_statuses() {
 
     assert_eq!(results, vec![StatusType::INVALID; 3]);
     assert_ne!(last_checked, updated_last_checked);
+
+    // The changed statuses are written back to Stronghold.
+    for credential in state.credentials.iter().take(3) {
+        let key: uuid::Uuid = credential.id.parse().unwrap();
+        let record: VerifiableCredentialRecord =
+            serde_json::from_slice(&stronghold_manager.get(key).unwrap().unwrap()).unwrap();
+        assert_eq!(
+            record.display_credential.credential_status.unwrap().status,
+            StatusType::INVALID
+        );
+    }
 }
 
 #[tokio::test]
@@ -275,4 +287,44 @@ async fn test_unreachable_credential_status() {
             .unwrap()
             .last_checked
     );
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_all_credential_statuses_keeps_statuses_of_an_unreachable_status_list() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/ietf-oauth-token-status-list/0"))
+        .respond_with(ResponseTemplate::new(503))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    setup_state_file();
+    let mut state = json_example::<AppState>("tests/fixtures/states/three_credentials_with_status.json");
+    state.core_utils.managers = test_managers(vec![]).await;
+
+    let mut previous = Vec::new();
+    for status in state
+        .credentials
+        .iter_mut()
+        .filter_map(|credential| credential.credential_status.as_mut())
+    {
+        status.uri =
+            serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
+        previous.push((status.status, status.last_checked.clone()));
+    }
+
+    setup_stronghold();
+
+    let action = json_example::<Action>("tests/fixtures/actions/refresh_all_credential_statuses.json");
+    let state = refresh_all_credential_statuses(state, action).await.unwrap();
+
+    let current: Vec<(StatusType, String)> = state
+        .credentials
+        .iter()
+        .filter_map(|credential| credential.credential_status.as_ref())
+        .map(|status| (status.status, status.last_checked.clone()))
+        .collect();
+    assert_eq!(current, previous);
 }

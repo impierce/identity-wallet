@@ -65,10 +65,12 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             Ok(status) => {
                 info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
                 credential_status_data.last_checked = DateUtils::new_date_string();
+                let status_changed = credential_status_data.status != status;
                 credential_status_data.status = status;
 
-                // Update the credential in Stronghold
-                {
+                // Update the credential in Stronghold. Each write encrypts and rewrites the whole snapshot, so a check
+                // that only confirms the status leaves it as it is.
+                if status_changed {
                     let stronghold_manager = state_guard
                         .stronghold_manager
                         .as_ref()
@@ -81,9 +83,10 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                         .find(|c| c.id == credential_id)
                         .ok_or(AppError::NoCredentialWithIdError(credential_id))?;
 
+                    // `insert` replaces the record, so there is no need to remove it first (and commit twice).
                     let mut verifiable_credential_record = stronghold_manager
-                        .remove(key)
-                        .map_err(AppError::StrongholdDeletionError)?
+                        .get(key)
+                        .map_err(AppError::StrongholdValuesError)?
                         .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
                         .ok_or(AppError::StrongholdMissingCredentialError(key))?;
 
@@ -160,8 +163,22 @@ pub async fn fetch_credential_status(
     credential_status_data: &CredentialStatus,
     subject: &Subject,
 ) -> Result<StatusType, AppError> {
+    let status_list = fetch_verified_status_list(credential_status_data.uri.as_str(), subject).await?;
+    let status = status_at(&status_list, credential_status_data.idx)?;
+
+    info!(
+        "Successfully fetched status list from `{}` with status: `{:?}`",
+        credential_status_data.uri, status
+    );
+
+    Ok(status)
+}
+
+/// Fetches the Status List Token at `uri` and verifies its signature against the key of its issuer.
+#[tracing::instrument(skip_all, err)]
+pub async fn fetch_verified_status_list(uri: &str, subject: &Subject) -> Result<StatusList, AppError> {
     let status_list_jwt = fetch_status_list(
-        credential_status_data.uri.as_str(),
+        uri,
         // TODO: the response type is hardcoded to be JWT, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
         StatusListTokenResponseType::Jwt,
     )
@@ -185,25 +202,22 @@ pub async fn fetch_credential_status(
     };
     let status_list_token =
         decrypt_status_list_token(&status_list_jwt, decoding_key).map_err(|_| AppError::GetCredentialStatusError)?;
-    let status_list: StatusList = status_list_token
+
+    status_list_token
         .claims
         .encoded_status_list
         .try_into()
-        .map_err(|_| AppError::GetCredentialStatusError)?;
+        .map_err(|_| AppError::GetCredentialStatusError)
+}
 
-    let status = StatusType::try_from(
+/// The status at `idx` in `status_list`.
+pub fn status_at(status_list: &StatusList, idx: u64) -> Result<StatusType, AppError> {
+    StatusType::try_from(
         status_list
-            .get_status(credential_status_data.idx as usize)
+            .get_status(idx as usize)
             .map_err(|_| AppError::GetCredentialStatusError)?,
     )
-    .map_err(|_| AppError::GetCredentialStatusError)?;
-
-    info!(
-        "Successfully fetched status list from `{}` with status: `{:?}`",
-        credential_status_data.uri, credential_status_data.status
-    );
-
-    Ok(status)
+    .map_err(|_| AppError::GetCredentialStatusError)
 }
 
 /// Sends a status list request to the provided URI and returns the response body as a String.
@@ -212,10 +226,11 @@ pub async fn fetch_credential_status(
 #[tracing::instrument(skip_all, err)]
 pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
-    // The timeout of 10 seconds is an estimated guess of how long a status list request should take at maximum.
+    // The status of every credential is refreshed in a single action, which `handle_action` gives up on after 10 seconds,
+    // so one unresponsive status list must not take all of that.
     let client = get_http_client_builder()
         .redirect(Policy::limited(5))
-        .timeout(Duration::from_secs(10))
+        .timeout(Duration::from_secs(5))
         .build()
         .map_err(AppError::FetchCredentialListError)?;
 

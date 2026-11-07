@@ -69,7 +69,13 @@ pub fn run() {
         .manage(AppStateContainer(Default::default()))
         .plugin(
             tauri_plugin_log::Builder::new()
-                .targets([Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])
+                // Every record sent to the WebView is a message to the main thread and a `console.log` there, so release
+                // builds keep their logs out of it.
+                .targets(if cfg!(debug_assertions) {
+                    vec![Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)]
+                } else {
+                    vec![Target::new(TargetKind::Stdout)]
+                })
                 .level(LevelFilter::Info)
                 .level_for("unime", LevelFilter::Debug)
                 .level_for("identity_wallet", LevelFilter::Debug)

@@ -12,7 +12,9 @@
   import { groupConnectionsAlphabetically } from './utils';
 
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
-  info(`Connections: ${JSON.stringify(Array.from(connections.entries()))}`);
+  // Only the count: connections carry ecosystems and linked credentials, and serializing all of them for the log stalls
+  // the opening of this tab.
+  info(`Showing ${$state.connections.length} connections`);
 
   let squareLogos: Record<string, boolean> = {};
 </script>
