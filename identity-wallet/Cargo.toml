@@ -19,6 +19,7 @@ did_manager.workspace = true
 downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
+hickory-resolver = "0.26"
 icu = "1.4.0"
 identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1", default-features = false, features = [
     "credential",
