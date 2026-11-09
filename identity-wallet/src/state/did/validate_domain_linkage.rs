@@ -16,7 +16,7 @@ use serde_with::skip_serializing_none;
 use std::str::FromStr;
 use ts_rs::TS;
 
-use crate::http_client::get_http_client;
+use crate::http_client::fetch_public_destination;
 
 #[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -157,11 +157,8 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
 
     debug!("Fetching DID configuration from: {url}");
 
-    // 2. Fetch the resource
-    let response = get_http_client()
-        .await
-        .get(url.clone())
-        .send()
+    // 2. Fetch the resource. The URL is remote-supplied: from a QR code or from a DID document.
+    let response = fetch_public_destination(url.clone())
         .await
         .map_err(|_| format!("failed to get response from resource url: {url}"))?;
 
