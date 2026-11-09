@@ -371,6 +371,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             })?;
 
                         info!("Received pushed authorization response");
+                        crate::log_payload!("Pushed authorization response: {par_response:?}");
 
                         let mut authorization_endpoint = authorization_server_metadata
                             .authorization_endpoint
@@ -388,6 +389,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             "Opening authorization endpoint `{}` in browser",
                             url_without_query(&authorization_endpoint)
                         );
+                        crate::log_payload!("Authorization URL: {authorization_endpoint}");
                         let app_handle = state
                             .core_utils
                             .app_handle
