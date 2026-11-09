@@ -38,6 +38,8 @@
   import '../app.css';
 
   import { loadIcons } from '$lib/icons/iconify';
+  import { measureFrameRate } from '$lib/motion/frameRate';
+  import { usePageTransitions } from '$lib/motion/pageTransitions';
 
   let detachConsole: UnlistenFn;
   let unlistenError: UnlistenFn;
@@ -45,6 +47,10 @@
   let unlistenDeepLink: UnlistenFn;
 
   const pendingDeepLinkUrl = writable<URL | undefined>();
+
+  // The element that carries the theme's background colour.
+  let appRoot: HTMLDivElement;
+  usePageTransitions(() => appRoot);
 
   async function processDeepLink(url: URL) {
     info(`App is ready, processing pending deep link: ${url}`);
@@ -85,6 +91,10 @@
 
   onMount(async () => {
     detachConsole = await attachConsole();
+
+    if (import.meta.env.DEV) {
+      measureFrameRate().then((fps) => info(`Frame rate of requestAnimationFrame: ${fps} fps`));
+    }
 
     loadAllLocales(); //TODO: performance: only load locale on user request
 
@@ -444,7 +454,11 @@ Stacking context: We have to deviate from the DOM-sequence.
 
 <!-- Set default background and text color. -->
 <!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
-<div class="overflow-hidden text-text {page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
+<div
+  bind:this={appRoot}
+  class="overflow-hidden text-text {page.data.transparent ? 'bg-transparent' : 'bg-background'}"
+  class:dark
+>
   <!-- Default background for `safe-area-inset-top` is `bg-background`. Make it `bg-background-alt` when flag is set.  -->
   <div
     bind:this={safeAreaInsetTop}

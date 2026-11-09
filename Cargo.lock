@@ -13560,6 +13560,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-haptics"
+version = "2.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4ab6c843ce8255031547e6332c348ad8f2fbcb703f17b52a1a0dfacc5ad0e00"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.16",
+]
+
+[[package]]
 name = "tauri-plugin-keystore"
 version = "2.1.0-alpha.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13786,7 +13800,7 @@ dependencies = [
  "serde_with 3.14.0",
  "swift-rs",
  "thiserror 2.0.16",
- "toml 0.9.5",
+ "toml 1.1.8+spec-1.1.0",
  "url",
  "urlpattern",
  "uuid",
@@ -14704,6 +14718,7 @@ dependencies = [
  "tauri-plugin-biometric",
  "tauri-plugin-deep-link",
  "tauri-plugin-fs",
+ "tauri-plugin-haptics",
  "tauri-plugin-keystore",
  "tauri-plugin-log",
  "tauri-plugin-mcp-bridge",

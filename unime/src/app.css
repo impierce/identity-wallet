@@ -232,3 +232,145 @@
     user-select: none;
   }
 }
+
+/*
+ * Page transitions, started by `usePageTransitions` in `$lib/motion/pageTransitions.ts`. The whole page is captured,
+ * so only the root takes part. Only `transform` and `opacity` are animated, which the WebView composites natively.
+ */
+:root {
+  /* Close to the curve of UIKit's navigation push: a quick start that settles softly, without overshoot. */
+  --page-transition-ios-easing: cubic-bezier(0.32, 0.72, 0, 1);
+  --page-transition-ios-duration: 380ms;
+  /* Material 3's emphasized easing and the duration of its shared axis transition. */
+  --page-transition-material-easing: cubic-bezier(0.2, 0, 0, 1);
+  --page-transition-material-duration: 300ms;
+}
+
+html[data-page-transition]::view-transition {
+  background-color: var(--page-transition-backdrop, transparent);
+}
+
+html[data-page-transition]::view-transition-old(root),
+html[data-page-transition]::view-transition-new(root) {
+  mix-blend-mode: normal;
+  animation-fill-mode: both;
+}
+
+/* iOS: the new page slides in over the old one, which moves a little in the same direction. Back reverses it. */
+html[data-page-transition-style='ios'][data-page-transition]::view-transition-old(root),
+html[data-page-transition-style='ios'][data-page-transition]::view-transition-new(root) {
+  animation-duration: var(--page-transition-ios-duration);
+  animation-timing-function: var(--page-transition-ios-easing);
+}
+
+/* The page on top casts a faint shadow on its leading edge, as UIKit's does, so the edge reads when both pages share a
+   background colour. It doesn't move, so it costs nothing to animate. */
+html[data-page-transition-style='ios'][data-page-transition='forward']::view-transition-new(root),
+html[data-page-transition-style='ios'][data-page-transition='back']::view-transition-old(root) {
+  box-shadow: -2px 0 16px rgb(0 0 0 / 0.08);
+}
+
+html[data-page-transition-style='ios'][data-page-transition='forward']::view-transition-old(root) {
+  animation-name: page-ios-cover-to-leading;
+}
+
+html[data-page-transition-style='ios'][data-page-transition='forward']::view-transition-new(root) {
+  animation-name: page-ios-in-from-trailing;
+}
+
+html[data-page-transition-style='ios'][data-page-transition='back']::view-transition-old(root) {
+  /* The page that leaves stays on top, so the parent is revealed underneath it. */
+  z-index: 1;
+  animation-name: page-ios-out-to-trailing;
+}
+
+html[data-page-transition-style='ios'][data-page-transition='back']::view-transition-new(root) {
+  animation-name: page-ios-uncover-from-leading;
+}
+
+@keyframes page-ios-in-from-trailing {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes page-ios-out-to-trailing {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes page-ios-cover-to-leading {
+  to {
+    transform: translateX(-30%);
+  }
+}
+
+@keyframes page-ios-uncover-from-leading {
+  from {
+    transform: translateX(-30%);
+  }
+}
+
+/* Android and elsewhere: Material's shared axis on X. The old page fades out early, the new one fades in after it. */
+html[data-page-transition-style='material'][data-page-transition]::view-transition-old(root),
+html[data-page-transition-style='material'][data-page-transition]::view-transition-new(root) {
+  animation-duration: var(--page-transition-material-duration);
+  animation-timing-function: var(--page-transition-material-easing);
+}
+
+html[data-page-transition-style='material'][data-page-transition='forward']::view-transition-old(root) {
+  animation-name: page-material-out-to-leading;
+}
+
+html[data-page-transition-style='material'][data-page-transition='forward']::view-transition-new(root) {
+  animation-name: page-material-in-from-trailing;
+}
+
+html[data-page-transition-style='material'][data-page-transition='back']::view-transition-old(root) {
+  animation-name: page-material-out-to-trailing;
+}
+
+html[data-page-transition-style='material'][data-page-transition='back']::view-transition-new(root) {
+  animation-name: page-material-in-from-leading;
+}
+
+@keyframes page-material-out-to-leading {
+  35%,
+  to {
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-30px);
+  }
+}
+
+@keyframes page-material-out-to-trailing {
+  35%,
+  to {
+    opacity: 0;
+  }
+  to {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes page-material-in-from-trailing {
+  from,
+  35% {
+    opacity: 0;
+  }
+  from {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes page-material-in-from-leading {
+  from,
+  35% {
+    opacity: 0;
+  }
+  from {
+    transform: translateX(-30px);
+  }
+}

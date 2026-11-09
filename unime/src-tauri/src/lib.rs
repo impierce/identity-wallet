@@ -47,6 +47,7 @@ pub fn run() {
         builder = builder
             .plugin(tauri_plugin_barcode_scanner::init())
             .plugin(tauri_plugin_biometric::init())
+            .plugin(tauri_plugin_haptics::init())
             .plugin(tauri_plugin_keystore::init());
     }
 
