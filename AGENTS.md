@@ -7,8 +7,8 @@ pnpm workspace and a Cargo workspace.
 ## Prerequisites
 
 - Node.js 22 or newer and pnpm 10 or newer (enforced by `unime/package.json` and `.npmrc`).
-- A stable Rust toolchain with `rustfmt` and `clippy`. The workspace declares Rust 1.76 as its minimum supported
-  version, but development and CI use stable.
+- A stable Rust toolchain with `rustfmt` and `clippy`. The workspace declares Rust 1.95 as its minimum supported
+  version, the highest any dependency requires; development and CI use stable.
 - The platform prerequisites from the Tauri 2 documentation. Linux needs WebKitGTK and related system libraries;
   mobile development additionally needs Android Studio/SDK/NDK or Xcode.
 - For iOS builds with Xcode 27 or newer, the `llvm-tools` rustup component (`rustup component add llvm-tools`).
