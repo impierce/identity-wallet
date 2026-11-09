@@ -197,7 +197,7 @@ async fn get_validated_linked_credential_data(
             debug!("Issuer document: {issuer_document:#?}");
 
             // Resolve the issuer linked domains from the issuer document
-            let issuer_linked_domains = get_issuer_linked_domains(&issuer_document).await;
+            let issuer_linked_domains = get_linked_domains(&issuer_document);
 
             debug!("Issuer linked domains: {issuer_linked_domains:#?}");
 
@@ -339,11 +339,11 @@ async fn get_validated_linked_domains(
     .await
 }
 
-/// Get the linked domains from the issuer document. It returns a list of URLs if the service type is `LinkedDomains`.
+/// Get the linked domains from a DID document. It returns a list of URLs if the service type is `LinkedDomains`.
 /// The service endpoint can be an object with `origins`, a single URL or a set of URLs:
 /// https://identity.foundation/.well-known/resources/did-configuration/#linked-domain-service-endpoint
-async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
-    issuer_document
+pub(crate) fn get_linked_domains(document: &CoreDocument) -> Vec<Url> {
+    document
         .service()
         .iter()
         .filter_map(|service| {
@@ -913,7 +913,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_issuer_linked_domains_supports_all_service_endpoint_forms() {
+    async fn get_linked_domains_supports_all_service_endpoint_forms() {
         let mut issuer = TestEntity::new().await;
         let domain_a: url::Url = "https://a.example.com/".parse().unwrap();
         let domain_b: url::Url = "https://b.example.com/".parse().unwrap();
@@ -933,7 +933,7 @@ mod tests {
             issuer.did_document.insert_service(service).unwrap();
         }
 
-        let linked_domains = get_issuer_linked_domains(&issuer.did_document).await;
+        let linked_domains = get_linked_domains(&issuer.did_document);
 
         assert_eq!(linked_domains.len(), 3);
         assert!([domain_a, domain_b, domain_c]
