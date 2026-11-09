@@ -15,6 +15,9 @@ pub fn run() {
     use tauri::Manager;
     use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
+    // Loaded first, so that `unime/.env` debug switches such as `LOG_FULL_PAYLOADS` apply to the log filter below.
+    dotenvy::dotenv().ok();
+
     let mut builder = tauri::Builder::default();
 
     #[cfg(desktop)]
@@ -57,6 +60,12 @@ pub fn run() {
     } else {
         LevelFilter::Info
     };
+    // Full protocol payloads from the openid4vc crates are TRACE: only with `LOG_FULL_PAYLOADS=true` in a debug build.
+    let oid4vc_log_level = if identity_wallet::logging::debug_flag("LOG_FULL_PAYLOADS") {
+        LevelFilter::Trace
+    } else {
+        wallet_log_level
+    };
 
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
@@ -71,7 +80,6 @@ pub fn run() {
                 let assets_dir = ASSETS_DIR.lock().unwrap().clone();
                 app.asset_protocol_scope().allow_directory(&assets_dir, true)?;
             }
-            dotenvy::dotenv().ok();
             Ok(())
         })
         .manage(AppStateContainer(Default::default()))
@@ -81,12 +89,12 @@ pub fn run() {
                 .level(LevelFilter::Info)
                 .level_for("unime", wallet_log_level)
                 .level_for("identity_wallet", wallet_log_level)
-                .level_for("oid4vc", wallet_log_level)
-                .level_for("oid4vc_core", wallet_log_level)
-                .level_for("oid4vci", wallet_log_level)
-                .level_for("oid4vp", wallet_log_level)
-                .level_for("siopv2", wallet_log_level)
-                .level_for("oid4vc_manager", wallet_log_level)
+                .level_for("oid4vc", oid4vc_log_level)
+                .level_for("oid4vc_core", oid4vc_log_level)
+                .level_for("oid4vci", oid4vc_log_level)
+                .level_for("oid4vp", oid4vc_log_level)
+                .level_for("siopv2", oid4vc_log_level)
+                .level_for("oid4vc_manager", oid4vc_log_level)
                 .with_colors(
                     ColoredLevelConfig::new()
                         .trace(Color::White)

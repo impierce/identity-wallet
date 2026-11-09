@@ -273,7 +273,8 @@ Logging follows `docs/adr/0003-no-personal-data-in-logs.md`, in this repository 
   Log a URL that grants access (a `credential_offer_uri`, a public link) with `identity_wallet::logging::url_host`,
   and an endpoint whose query carries request parameters with `url_without_query`.
 - Full payloads go only through `identity_wallet::log_payload!`, which logs at DEBUG in debug builds when
-  `LOG_FULL_PAYLOADS=true` is set in `unime/.env`, and never in release builds.
+  `LOG_FULL_PAYLOADS=true` is set in `unime/.env`, and never in release builds. In the openid4vc library, full
+  payloads are logged at TRACE; `unime/src-tauri/src/lib.rs` raises the openid4vc crates to TRACE with the same switch.
 - In the frontend, log the action type or a count, never a payload or a URL from a deep link or QR code.
 - Keep the manual `Debug` implementations that redact secrets in action payloads (`CheckPassword`, `UnlockStorage`,
   `CreateNew`). Do not add file or remote logging without revisiting `docs/adr/0002-logging-sensitive-information.md`.

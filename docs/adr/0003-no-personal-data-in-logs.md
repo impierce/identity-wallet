@@ -40,6 +40,9 @@ Full payload logging is tied to debug builds and not to Dev Mode, because Dev Mo
 builds through the settings screen.
 
 The same rules apply to the openid4vc library, whose `oid4vc*` and `siopv2` crates log through the same pipeline.
+The library cannot read UniMe's switches, so it logs full protocol payloads at TRACE and everything else at DEBUG or
+above. UniMe logs the openid4vc crates at DEBUG in debug builds and raises them to TRACE only through the same
+`LOG_FULL_PAYLOADS` switch. Other consumers of the library see these payloads only if they log its crates at TRACE.
 
 ## Consequences
 
