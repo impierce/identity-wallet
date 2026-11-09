@@ -1,4 +1,3 @@
-use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use futures::future::join_all;
@@ -22,7 +21,7 @@ use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, Decod
 use log::{debug, info, warn};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::{str::FromStr, time::Duration};
+use std::{future::Future, str::FromStr, time::Duration};
 use ts_rs::TS;
 use url::{Host, Url};
 
@@ -306,10 +305,9 @@ fn normalize_name(name: &str) -> String {
     name.trim_end_matches('.').to_ascii_lowercase()
 }
 
-#[async_trait]
 trait CnameResolver: Sync {
     /// The target of the `CNAME` record of `name`, or `None` when `name` has none.
-    async fn cname(&self, name: &str) -> Result<Option<String>, String>;
+    fn cname(&self, name: &str) -> impl Future<Output = Result<Option<String>, String>> + Send;
 }
 
 /// Looks up `CNAME` records with the resolvers of the operating system, or public resolvers where its configuration
@@ -336,7 +334,6 @@ impl DnsCnameResolver {
     }
 }
 
-#[async_trait]
 impl CnameResolver for DnsCnameResolver {
     async fn cname(&self, name: &str) -> Result<Option<String>, String> {
         // The trailing dot makes the name fully qualified, so no search domain is appended to it.
@@ -790,7 +787,6 @@ mod connection_domain_tests {
         }
     }
 
-    #[async_trait]
     impl CnameResolver for FakeCnames {
         async fn cname(&self, name: &str) -> Result<Option<String>, String> {
             self.lookups.lock().unwrap().push(name.to_string());
