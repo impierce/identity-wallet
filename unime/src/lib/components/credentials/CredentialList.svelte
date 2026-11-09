@@ -8,9 +8,7 @@
   import { GhostFillIcon, SealCheckFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { getCredentialValidity } from '$lib/utils/credentialValidity';
-  import { issuerEcosystems } from '$lib/utils/ecosystems';
 
-  import EcosystemBadges from '../ecosystems/EcosystemBadges.svelte';
   import CredentialValidityIcon from './CredentialValidityIcon.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -47,8 +45,7 @@
         isInvalid={validity.state !== 'valid'}
         on:click={() => goto(`/credentials/${credential.id}`)}
       >
-        <div slot="right" class="flex items-center">
-          <EcosystemBadges ecosystems={issuerEcosystems(credential, $state.connections).ecosystems} />
+        <div slot="right">
           <CredentialValidityIcon {validity} />
         </div>
       </ListItemCard>

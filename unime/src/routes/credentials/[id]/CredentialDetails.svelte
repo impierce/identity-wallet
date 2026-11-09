@@ -6,7 +6,6 @@
   import { dispatch } from '$lib/dispatcher';
 
   import CredentialClaimsRenderer from './CredentialClaimsRenderer.svelte';
-  import CredentialEcosystems from './CredentialEcosystems.svelte';
   import CredentialHeader from './CredentialHeader.svelte';
   import CredentialOverview from './CredentialOverview.svelte';
 
@@ -14,29 +13,17 @@
   // Hides the favorite button and the menu, e.g. when the credential is inspected while sharing.
   export let actions = true;
 
-  // What is on screen may be outdated while this is set.
-  let refreshing = false;
-
-  // Status and ecosystems are fetched from the issuer's side each time a credential is opened, and on request.
-  async function refresh() {
-    refreshing = true;
-    try {
-      await Promise.all([
-        dispatch({ type: '[Credential] Refresh status', payload: { credential_id: credential.id } }),
-        dispatch({ type: '[Credential] Refresh ecosystems', payload: { credential_id: credential.id } }),
-      ]);
-    } finally {
-      refreshing = false;
-    }
-  }
-
-  onMount(refresh);
+  // Status and ecosystems are fetched from the issuer's side each time a credential is opened.
+  onMount(() => {
+    dispatch({ type: '[Credential] Refresh status', payload: { credential_id: credential.id } });
+    dispatch({ type: '[Credential] Refresh ecosystems', payload: { credential_id: credential.id } });
+  });
 </script>
 
 <!--
 @component
-The details of a credential: its header with the title in the default slot, its validity and issuer, the ecosystems
-endorsing its issuer, and its claims. Opening it refreshes its status and ecosystems.
+The details of a credential: its header with the title in the default slot, its validity, issuer and the ecosystems
+endorsing the issuer, and its claims. Opening it refreshes its status and ecosystems.
 Used by the credential page and when inspecting a credential while sharing.
 
 ### Props
@@ -53,6 +40,5 @@ Used by the credential page and when inspecting a credential while sharing.
   </CredentialHeader>
   <slot name="header-actions" />
   <CredentialOverview {credential} />
-  <CredentialEcosystems {credential} {refreshing} on:refresh={refresh} />
   <CredentialClaimsRenderer {credential} />
 </div>

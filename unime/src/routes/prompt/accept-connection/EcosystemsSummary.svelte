@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
+  import { twMerge } from 'tailwind-merge';
 
   import type { EcosystemProfile } from '@bindings/user_prompt/EcosystemProfile';
 
@@ -8,7 +9,15 @@
 
   export let ecosystems: EcosystemProfile[];
   export let href: string | undefined = undefined;
-  export let isTempAsset = true;
+  export let isTempAsset: boolean | 'fallback' = true;
+
+  // Defaults to "Ecosystems".
+  export let title: string | undefined = undefined;
+
+  let className = '';
+  export { className as class };
+  // Matches the card's background, so the overlapping logos stay apart.
+  export let ringClass = 'ring-white dark:ring-dark';
 
   // Past three the overlap stops reading as distinct marks. Matches `CertificationsSummary`.
   const STACK_COUNT = 3;
@@ -36,14 +45,22 @@ tap target — "See all" is a label, not a separate link.
 
 ### Props
 - ecosystems
+- href (_default_: the ecosystems of the connection request)
+- isTempAsset (_default_: `true`)
+- title (_default_: "Ecosystems")
+- class (_overwrite the card's Tailwind classes, e.g. its background_)
+- ringClass (_ring colour around each logo, default_: `'ring-white dark:ring-dark'`)
 -->
 <a
   href={destination}
-  class="flex w-full flex-col rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+  class={twMerge(
+    'flex w-full flex-col rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark',
+    className,
+  )}
 >
   <div class="flex items-center justify-between">
     <p class="text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">
-      {$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEMS()}
+      {title ?? $LL.SCAN.CONNECTION_REQUEST.ECOSYSTEMS()}
     </p>
     <span class="text-[13px]/[24px] font-normal text-primary">
       {$LL.SCAN.CONNECTION_REQUEST.SEE_ALL_ECOSYSTEMS()}
@@ -56,7 +73,7 @@ tap target — "See all" is a label, not a separate link.
         <EcosystemAvatar
           name={ecosystem.name}
           logoUri={ecosystem.logo_uri}
-          class="size-8 rounded-full ring-2 ring-white dark:ring-dark"
+          class={twMerge('size-8 rounded-full ring-2', ringClass)}
           textClass="text-[11px]/[16px]"
           {isTempAsset}
         />

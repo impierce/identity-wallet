@@ -470,6 +470,7 @@ const nl_NL = {
       BY_THE_ISSUER: 'Door de uitgever',
       VALID_FROM: 'Vanaf {date}',
       ISSUED_BY: 'Uitgegeven door',
+      ENDORSED_BY: 'Erkend door',
       SELF_SIGNED: 'jezelf',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {
@@ -482,20 +483,6 @@ const nl_NL = {
         CRITERIA: 'Criteria',
         VALUE: 'Cijfer',
       },
-    },
-    REFRESH: 'Vernieuwen',
-    REFRESHING: 'Bijwerken…',
-    ECOSYSTEMS: {
-      TITLE: 'Erkend door',
-      ENDORSED_BY: 'Erkend door {names}',
-      UNCONFIRMED: 'Deze erkenningen konden nu niet worden bevestigd.',
-      UNCONFIRMED_SINCE:
-        'Deze erkenningen konden nu niet worden bevestigd. Ze zijn voor het laatst bevestigd op {date}.',
-      UNCHECKED: 'Er kon niet worden gecontroleerd of de uitgever door een ecosysteem wordt erkend.',
-      ISSUER: 'Uitgever',
-      ECOSYSTEM_LEADER: 'Ecosysteemleider',
-      SHOW_TRUST_CHAIN: 'Toon de vertrouwensketen van {name}',
-      TRUST_CHAIN_PENDING: 'De vertrouwensketen wordt getoond na de volgende vernieuwing.',
     },
     RENDERER: {
       PID: {

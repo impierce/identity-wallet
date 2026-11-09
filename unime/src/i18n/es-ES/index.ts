@@ -471,6 +471,7 @@ const es_ES = {
       BY_THE_ISSUER: 'Por el emisor',
       VALID_FROM: 'Desde el {date}',
       ISSUED_BY: 'Emitidas por',
+      ENDORSED_BY: 'Respaldado por',
       SELF_SIGNED: 'Autofirmadas',
       DESCRIPTION: 'Descripción',
       OPEN_BADGES: {
@@ -483,20 +484,6 @@ const es_ES = {
         CRITERIA: 'Criterio',
         VALUE: 'Nota',
       },
-    },
-    REFRESH: 'Actualizar',
-    REFRESHING: 'Actualizando…',
-    ECOSYSTEMS: {
-      TITLE: 'Respaldado por',
-      ENDORSED_BY: 'Respaldado por {names}',
-      UNCONFIRMED: 'No se han podido confirmar estos respaldos en este momento.',
-      UNCONFIRMED_SINCE:
-        'No se han podido confirmar estos respaldos en este momento. Se confirmaron por última vez el {date}.',
-      UNCHECKED: 'No se ha podido comprobar si el emisor está respaldado por un ecosistema.',
-      ISSUER: 'Emisor',
-      ECOSYSTEM_LEADER: 'Líder del ecosistema',
-      SHOW_TRUST_CHAIN: 'Mostrar la cadena de confianza de {name}',
-      TRUST_CHAIN_PENDING: 'La cadena de confianza se mostrará tras la próxima actualización.',
     },
     RENDERER: {
       PID: {

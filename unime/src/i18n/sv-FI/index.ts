@@ -469,6 +469,7 @@ const sv_FI = {
       BY_THE_ISSUER: 'Av utfärdaren',
       VALID_FROM: 'Från {date}',
       ISSUED_BY: 'Utfärdad av',
+      ENDORSED_BY: 'Godkänd av',
       SELF_SIGNED: 'dig själv',
       DESCRIPTION: 'Beskrivning',
       OPEN_BADGES: {
@@ -481,19 +482,6 @@ const sv_FI = {
         CRITERIA: 'Kriterier',
         VALUE: 'Betyg',
       },
-    },
-    REFRESH: 'Uppdatera',
-    REFRESHING: 'Uppdaterar…',
-    ECOSYSTEMS: {
-      TITLE: 'Godkänd av',
-      ENDORSED_BY: 'Godkänd av {names}',
-      UNCONFIRMED: 'Dessa godkännanden kunde inte bekräftas just nu.',
-      UNCONFIRMED_SINCE: 'Dessa godkännanden kunde inte bekräftas just nu. De bekräftades senast {date}.',
-      UNCHECKED: 'Det gick inte att kontrollera om utfärdaren är godkänd av ett ekosystem.',
-      ISSUER: 'Utfärdare',
-      ECOSYSTEM_LEADER: 'Ekosystemledare',
-      SHOW_TRUST_CHAIN: 'Visa förtroendekedjan för {name}',
-      TRUST_CHAIN_PENDING: 'Förtroendekedjan visas efter nästa uppdatering.',
     },
     RENDERER: {
       PID: {
