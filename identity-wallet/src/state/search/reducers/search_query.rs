@@ -48,6 +48,7 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
             match_count,
             total_count
         );
+        crate::log_payload!("Credential search term: {}", query.search_term);
 
         return Ok(AppState {
             search_results,

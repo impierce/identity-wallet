@@ -21,6 +21,7 @@ pub fn run() {
     {
         builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
             info!("New app instance opened with {} argument(s)", argv.len());
+            identity_wallet::log_payload!("New app instance arguments: {argv:?}");
         }));
     }
 

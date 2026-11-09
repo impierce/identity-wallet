@@ -310,6 +310,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             };
 
             debug!("Proof nonce present: {}", nonce.is_some());
+            crate::log_payload!("Proof nonce: {nonce:?}");
 
             // Determine if the token request was pre-authorized and if anonymous access is supported.
             // See: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#section-8.2.1.1-2.2.2.2

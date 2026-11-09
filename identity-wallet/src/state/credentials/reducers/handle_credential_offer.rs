@@ -297,6 +297,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             "Credentials matching interactive OID4VP request: {}",
                             summarize_requested_credentials(&requested_credentials)
                         );
+                        crate::log_payload!("Requested credentials: {requested_credentials:?}");
 
                         // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
                         let ClientMetadata {

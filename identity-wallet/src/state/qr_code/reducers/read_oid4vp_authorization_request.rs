@@ -39,6 +39,7 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
             "Loaded {} verifiable credential(s) from Stronghold",
             verifiable_credentials.len()
         );
+        crate::log_payload!("Verifiable credentials: {verifiable_credentials:?}");
 
         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
         let requested_credentials = match_credential_queries(dcql_query, &verifiable_credentials);

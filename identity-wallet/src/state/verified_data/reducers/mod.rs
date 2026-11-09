@@ -66,6 +66,7 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
         let body = json!({ "email": action.email });
         info!("Sending email verification request");
+        crate::log_payload!("Email verification request for: {}", action.email);
         debug!("Verification request POST to {url}");
         let response = crate::http_client::get_http_client()
             .await
