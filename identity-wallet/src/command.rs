@@ -139,7 +139,7 @@ pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyh
     window.emit(STATE_CHANGED_EVENT, app_state)?;
 
     // Print to console or write to file (default)
-    if cfg!(debug_assertions) && crate::logging::env_flag("LOG_STATE_UPDATES_TO_CONSOLE") {
+    if crate::logging::debug_flag("LOG_STATE_UPDATES_TO_CONSOLE") {
         debug!(
             "emitted event `{}` with payload:\n{}",
             STATE_CHANGED_EVENT,

@@ -2,26 +2,23 @@
 //!
 //! Log lines contain only IDs, credential types, counts, issuer/verifier names and hosts, statuses, and durations.
 //! Credentials, claims, tokens, codes, nonces, protocol payloads, actions, and app state are logged only through
-//! [`log_payload!`], which is a no-op unless [`full_payloads_enabled`] returns `true`.
+//! [`log_payload!`], which is a no-op unless `LOG_FULL_PAYLOADS=true` is set in a debug build.
 
-/// Whether full payloads may be logged: only in debug builds, and only when `LOG_FULL_PAYLOADS=true` is set.
-pub fn full_payloads_enabled() -> bool {
-    cfg!(debug_assertions) && env_flag("LOG_FULL_PAYLOADS")
+/// Whether a debug switch such as `LOG_FULL_PAYLOADS` is on: only in debug builds, and only when the environment
+/// variable is set to `true`. Always `false` in release builds, whatever the environment says.
+pub fn debug_flag(name: &str) -> bool {
+    cfg!(debug_assertions)
+        && std::env::var(name)
+            .ok()
+            .and_then(|value| value.parse().ok())
+            .unwrap_or(false)
 }
 
-/// Reads a boolean environment variable, defaulting to `false`.
-pub(crate) fn env_flag(name: &str) -> bool {
-    std::env::var(name)
-        .ok()
-        .and_then(|value| value.parse().ok())
-        .unwrap_or(false)
-}
-
-/// Logs a full payload at DEBUG, only when [`full_payloads_enabled`] returns `true`.
+/// Logs a full payload at DEBUG, only when `LOG_FULL_PAYLOADS=true` is set in a debug build.
 #[macro_export]
 macro_rules! log_payload {
     ($($arg:tt)+) => {
-        if $crate::logging::full_payloads_enabled() {
+        if $crate::logging::debug_flag("LOG_FULL_PAYLOADS") {
             log::debug!($($arg)+);
         }
     };

@@ -200,7 +200,7 @@ pub fn summarize_requested_credentials(requested_credentials: &[RequestedCredent
         .iter()
         .map(|requested| {
             format!(
-                "{} {:?}: {} option(s)",
+                "{} {:?}: {} candidate(s)",
                 requested.query_id,
                 requested.types,
                 requested.options.len()
