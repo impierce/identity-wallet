@@ -7,7 +7,7 @@ use tauri::Manager;
 use tempfile::NamedTempFile;
 
 use crate::common::extensions::CustomExtension;
-use crate::common::mock_app;
+use crate::common::{app_origin, mock_app};
 
 /// Asserts that the state is updated as expected after the given action is handled.
 pub async fn assert_state_update(
@@ -38,7 +38,7 @@ pub async fn assert_state_update(
                 cmd: "handle_action".into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
-                url: url::Url::parse("tauri://localhost").unwrap(),
+                url: app_origin(),
                 body: json!({ "action": action }).into(),
                 headers: Default::default(),
                 invoke_key: tauri::test::INVOKE_KEY.to_string(),

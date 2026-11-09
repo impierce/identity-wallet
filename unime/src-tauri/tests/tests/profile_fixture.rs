@@ -11,7 +11,7 @@ use std::path::Path;
 use tauri::Manager;
 use tempfile::TempDir;
 
-use crate::common::mock_app;
+use crate::common::{app_origin, mock_app};
 
 /// Profile created with UniMe 0.18.0 through the regular onboarding, see `tests/fixtures/profiles/v0.18.0/README.md`.
 pub(crate) const PROFILE_V0_18_0: &str = "tests/fixtures/profiles/v0.18.0";
@@ -45,7 +45,7 @@ pub(crate) async fn handle_actions(actions: Vec<Action>) -> AppState {
                 cmd: "handle_action".into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
-                url: url::Url::parse("tauri://localhost").unwrap(),
+                url: app_origin(),
                 body: json!({ "action": action }).into(),
                 headers: Default::default(),
                 invoke_key: tauri::test::INVOKE_KEY.to_string(),
