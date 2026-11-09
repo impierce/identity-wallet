@@ -33,7 +33,10 @@
         <ConnectionsList />
       </div>
       <div slot="1" class="h-full">
-        <History />
+        <!-- Rendered once its tab is opened, so that the connections show without waiting for the whole history. -->
+        {#if $activeTab === triggers[1]}
+          <History />
+        {/if}
       </div>
     </Tabs>
   </div>
