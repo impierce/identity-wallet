@@ -24,6 +24,17 @@ use std::sync::Arc;
 const KEY_ID: &str = "ed25519-0";
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 
+/// The origin of the app's own pages, which mock IPC requests must come from: Tauri 2.12 rejects app commands from any
+/// other origin. Windows and Android serve the app from `http://tauri.localhost` instead of the `tauri://` scheme.
+pub fn app_origin() -> url::Url {
+    let origin = if cfg!(any(windows, target_os = "android")) {
+        "http://tauri.localhost"
+    } else {
+        "tauri://localhost"
+    };
+    origin.parse().unwrap()
+}
+
 /// Builds a mock app that manages `state` and handles `handle_action`.
 ///
 /// The only `tauri::generate_context!()` in the test crate: on macOS every expansion defines the same
