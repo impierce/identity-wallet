@@ -1,4 +1,4 @@
-use crate::logging::url_host;
+use crate::logging::url_without_query;
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
@@ -385,8 +385,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             .append_pair("request_uri", &par_response.request_uri.to_string());
 
                         info!(
-                            "Opening authorization endpoint of `{}` in browser",
-                            url_host(&authorization_endpoint)
+                            "Opening authorization endpoint `{}` in browser",
+                            url_without_query(&authorization_endpoint)
                         );
                         let app_handle = state
                             .core_utils

@@ -270,7 +270,8 @@ Logging follows `docs/adr/0003-no-personal-data-in-logs.md`, in this repository 
 - Log only IDs, credential types, counts, statuses, durations, and issuer/verifier names and hosts.
 - Never log credentials, claim values, credential offers, tokens, codes, nonces, `state`, request URIs, VP/ID/proof
   JWTs, public links, profile data or other user input, QR code or deep link contents, action payloads, or app state.
-  Log a URL with `identity_wallet::logging::url_host` when its path or query can carry a secret.
+  Log a URL that grants access (a `credential_offer_uri`, a public link) with `identity_wallet::logging::url_host`,
+  and an endpoint whose query carries request parameters with `url_without_query`.
 - Full payloads go only through `identity_wallet::log_payload!`, which logs at DEBUG in debug builds when
   `LOG_FULL_PAYLOADS=true` is set in `unime/.env`, and never in release builds.
 - In the frontend, log the action type or a count, never a payload or a URL from a deep link or QR code.
