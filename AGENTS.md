@@ -7,8 +7,8 @@ pnpm workspace and a Cargo workspace.
 ## Prerequisites
 
 - Node.js 22 or newer and pnpm 10 or newer (enforced by `unime/package.json` and `.npmrc`).
-- A stable Rust toolchain with `rustfmt` and `clippy`. The workspace declares Rust 1.76 as its minimum supported
-  version, but development and CI use stable.
+- A stable Rust toolchain with `rustfmt` and `clippy`. The workspace declares Rust 1.95 as its minimum supported
+  version, the highest any dependency requires; development and CI use stable.
 - The platform prerequisites from the Tauri 2 documentation. Linux needs WebKitGTK and related system libraries;
   mobile development additionally needs Android Studio/SDK/NDK or Xcode.
 - For iOS builds with Xcode 27 or newer, the `llvm-tools` rustup component (`rustup component add llvm-tools`).
@@ -44,10 +44,11 @@ The root `package.json` proxies frontend and Tauri commands into the `unime` wor
 # Run the desktop application (Vite plus Tauri)
 pnpm tauri dev
 
-# Same, with the window exposed to the Tauri MCP server (@hypothesi/tauri-mcp-server@0.13.0)
-# for UI automation by AI agents. The bridge only runs in debug desktop builds, on 127.0.0.1, port 9223 or the
-# next free port up to 9322. The chosen port is logged as `[MCP][WS_SERVER] WebSocket server listening on: ...`; the
-# MCP server scans that range to find the app, or pass the port to its `driver_session` tool.
+# Same, with the window exposed to the Tauri MCP server (@hypothesi/tauri-mcp-server@0.13.0, configured for Claude
+# Code in `.mcp.json`) for UI automation by AI agents. The bridge only runs in debug desktop builds, on 127.0.0.1,
+# port 9223 or the next free port up to 9322. The chosen port is logged as
+# `[MCP][WS_SERVER] WebSocket server listening on: ...`; the MCP server scans that range to find the app, or pass the
+# port to its `driver_session` tool.
 pnpm tauri:mcp
 
 # Frontend-only development server at http://localhost:4173

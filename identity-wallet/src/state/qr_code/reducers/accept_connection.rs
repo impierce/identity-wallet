@@ -101,11 +101,11 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         let domain_validation = {
             #[cfg(not(feature = "test_utils"))]
             {
-                use crate::state::did::validate_domain_linkage::validate_domain_linkage;
+                use crate::state::did::validate_domain_linkage::validate_connection_domain;
 
                 let resolver = subject.resolver().await;
 
-                Box::new(validate_domain_linkage(resolver.as_ref(), url.clone(), &did).await)
+                Box::new(validate_connection_domain(resolver.as_ref(), url.clone(), &did).await)
             }
             #[cfg(feature = "test_utils")]
             {
