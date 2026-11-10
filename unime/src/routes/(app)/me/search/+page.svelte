@@ -10,6 +10,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { GhostFillIcon, MagnifyingGlassFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { currentIssuerName } from '$lib/utils/issuer';
 
   import RecentSearches from './RecentSearches.svelte';
   import Search from './Search.svelte';
@@ -71,7 +72,7 @@
           <ListItemCard
             id={credential.id}
             title={credential.display_name}
-            description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+            description={currentIssuerName(credential, $state.connections)}
             type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
             on:click={() => {
               dispatch({ type: '[Search] Add recent', payload: { id: credential.id } });

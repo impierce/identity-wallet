@@ -2,6 +2,7 @@ pub mod actions;
 pub mod reducers;
 
 use crate::state::{
+    credentials::DisplayCredential,
     did::{
         validate_domain_linkage::ValidationStatus,
         validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
@@ -30,6 +31,18 @@ impl Connections {
 
     pub fn contains(&self, did: &str) -> bool {
         self.0.iter().any(|connection| connection.did == did)
+    }
+
+    /// The name of a credential's issuer as it is now. Credentials keep the name the issuer had at issuance, while the
+    /// connection is renamed on every later interaction, so the connection's name wins when the credential has one.
+    pub fn current_issuer_name<'a>(&'a self, credential: &'a DisplayCredential) -> &'a str {
+        credential
+            .connection_id
+            .as_ref()
+            .and_then(|connection_id| self.0.iter().find(|connection| &connection.id == connection_id))
+            .map(|connection| connection.name.as_str())
+            .filter(|name| !name.is_empty())
+            .unwrap_or(&credential.issuer_name)
     }
 
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
@@ -174,6 +187,40 @@ mod tests {
             linked_verifiable_presentations: None,
             ecosystems: None,
         }
+    }
+
+    #[test]
+    fn test_current_issuer_name_follows_the_connection() {
+        let mut connections = Connections::new();
+        let did = CoreDID::from_str("did:example:123").unwrap();
+        let connection_id = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(
+                "https://example.com",
+                "Old name",
+                did.clone(),
+            ))
+            .id
+            .clone();
+        let credential = DisplayCredential {
+            issuer_name: "Old name".to_string(),
+            connection_id: Some(connection_id),
+            ..Default::default()
+        };
+
+        connections.update_last_interaction_or_insert_new(&pending_connection_data(
+            "https://example.com",
+            "New name",
+            did,
+        ));
+        assert_eq!(connections.current_issuer_name(&credential), "New name");
+
+        // Without its connection, a credential keeps the name the issuer had at issuance.
+        assert_eq!(Connections::new().current_issuer_name(&credential), "Old name");
+        let self_issued = DisplayCredential {
+            issuer_name: "Me".to_string(),
+            ..Default::default()
+        };
+        assert_eq!(connections.current_issuer_name(&self_issued), "Me");
     }
 
     #[test]

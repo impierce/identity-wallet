@@ -17,9 +17,13 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
                 .iter()
                 .partition(|credential| contains_search_term(Some(&credential.display_name), &query.search_term));
 
-            let (filtered_creds_issuer, credentials): (Vec<_>, Vec<_>) = credentials
-                .into_iter()
-                .partition(|credential| contains_search_term(Some(&credential.issuer_name), &query.search_term));
+            let (filtered_creds_issuer, credentials): (Vec<_>, Vec<_>) =
+                credentials.into_iter().partition(|credential| {
+                    contains_search_term(
+                        Some(state.connections.current_issuer_name(credential)),
+                        &query.search_term,
+                    )
+                });
 
             let filtered_creds_content: Vec<_> = credentials
                 .into_iter()

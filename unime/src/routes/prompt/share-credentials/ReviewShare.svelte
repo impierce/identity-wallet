@@ -8,6 +8,8 @@
 
   import { Button, TopNavBar } from '$lib/components';
   import { CheckRegularIcon, EyeSlashRegularIcon, IdentificationBadgeRegularIcon, SealCheckFillIcon } from '$lib/icons';
+  import { state } from '$lib/stores';
+  import { currentIssuerName } from '$lib/utils/issuer';
 
   import VerifierHeader from './VerifierHeader.svelte';
 
@@ -54,10 +56,11 @@ The last check before sharing: exactly which fields go to the verifier, per cred
         </p>
       </div>
       {#each shared as { credential, fields }, position (`${credential.id}-${position}`)}
+        {@const issuerName = currentIssuerName(credential, $state.connections)}
         <div class="flex items-center gap-2 px-[14px] pt-3 pb-1 text-slate-500 dark:text-slate-300">
           <IdentificationBadgeRegularIcon class="size-4 shrink-0" />
           <p class="truncate text-[12px]/[20px] font-medium">
-            {credential.display_name}{credential.issuer_name ? ` · ${credential.issuer_name}` : ''}
+            {credential.display_name}{issuerName ? ` · ${issuerName}` : ''}
           </p>
         </div>
         {#each fields as field}
