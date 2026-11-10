@@ -481,8 +481,10 @@ pub(crate) async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<Ecos
 
     let ecosystems: Vec<EcosystemProfile> =
         futures::future::join_all(trust_anchors.iter().map(|(id, configuration, trust_chain)| async {
+            // The trust anchor's own entity configuration ends the chain, which verified it.
+            let trust_anchor_statement = trust_chain.chain.last().map(String::as_str);
             let (ecosystem_profile, trust_chain) = futures::future::join(
-                resolve_ecosystem_profile(&federation_client, id, configuration),
+                resolve_ecosystem_profile(&federation_client, id, configuration, trust_anchor_statement),
                 trust_chain_members(&federation_client, trust_chain),
             )
             .await;
@@ -575,10 +577,19 @@ async fn resolve_ecosystem_profile(
     federation_client: &FederationClient,
     trust_anchor_id: &EntityId,
     trust_anchor_configuration: &EntityConfiguration,
+    trust_anchor_statement: Option<&str>,
 ) -> EcosystemProfile {
     let ecosystem_profile = match fetch_ecosystem_profile(trust_anchor_id.as_url()).await {
         Some(ecosystem_profile) => ecosystem_profile,
-        None => federation_ecosystem_profile(federation_client, trust_anchor_id, trust_anchor_configuration).await,
+        None => {
+            federation_ecosystem_profile(
+                federation_client,
+                trust_anchor_id,
+                trust_anchor_configuration,
+                trust_anchor_statement,
+            )
+            .await
+        }
     };
 
     download_profile_logos(&ecosystem_profile).await;
@@ -646,8 +657,8 @@ async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<Ec
 const MAX_FEDERATION_MEMBERS: usize = 20;
 
 /// Describes an ecosystem through the standardized OpenID Federation endpoints only: the trust anchor's own
-/// `federation_entity` metadata names the ecosystem and its leader, and the trust anchor's federation list endpoint
-/// enumerates its members (its immediate subordinates).
+/// `federation_entity` metadata names the ecosystem and its leader (see `ecosystem_leader`), and the trust anchor's
+/// federation list endpoint enumerates its members (its immediate subordinates).
 ///
 /// Reference: OpenID Federation 1.0 - Section 5.1.1 Federation Entity, Section 5.2.2 Informational Metadata
 /// Parameters, Section 8.3 Subordinate Listing
@@ -655,9 +666,12 @@ async fn federation_ecosystem_profile(
     federation_client: &FederationClient,
     trust_anchor_id: &EntityId,
     trust_anchor_configuration: &EntityConfiguration,
+    trust_anchor_statement: Option<&str>,
 ) -> EcosystemProfile {
     let federation_entity = federation_entity_metadata(trust_anchor_configuration);
-    let ecosystem_leader = federation_member(trust_anchor_id, federation_entity);
+    // The trust anchor is the ecosystem: its name, logo and description are the ecosystem's.
+    let ecosystem = federation_member(trust_anchor_id, federation_entity);
+    let ecosystem_leader = ecosystem_leader(trust_anchor_id, federation_entity, trust_anchor_statement);
 
     let member_ids = match federation_entity.and_then(|metadata| metadata.federation_list_endpoint.as_ref()) {
         Some(list_endpoint) => federation_client
@@ -677,13 +691,53 @@ async fn federation_ecosystem_profile(
     .await;
 
     EcosystemProfile {
-        logo_uri: ecosystem_leader.logo_uri.clone(),
-        name: ecosystem_leader.name.clone(),
-        description: ecosystem_leader.description.clone(),
+        logo_uri: ecosystem.logo_uri,
+        name: ecosystem.name,
+        description: ecosystem.description,
         ecosystem_leader,
         member_count: member_ids.len(),
         members,
         trust_chain: Vec::new(),
+    }
+}
+
+/// UniTrust's parameter for the leader's logo on a trust anchor, whose `logo_uri` is the ecosystem's own.
+const UNITRUST_ORGANIZATION_LOGO_URI: &str = "unitrust_organization_logo_uri";
+
+/// Who leads the ecosystem a trust anchor stands for.
+///
+/// A trust anchor that carries a `display_name` names the ecosystem with it and its leader with `organization_name`,
+/// as UniTrust does. The leader's logo is then UniTrust's `unitrust_organization_logo_uri`, never `logo_uri`, and its
+/// identifier is `organization_uri`, never the trust anchor's own. Otherwise the trust anchor names only itself, so
+/// it describes its leader as well.
+fn ecosystem_leader(
+    trust_anchor_id: &EntityId,
+    federation_entity: Option<&FederationEntityMetadata>,
+    trust_anchor_statement: Option<&str>,
+) -> Member {
+    let (Some(metadata), Some(organization_name)) = (
+        federation_entity.filter(|metadata| non_empty(&metadata.display_name).is_some()),
+        federation_entity.and_then(|metadata| non_empty(&metadata.organization_name)),
+    ) else {
+        return federation_member(trust_anchor_id, federation_entity);
+    };
+
+    // Not part of the typed metadata, so read from the trust anchor's entity configuration itself.
+    let logo_uri = trust_anchor_statement
+        .and_then(|statement| extract_claims_unverified::<serde_json::Value>(statement).ok())
+        .and_then(|claims| {
+            claims
+                .pointer(&format!("/metadata/federation_entity/{UNITRUST_ORGANIZATION_LOGO_URI}"))
+                .and_then(serde_json::Value::as_str)
+                .and_then(|uri| url::Url::parse(uri).ok())
+        })
+        .map(|uri| uri.to_string());
+
+    Member {
+        logo_uri,
+        name: organization_name,
+        description: None,
+        identifier: metadata.organization_uri.as_ref().map(url::Url::to_string),
     }
 }
 
@@ -706,13 +760,17 @@ fn federation_entity_metadata(configuration: &EntityConfiguration) -> Option<&Fe
         .and_then(|metadata| metadata.federation_entity.as_ref())
 }
 
-/// Names an entity by its organization, falling back to its display name and finally its host, since a
-/// `federation_entity` may omit every informational parameter.
+/// The parameters are optional, and an empty one names nothing.
+fn non_empty(name: &Option<String>) -> Option<String> {
+    name.clone().filter(|name| !name.trim().is_empty())
+}
+
+/// Names an entity by its display name, falling back to its organization and finally its host, since a
+/// `federation_entity` may omit every informational parameter. The display name comes first because it names the
+/// entity itself: a trust anchor's names the ecosystem, while its `organization_name` is the ecosystem's leader.
 fn federation_member(entity_id: &EntityId, federation_entity: Option<&FederationEntityMetadata>) -> Member {
-    // The parameters are optional, and an empty one names nothing.
-    let non_empty = |name: &Option<String>| name.clone().filter(|name| !name.trim().is_empty());
     let name = federation_entity
-        .and_then(|metadata| non_empty(&metadata.organization_name).or_else(|| non_empty(&metadata.display_name)))
+        .and_then(|metadata| non_empty(&metadata.display_name).or_else(|| non_empty(&metadata.organization_name)))
         .or(entity_id.as_url().host_str().map(str::to_string))
         .unwrap_or_else(|| entity_id.to_string());
 
@@ -739,7 +797,7 @@ mod tests {
     use oid4vc::oid4vci::credential_offer::CredentialConfigurationIds;
     use oid4vc::oid4vci::Wallet;
     use openid_federation::{
-        expires_in, EntityConfiguration, EntityMetadata, FederationEntityMetadata, Jwk, JwkSet, SubordinateStatement,
+        expires_in, EntityConfiguration, FederationEntityMetadata, Jwk, JwkSet, SubordinateStatement,
     };
 
     use serde_json::json;
@@ -1092,43 +1150,46 @@ mod tests {
         organization_name: &str,
         authority_hints: Vec<url::Url>,
     ) {
+        mount_entity_configuration_with(
+            mock_server,
+            entity_id,
+            json!({ "organization_name": organization_name }),
+            authority_hints,
+        )
+        .await;
+    }
+
+    /// Like `mount_entity_configuration`, with the `federation_entity` metadata given as JSON, so that it can carry
+    /// parameters the typed metadata does not know. The fetch and list endpoints are added to it.
+    async fn mount_entity_configuration_with(
+        mock_server: &MockServer,
+        entity_id: &url::Url,
+        mut federation_entity: serde_json::Value,
+        authority_hints: Vec<url::Url>,
+    ) {
         let mut jwks = JwkSet::new();
         jwks.add_key(federation_test_key());
-
-        let mut metadata = EntityMetadata::new();
-        metadata.federation_entity = Some(FederationEntityMetadata {
-            organization_name: Some(organization_name.to_string()),
-            display_name: None,
-            description: None,
-            keywords: None,
-            contacts: None,
-            logo_uri: None,
-            policy_uri: None,
-            information_uri: None,
-            organization_uri: None,
-            federation_fetch_endpoint: Some(entity_id.join("/federation-fetch").unwrap()),
-            federation_list_endpoint: Some(entity_id.join("/federation-list").unwrap()),
-            federation_resolve_endpoint: None,
-            federation_trust_mark_status_endpoint: None,
-            federation_historical_keys_endpoint: None,
-        });
 
         let mut config = EntityConfiguration::new(
             EntityId::from(entity_id.clone()),
             jwks,
             expires_in(chrono::Duration::hours(1)),
             chrono::Utc::now().timestamp(),
-        )
-        .with_metadata(metadata);
+        );
         if !authority_hints.is_empty() {
             config = config.with_authority_hints(authority_hints.into_iter().map(EntityId::from).collect());
         }
+
+        federation_entity["federation_fetch_endpoint"] = json!(entity_id.join("/federation-fetch").unwrap());
+        federation_entity["federation_list_endpoint"] = json!(entity_id.join("/federation-list").unwrap());
+        let mut claims = serde_json::to_value(&config).unwrap();
+        claims["metadata"] = json!({ "federation_entity": federation_entity });
 
         Mock::given(method("GET"))
             .and(path("/.well-known/openid-federation"))
             .respond_with(
                 ResponseTemplate::new(200)
-                    .set_body_string(encode_entity_statement(&config))
+                    .set_body_string(encode_entity_statement(&claims))
                     .insert_header("content-type", "application/entity-statement+jwt"),
             )
             .mount(mock_server)
@@ -1396,6 +1457,121 @@ mod tests {
                 ("127.0.0.1", Some(unreachable_member_id.as_str()))
             ]
         );
+    }
+
+    /// A UniTrust trust anchor: the ecosystem is named by `display_name` and pictured by `logo_uri`, its leader is
+    /// named by `organization_name` and pictured by `unitrust_organization_logo_uri`.
+    fn unitrust_trust_anchor(trust_anchor_server: &MockServer) -> serde_json::Value {
+        json!({
+            "display_name": "Community Learning Network",
+            "organization_name": "Capella",
+            "description": "Organisations that recognise community learning with shared badges.",
+            "logo_uri": format!("{}/ecosystem.png", trust_anchor_server.uri()),
+            "unitrust_organization_logo_uri": format!("{}/capella.png", trust_anchor_server.uri()),
+        })
+    }
+
+    #[tokio::test]
+    async fn discover_ecosystems_names_a_unitrust_ecosystem_apart_from_its_leader() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        mount_entity_configuration(&leaf_server, &leaf_id, "Sargas", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration_with(
+            &trust_anchor_server,
+            &trust_anchor_id,
+            unitrust_trust_anchor(&trust_anchor_server),
+            vec![],
+        )
+        .await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+
+        let ecosystems = discover_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        let ecosystem = &ecosystems[0];
+        assert_eq!(ecosystem.name, "Community Learning Network");
+        assert_eq!(
+            ecosystem.description.as_deref(),
+            Some("Organisations that recognise community learning with shared badges.")
+        );
+        assert_eq!(
+            ecosystem.logo_uri,
+            Some(format!("{}/ecosystem.png", trust_anchor_server.uri()))
+        );
+        assert_eq!(ecosystem.ecosystem_leader.name, "Capella");
+        assert_eq!(
+            ecosystem.ecosystem_leader.logo_uri,
+            Some(format!("{}/capella.png", trust_anchor_server.uri()))
+        );
+        // The trust anchor publishes no `organization_uri`, and its own identifier is the ecosystem's, not the leader's.
+        assert_eq!(ecosystem.ecosystem_leader.identifier, None);
+
+        let trust_chain: Vec<_> = ecosystem
+            .trust_chain
+            .iter()
+            .map(|member| member.name.as_str())
+            .collect();
+        assert_eq!(trust_chain, vec!["Sargas", "Community Learning Network"]);
+    }
+
+    #[tokio::test]
+    async fn discover_ecosystems_identifies_the_leader_by_the_organization_uri_of_the_trust_anchor() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        let mut trust_anchor = unitrust_trust_anchor(&trust_anchor_server);
+        trust_anchor["organization_uri"] = json!("https://capella.example.com/");
+        mount_entity_configuration(&leaf_server, &leaf_id, "Sargas", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration_with(&trust_anchor_server, &trust_anchor_id, trust_anchor, vec![]).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+
+        let ecosystems = discover_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(
+            ecosystems[0].ecosystem_leader.identifier.as_deref(),
+            Some("https://capella.example.com/")
+        );
+    }
+
+    /// The leader issues credentials itself: as a subordinate of its own trust anchor, its ecosystem is found like
+    /// any other.
+    #[tokio::test]
+    async fn discover_ecosystems_finds_the_ecosystem_the_entity_leads_as_a_subordinate_of_its_own_trust_anchor() {
+        let leader_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leader_id: url::Url = leader_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        mount_entity_configuration(&leader_server, &leader_id, "Capella", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration_with(
+            &trust_anchor_server,
+            &trust_anchor_id,
+            unitrust_trust_anchor(&trust_anchor_server),
+            vec![],
+        )
+        .await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leader_id).await;
+        mount_subordinate_listing(&trust_anchor_server, &[&leader_id]).await;
+
+        let ecosystems = discover_ecosystems(&leader_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        assert_eq!(ecosystems[0].name, "Community Learning Network");
+        assert_eq!(ecosystems[0].ecosystem_leader.name, "Capella");
+        let members: Vec<_> = ecosystems[0]
+            .members
+            .iter()
+            .map(|member| (member.name.as_str(), member.identifier.as_deref()))
+            .collect();
+        assert_eq!(members, vec![("Capella", Some(leader_id.as_str()))]);
     }
 
     #[tokio::test]

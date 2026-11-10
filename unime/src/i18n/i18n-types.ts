@@ -942,6 +942,11 @@ type RootTranslation = {
 			 */
 			ECOSYSTEM_OWNER: string
 			/**
+			 * L​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			ECOSYSTEM_LED_BY: RequiredParams<'name'>
+			/**
 			 * {​c​o​u​n​t​}​ ​{​{​e​c​o​s​y​s​t​e​m​|​e​c​o​s​y​s​t​e​m​s​}​}
 			 * @param {number} count
 			 */
@@ -3170,6 +3175,10 @@ export type TranslationFunctions = {
 			 * Ecosystem Owner
 			 */
 			ECOSYSTEM_OWNER: () => LocalizedString
+			/**
+			 * Led by {name}
+			 */
+			ECOSYSTEM_LED_BY: (arg: { name: string }) => LocalizedString
 			/**
 			 * {count} {{ecosystem|ecosystems}}
 			 */

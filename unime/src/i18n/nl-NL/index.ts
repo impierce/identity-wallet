@@ -349,6 +349,7 @@ const nl_NL = {
       ECOSYSTEM_MEMBERS_HEADING: 'Leden',
       ECOSYSTEM_ABOUT: 'Over',
       ECOSYSTEM_OWNER: 'Eigenaar van ecosysteem',
+      ECOSYSTEM_LED_BY: 'Geleid door {name}',
       ECOSYSTEM_COUNT: '{count} {{ecosysteem|ecosystemen}}',
     },
     SHARE_CREDENTIALS: {

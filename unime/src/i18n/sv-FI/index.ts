@@ -349,6 +349,7 @@ const sv_FI = {
       ECOSYSTEM_MEMBERS_HEADING: 'Medlemmar',
       ECOSYSTEM_ABOUT: 'Om',
       ECOSYSTEM_OWNER: 'Ekosystemets ägare',
+      ECOSYSTEM_LED_BY: 'Leds av {name}',
       ECOSYSTEM_COUNT: '{count} {{ekosystem|ekosystem}}',
     },
     SHARE_CREDENTIALS: {

@@ -350,6 +350,7 @@ const es_ES = {
       ECOSYSTEM_MEMBERS_HEADING: 'Miembros',
       ECOSYSTEM_ABOUT: 'Acerca de',
       ECOSYSTEM_OWNER: 'Propietario del ecosistema',
+      ECOSYSTEM_LED_BY: 'Dirigido por {name}',
       ECOSYSTEM_COUNT: '{count} {{ecosistema|ecosistemas}}',
     },
     SHARE_CREDENTIALS: {

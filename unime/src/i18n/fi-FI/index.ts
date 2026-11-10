@@ -350,6 +350,7 @@ const fi_FI = {
       ECOSYSTEM_MEMBERS_HEADING: 'Jäsenet',
       ECOSYSTEM_ABOUT: 'Tietoja',
       ECOSYSTEM_OWNER: 'Ekosysteemin omistaja',
+      ECOSYSTEM_LED_BY: 'Johtaja: {name}',
       ECOSYSTEM_COUNT: '{count} {{ekosysteemi|ekosysteemiä}}',
     },
     SHARE_CREDENTIALS: {

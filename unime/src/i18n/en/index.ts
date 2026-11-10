@@ -348,6 +348,7 @@ const en = {
       ECOSYSTEM_MEMBERS_HEADING: 'Members',
       ECOSYSTEM_ABOUT: 'About this Ecosystem',
       ECOSYSTEM_OWNER: 'Ecosystem Owner',
+      ECOSYSTEM_LED_BY: 'Led by {name:string}',
       ECOSYSTEM_COUNT: '{count:number} {{ecosystem|ecosystems}}',
     },
     SHARE_CREDENTIALS: {

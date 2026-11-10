@@ -349,6 +349,7 @@ const de_DE = {
       ECOSYSTEM_MEMBERS_HEADING: 'Mitglieder',
       ECOSYSTEM_ABOUT: 'Über das Ökosystem',
       ECOSYSTEM_OWNER: 'Ökosystem-Inhaber',
+      ECOSYSTEM_LED_BY: 'Geleitet von {name}',
       ECOSYSTEM_COUNT: '{count} {{Ökosystem|Ökosysteme}}',
     },
     SHARE_CREDENTIALS: {
