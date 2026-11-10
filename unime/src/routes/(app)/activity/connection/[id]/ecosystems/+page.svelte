@@ -8,13 +8,15 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
-  import { useParentRoute } from '$lib/navigation';
+  import { returnRoute, useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
   import { hostname } from '$lib/utils/url';
 
   import EcosystemCard from '../../../../../prompt/accept-connection/EcosystemCard.svelte';
 
-  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}${page.url.search}`);
+  // Opened from the connection page or from one of the connection's credentials, which both link here with
+  // `linkWithReturn`.
+  const navigateUp = useParentRoute(() => returnRoute(`/activity/connection/${page.params.id}`));
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: ecosystems = connection?.ecosystems ?? [];

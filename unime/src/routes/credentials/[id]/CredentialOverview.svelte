@@ -7,7 +7,6 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { Avatar } from '$lib/components';
-  import { dispatch } from '$lib/dispatcher';
   import {
     BankLightIcon,
     CalendarPlusFillIcon,
@@ -20,6 +19,9 @@
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDateWithWrittenMonth, getImageAsset } from '$lib/utils';
   import { getCredentialValidity } from '$lib/utils/credentialValidity';
+  import { issuerEcosystems } from '$lib/utils/ecosystems';
+
+  import EcosystemsSummary from '../../prompt/accept-connection/EcosystemsSummary.svelte';
 
   export let credential: DisplayCredential;
 
@@ -40,6 +42,7 @@
   }
 
   $: validity = getCredentialValidity(credential);
+  $: ecosystems = issuerEcosystems(credential, $appState.connections).ecosystems;
 
   function formatValidityDate(isoDate: string) {
     return formatDateWithWrittenMonth(isoDate, $appState.profile_settings.locale);
@@ -56,7 +59,6 @@
   }
 
   onMount(async () => {
-    await dispatch({ type: '[Credential] Refresh status', payload: { credential_id: credential.id } });
     if (credential.connection_id) {
       issuerLogoUrl = await getImageAsset(credential.connection_id);
     }
@@ -132,4 +134,17 @@
     </svelte:element>
     <div class="break-all">{determineIssuerName()}</div>
   </div>
+  {#if ecosystems.length > 0}
+    <!-- Ecosystems belong to a connection, which only issued credentials have. -->
+    <section class="col-span-2">
+      <EcosystemsSummary
+        {ecosystems}
+        title={$LL.CREDENTIAL.DETAILS.ENDORSED_BY()}
+        href={linkWithReturn(`/activity/connection/${credential.connection_id}/ecosystems`)}
+        isTempAsset="fallback"
+        class="border-0 bg-background dark:bg-background"
+        ringClass="ring-background"
+      />
+    </section>
+  {/if}
 </div>

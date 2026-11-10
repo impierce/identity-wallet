@@ -349,6 +349,7 @@ const de_DE = {
       ECOSYSTEM_MEMBERS_HEADING: 'Mitglieder',
       ECOSYSTEM_ABOUT: 'Über das Ökosystem',
       ECOSYSTEM_OWNER: 'Ökosystem-Inhaber',
+      ECOSYSTEM_LED_BY: 'Geleitet von {name}',
       ECOSYSTEM_COUNT: '{count} {{Ökosystem|Ökosysteme}}',
     },
     SHARE_CREDENTIALS: {
@@ -469,6 +470,7 @@ const de_DE = {
       BY_THE_ISSUER: 'Vom Aussteller',
       VALID_FROM: 'Ab {date}',
       ISSUED_BY: 'Ausgestellt durch',
+      ENDORSED_BY: 'Anerkannt durch',
       SELF_SIGNED: 'dich selbst',
       DESCRIPTION: 'Beschreibung',
       OPEN_BADGES: {

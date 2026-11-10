@@ -350,6 +350,7 @@ const fi_FI = {
       ECOSYSTEM_MEMBERS_HEADING: 'Jäsenet',
       ECOSYSTEM_ABOUT: 'Tietoja',
       ECOSYSTEM_OWNER: 'Ekosysteemin omistaja',
+      ECOSYSTEM_LED_BY: 'Johtaja: {name}',
       ECOSYSTEM_COUNT: '{count} {{ekosysteemi|ekosysteemiä}}',
     },
     SHARE_CREDENTIALS: {
@@ -469,6 +470,7 @@ const fi_FI = {
       BY_THE_ISSUER: 'Myöntäjän toimesta',
       VALID_FROM: '{date} alkaen',
       ISSUED_BY: 'Myöntäjä',
+      ENDORSED_BY: 'Hyväksyjät',
       SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {

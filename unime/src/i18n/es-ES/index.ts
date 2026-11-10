@@ -350,6 +350,7 @@ const es_ES = {
       ECOSYSTEM_MEMBERS_HEADING: 'Miembros',
       ECOSYSTEM_ABOUT: 'Acerca de',
       ECOSYSTEM_OWNER: 'Propietario del ecosistema',
+      ECOSYSTEM_LED_BY: 'Dirigido por {name}',
       ECOSYSTEM_COUNT: '{count} {{ecosistema|ecosistemas}}',
     },
     SHARE_CREDENTIALS: {
@@ -471,6 +472,7 @@ const es_ES = {
       BY_THE_ISSUER: 'Por el emisor',
       VALID_FROM: 'Desde el {date}',
       ISSUED_BY: 'Emitidas por',
+      ENDORSED_BY: 'Respaldado por',
       SELF_SIGNED: 'Autofirmadas',
       DESCRIPTION: 'Descripción',
       OPEN_BADGES: {

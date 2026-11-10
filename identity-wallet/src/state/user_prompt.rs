@@ -108,6 +108,11 @@ pub struct EcosystemProfile {
     /// Omitted entirely by `ssi-agent` when it sends no members; `member_count` is the total.
     #[serde(default)]
     pub members: Vec<Member>,
+    /// The entities that endorse the connection into this ecosystem, starting with the connection itself and ending
+    /// with the ecosystem's trust anchor. The wallet derives it from the OpenID Federation trust chain it discovered;
+    /// whatever a profile endpoint sends here is overwritten.
+    #[serde(default)]
+    pub trust_chain: Vec<Member>,
 }
 
 /// Same camelCase-deserialize/snake_case-serialize split as `EcosystemProfile`, to match `ssi-agent`'s `Member` struct.

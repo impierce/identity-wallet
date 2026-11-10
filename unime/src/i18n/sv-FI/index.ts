@@ -349,6 +349,7 @@ const sv_FI = {
       ECOSYSTEM_MEMBERS_HEADING: 'Medlemmar',
       ECOSYSTEM_ABOUT: 'Om',
       ECOSYSTEM_OWNER: 'Ekosystemets ägare',
+      ECOSYSTEM_LED_BY: 'Leds av {name}',
       ECOSYSTEM_COUNT: '{count} {{ekosystem|ekosystem}}',
     },
     SHARE_CREDENTIALS: {
@@ -469,6 +470,7 @@ const sv_FI = {
       BY_THE_ISSUER: 'Av utfärdaren',
       VALID_FROM: 'Från {date}',
       ISSUED_BY: 'Utfärdad av',
+      ENDORSED_BY: 'Godkänd av',
       SELF_SIGNED: 'dig själv',
       DESCRIPTION: 'Beskrivning',
       OPEN_BADGES: {
