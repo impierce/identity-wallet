@@ -248,8 +248,10 @@ For a release:
    NDK's `llvm-ar` and `llvm-ranlib` for the Android build: Xcode 27's `ar` drops the Android objects from libsodium,
    which leaves the app crashing on launch. It also runs `cargo clean` for `libsodium-sys-stable` first, because a
    cached empty archive would otherwise be reused. Use the script rather than `pnpm tauri android build` directly.
-6. Upload the signed artifacts to their respective app stores and manually make the new builds available to the team
-   through the stores' internal-testing channels.
+6. Upload the signed artifacts to the stores' internal-testing channels with `scripts/upload-mobile-releases.sh`
+   (fastlane; credentials and the TestFlight group names come from the git-ignored root `.env`, see `.env.example`),
+   or by hand. `--dry-run` checks the tools, configuration and artifacts without uploading. Only run the upload when
+   the task explicitly authorizes it.
 7. After the team has tested and approved both builds, manually submit them for store review and public release.
 
 Do not publish a build, submit it for review, or change store availability unless the task explicitly authorizes that
