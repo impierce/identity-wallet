@@ -12,7 +12,7 @@
   import { groupConnectionsAlphabetically } from './utils';
 
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
-  info(`Connections: ${JSON.stringify(Array.from(connections.entries()))}`);
+  info(`Connections: ${Array.from(connections.values()).flat().length}`);
 
   let squareLogos: Record<string, boolean> = {};
 </script>

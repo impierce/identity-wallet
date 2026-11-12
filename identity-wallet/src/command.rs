@@ -64,7 +64,8 @@ pub async fn main_exec(
         .and_then(|qr_code_scanned| host_of_scanned_request(&qr_code_scanned.form_urlencoded));
     let tx_code_entered = listen::<CredentialOffersSelected>(action.clone())
         .is_some_and(|credential_offers_selected| credential_offers_selected.tx_code.is_some());
-    info!("Dispatching action: `{action:?}`");
+    info!("Dispatching action: `{action_type}`");
+    crate::log_payload!("Action payload: {action:?}");
 
     let mut guard = container.0.lock().await;
 
@@ -138,11 +139,7 @@ pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyh
     window.emit(STATE_CHANGED_EVENT, app_state)?;
 
     // Print to console or write to file (default)
-    if std::env::var("LOG_STATE_UPDATES_TO_CONSOLE")
-        .unwrap_or("false".to_string())
-        .parse()
-        .unwrap_or(false)
-    {
+    if crate::logging::debug_flag("LOG_STATE_UPDATES_TO_CONSOLE") {
         debug!(
             "emitted event `{}` with payload:\n{}",
             STATE_CHANGED_EVENT,

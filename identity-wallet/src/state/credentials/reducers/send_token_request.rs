@@ -230,7 +230,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             }
         };
 
-        debug!("Token request: {token_request:?}");
+        crate::log_payload!("Token request: {token_request:?}");
 
         // Get an access token.
         let token_response = wallet
@@ -246,7 +246,18 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetAccessTokenError)?;
 
-        debug!("Token response: {token_response:?}");
+        // `TokenResponse` derives `Debug`, so the access and refresh tokens are only logged as a payload.
+        debug!(
+            "Received token response (token_type: {}, expires_in: {:?}, refresh_token: {}, authorization_details: {})",
+            token_response.token_type,
+            token_response.expires_in,
+            token_response.refresh_token.is_some(),
+            token_response
+                .authorization_details
+                .as_ref()
+                .map_or(0, |authorization_details| authorization_details.len())
+        );
+        crate::log_payload!("Token response: {token_response:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -309,7 +320,8 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 None
             };
 
-            debug!("Using proof nonce: {nonce:?}");
+            debug!("Proof nonce present: {}", nonce.is_some());
+            crate::log_payload!("Proof nonce: {nonce:?}");
 
             // Determine if the token request was pre-authorized and if anonymous access is supported.
             // See: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#section-8.2.1.1-2.2.2.2
@@ -428,7 +440,11 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             // Add history event
             history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
 
-            debug!("Successfully sent token request and received credential: {credential:?}");
+            debug!(
+                "Received and stored credential `{}`",
+                verifiable_credential_record.display_credential.id
+            );
+            crate::log_payload!("Received credential: {credential:?}");
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
