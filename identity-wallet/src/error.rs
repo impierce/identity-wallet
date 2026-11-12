@@ -17,7 +17,8 @@ pub enum AppError {
     InvalidActionError { action: Action },
     #[error("No credential found with id: `{0}`")]
     NoCredentialWithIdError(String),
-    #[error("Unable to parse QR code with content: `{0}`")]
+    /// The content is kept for tests and debugging, but left out of the message: it can carry a pre-authorized code.
+    #[error("Unable to parse QR code")]
     InvalidQRCodeError(String),
     #[error("No `{0}` manager found in the state")]
     MissingManagerError(&'static str),

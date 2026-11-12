@@ -1,3 +1,4 @@
+pub mod debug_log;
 pub mod helpers;
 pub mod history_event;
 
@@ -12,6 +13,7 @@ use crate::state::did::{
 use crate::state::user_prompt::{ClientMetadata, EcosystemProfile};
 use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
+pub use debug_log::DebugLog;
 pub use helpers::DateUtils;
 
 use oid4vc::{
@@ -70,6 +72,17 @@ pub enum ActiveFlow {
     },
 }
 
+impl ActiveFlow {
+    /// The flow's name for the logs and the Debug screen.
+    pub fn name(&self) -> &'static str {
+        match self {
+            ActiveFlow::Siopv2 { .. } => "SIOPv2 login",
+            ActiveFlow::Oid4vp { .. } => "Presentation",
+            ActiveFlow::Oid4vciOffer { .. } => "Issuance",
+        }
+    }
+}
+
 /// `PendingConnectionData` contains the connection data collected to populate the AcceptConnection prompt.
 /// However this data remains pending until the flow is completed successfully. Only then is the connection considered fully established,
 /// and then it will be added to the state. This means the data has to remain pending throughout the entire active flow of whatever type.
@@ -89,6 +102,8 @@ pub struct CoreUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_flow: Option<ActiveFlow>,
     pub pending_connection_data: Option<PendingConnectionData>,
+    /// Flow entries for the Debug screen, drained into `AppState::debug_messages` after every action.
+    pub debug_log: DebugLog,
 }
 
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.

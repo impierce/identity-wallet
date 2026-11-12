@@ -41,6 +41,7 @@ async fn test_self_issue_credential() {
 
     let action = json_example::<Action>("tests/fixtures/actions/self_issue_profile.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/self_issued_profile.json");
+    // This direct call shares its Debug screen log with `app_state`, so the expected state has two entries.
     let result = self_issue_credential(app_state.clone(), action.clone()).await.unwrap();
 
     assert_state_update(

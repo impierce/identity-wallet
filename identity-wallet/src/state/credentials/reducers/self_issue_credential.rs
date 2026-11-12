@@ -5,7 +5,7 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
-use log::{debug, info};
+use log::debug;
 use oid4vc::{oid4vc_core::Sign, oid4vci::credential_format_profiles::CredentialFormats};
 use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding, SdJwtBuilder};
 use serde_json::{json, Map, Value};
@@ -241,10 +241,11 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .map_err(StrongholdInsertionError)?;
 
         drop(state_guard);
-        info!(
-            "Self-issued credential `{}` ({key}) successfully saved to Stronghold",
+        debug!("Self-issued credential {key} saved to Stronghold");
+        state.core_utils.debug_log.ok(format!(
+            "Self-issued credential `{}` saved",
             vcr.display_credential.display_name
-        );
+        ));
 
         let mut credentials = state.credentials.clone();
         if credentials

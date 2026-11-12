@@ -194,20 +194,28 @@ fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
     }
 }
 
-/// Summarizes requested credentials for logging: query IDs, requested types, and the number of matching credentials.
+/// Describes what a Verifier asked for and how many stored credentials match, for the logs and the Debug screen. Only
+/// query IDs, types and counts: the options carry claim values.
 pub fn summarize_requested_credentials(requested_credentials: &[RequestedCredential]) -> String {
     requested_credentials
         .iter()
         .map(|requested| {
+            let shareable = requested
+                .options
+                .iter()
+                .filter(|option| option.state != OptionState::Unavailable)
+                .count();
             format!(
-                "{} {:?}: {} candidate(s)",
+                "`{}` ({}; {} claim(s)): {} matching, {} shareable",
                 requested.query_id,
-                requested.types,
-                requested.options.len()
+                requested.types.join(", "),
+                requested.claims.len(),
+                requested.options.len(),
+                shareable
             )
         })
         .collect::<Vec<_>>()
-        .join(", ")
+        .join("; ")
 }
 
 /// Fills in `last_shared` from the credentials previously shared with this connection.

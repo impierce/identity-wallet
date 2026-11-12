@@ -111,16 +111,12 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 let debug_timestamp_after = chrono::Local::now();
                 let debug_duration = debug_timestamp_after - debug_timestamp_before;
 
+                state.core_utils.debug_log.error(format!(
+                    "Refreshing credential status for `{}` took {:?}ms (failed): {e}",
+                    display_name,
+                    debug_duration.num_milliseconds()
+                ));
                 return Ok(AppState {
-                    debug_messages: {
-                        let mut debug_messages = state.debug_messages.clone();
-                        debug_messages.push_back(format!(
-                            "Refreshing credential status for `{}` took {:?}ms (failed)",
-                            display_name,
-                            debug_duration.num_milliseconds()
-                        ));
-                        debug_messages
-                    },
                     current_user_prompt: None,
                     ..state.clone()
                 });
@@ -132,16 +128,12 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
         drop(state_guard);
 
+        state.core_utils.debug_log.ok(format!(
+            "Refreshing credential status for `{}` took {:?}ms (success)",
+            display_name,
+            debug_duration.num_milliseconds()
+        ));
         return Ok(AppState {
-            debug_messages: {
-                let mut debug_messages = state.debug_messages.clone();
-                debug_messages.push_back(format!(
-                    "Refreshing credential status for `{}` took {:?}ms (success)",
-                    display_name,
-                    debug_duration.num_milliseconds()
-                ));
-                debug_messages
-            },
             current_user_prompt: None,
             credentials,
             ..state.to_owned()

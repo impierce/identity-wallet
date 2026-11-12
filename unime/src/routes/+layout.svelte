@@ -252,26 +252,23 @@
   // The messages the backend collected, oldest first.
   $: debugMessages = $appState.debug_messages;
 
-  // Debug messages are prefixed with `[YYYY-MM-DD][HH:MM:SS]` by the backend (but not all of them are).
-  const debugMessageTimestamp = /^\[(\d{4}-\d{2}-\d{2})\]\[(\d{2}:\d{2}:\d{2})\]\s*/;
+  // The backend writes debug messages as `[YYYY-MM-DD][HH:MM:SS] LEVEL message` (see `debug_log.rs`), with LEVEL one
+  // of ERROR, OK or INFO. Messages stored by older versions have no level.
+  const debugMessagePrefix = /^\[(\d{4}-\d{2}-\d{2})\]\[(\d{2}:\d{2}:\d{2})\]\s*(?:(ERROR|OK|INFO)\s+)?/;
 
-  function splitDebugMessage(message: string): { timestamp: string | null; text: string } {
-    const match = message.match(debugMessageTimestamp);
+  function splitDebugMessage(message: string): { timestamp: string | null; level: string | null; text: string } {
+    const match = message.match(debugMessagePrefix);
     return match
-      ? { timestamp: `${match[1]} ${match[2]}`, text: message.slice(match[0].length) }
-      : { timestamp: null, text: message };
+      ? { timestamp: `${match[1]} ${match[2]}`, level: match[3] ?? null, text: message.slice(match[0].length) }
+      : { timestamp: null, level: null, text: message };
   }
 
-  // The backend does not attach a log level to debug messages, so it has to be guessed from the text.
-  // Known producers today:
-  // - `command.rs` pushes a timestamped `{error:?}` whenever a state update fails (always an error).
-  // - `refresh_credential_status.rs` ends its message with `(failed)` or `(success)`.
-  // - `check_password.rs` pushes `Wrong Stronghold password` or `Stronghold password OK`.
-  // The keyword match also covers messages added later, at the price of the occasional false positive.
-  const debugMessageErrorPatterns = [debugMessageTimestamp, /\b(error|failed|failure|wrong|invalid)\b/i];
-
   function isDebugMessageError(message: string): boolean {
-    return debugMessageErrorPatterns.some((pattern) => pattern.test(message));
+    return splitDebugMessage(message).level === 'ERROR';
+  }
+
+  function isDebugMessageSuccess(message: string): boolean {
+    return splitDebugMessage(message).level === 'OK';
   }
 
   type DebugMessageFilter = 'all' | 'errors' | 'success';
@@ -296,9 +293,8 @@
     const term = search.trim().toLowerCase();
 
     const filtered = messages.filter((message) => {
-      const isError = isDebugMessageError(message);
-      if (filter === 'errors' && !isError) return false;
-      if (filter === 'success' && isError) return false;
+      if (filter === 'errors' && !isDebugMessageError(message)) return false;
+      if (filter === 'success' && !isDebugMessageSuccess(message)) return false;
       return term === '' || message.toLowerCase().includes(term);
     });
 
@@ -617,14 +613,18 @@ Stacking context: We have to deviate from the DOM-sequence.
           {:else}
             <div class="flex flex-col gap-2">
               {#each visibleDebugMessages as message}
-                {@const { timestamp, text } = splitDebugMessage(message)}
+                {@const { timestamp, level, text } = splitDebugMessage(message)}
                 <div
-                  class="rounded-lg border p-2 {isDebugMessageError(message)
+                  class="rounded-lg border p-2 {level === 'ERROR'
                     ? 'border-rose-400 bg-rose-50 dark:border-rose-500/60 dark:bg-rose-500/10'
-                    : 'border-slate-300 bg-background-alt dark:border-slate-600'}"
+                    : level === 'OK'
+                      ? 'border-emerald-400 bg-emerald-50 dark:border-emerald-500/60 dark:bg-emerald-500/10'
+                      : 'border-slate-300 bg-background-alt dark:border-slate-600'}"
                 >
-                  {#if timestamp}
-                    <p class="pb-1 font-mono text-[10px]/[14px] text-text-alt">{timestamp}</p>
+                  {#if timestamp || level}
+                    <p class="pb-1 font-mono text-[10px]/[14px] text-text-alt">
+                      {[timestamp, level].filter(Boolean).join(' · ')}
+                    </p>
                   {/if}
                   <p class="font-mono text-[11px]/[16px] break-all whitespace-pre-wrap text-text select-text">{text}</p>
                 </div>

@@ -44,9 +44,17 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
         }
 
         // Remove DisplayCredential from AppState
+        let display_name = credentials
+            .iter()
+            .find(|credential| credential.id == delete_credential.id)
+            .map(|credential| credential.display_name.clone())
+            .unwrap_or_default();
         credentials.retain(|credential| credential.id != delete_credential.id);
 
-        info!("Successfully deleted credential with id: `{}`", delete_credential.id);
+        state.core_utils.debug_log.ok(format!(
+            "Deleted credential `{}` ({display_name})",
+            delete_credential.id
+        ));
 
         let redirect_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),

@@ -13,7 +13,7 @@ use crate::{
     },
 };
 
-use log::{debug, info};
+use log::debug;
 
 /// Handles the `ConnectionAccepted` action for the SIOPv2 active flow, triggered by accepting `AcceptConnection` prompt and persists the connection.
 /// Sends the SIOPv2 authorization response.
@@ -35,7 +35,17 @@ pub async fn handle_siopv2_authorization_request(state: AppState, action: Action
             .ok_or(MissingManagerError("identity"))?
             .provider_manager;
 
-        info!("generating response");
+        let debug_log = state.core_utils.debug_log.clone();
+        let verifier = state
+            .core_utils
+            .pending_connection_data
+            .as_ref()
+            .map(|data| data.client_metadata.client_name.clone())
+            .unwrap_or_else(|| "unknown Verifier".to_string());
+        debug_log.info(format!(
+            "SIOPv2 login with {verifier} (client_id: {})",
+            siopv2_authorization_request.body.client_id
+        ));
 
         let response = provider_manager
             .generate_response(&*siopv2_authorization_request, Default::default())
@@ -44,12 +54,16 @@ pub async fn handle_siopv2_authorization_request(state: AppState, action: Action
         debug!("Generated SIOPv2 authorization response");
         crate::log_payload!("SIOPv2 authorization response: {response:?}");
 
+        // Reads the response body, so the Verifier's HTTP status and error reach the Debug screen.
         #[cfg(not(feature = "test_utils"))]
-        if provider_manager.send_response(&response).await.is_err() {
-            log::warn!("Failed to send SIOPv2 authorization response to redirect_uri");
-            return Err(SendAuthorizationResponseError);
+        match crate::state::interaction_result::send_authorization_response(&response).await {
+            crate::state::interaction_result::InteractionOutcome::Approved => {}
+            outcome => {
+                debug_log.error(format!("SIOPv2 login with {verifier} failed: {outcome}"));
+                return Err(SendAuthorizationResponseError);
+            }
         }
-        info!("SIOPv2 response successfully sent");
+        debug_log.ok(format!("SIOPv2 login with {verifier}: approved"));
 
         let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             Error("Unexpected state: No pending connection data found for SIOPv2 authorization request".to_string())
