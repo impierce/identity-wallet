@@ -104,9 +104,10 @@ pub async fn assert_state_update(
 
             debug_messages.iter().zip(expected_debug_messages.iter()).for_each(
                 |(debug_message, expected_debug_message)| {
+                    // The timestamp and durations differ per run.
                     assert_eq!(
-                        debug_message.split_once(' ').unwrap().1,
-                        expected_debug_message.split_once(' ').unwrap().1
+                        without_durations(debug_message.split_once(' ').unwrap().1),
+                        without_durations(expected_debug_message.split_once(' ').unwrap().1)
                     );
                 },
             );
@@ -144,4 +145,28 @@ pub fn setup_state_file() {
 pub fn setup_stronghold() {
     let path = NamedTempFile::new().unwrap().into_temp_path();
     *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+}
+
+/// Replaces every duration such as `74ms` with `_ms`.
+fn without_durations(message: &str) -> String {
+    let mut result = String::with_capacity(message.len());
+    let mut digits = String::new();
+    let mut chars = message.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c.is_ascii_digit() {
+            digits.push(c);
+            continue;
+        }
+        if !digits.is_empty() {
+            if c == 'm' && chars.peek() == Some(&'s') {
+                result.push('_');
+            } else {
+                result.push_str(&digits);
+            }
+            digits.clear();
+        }
+        result.push(c);
+    }
+    result.push_str(&digits);
+    result
 }

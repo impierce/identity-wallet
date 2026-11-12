@@ -16,6 +16,7 @@ use log::{info, warn};
 /// Reads the active OID4VP request from the active flow after the `AcceptConnection` prompt is accepted and the `ConnectionAccepted` action is send back from the Frontend.
 /// This function validates the request, and sets the next CurrentUserPrompt to non-interactive `ShareCredentials`.
 /// Non-interactive `CredentialsSelected` is handled by `handle_oid4vp_authorization_request`.
+#[tracing::instrument(skip_all, err)]
 pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(_connection_accepted) = listen::<ConnectionAccepted>(action) {
         info!("read oid4vp authorization request");
@@ -47,6 +48,21 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
             "Credentials that can fulfill the request: {}",
             summarize_requested_credentials(&requested_credentials)
         );
+        let debug_log = state.core_utils.debug_log.clone();
+        let verifier = state
+            .core_utils
+            .pending_connection_data
+            .as_ref()
+            .map(|data| data.client_metadata.client_name.clone())
+            .unwrap_or_else(|| "unknown Verifier".to_string());
+        crate::debug_log_info!(
+            debug_log,
+            "{verifier} (client_id: {}) requests {} credential(s) out of {} stored: {}",
+            oid4vp_authorization_request.body.client_id,
+            requested_credentials.len(),
+            verifiable_credentials.len(),
+            summarize_requested_credentials(&requested_credentials)
+        );
         crate::log_payload!("Requested credentials: {requested_credentials:?}");
 
         drop(state_guard);
@@ -61,7 +77,9 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 .iter()
                 .find(|connection| connection.did == client_id);
             let requested_credentials = with_last_shared(requested_credentials, connection);
-            ensure_shareable(&requested_credentials)?;
+            ensure_shareable(&requested_credentials).inspect_err(|error| {
+                crate::debug_log_error!(debug_log, "Cannot respond to {verifier}: {error}");
+            })?;
             Ok(AppState {
                 core_utils: CoreUtils {
                     active_flow: Some(ActiveFlow::Oid4vp {

@@ -1,6 +1,7 @@
 use crate::error::AppError;
 use crate::persistence::save_state;
 use crate::state::actions::{listen, Action};
+use crate::state::core_utils::debug_log::{error_chain, push_debug_message, DebugLevel};
 use crate::state::credentials::actions::credential_offers_selected::CredentialOffersSelected;
 use crate::state::qr_code::actions::qrcode_scanned::QrCodeScanned;
 use crate::state::{AppState, AppStateContainer};
@@ -72,6 +73,7 @@ pub async fn main_exec(
     };
 
     guard.core_utils.app_handle = Some(app_handle);
+    let debug_log = guard.core_utils.debug_log.clone();
 
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
@@ -82,31 +84,24 @@ pub async fn main_exec(
         }
         // If the state update fails, we log the error and keep the old state.
         Err(error) => {
-            {
-                let debug_messages = &mut guard.debug_messages;
-                while debug_messages.len() > 100 {
-                    debug_messages.remove(0);
-                }
-                debug_messages.push_back(format!(
-                    "{} {:?}",
-                    chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                    error
-                ));
-                let counterparty = guard
-                    .core_utils
-                    .pending_connection_data
-                    .as_ref()
-                    .map(|data| data.client_metadata.client_name.clone())
-                    .or(scanned_host);
-                let mut user_error = UserError::new(&error, action_type, counterparty);
-                if tx_code_entered {
-                    user_error = user_error.after_tx_code_entered();
-                }
-                let _ = emit_error(&window, &user_error);
+            crate::debug_log_error!(debug_log, "{action_type} failed: {}", error_chain(&error));
+            let counterparty = guard
+                .core_utils
+                .pending_connection_data
+                .as_ref()
+                .map(|data| data.client_metadata.client_name.clone())
+                .or(scanned_host);
+            let mut user_error = UserError::new(&error, action_type, counterparty);
+            if tx_code_entered {
+                user_error = user_error.after_tx_code_entered();
             }
+            let _ = emit_error(&window, &user_error);
             error!("State update failed after {:?}: {error}", start.elapsed());
         }
     };
+
+    // Entries written by the reducers, including those of a reducer that failed halfway.
+    debug_log.drain_into(&mut guard.debug_messages);
 
     // Save and emit the state.
     save_state(&guard).await.ok();
@@ -124,13 +119,23 @@ pub async fn handle_action(
     let action_type = action.typetag_name();
     // Prevents deadlocks in the backend from hanging the frontend forever.
     let time_limit = action.time_limit();
+    let state_container = container.inner();
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finished command invoke");
             res
         }
         _ = tokio::time::sleep(time_limit) => {
-            error!("Operation timed out after {time_limit:?}");
+            {
+                // The dropped `main_exec` future released the lock, so the state can be updated here.
+                let mut guard = state_container.0.lock().await;
+                let debug_log = guard.core_utils.debug_log.clone();
+                debug_log.drain_into(&mut guard.debug_messages);
+                let message = format!("{action_type} timed out after {time_limit:?}");
+                error!("{message}");
+                push_debug_message(&mut guard.debug_messages, DebugLevel::Error, message);
+                emit_event(&window, &guard).ok();
+            }
             emit_error(&window, &UserError::timeout(action_type, None)).ok();
             Err("Operation timed out".to_string())
         }

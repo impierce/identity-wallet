@@ -17,6 +17,7 @@ use oid4vci::credential_issuer::credential_configurations_supported::CredentialC
 
 /// Sets the `CredentialOffer` prompt after the `AcceptConnetion` prompt was accepted, triggering the `ConnectionAccepted` action.
 /// Accepting the prompt set in this reducer would result in the `CredentialOffersSelected` action, which is handled by `handle_credential_offer`.
+#[tracing::instrument(skip_all, err)]
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(_connection_accepted) = listen::<ConnectionAccepted>(action) {
         info!("read oid4vci credential offer");
@@ -35,7 +36,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         info!("credential issuer url: {credential_issuer_url:?}");
 
-        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
+            .await
+            .inspect_err(|err| {
+                warn!("Failed to fetch the Credential Issuer metadata of {credential_issuer_url}: {err:#}")
+            })
+            .ok();
 
         info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
@@ -63,6 +69,38 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
 
         download_credential_logos(&credential_configurations).await;
+
+        let debug_log = state.core_utils.debug_log.clone();
+        let unsupported: Vec<_> = credential_offer
+            .credential_configuration_ids
+            .iter()
+            .filter(|id| !credential_configurations.contains_key(*id))
+            .collect();
+        if credential_issuer_metadata.is_none() {
+            crate::debug_log_error!(
+                debug_log,
+                "Read Credential offer from {}: the Credential Issuer metadata could not be fetched",
+                credential_issuer_url.host_str().unwrap_or("unknown host")
+            );
+        } else {
+            crate::debug_log_info!(
+                debug_log,
+                "Read Credential offer from {}: {} configuration(s) {:?}{}, pre-authorized: {}, tx_code required: {}",
+                credential_issuer_url.host_str().unwrap_or("unknown host"),
+                credential_offer.credential_configuration_ids.len(),
+                credential_offer.credential_configuration_ids.iter().collect::<Vec<_>>(),
+                if unsupported.is_empty() {
+                    String::new()
+                } else {
+                    format!(", not in the Issuer metadata: {unsupported:?}")
+                },
+                credential_offer
+                    .grants
+                    .as_ref()
+                    .is_some_and(|grants| grants.pre_authorized_code.is_some()),
+                tx_code.is_some()
+            );
+        }
 
         if let Some(pending_connection_data) = &state.core_utils.pending_connection_data {
             let client_metadata = &pending_connection_data.client_metadata;

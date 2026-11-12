@@ -5,11 +5,12 @@ use crate::{
         actions::{listen, Action},
         connections::EcosystemsCheck,
         core_utils::{
+            debug_log::error_chain,
             helpers::{download_logo, normalize_connection_url},
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage, PendingConnectionData,
         },
         did::validate_linked_verifiable_presentations::{
-            validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
+            validate_linked_verifiable_presentations_with_count, LinkedVerifiableCredentialData,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
@@ -18,6 +19,7 @@ use crate::{
     well_known::{get_credential_issuer_metadata, get_did_document_id},
 };
 use identity_iota::did::CoreDID;
+use itertools::Itertools;
 use log::{info, warn};
 use oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
@@ -43,19 +45,61 @@ enum ParsedQrCode {
     Oid4vci(Box<CredentialOfferParameters>),
 }
 
+impl ParsedQrCode {
+    /// The request type and the Issuer or Verifier host, for the Debug screen. Never the request itself, which can
+    /// carry a pre-authorized code or a nonce.
+    fn summary(&self) -> String {
+        let host = |url: &url::Url| url.host_str().unwrap_or("unknown host").to_string();
+        match self {
+            ParsedQrCode::Siopv2(request) => format!(
+                "SIOPv2 request from {} (client_id: {})",
+                host(request.body.uri.uri()),
+                request.body.client_id
+            ),
+            ParsedQrCode::Oid4vp(request) => format!(
+                "OID4VP request from {} (client_id: {})",
+                host(request.body.uri.uri()),
+                request.body.client_id
+            ),
+            ParsedQrCode::Oid4vci(offer) => format!(
+                "Credential offer from {} ({} configuration(s): {})",
+                host(&offer.credential_issuer),
+                offer.credential_configuration_ids.len(),
+                offer.credential_configuration_ids.iter().join(", ")
+            ),
+        }
+    }
+}
+
 /// Sets the `AcceptConnection` prompt; the following `ConnectionAccepted` action routes to the next reducer depending on the `ActiveFlow` set here.
 /// 1. Read and parse the QR-code to a URL.
 /// 2. Retrieve the connection data to display on the "Accept connection" screen.
 /// 3. Init the `ActiveFlow` enum with the rest of the retrieved data.
+#[tracing::instrument(skip_all, err)]
 pub async fn accept_connection(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action).map(|payload| payload.form_urlencoded) {
-        let parsed_qr_code = parse_qr_code(&state, qr_code_scanned).await?;
+        let debug_log = state.core_utils.debug_log.clone();
+
+        let parsed_qr_code = parse_qr_code(&state, qr_code_scanned).await.inspect_err(|error| {
+            crate::debug_log_error!(debug_log, "Unrecognised QR code: {}", unrecognised_reason(error))
+        })?;
+        crate::debug_log_info!(debug_log, "Scanned {}", parsed_qr_code.summary());
         info!("QR code parsed");
         crate::log_payload!("Parsed QR code: {parsed_qr_code:?}");
 
-        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed_qr_code.clone()).await?;
+        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed_qr_code.clone())
+            .await
+            .inspect_err(|error| {
+                crate::debug_log_error!(
+                    debug_log,
+                    "Failed to read the metadata of {}: {}",
+                    parsed_qr_code.summary(),
+                    error_chain(error)
+                )
+            })?;
         info!("Retrieved client metadata: {client_metadata:?}");
         crate::log_payload!("Initializing active flow: {active_flow:?}");
+        let trust_check_start = std::time::Instant::now();
 
         let did = client_metadata.client_id.to_string();
         let connection_data = state
@@ -131,8 +175,10 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         info!("Domain validation result: {domain_validation:?}");
 
-        let linked_verifiable_presentations = match validate_linked_verifiable_presentations(&subject, &did)
-            .await
+        let (linked_verifiable_presentations_found, validated_linked_verifiable_presentations) =
+            validate_linked_verifiable_presentations_with_count(&subject, &did).await;
+        let linked_verifiable_presentations_valid = validated_linked_verifiable_presentations.len();
+        let linked_verifiable_presentations = match validated_linked_verifiable_presentations
             .into_iter()
             .flatten()
             .collect::<Vec<LinkedVerifiableCredentialData>>()
@@ -148,7 +194,23 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         let ecosystems = discovery
             .await
             .unwrap_or_else(|e| Err(EcosystemsUnavailable(format!("Resolving the ecosystems failed: {e}"))));
+        let ecosystems_summary = match &ecosystems {
+            Ok(ecosystems) if ecosystems.is_empty() => "none".to_string(),
+            Ok(ecosystems) => format!("{} found", ecosystems.len()),
+            Err(e) => format!("unavailable ({e})"),
+        };
         let (ecosystems, ecosystems_check) = EcosystemsCheck::outcome(ecosystems);
+
+        crate::debug_log_info!(
+            debug_log,
+            "Trust check for {} took {}ms: domain linkage {:?}; linked VPs {} found, {} valid, {} failed; ecosystems {ecosystems_summary}",
+            client_metadata.client_name,
+            trust_check_start.elapsed().as_millis(),
+            domain_validation.status,
+            linked_verifiable_presentations_found,
+            linked_verifiable_presentations_valid,
+            linked_verifiable_presentations_found.saturating_sub(linked_verifiable_presentations_valid)
+        );
 
         // The pending connection data remains pending until the active flow is completed successfully.
         // Then, it is persisted to the state connections.
@@ -185,6 +247,16 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 }
 
 // Helpers
+
+/// Why a scanned QR code was not recognised, without repeating its content.
+fn unrecognised_reason(error: &AppError) -> String {
+    match error {
+        InvalidQRCodeError(_) => "not a Credential offer, OID4VP or SIOPv2 request".to_string(),
+        InvalidAuthorizationRequest(_) => "an authorization request, but neither OID4VP nor SIOPv2".to_string(),
+        GetCredentialOfferError(error) => format!("the Credential offer could not be fetched: {error}"),
+        error => error.to_string(),
+    }
+}
 
 // OID4VCI credential offers are handled by a dedicated reducer, so they're
 // parsed directly here rather than through `provider_manager.validate_request`.
@@ -350,7 +422,10 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
     info!("credential issuer url: {credential_issuer_url:?}");
     info!("connection url: {connection_url:?}");
 
-    let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+    let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
+        .await
+        .inspect_err(|err| warn!("Failed to fetch the Credential Issuer metadata of {credential_issuer_url}: {err:#}"))
+        .ok();
 
     let display = credential_issuer_metadata
         .as_ref()
@@ -480,6 +555,8 @@ async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfil
         )));
     }
 
+    let trust_chain_count = discovery.chains.len();
+
     // Discovery order is kept so the shortest chains' anchors come first.
     let mut trust_anchors: Vec<(EntityId, EntityConfiguration, TrustChain)> = Vec::new();
     for trust_chain in discovery.chains {
@@ -511,7 +588,10 @@ async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfil
         }))
         .await;
 
-    info!("Fetched ecosystems for entity ID {entity_id}: {ecosystems:?}");
+    info!(
+        "Fetched ecosystems for entity ID {entity_id} from {trust_chain_count} trust chain(s) and {} trust anchor(s): {ecosystems:?}",
+        trust_anchors.len()
+    );
 
     Ok(ecosystems)
 }

@@ -49,6 +49,11 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
         }
 
         // Get or create public link to the credential
+        let public_link_kind = if credential.public_link.is_some() {
+            "existing"
+        } else {
+            "new"
+        };
         let public_link = if let Some(existing_link) = credential.public_link.clone() {
             info!("Using existing public link for credential `{}`", credential.id);
             crate::log_payload!("Existing public link: {existing_link}");
@@ -82,6 +87,12 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
                 .map_err(|err| AppError::BrowserUnavailableError(format!("Failed to open URL in browser: {err}")))?;
         }
 
+        crate::debug_log_ok!(
+            state.core_utils.debug_log,
+            "Shared credential `{}` ({}) to LinkedIn with a {public_link_kind} public link",
+            credential.id,
+            credential.display_name
+        );
         credential.public_link = Some(public_link);
         return Ok(AppState { credentials, ..state });
     }
@@ -411,6 +422,7 @@ mod tests {
                 })),
                 active_flow: None,
                 pending_connection_data: None,
+                debug_log: Default::default(),
             },
             ..Default::default()
         };
