@@ -6,5 +6,8 @@
       "theme": "system"
     }
   },
-  "debug_messages": ["[2023-11-14][22:03:55] Unable to parse QR code with content: `invalid payload`\n"]
+  "debug_messages": [
+    "[2023-11-14][22:03:55] ERROR Unrecognised QR code: not a Credential offer, OID4VP or SIOPv2 request",
+    "[2023-11-14][22:03:55] ERROR [QR Code] Scanned failed: Unable to parse QR code"
+  ]
 }

@@ -31,7 +31,7 @@ use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
 use identity_iota::did::DID;
-use log::{debug, info};
+use log::debug;
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::{jwt, Sign, Subject as _};
@@ -66,13 +66,18 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     if let Some(selections) = listen::<CredentialsSelected>(action)
         .and_then(|payload| (!payload.is_interactive).then_some(payload.selections))
     {
-        info!(
-            "Responding to OID4VP authorization request with {} credential(s)",
-            selections
-                .iter()
-                .map(|selection| selection.credential_uuids.len())
-                .sum::<usize>()
-        );
+        let shared_count = selections
+            .iter()
+            .map(|selection| selection.credential_uuids.len())
+            .sum::<usize>();
+        let debug_log = state.core_utils.debug_log.clone();
+        let verifier = state
+            .core_utils
+            .pending_connection_data
+            .as_ref()
+            .map(|data| data.client_metadata.client_name.clone())
+            .unwrap_or_else(|| "unknown Verifier".to_string());
+        debug_log.info(format!("Sharing {shared_count} credential(s) with {verifier}"));
 
         let state_guard = state.core_utils.managers.lock().await;
 
@@ -124,7 +129,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             InteractionOutcome::Approved => {}
             // Nothing was shared: keep the flow so the user can try again.
             outcome @ InteractionOutcome::NotSent { .. } => {
-                log::warn!("Failed to send OID4VP authorization response to verifier: {outcome:?}");
+                debug_log.error(format!("Presentation to {verifier} failed: {outcome}"));
                 drop(state_guard);
                 return Ok(AppState {
                     interaction_result: interaction_result(outcome),
@@ -133,7 +138,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             }
             // The verifier refused the presentation: end the flow without recording a share.
             outcome @ InteractionOutcome::Rejected { .. } => {
-                log::warn!("Verifier rejected the OID4VP authorization response: {outcome:?}");
+                debug_log.error(format!("Presentation to {verifier} failed: {outcome}"));
                 drop(state_guard);
                 return Ok(AppState {
                     core_utils: CoreUtils {
@@ -149,7 +154,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 });
             }
         }
-        info!("OID4VP presentation response accepted by verifier");
+        debug_log.ok(format!(
+            "Presentation of {shared_count} credential(s) to {verifier}: approved"
+        ));
 
         let interaction_result = interaction_result(InteractionOutcome::Approved);
         let mut connections = state.connections;

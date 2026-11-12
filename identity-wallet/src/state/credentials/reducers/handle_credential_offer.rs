@@ -1,5 +1,5 @@
-use crate::logging::url_without_query;
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
+use crate::state::core_utils::debug_log::error_chain;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
 use crate::state::credentials::credential_query_matching::{
@@ -81,10 +81,23 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
         let credential_issuer_url = credential_offer.credential_issuer.clone();
         debug!("Credential issuer URL: {credential_issuer_url}");
 
+        let debug_log = state.core_utils.debug_log.clone();
+        let issuer_host = credential_issuer_url
+            .host_str()
+            .unwrap_or(credential_issuer_url.as_str())
+            .to_string();
+        let failed_at = |step: &str, error: &AppError| {
+            debug_log.error(format!(
+                "Issuance from {issuer_host} failed at {step}: {}",
+                error_chain(error)
+            ))
+        };
+
         // Get the credential issuer metadata.
         let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
             .await
-            .map_err(GetCredentialIssuerMetadataError)?;
+            .map_err(GetCredentialIssuerMetadataError)
+            .inspect_err(|error| failed_at("Credential Issuer metadata", error))?;
 
         debug!("Credential issuer metadata: {credential_issuer_metadata:?}");
 
@@ -115,8 +128,16 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
             })
             .unwrap_or(connection_url.to_string());
 
-        info!("Processing credential offer for issuer: {issuer_name} ({connection_url})");
-        debug!("Credential configuration IDs: {:?}", credential_configuration_ids);
+        let grant = match credential_offer.grants.as_ref() {
+            Some(grants) if grants.pre_authorized_code.is_some() => "pre-authorized code",
+            Some(grants) if grants.authorization_code.is_some() => "authorization code",
+            _ => "none",
+        };
+        debug_log.info(format!(
+            "Issuance started with {issuer_name} ({connection_url}): {} configuration(s) {:?}, grant: {grant}",
+            credential_configuration_ids.len(),
+            credential_configuration_ids
+        ));
 
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
@@ -139,9 +160,9 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                     let tx_code = selected_offer.tx_code;
 
                     if tx_code_required && tx_code.is_none() {
-                        return Err(AppError::InvalidInputError(
-                            "tx_code is required but not provided".to_string(),
-                        ));
+                        let error = AppError::InvalidInputError("tx_code is required but not provided".to_string());
+                        failed_at("transaction code", &error);
+                        return Err(error);
                     }
 
                     let action = CodeReceived {
@@ -225,7 +246,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                     // Get the authorization server metadata.
                     let authorization_server_metadata = get_authorization_server_metadata(&authorization_server_url)
                         .await
-                        .map_err(GetAuthorizationServerMetadataError)?;
+                        .map_err(GetAuthorizationServerMetadataError)
+                        .inspect_err(|error| failed_at("Authorization Server metadata", error))?;
 
                     if let Some(interactive_authorization_endpoint) =
                         &authorization_server_metadata.interactive_authorization_endpoint
@@ -252,7 +274,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             .await
                             .map_err(|err| {
                                 AppError::Error(format!("Failed to get interactive authorization response: {}", err))
-                            })?;
+                            })
+                            .inspect_err(|error| failed_at("interactive authorization request", error))?;
 
                         debug!(
                              "interactive authorization response received (auth_session_present={}, openid4vp_request_present={})",
@@ -293,10 +316,6 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             connection,
                         );
 
-                        debug!(
-                            "Credentials matching interactive OID4VP request: {}",
-                            summarize_requested_credentials(&requested_credentials)
-                        );
                         crate::log_payload!("Requested credentials: {requested_credentials:?}");
 
                         // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
@@ -307,7 +326,13 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             ..
                         } = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
 
-                        info!("Interactive OID4VP client metadata: client_name={client_name:?}, logo_uri={logo_uri:?}");
+                        debug_log.info(format!(
+                            "Interactive authorization: {client_name} (client_id: {}) requests {} credential(s) out of {} stored: {}",
+                            oid4vp_authorization_request.body.client_id,
+                            requested_credentials.len(),
+                            verifiable_credentials.len(),
+                            summarize_requested_credentials(&requested_credentials)
+                        ));
 
                         if let Some(logo_uri_str) = logo_uri.clone() {
                             download_logo(&logo_uri_str).await;
@@ -315,7 +340,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             debug!("No logo URI found for interactive OID4VP client");
                         }
 
-                        ensure_shareable(&requested_credentials)?;
+                        ensure_shareable(&requested_credentials)
+                            .inspect_err(|error| failed_at("interactive authorization", error))?;
                         drop(state_guard);
 
                         return Ok(AppState {
@@ -369,7 +395,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             .await
                             .map_err(|err| {
                                 AppError::Error(format!("Failed to get pushed authorization response: {}", err))
-                            })?;
+                            })
+                            .inspect_err(|error| failed_at("pushed authorization request", error))?;
 
                         info!("Received pushed authorization response");
                         crate::log_payload!("Pushed authorization response: {par_response:?}");
@@ -386,10 +413,10 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             .append_pair("client_id", UNIME_CLIENT_ID)
                             .append_pair("request_uri", &par_response.request_uri.to_string());
 
-                        info!(
-                            "Opening authorization endpoint `{}` in browser",
-                            url_without_query(&authorization_endpoint)
-                        );
+                        debug_log.info(format!(
+                            "Opening the authorization endpoint of {} in the browser",
+                            authorization_endpoint.host_str().unwrap_or("unknown host")
+                        ));
                         crate::log_payload!("Authorization URL: {authorization_endpoint}");
                         let app_handle = state
                             .core_utils

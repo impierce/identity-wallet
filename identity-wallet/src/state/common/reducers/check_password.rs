@@ -1,8 +1,13 @@
 use crate::error::AppError;
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::check_password::CheckPassword;
+use crate::state::core_utils::debug_log::{push_debug_message, DebugLevel};
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
+
+/// The security settings page reads the outcome from the end of the last debug message.
+const PASSWORD_OK_MESSAGE: &str = "Stronghold password OK";
+const WRONG_PASSWORD_MESSAGE: &str = "Wrong Stronghold password";
 
 #[tracing::instrument(skip_all, err)]
 pub async fn check_password(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -15,7 +20,7 @@ pub async fn check_password(state: AppState, action: Action) -> Result<AppState,
             return Ok(AppState {
                 debug_messages: {
                     let mut debug_messages = state.debug_messages.clone();
-                    debug_messages.push_back("Stronghold password OK".to_string());
+                    push_debug_message(&mut debug_messages, DebugLevel::Ok, PASSWORD_OK_MESSAGE);
                     debug_messages
                 },
                 current_user_prompt: None,
@@ -26,7 +31,7 @@ pub async fn check_password(state: AppState, action: Action) -> Result<AppState,
             return Ok(AppState {
                 debug_messages: {
                     let mut debug_messages = state.debug_messages.clone();
-                    debug_messages.push_back("Wrong Stronghold password".to_string());
+                    push_debug_message(&mut debug_messages, DebugLevel::Error, WRONG_PASSWORD_MESSAGE);
                     debug_messages
                 },
                 current_user_prompt: None,

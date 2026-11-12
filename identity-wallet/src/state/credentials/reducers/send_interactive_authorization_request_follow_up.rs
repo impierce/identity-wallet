@@ -117,11 +117,24 @@ pub async fn send_interactive_authorization_request_follow_up(
                 AppError::Error(format!(
                     "Failed to send interactive authorization follow-up request: {e}"
                 ))
+            });
+        let debug_log = state.core_utils.debug_log.clone();
+        let code = response
+            .and_then(|response| {
+                response
+                    .authorization_code()
+                    .map(ToString::to_string)
+                    .ok_or(AppError::Error(
+                        "Authorization code is missing in the response".to_string(),
+                    ))
+            })
+            .inspect_err(|error| {
+                debug_log.error(format!(
+                    "Interactive authorization follow-up failed: {}",
+                    crate::state::core_utils::debug_log::error_chain(error)
+                ))
             })?;
-
-        let code = response.authorization_code().ok_or(AppError::Error(
-            "Authorization code is missing in the response".to_string(),
-        ))?;
+        debug_log.info("Interactive authorization follow-up accepted, authorization code received");
 
         let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::FlowExpiredError(
@@ -159,7 +172,7 @@ pub async fn send_interactive_authorization_request_follow_up(
         };
 
         let action = Arc::new(CodeReceived {
-            code: code.to_string(),
+            code,
             is_pre_authorized: false,
             is_interactive: true,
             state: None,

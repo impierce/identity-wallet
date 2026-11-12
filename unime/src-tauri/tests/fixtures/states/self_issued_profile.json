@@ -32,5 +32,9 @@
   "current_user_prompt": {
     "type": "redirect",
     "target": "me"
-  }
+  },
+  "debug_messages": [
+    "[2023-11-14][22:03:55] OK Self-issued credential `My Profile` saved",
+    "[2023-11-14][22:03:55] OK Self-issued credential `My Profile` saved"
+  ]
 }

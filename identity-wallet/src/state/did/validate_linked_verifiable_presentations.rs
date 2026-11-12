@@ -51,6 +51,17 @@ pub async fn validate_linked_verifiable_presentations(
     subject: &Subject,
     holder_did: &str,
 ) -> Vec<Vec<LinkedVerifiableCredentialData>> {
+    validate_linked_verifiable_presentations_with_count(subject, holder_did)
+        .await
+        .1
+}
+
+/// Same as [`validate_linked_verifiable_presentations`], but also returns the number of linked verifiable
+/// presentations found in the holder's DID document, so callers can tell how many failed validation.
+pub async fn validate_linked_verifiable_presentations_with_count(
+    subject: &Subject,
+    holder_did: &str,
+) -> (usize, Vec<Vec<LinkedVerifiableCredentialData>>) {
     info!("Validating linked verifiable presentations for holder DID: {holder_did}");
 
     let resolver = subject.resolver().await;
@@ -59,27 +70,31 @@ pub async fn validate_linked_verifiable_presentations(
         Ok(holder_document) => holder_document,
         _ => {
             warn!("Failed to resolve holder DID: {holder_did}");
-            return vec![];
+            return (0, vec![]);
         }
     };
 
     debug!("Holder document: {holder_document:#?}");
 
-    iter(
-        // Get all linked verifiable presentation URLs from the holder document
-        holder_document
-            .service()
-            .iter()
-            .filter_map(get_linked_verifiable_presentation_urls)
-            .flatten(),
-    )
-    .filter_map(|linked_verifiable_presentation_url| {
-        debug!("Processing linked verifiable presentation URL: {linked_verifiable_presentation_url}");
-        // Validate the linked verifiable presentation and get the linked verifiable credential data
-        get_validated_linked_presentation_data(subject, &holder_document, linked_verifiable_presentation_url)
-    })
-    .collect::<Vec<_>>()
-    .await
+    // Get all linked verifiable presentation URLs from the holder document
+    let linked_verifiable_presentation_urls: Vec<Url> = holder_document
+        .service()
+        .iter()
+        .filter_map(get_linked_verifiable_presentation_urls)
+        .flatten()
+        .collect();
+    let found = linked_verifiable_presentation_urls.len();
+
+    let validated = iter(linked_verifiable_presentation_urls)
+        .filter_map(|linked_verifiable_presentation_url| {
+            debug!("Processing linked verifiable presentation URL: {linked_verifiable_presentation_url}");
+            // Validate the linked verifiable presentation and get the linked verifiable credential data
+            get_validated_linked_presentation_data(subject, &holder_document, linked_verifiable_presentation_url)
+        })
+        .collect::<Vec<_>>()
+        .await;
+
+    (found, validated)
 }
 
 /// Get the linked verifiable presentation URLs from the service. It returns a list of URLs if the service type is a

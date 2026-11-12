@@ -4,6 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
+            debug_log::error_chain,
             helpers::{normalize_connection_url, validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
@@ -43,7 +44,45 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         return Ok(state);
     }
 
-    let issuer_name = match &state.current_user_prompt {
+    let issuer_name = issuer_name(&state);
+    let previous_state = state.clone();
+    match redeem_code_for_credentials(state, action).await {
+        Ok(state) => Ok(AppState {
+            interaction_result: issuance_result(issuer_name, InteractionOutcome::Approved),
+            ..state
+        }),
+        Err(GetAccessTokenError(error)) => Ok(end_failed_issuance(previous_state, "token request", &error)),
+        Err(GetCredentialError(error)) => Ok(end_failed_issuance(previous_state, "Credential request", &error)),
+        Err(error) => Err(error),
+    }
+}
+
+/// Ends the flow after the issuer's token or credential endpoint answered with an error (or not at all), and reports
+/// the outcome in the result pop-up and the Debug screen.
+fn end_failed_issuance(previous_state: AppState, step: &str, error: &anyhow::Error) -> AppState {
+    let issuer_name = issuer_name(&previous_state);
+    let outcome = InteractionOutcome::from_wallet_error(error);
+    previous_state
+        .core_utils
+        .debug_log
+        .error(format!("Issuance from {issuer_name} failed at {step}: {outcome}"));
+    AppState {
+        core_utils: CoreUtils {
+            active_flow: None,
+            pending_connection_data: None,
+            ..previous_state.core_utils
+        },
+        current_user_prompt: Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
+        }),
+        interaction_result: issuance_result(issuer_name, outcome),
+        ..previous_state
+    }
+}
+
+/// The issuer's display name, from the `CredentialOffer` prompt or else the pending connection.
+fn issuer_name(state: &AppState) -> String {
+    match &state.current_user_prompt {
         Some(CurrentUserPrompt::CredentialOffer { issuer_name, .. }) => Some(issuer_name.clone()),
         _ => None,
     }
@@ -54,39 +93,15 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .as_ref()
             .map(|pending_connection_data| pending_connection_data.client_metadata.client_name.clone())
     })
-    .unwrap_or_default();
-    let interaction_result = |outcome| {
-        Some(InteractionResult {
-            kind: InteractionKind::Issuance,
-            counterparty: issuer_name.clone(),
-            outcome,
-        })
-    };
+    .unwrap_or_default()
+}
 
-    let previous_state = state.clone();
-    match redeem_code_for_credentials(state, action).await {
-        Ok(state) => Ok(AppState {
-            interaction_result: interaction_result(InteractionOutcome::Approved),
-            ..state
-        }),
-        Err(GetAccessTokenError(error) | GetCredentialError(error)) => {
-            let outcome = InteractionOutcome::from_wallet_error(&error);
-            warn!("Credential issuance failed: {outcome:?}");
-            Ok(AppState {
-                core_utils: CoreUtils {
-                    active_flow: None,
-                    pending_connection_data: None,
-                    ..previous_state.core_utils
-                },
-                current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                    target: "me".to_string(),
-                }),
-                interaction_result: interaction_result(outcome),
-                ..previous_state
-            })
-        }
-        Err(error) => Err(error),
-    }
+fn issuance_result(issuer_name: String, outcome: InteractionOutcome) -> Option<InteractionResult> {
+    Some(InteractionResult {
+        kind: InteractionKind::Issuance,
+        counterparty: issuer_name,
+        outcome,
+    })
 }
 
 async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -137,6 +152,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             ));
         }
 
+        let debug_log = state.core_utils.debug_log.clone();
         let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
@@ -154,11 +170,22 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
         debug!("Credential issuer URL: {credential_issuer_url}");
+        let issuer_host = credential_issuer_url
+            .host_str()
+            .unwrap_or(credential_issuer_url.as_str())
+            .to_string();
+        let failed_at = |step: &str, error: &AppError| {
+            debug_log.error(format!(
+                "Issuance from {issuer_host} failed at {step}: {}",
+                error_chain(error)
+            ))
+        };
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
             .await
-            .map_err(GetCredentialIssuerMetadataError)?;
+            .map_err(GetCredentialIssuerMetadataError)
+            .inspect_err(|error| failed_at("Credential Issuer metadata", error))?;
 
         // Check that the specified authorization servers are listed in the Credential Issuer Metadata's `authorization_servers` parameter.
         let specified_authorization_server = &credential_offer.grants.as_ref().and_then(|grants| {
@@ -201,7 +228,8 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         // Get the authorization server metadata.
         let authorization_server_metadata = get_authorization_server_metadata(&authorization_server_url)
             .await
-            .map_err(GetAuthorizationServerMetadataError)?;
+            .map_err(GetAuthorizationServerMetadataError)
+            .inspect_err(|error| failed_at("Authorization Server metadata", error))?;
 
         debug!("Authorization server metadata: {:?}", authorization_server_metadata);
 
@@ -245,6 +273,10 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             )
             .await
             .map_err(GetAccessTokenError)?;
+        debug_log.info(format!(
+            "Token request to {} succeeded",
+            authorization_server_url.host_str().unwrap_or("unknown host")
+        ));
 
         // `TokenResponse` derives `Debug`, so the access and refresh tokens are only logged as a payload.
         debug!(
@@ -301,6 +333,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data);
 
         let mut history_credentials = vec![];
+        let mut received_credentials: Vec<String> = vec![];
 
         for credential_configuration_id in credential_configuration_ids {
             let credential_configuration = credential_configurations_supported
@@ -311,9 +344,13 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
             // Get a nonce if the credential issuer metadata contains a nonce endpoint.
             let nonce = if let Some(nonce_endpoint) = &credential_issuer_metadata.nonce_endpoint {
-                let nonce = wallet.get_nonce(nonce_endpoint.clone()).await.map_err(|err| {
-                    AppError::Error(format!("Failed to get nonce from endpoint {nonce_endpoint}: {err}"))
-                })?;
+                let nonce = wallet
+                    .get_nonce(nonce_endpoint.clone())
+                    .await
+                    .map_err(|err| {
+                        AppError::Error(format!("Failed to get nonce from endpoint {nonce_endpoint}: {err}"))
+                    })
+                    .inspect_err(|error| failed_at("nonce request", error))?;
 
                 Some(nonce)
             } else {
@@ -361,11 +398,20 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                     )
                 }
                 CredentialResponseType::Deferred { .. } => {
-                    return Err(AppError::UnsupportedError(
-                        "Deferred credential response is not supported yet.".to_string(),
-                    ))
+                    let error =
+                        AppError::UnsupportedError("Deferred credential response is not supported yet.".to_string());
+                    failed_at(
+                        &format!("Credential request for `{credential_configuration_id}`"),
+                        &error,
+                    );
+                    return Err(error);
                 }
             };
+            debug_log.info(format!(
+                "Credential request for `{credential_configuration_id}` to {issuer_host} succeeded"
+            ));
+            let failed_validation =
+                |error: &AppError| failed_at(&format!("validation of `{credential_configuration_id}`"), error);
 
             // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
@@ -374,7 +420,9 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                     .as_str()
                     .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
 
-                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
+                validate_jwt_vc_json(credential_jwt, identity_manager)
+                    .await
+                    .inspect_err(failed_validation)?;
             }
 
             let display = credential_configuration
@@ -395,9 +443,11 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 credential_configuration.credential_format.format(),
                 credential.clone(),
                 claims,
-            )?;
+            )
+            .inspect_err(failed_validation)?;
             // Validate the credential against its corresponding credential JSON Schema.
-            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+            validate_credential_types(&verifiable_credential_record.verifiable_credential)
+                .inspect_err(failed_validation)?;
 
             // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
@@ -445,7 +495,14 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 verifiable_credential_record.display_credential.id
             );
             crate::log_payload!("Received credential: {credential:?}");
+            received_credentials.push(verifiable_credential_record.display_credential.display_name.clone());
         }
+
+        debug_log.ok(format!(
+            "Received {} Credential(s) from {issuer_name}: {}",
+            received_credentials.len(),
+            received_credentials.join(", ")
+        ));
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
             .values()
