@@ -62,7 +62,7 @@ The last check before sharing: exactly which fields go to the verifier, per cred
         </div>
         {#each fields as field}
           <div class="flex items-center gap-2.5 px-[14px] py-1.5">
-            <CheckRegularIcon class="size-[14px] shrink-0 text-green-700 dark:text-green-400" />
+            <CheckRegularIcon class="size-[14px] shrink-0 text-primary" />
             <p class="min-w-0 grow text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">{field.label}</p>
             <p class="min-w-0 text-right text-[13px]/[24px] font-medium break-words text-slate-800 dark:text-grey">
               {field.value}
