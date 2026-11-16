@@ -155,7 +155,6 @@ fn backend(error: impl std::error::Error + Send + Sync + 'static) -> KeyStoreErr
 mod tests {
     use super::*;
     use crate::persistence::STRONGHOLD;
-    use identity_kit::jose::{DefaultVerifier, JwsVerifier};
     use tempfile::NamedTempFile;
 
     fn stronghold_manager() -> (StrongholdManager, tempfile::TempPath) {
@@ -164,40 +163,26 @@ mod tests {
         (StrongholdManager::create("sup3rSecr3t").unwrap(), path)
     }
 
+    /// The members of the public JWKs that the wallet's `did:jwk`s encode, see [`StrongholdManager::public_jwk`].
     #[tokio::test]
     #[serial_test::serial]
-    async fn signs_with_both_keys() {
+    async fn public_keys_carry_alg_and_thumbprint_kid() {
         let (store, _path) = stronghold_manager();
 
         for (key, alg) in KEYS {
-            let key = KeyId::new(key);
-            let jwk = store.public_jwk(&key).await.unwrap();
+            let jwk = store.public_jwk(&KeyId::new(key)).await.unwrap();
             assert_eq!(jwk.alg(), Some(alg.as_str()));
             assert_eq!(jwk.kid(), Some(jwk.thumbprint_sha256().unwrap().as_str()));
-
-            let signature = store.sign(&key, alg, b"foobar").await.unwrap();
-            assert_eq!(signature.len(), 64);
-            DefaultVerifier.verify(alg, b"foobar", &signature, &jwk).unwrap();
         }
     }
 
+    /// identity-kit's contract for key stores: `public_jwk`, `sign` in the JWS signature form, `AlgorithmMismatch`,
+    /// `NotFound` and no `generate` or `delete`.
     #[tokio::test]
     #[serial_test::serial]
-    async fn rejects_unknown_keys_and_other_algorithms() {
+    async fn follows_the_key_store_contract() {
         let (store, _path) = stronghold_manager();
 
-        let unknown = KeyId::new("es256k-0");
-        assert!(!store.exists(&unknown).await.unwrap());
-        assert!(matches!(
-            store.public_jwk(&unknown).await,
-            Err(KeyStoreError::NotFound(_))
-        ));
-        assert!(matches!(
-            store
-                .sign(&KeyId::new(ED25519_KEY_ID), JwsAlgorithm::ES256, b"foobar")
-                .await,
-            Err(KeyStoreError::AlgorithmMismatch { .. })
-        ));
-        assert!(store.exists(&KeyId::new(ES256_KEY_ID)).await.unwrap());
+        identity_kit::keys::testsuite::run_with_keys(&store, &KEYS.map(|(key, alg)| (KeyId::new(key), alg))).await;
     }
 }
