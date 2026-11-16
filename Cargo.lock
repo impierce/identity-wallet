@@ -9383,8 +9383,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "479b38ddabab40466598dc463c1f37783bfc8f5b4d753d408d0e3d45995ac5e7"
+source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9410,8 +9409,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3218fa6c88e849f39de0b4e961ecef05352995932aa1490ed0e9265ad580f531"
+source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9440,8 +9438,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b00fac0afb8b9ab1ba095a34bef0c48e829ef25ed6629864925a78f838370996"
+source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9467,8 +9464,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1acefd6395bf4c61be31e83d4495fa2ac797e2cce8fdebcf50b9685b510ac944"
+source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12487,8 +12483,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34c6924150a5770ed1af936415ea158d03d7904345840d51446d128cce27e382"
+source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
 dependencies = [
  "anyhow",
  "async-trait",

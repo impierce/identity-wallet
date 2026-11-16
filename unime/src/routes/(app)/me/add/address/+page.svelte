@@ -47,7 +47,7 @@
     };
 
     const validationResult = residence.safeParse(credentialSubject);
-    info(`Validation result: ${JSON.stringify(validationResult)}`);
+    info(`Address validation ${validationResult.success ? 'succeeded' : 'failed'}`);
 
     let name = addressName;
     if (addressName.trim().length === 0) {

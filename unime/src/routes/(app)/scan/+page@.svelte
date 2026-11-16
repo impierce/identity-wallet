@@ -31,7 +31,7 @@
   let mockQrCodeValue = '';
 
   function onMessage(scanned: Scanned) {
-    debug(`Scanned: ${scanned.content}`);
+    debug('Scanned a QR code');
     loading = true;
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
   }

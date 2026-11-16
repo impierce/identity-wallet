@@ -4,7 +4,9 @@ use crate::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,
         core_utils::{ActiveFlow, CoreUtils},
-        credentials::credential_query_matching::{ensure_shareable, match_credential_queries, with_last_shared},
+        credentials::credential_query_matching::{
+            ensure_shareable, match_credential_queries, summarize_requested_credentials, with_last_shared,
+        },
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -33,11 +35,19 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
             .ok_or(MissingManagerError("stronghold"))?;
 
         let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
-        info!("verifiable credentials: {verifiable_credentials:?}");
+        info!(
+            "Loaded {} verifiable credential(s) from Stronghold",
+            verifiable_credentials.len()
+        );
+        crate::log_payload!("Verifiable credentials: {verifiable_credentials:?}");
 
         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
         let requested_credentials = match_credential_queries(dcql_query, &verifiable_credentials);
-        info!("credentials that can fulfill the request: {requested_credentials:?}");
+        info!(
+            "Credentials that can fulfill the request: {}",
+            summarize_requested_credentials(&requested_credentials)
+        );
+        crate::log_payload!("Requested credentials: {requested_credentials:?}");
 
         drop(state_guard);
         let pending_connection_data = state.core_utils.pending_connection_data.clone();

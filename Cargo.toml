@@ -29,6 +29,13 @@ wiremock = "0.5"
 [patch.crates-io]
 # We need this patch because it makes the `Hasher` trait `Send` and `Sync`. See: https://github.com/iotaledger/sd-jwt-payload/compare/main...impierce:sd-jwt-payload:fix/hasher-send-sync
 sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }
+# openid4vc 0.6.0 plus the unreleased fix that keeps personal data and secrets out of its logs
+# (impierce/openid4vc#208), which `unime/src-tauri/src/lib.rs` relies on. Remove once a release contains it.
+oid4vc-core = { git = "https://github.com/impierce/openid4vc", rev = "80196c9" }
+oid4vc-manager = { git = "https://github.com/impierce/openid4vc", rev = "80196c9" }
+oid4vci = { git = "https://github.com/impierce/openid4vc", rev = "80196c9" }
+oid4vp = { git = "https://github.com/impierce/openid4vc", rev = "80196c9" }
+siopv2 = { git = "https://github.com/impierce/openid4vc", rev = "80196c9" }
 
 [workspace.package]
 version = "0.19.4"
