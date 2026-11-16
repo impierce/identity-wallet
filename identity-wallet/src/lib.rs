@@ -1,4 +1,5 @@
 pub mod command;
+pub mod did_resolver;
 pub mod error;
 pub mod http_client;
 pub mod logging;

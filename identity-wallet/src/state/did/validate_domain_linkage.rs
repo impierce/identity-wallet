@@ -1,5 +1,5 @@
+use crate::did_resolver::Resolver;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use did_manager::Resolver;
 use futures::future::join_all;
 use hickory_resolver::{
     config::{ResolverConfig, CLOUDFLARE},
@@ -617,7 +617,7 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone()).await.unwrap();
 
         let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();
@@ -658,7 +658,7 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone()).await.unwrap();
 
         let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();

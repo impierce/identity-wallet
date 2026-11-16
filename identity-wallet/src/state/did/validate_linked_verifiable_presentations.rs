@@ -1,3 +1,4 @@
+use crate::did_resolver::Resolver;
 use crate::{
     http_client::get_http_client,
     state::{
@@ -11,7 +12,6 @@ use crate::{
     subject::Subject,
     well_known::{well_known_candidates, OPENID_CREDENTIAL_ISSUER},
 };
-use did_manager::Resolver;
 use futures::{
     future::OptionFuture,
     stream::{iter, FuturesUnordered},
@@ -463,21 +463,23 @@ fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::stronghold::{StrongholdManager, ES256_KEY_ID};
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use base64::Engine;
-    use did_manager::SecretManager;
     use identity_credential::domain_linkage::{DomainLinkageConfiguration, DomainLinkageCredentialBuilder};
     use identity_iota::{
         core::{Duration, FromJson as _, Object, OrderedSet, Timestamp, Url},
         credential::{Credential, CredentialBuilder, Presentation},
         document::{CoreDocument, Service, ServiceEndpoint},
-        verification::jws::JwsAlgorithm,
+    };
+    use identity_kit::{
+        jose::JwsAlgorithm,
+        keys::{KeyId, KeyStore as _},
     };
     use jsonwebtoken::{Algorithm, Header};
     use serde_json::json;
     use std::sync::Arc;
     use tempfile::TempDir;
-    use tokio::sync::Mutex;
     use wiremock::{
         matchers::{method, path},
         Mock, MockServer, ResponseTemplate,
@@ -488,7 +490,7 @@ mod tests {
         pub mock_server: MockServer,
         pub domain: url::Url,
         pub did_document: CoreDocument,
-        pub secret_manager: Arc<Mutex<SecretManager>>,
+        pub stronghold_manager: Arc<StrongholdManager>,
         pub subject: Arc<Subject>,
     }
 
@@ -505,40 +507,31 @@ mod tests {
 
             let temp_dir = TempDir::new().unwrap();
             let path = temp_dir.path().join("stronghold.stronghold");
-            let snapshot_path = path.as_os_str().to_str().unwrap();
-
-            let mut secret_manager = SecretManager::builder()
-                .snapshot_path(snapshot_path)
-                .password("sup3rSecr3t")
-                .build()
-                .await
-                .unwrap();
-
-            let did_document = secret_manager
-                .produce_document(
-                    did_manager::DidMethod::Web,
-                    Some(did_manager::MethodSpecificParameters::Web {
-                        origin: domain.origin(),
-                    }),
-                    identity_iota::verification::jws::JwsAlgorithm::ES256,
-                )
-                .await
-                .unwrap();
-
             *crate::persistence::STRONGHOLD.lock().unwrap() = path.clone();
             let stronghold_manager = Arc::new(crate::stronghold::StrongholdManager::create("sup3rSecr3t").unwrap());
-            let secret_manager = Arc::new(Mutex::new(secret_manager));
-            let subject = Arc::new(Subject {
-                stronghold_manager,
-                secret_manager: secret_manager.clone(),
-                resolver: tokio::sync::OnceCell::new(),
-            });
+
+            // A `did:web` for the mock server, with the wallet's ES256 key as its only verification method.
+            let public_key_jwk = stronghold_manager.public_jwk(&KeyId::new(ES256_KEY_ID)).await.unwrap();
+            let did = format!("did:web:localhost%3A{port}");
+            let did_document = CoreDocument::from_json_value(json!({
+                "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/jws-2020/v1"],
+                "id": did,
+                "verificationMethod": [{
+                    "id": format!("{did}#key-0"),
+                    "type": "JsonWebKey2020",
+                    "controller": did,
+                    "publicKeyJwk": public_key_jwk,
+                }],
+            }))
+            .unwrap();
+
+            let subject = crate::subject::subject(stronghold_manager.clone()).await.unwrap();
 
             TestEntity {
                 mock_server,
                 domain,
                 did_document,
-                secret_manager,
+                stronghold_manager,
                 subject,
             }
         }
@@ -710,10 +703,9 @@ mod tests {
             ]
             .join(".");
 
-            let secret_manager = self.secret_manager.lock().await;
-
-            let proof_value = secret_manager
-                .sign(message.as_bytes(), JwsAlgorithm::ES256)
+            let proof_value = self
+                .stronghold_manager
+                .sign(&KeyId::new(ES256_KEY_ID), JwsAlgorithm::ES256, message.as_bytes())
                 .await
                 .unwrap();
             let signature = URL_SAFE_NO_PAD.encode(proof_value.as_slice());
@@ -1148,7 +1140,7 @@ mod tests {
         // issuer1, but a different domain.
         let mut issuer2 = TestEntity::new().await;
         issuer2.did_document = issuer1.did_document.clone();
-        issuer2.secret_manager = issuer1.secret_manager.clone();
+        issuer2.stronghold_manager = issuer1.stronghold_manager.clone();
 
         // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
         issuer2

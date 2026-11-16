@@ -1,31 +1,58 @@
-use crate::state::core_utils::tls_config;
-use crate::stronghold::StrongholdManager;
+use crate::did_resolver::Resolver;
+use crate::state::SUPPORTED_DID_METHODS;
+use crate::stronghold::{StrongholdManager, ED25519_KEY_ID, ES256_KEY_ID};
 use anyhow::anyhow;
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use did_manager::{DidMethod, Resolver, SecretManager};
 use identity_iota::verification::jwk::Jwk;
-use identity_iota::{
-    did::DID,
-    document::DIDUrlQuery,
-    verification::{jwk::JwkParams, jws::JwsAlgorithm},
+use identity_iota::{did::DID, document::DIDUrlQuery, verification::jwk::JwkParams};
+use identity_kit::{
+    did::DidMethod,
+    identity::{Identity, IdentityKind, KeyStoreIdentity},
+    jose::JwsAlgorithm,
+    keys::KeyId,
+    methods::{DidJwk, DidKey},
 };
 use jsonwebtoken::Algorithm;
 use log::debug;
 use oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
-use tokio::sync::{Mutex, OnceCell};
+use tokio::sync::OnceCell;
 
 /// A `Subject` implements functions required for signatures and verification.
-/// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the secret management (DID Manager).
+/// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the wallet's keys, which
+/// identity-kit reads from the Stronghold (see [`crate::stronghold::ED25519_KEY_ID`]).
 #[derive(Debug)]
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
-    pub secret_manager: Arc<Mutex<SecretManager>>,
+    identity: KeyStoreIdentity,
     pub resolver: OnceCell<Arc<Resolver>>,
 }
 
 impl Subject {
+    /// A subject for the keys in `stronghold_manager`, with a `did:jwk` and a `did:key` for each of them.
+    pub async fn new(stronghold_manager: Arc<StrongholdManager>) -> anyhow::Result<Self> {
+        let identity = KeyStoreIdentity::new(stronghold_manager.clone())
+            .with_producer(DidJwk)
+            .with_producer(DidKey::default());
+
+        for method in SUPPORTED_DID_METHODS {
+            let kind = identity_kind(method)?;
+            for (alg, key) in [
+                (JwsAlgorithm::EdDSA, ED25519_KEY_ID),
+                (JwsAlgorithm::ES256, ES256_KEY_ID),
+            ] {
+                identity.bind(kind.clone(), alg, KeyId::new(key)).await?;
+            }
+        }
+
+        Ok(Self {
+            stronghold_manager,
+            identity,
+            resolver: OnceCell::new(),
+        })
+    }
+
     /// Asynchronously gets a reference to the initialized resolver.
     ///
     /// The first time this is called, it will perform the async initialization.
@@ -37,7 +64,7 @@ impl Subject {
     /// The private async function that contains the actual initialization logic.
     async fn initialize_resolver() -> Arc<Resolver> {
         debug!("Initializing resolver for Subject");
-        let resolver = Resolver::new_with_options(Some(tls_config()), None, None);
+        let resolver = Resolver::new();
         debug!("Resolver initialized");
         Arc::new(resolver)
     }
@@ -74,24 +101,23 @@ impl Subject {
 #[async_trait]
 impl Sign for Subject {
     async fn key_id(&self, subject_syntax_type: &str, algorithm: Algorithm) -> Option<String> {
-        let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
-
-        let mut secret_manager = self.secret_manager.lock().await;
-
-        secret_manager
-            .produce_document(method, None, algorithm.into_jws_algorithm().ok()?)
+        let signer = self
+            .identity
+            .signer(
+                &identity_kind(subject_syntax_type).ok()?,
+                jws_algorithm(algorithm).ok()?,
+            )
             .await
-            .ok()
-            .and_then(|document| document.verification_method().first().cloned())
-            .map(|first| first.id().to_string())
+            .ok()?;
+        signer.kid().map(str::to_owned)
     }
 
-    async fn sign(&self, message: &str, _subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<Vec<u8>> {
-        let secret_manager = self.secret_manager.lock().await;
-
-        Ok(secret_manager
-            .sign(message.as_bytes(), algorithm.into_jws_algorithm()?)
-            .await?)
+    async fn sign(&self, message: &str, subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<Vec<u8>> {
+        let signer = self
+            .identity
+            .signer(&identity_kind(subject_syntax_type)?, jws_algorithm(algorithm)?)
+            .await?;
+        Ok(signer.sign(message.as_bytes()).await?)
     }
 
     fn external_signer(&self) -> Option<Arc<dyn ExternalSign>> {
@@ -102,13 +128,11 @@ impl Sign for Subject {
 #[async_trait]
 impl oid4vc_core::Subject for Subject {
     async fn identifier(&self, subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<String> {
-        let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}"))?;
-        let mut secret_manager = self.secret_manager.lock().await;
-
-        Ok(secret_manager
-            .produce_document(method, None, algorithm.into_jws_algorithm()?)
-            .await
-            .map(|document| document.id().to_string())?)
+        Ok(self
+            .identity
+            .identifier(&identity_kind(subject_syntax_type)?, jws_algorithm(algorithm)?)
+            .await?
+            .to_string())
     }
 }
 
@@ -157,52 +181,23 @@ impl Verify for Subject {
     }
 }
 
-// Helper function: load a `Subject`
-pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: String) -> Arc<Subject> {
-    let client_path = crate::persistence::STRONGHOLD
-        .lock()
-        .unwrap()
-        .to_str()
-        .expect("failed to get stronghold path")
-        .to_owned();
-
-    Arc::new(Subject {
-        stronghold_manager: stronghold_manager.clone(),
-        secret_manager: Arc::new(Mutex::new(
-            SecretManager::builder()
-                .snapshot_path(&client_path)
-                .with_ed25519_key("ed25519-0")
-                .with_es256_key("es256-0")
-                .password(&password)
-                .build()
-                .await
-                .unwrap(),
-        )),
-        resolver: OnceCell::new(),
-    })
+/// Loads the `Subject` for the keys in `stronghold_manager`.
+pub async fn subject(stronghold_manager: Arc<StrongholdManager>) -> anyhow::Result<Arc<Subject>> {
+    Ok(Arc::new(Subject::new(stronghold_manager).await?))
 }
 
-trait IntoJwsAlgorithm {
-    fn into_jws_algorithm(self) -> anyhow::Result<JwsAlgorithm>;
+/// The kind of identifier for an OID4VC subject syntax type such as `did:jwk`.
+fn identity_kind(subject_syntax_type: &str) -> anyhow::Result<IdentityKind> {
+    Ok(IdentityKind::Did(DidMethod::parse(subject_syntax_type).map_err(
+        |err| anyhow!("Unsupported subject syntax type `{subject_syntax_type}`: {err}"),
+    )?))
 }
 
-impl IntoJwsAlgorithm for Algorithm {
-    fn into_jws_algorithm(self) -> anyhow::Result<JwsAlgorithm> {
-        Ok(match self {
-            Algorithm::HS256 => JwsAlgorithm::HS256,
-            Algorithm::HS384 => JwsAlgorithm::HS384,
-            Algorithm::HS512 => JwsAlgorithm::HS512,
-            Algorithm::RS256 => JwsAlgorithm::RS256,
-            Algorithm::RS384 => JwsAlgorithm::RS384,
-            Algorithm::RS512 => JwsAlgorithm::RS512,
-            Algorithm::ES256 => JwsAlgorithm::ES256,
-            Algorithm::ES384 => JwsAlgorithm::ES384,
-            Algorithm::PS256 => JwsAlgorithm::PS256,
-            Algorithm::PS384 => JwsAlgorithm::PS384,
-            Algorithm::PS512 => JwsAlgorithm::PS512,
-            Algorithm::EdDSA => JwsAlgorithm::EdDSA,
-            // `jsonwebtoken::Algorithm` is `#[non_exhaustive]` since 10.0.
-            unsupported => return Err(anyhow!("Unsupported signing algorithm: {unsupported:?}")),
-        })
+/// The identity-kit algorithm for one of the wallet's [`SUPPORTED_SIGNING_ALGORITHMS`](crate::state::SUPPORTED_SIGNING_ALGORITHMS).
+fn jws_algorithm(algorithm: Algorithm) -> anyhow::Result<JwsAlgorithm> {
+    match algorithm {
+        Algorithm::EdDSA => Ok(JwsAlgorithm::EdDSA),
+        Algorithm::ES256 => Ok(JwsAlgorithm::ES256),
+        unsupported => Err(anyhow!("Unsupported signing algorithm: {unsupported:?}")),
     }
 }
