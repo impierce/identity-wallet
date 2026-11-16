@@ -350,10 +350,11 @@ mod tests {
     use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
     use crate::stronghold::StrongholdManager;
     use crate::subject::subject;
-    use crate::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use jsonwebtoken::Algorithm;
+    use oid4vc_manager::ProviderManager;
     use oid4vci::credential_format_profiles::CredentialFormats;
+    use oid4vci::Wallet;
     use serial_test::serial;
     use std::sync::Arc;
     use tempfile::NamedTempFile;

@@ -1,12 +1,13 @@
 use std::sync::Arc;
 
-use crate::{oid4vc_core::Sign, oid4vci::credential_format_profiles::CredentialFormats};
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
 use log::{debug, info};
+use oid4vc_core::Sign;
+use oid4vci::credential_format_profiles::CredentialFormats;
 use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding, SdJwtBuilder};
 use serde_json::{json, Map, Value};
 use uuid::Uuid;

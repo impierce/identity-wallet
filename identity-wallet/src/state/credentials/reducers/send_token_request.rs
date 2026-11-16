@@ -20,17 +20,15 @@ use crate::{
     subject::Subject,
     well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
-use crate::{
-    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
-    oid4vci::{
-        credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-        credential_response::CredentialResponseType, token_request::TokenRequest,
-    },
-};
 use identity_iota::did::DID;
 use identity_kit::status_list::Status;
 use log::{debug, info, warn};
+use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
+use oid4vci::{
+    credential_format_profiles::CredentialFormats,
+    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
+    credential_response::CredentialResponseType, token_request::TokenRequest,
+};
 use serde_json::json;
 use std::collections::HashMap;
 use uuid::Uuid;

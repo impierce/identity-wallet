@@ -17,16 +17,15 @@ use crate::{
     },
     well_known::{get_credential_issuer_metadata, get_did_document_id},
 };
-use crate::{
-    oid4vc_core::{
-        authorization_request::{AuthorizationRequest, Object},
-        client_metadata::ClientMetadataResource,
-    },
-    oid4vci::credential_offer::CredentialOffer,
-};
-use crate::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
 use identity_iota::did::CoreDID;
 use log::{info, warn};
+use oid4vc_core::{
+    authorization_request::{AuthorizationRequest, Object},
+    client_metadata::ClientMetadataResource,
+};
+use oid4vci::credential_offer::CredentialOffer;
+use oid4vci::credential_offer::CredentialOfferParameters;
+use oid4vp::oid4vp::OID4VP;
 use openid_federation::{
     extract_claims_unverified, EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata, TrustChain,
 };

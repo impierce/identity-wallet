@@ -1,5 +1,4 @@
 use crate::logging::url_without_query;
-use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
 use crate::state::credentials::credential_query_matching::{
@@ -23,6 +22,7 @@ use crate::{
 };
 use log::{debug, info};
 use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vci::authorization_request::CodeChallengeMethod;
 use oid4vci::InteractionType;
 use oid4vci::{
     authorization_details::{AuthorizationDetailsObject, OpenidCredential},

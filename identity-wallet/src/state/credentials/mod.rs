@@ -5,16 +5,6 @@ pub mod selective_disclosure;
 pub mod self_issued_migration;
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
-use crate::{
-    oid4vc_core::{
-        claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
-        utils::jwt::get_unverified_jwt_claims,
-    },
-    oid4vci::{
-        credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::ClaimDescription,
-    },
-};
 use derivative::Derivative;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::{
@@ -22,6 +12,14 @@ use identity_iota::{
     credential::CredentialV2,
 };
 use identity_kit::status_list::StatusType;
+use oid4vc_core::{
+    claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
+    utils::jwt::get_unverified_jwt_claims,
+};
+use oid4vci::{
+    credential_format_profiles::CredentialFormats,
+    credential_issuer::credential_configurations_supported::ClaimDescription,
+};
 use sd_jwt::{SdJwt, Sha256Hasher};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
