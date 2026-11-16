@@ -7,7 +7,7 @@ use crate::{
         actions::{listen, Action},
         connections::EcosystemsCheck,
         credentials::actions::refresh_credential_ecosystems::{RefreshCredentialEcosystems, ResolvedEcosystems},
-        qr_code::reducers::accept_connection::{discover_ecosystems, EcosystemsUnavailable},
+        qr_code::reducers::accept_connection::{discover_ecosystems_within, EcosystemsUnavailable},
         user_prompt::EcosystemProfile,
         AppState,
     },
@@ -96,13 +96,7 @@ pub(crate) const ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(15);
 /// Resolves the ecosystems of the issuer at `url`, and keeps the logos they show beyond this app session: credentials
 /// show them in the credential list, before any of them is opened again.
 pub(crate) async fn resolve_issuer_ecosystems(url: &url::Url) -> Result<Vec<EcosystemProfile>, EcosystemsUnavailable> {
-    let result = tokio::time::timeout(ECOSYSTEMS_TIMEOUT, discover_ecosystems(url))
-        .await
-        .unwrap_or_else(|_| {
-            Err(EcosystemsUnavailable(format!(
-                "Resolving the ecosystems of {url} took longer than {ECOSYSTEMS_TIMEOUT:?}"
-            )))
-        });
+    let result = discover_ecosystems_within(url, ECOSYSTEMS_TIMEOUT).await;
 
     if let Ok(ecosystems) = &result {
         let logo_uris = ecosystems.iter().flat_map(|ecosystem| {
@@ -242,8 +236,10 @@ mod tests {
             resolved: None,
         };
 
-        assert!(ECOSYSTEMS_TIMEOUT > crate::state::actions::DEFAULT_ACTION_TIME_LIMIT);
-        assert!(action.time_limit() > ECOSYSTEMS_TIMEOUT);
+        let default_time_limit = crate::state::actions::DEFAULT_ACTION_TIME_LIMIT;
+        assert!(ECOSYSTEMS_TIMEOUT > default_time_limit);
+        // Behind another action, such as the status refresh, both before and after discovery.
+        assert!(action.time_limit() >= ECOSYSTEMS_TIMEOUT + 2 * default_time_limit);
     }
 
     #[test]

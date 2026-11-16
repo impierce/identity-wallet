@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::actions::Action;
+use crate::state::actions::{Action, DEFAULT_ACTION_TIME_LIMIT};
 use crate::state::credentials::reducers::refresh_credential_ecosystems::{
     issuer_connection, refresh_credential_ecosystems, resolve_issuer_ecosystems, ECOSYSTEMS_TIMEOUT,
 };
@@ -12,8 +12,10 @@ use serde::{Deserialize, Serialize};
 use std::{sync::Arc, time::Duration};
 use ts_rs::TS;
 
-/// How long a refresh may wait for the state lock on top of discovery.
-const STATE_LOCK_ALLOWANCE: Duration = Duration::from_secs(5);
+/// How long a refresh may wait for the state lock on top of discovery: once before `prepare` and once before reducing,
+/// each time behind an action that holds the lock for at most its own time limit, such as the status refresh dispatched
+/// alongside.
+const STATE_LOCK_ALLOWANCE: Duration = DEFAULT_ACTION_TIME_LIMIT.saturating_mul(2);
 
 /// Resolves the ecosystems of a credential's issuer again, together with the trust chains into them.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
@@ -52,9 +54,8 @@ impl ActionTrait for RefreshCredentialEcosystems {
         }))
     }
 
-    /// Discovery gets its own limit, `ECOSYSTEMS_TIMEOUT`, so that it ends with the soft "could not be confirmed"
-    /// warning rather than a timeout error. On top of it comes a short wait for the state lock, before `prepare` and
-    /// before reducing, such as behind the status refresh dispatched alongside.
+    /// Discovery gets its own limit, `ECOSYSTEMS_TIMEOUT`, after which the ecosystems stay unconfirmed. This limit only
+    /// adds the waits for the state lock to it, so that a slow refresh in the background never ends in a timeout error.
     fn time_limit(&self) -> Duration {
         ECOSYSTEMS_TIMEOUT + STATE_LOCK_ALLOWANCE
     }

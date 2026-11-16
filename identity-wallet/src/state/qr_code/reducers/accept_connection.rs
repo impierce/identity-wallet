@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    http_client::{fetch_public_destination, PublicDestinationHttpClient},
+    http_client::{fetch_public_destination, is_refused_destination, PublicDestinationHttpClient},
     state::{
         actions::{listen, Action},
         connections::EcosystemsCheck,
@@ -32,6 +32,7 @@ use openid_federation::{
     extract_claims_unverified, EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata,
     SubordinateStatement, TrustChain,
 };
+use std::time::Duration;
 
 /// The kind of request encoded in a scanned QR-code.
 ///
@@ -84,6 +85,12 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
                 client_metadata.connection_url.clone()
             ))
         })?;
+
+        // Discovery does not depend on the checks of the connection's identity, so it runs alongside them.
+        let discovery = tokio::spawn({
+            let url = url.clone();
+            async move { discover_ecosystems_within(&url, PROMPT_ECOSYSTEMS_TIMEOUT).await }
+        });
 
         let state_guard = state.core_utils.managers.lock().await;
         let subject = state_guard
@@ -139,7 +146,10 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         drop(state_guard);
 
-        let (ecosystems, ecosystems_check) = EcosystemsCheck::outcome(discover_ecosystems(&url).await);
+        let ecosystems = discovery
+            .await
+            .unwrap_or_else(|e| Err(EcosystemsUnavailable(format!("Resolving the ecosystems failed: {e}"))));
+        let (ecosystems, ecosystems_check) = EcosystemsCheck::outcome(ecosystems);
 
         // The pending connection data remains pending until the active flow is completed successfully.
         // Then, it is persisted to the state connections.
@@ -412,13 +422,32 @@ impl std::fmt::Display for EcosystemsUnavailable {
     }
 }
 
+/// How long the connection prompt waits for the ecosystems. Discovery runs alongside the checks of the connection's
+/// identity, within the time limit of the action, which reading the request has drawn on before.
+const PROMPT_ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(5);
+
+/// Discovers the ecosystems of `entity_id` (see `discover_ecosystems`) for at most `limit`. A slow federation then leaves
+/// them unavailable, rather than failing whatever waits for them.
+pub(crate) async fn discover_ecosystems_within(
+    entity_id: &url::Url,
+    limit: Duration,
+) -> Result<Vec<EcosystemProfile>, EcosystemsUnavailable> {
+    tokio::time::timeout(limit, discover_ecosystems(entity_id))
+        .await
+        .unwrap_or_else(|_| {
+            Err(EcosystemsUnavailable(format!(
+                "Resolving the ecosystems of {entity_id} took longer than {limit:?}"
+            )))
+        })
+}
+
 /// Discovers every OpenID Federation trust chain reachable from `entity_id`, a connection's `connection_url`, and
 /// resolves the ecosystem profile of each chain's trust anchor (see `resolve_ecosystem_profile`) together with the
 /// entities on the chain. Returns no ecosystems for an entity outside any federation.
 ///
 /// Anchors are deduplicated first: one ecosystem per trust anchor, not one per path to it. Each keeps the shortest
 /// chain to it.
-pub(crate) async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfile>, EcosystemsUnavailable> {
+async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfile>, EcosystemsUnavailable> {
     // Every entity configuration and federation endpoint on the way is named by a remote party, see
     // `PublicDestinationHttpClient`.
     let federation_client = FederationClient::with_http_client(PublicDestinationHttpClient);
@@ -501,7 +530,10 @@ pub(crate) async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<Ecos
 }
 
 /// Whether `entity_id` answers for its entity configuration with a client error, or with something that is no
-/// configuration at all, rather than not answering. Only the latter is a failure: most websites are in no federation.
+/// configuration at all, or is a destination the wallet refuses to request. Anything else is a failure to determine
+/// the ecosystems, not an entity in no federation: an entity whose host cannot be resolved (as while offline) or that
+/// does not answer, and one that does serve an entity configuration, which discovery then failed on (it timed out
+/// before, or the configuration is invalid or expired).
 async fn publishes_no_entity_configuration(entity_id: &url::Url) -> bool {
     // As `FederationClient` builds it: the path is appended to, not replaced.
     let mut well_known_url = entity_id.clone();
@@ -513,14 +545,38 @@ async fn publishes_no_entity_configuration(entity_id: &url::Url) -> bool {
     ));
 
     match fetch_public_destination(well_known_url).await {
+        Ok(response) if response.status().is_success() => !serves_entity_statement(response).await,
         Ok(response) => {
             let status = response.status();
-            !(status.is_server_error() || status == reqwest::StatusCode::TOO_MANY_REQUESTS)
+            !(status.is_server_error()
+                || status == reqwest::StatusCode::TOO_MANY_REQUESTS
+                || status == reqwest::StatusCode::REQUEST_TIMEOUT)
         }
         // A destination the wallet refuses to request stays refused, so it is not worth a warning either.
-        Err(AppError::DownloadAborted(_)) => true,
-        Err(_) => false,
+        Err(err) => is_refused_destination(&err),
     }
+}
+
+/// The media type of entity statements, see OpenID Federation 1.0 - Section 15.1.
+const ENTITY_STATEMENT_MEDIA_TYPE: &str = "application/entity-statement+jwt";
+
+/// Whether a successful response for an entity configuration carries one: it says so by its media type, or its body
+/// is a JWT anyway. A single-page app, for example, answers with its HTML instead.
+async fn serves_entity_statement(response: reqwest::Response) -> bool {
+    let media_type = response
+        .headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|content_type| content_type.to_str().ok())
+        .and_then(|content_type| content_type.split(';').next())
+        .map(|media_type| media_type.trim().to_ascii_lowercase());
+    if media_type.as_deref() == Some(ENTITY_STATEMENT_MEDIA_TYPE) {
+        return true;
+    }
+
+    response
+        .text()
+        .await
+        .is_ok_and(|body| extract_claims_unverified::<serde_json::Value>(body.trim()).is_ok())
 }
 
 /// The entities on a trust chain, from its leaf up to its trust anchor.
@@ -1695,6 +1751,57 @@ mod tests {
             .await;
 
         assert_eq!(discover_ecosystems(&entity_id).await, Ok(vec![]));
+    }
+
+    #[tokio::test]
+    async fn discover_ecosystems_fails_for_an_entity_configuration_that_does_not_verify() {
+        let mock_server = MockServer::start().await;
+        let entity_id: url::Url = mock_server.uri().parse().unwrap();
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-federation"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(
+                "not-a-signed-entity-configuration",
+                "application/entity-statement+jwt; charset=utf-8",
+            ))
+            .mount(&mock_server)
+            .await;
+
+        assert!(discover_ecosystems(&entity_id).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn discover_ecosystems_fails_for_an_entity_configuration_served_as_another_media_type() {
+        let mock_server = MockServer::start().await;
+        let entity_id: url::Url = mock_server.uri().parse().unwrap();
+        // Signed by a key it does not publish, so it does not verify.
+        let claims = EntityConfiguration::new(
+            EntityId::from(entity_id.clone()),
+            JwkSet::new(),
+            expires_in(chrono::Duration::hours(1)),
+            chrono::Utc::now().timestamp(),
+        );
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-federation"))
+            .respond_with(ResponseTemplate::new(200).set_body_string(encode_entity_statement(&claims)))
+            .mount(&mock_server)
+            .await;
+
+        assert!(discover_ecosystems(&entity_id).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn discover_ecosystems_within_a_time_limit_leaves_a_slow_federation_unavailable() {
+        let mock_server = MockServer::start().await;
+        let entity_id: url::Url = mock_server.uri().parse().unwrap();
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-federation"))
+            .respond_with(ResponseTemplate::new(404).set_delay(std::time::Duration::from_secs(2)))
+            .mount(&mock_server)
+            .await;
+
+        let result = discover_ecosystems_within(&entity_id, Duration::from_millis(100)).await;
+
+        assert!(result.is_err());
     }
 
     #[tokio::test]
