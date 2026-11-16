@@ -75,6 +75,31 @@ async fn get_public_destination_http_client() -> Result<Client, AppError> {
 
 const MAX_REDIRECTS: usize = 5;
 
+const NOT_HTTP: &str = "URL scheme is not http(s)";
+const NO_HOST: &str = "URL has no host to resolve";
+const NON_PUBLIC_ADDRESS: &str = "URL resolves to a non-public address";
+const REDIRECT_WITHOUT_LOCATION: &str = "redirect without a usable location";
+const REDIRECT_TO_UNPARSEABLE_LOCATION: &str = "redirect to an unparseable location";
+const TOO_MANY_REDIRECTS: &str = "too many redirects";
+const HOST_NOT_RESOLVED: &str = "URL host could not be resolved";
+
+/// Whether [`fetch_public_destination`] failed because it refuses to request the URL, which it keeps refusing, rather
+/// than because the destination could not be reached, such as when its host cannot be resolved while offline.
+pub fn is_refused_destination(err: &AppError) -> bool {
+    matches!(
+        err,
+        AppError::DownloadAborted(reason) if [
+            NOT_HTTP,
+            NO_HOST,
+            NON_PUBLIC_ADDRESS,
+            REDIRECT_WITHOUT_LOCATION,
+            REDIRECT_TO_UNPARSEABLE_LOCATION,
+            TOO_MANY_REDIRECTS,
+        ]
+        .contains(reason)
+    )
+}
+
 /// Requests a remote-supplied `url`, following redirects by hand so each hop passes
 /// [`assert_public_destination`] first. `reqwest`'s redirect policy is synchronous and cannot resolve a host.
 pub async fn fetch_public_destination(mut url: Url) -> Result<reqwest::Response, AppError> {
@@ -92,14 +117,14 @@ pub async fn fetch_public_destination(mut url: Url) -> Result<reqwest::Response,
             .headers()
             .get(reqwest::header::LOCATION)
             .and_then(|location| location.to_str().ok())
-            .ok_or(AppError::DownloadAborted("redirect without a usable location"))?;
+            .ok_or(AppError::DownloadAborted(REDIRECT_WITHOUT_LOCATION))?;
 
         url = url
             .join(location)
-            .map_err(|_| AppError::DownloadAborted("redirect to an unparseable location"))?;
+            .map_err(|_| AppError::DownloadAborted(REDIRECT_TO_UNPARSEABLE_LOCATION))?;
     }
 
-    Err(AppError::DownloadAborted("too many redirects"))
+    Err(AppError::DownloadAborted(TOO_MANY_REDIRECTS))
 }
 
 /// An `openid-federation` HTTP client that only requests public destinations, see [`fetch_public_destination`].
@@ -142,28 +167,26 @@ fn private_destinations_allowed() -> bool {
 /// rather than closing the race.
 pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
     if !matches!(url.scheme(), "http" | "https") {
-        return Err(AppError::DownloadAborted("URL scheme is not http(s)"));
+        return Err(AppError::DownloadAborted(NOT_HTTP));
     }
 
     if private_destinations_allowed() {
         return Ok(());
     }
 
-    let host = url
-        .host_str()
-        .ok_or(AppError::DownloadAborted("URL has no host to resolve"))?;
+    let host = url.host_str().ok_or(AppError::DownloadAborted(NO_HOST))?;
     let port = url.port_or_known_default().unwrap_or(443);
 
     let addresses = tokio::net::lookup_host((host, port))
         .await
-        .map_err(|_| AppError::DownloadAborted("URL host could not be resolved"))?;
+        .map_err(|_| AppError::DownloadAborted(HOST_NOT_RESOLVED))?;
 
     let mut resolved = false;
     for address in addresses {
         resolved = true;
         if !is_public(&address.ip()) {
             log::warn!("Refusing to request {url}: {} is not a public address", address.ip());
-            return Err(AppError::DownloadAborted("URL resolves to a non-public address"));
+            return Err(AppError::DownloadAborted(NON_PUBLIC_ADDRESS));
         }
     }
 
@@ -305,5 +328,27 @@ mod tests {
     async fn public_destination_http_client_rejects_non_http_schemes() {
         let url = Url::parse("file:///etc/passwd").unwrap();
         assert!(PublicDestinationHttpClient.fetch_text(url).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn refusals_are_told_apart_from_unreachable_destinations() {
+        let file_url = Url::parse("file:///etc/passwd").unwrap();
+        assert!(is_refused_destination(
+            &fetch_public_destination(file_url).await.unwrap_err()
+        ));
+
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/loop"))
+            .respond_with(ResponseTemplate::new(302).insert_header("location", "/loop"))
+            .mount(&server)
+            .await;
+        let loop_url = Url::parse(&format!("{}/loop", server.uri())).unwrap();
+        assert!(is_refused_destination(
+            &fetch_public_destination(loop_url).await.unwrap_err()
+        ));
+
+        // As while offline, in release builds.
+        assert!(!is_refused_destination(&AppError::DownloadAborted(HOST_NOT_RESOLVED)));
     }
 }

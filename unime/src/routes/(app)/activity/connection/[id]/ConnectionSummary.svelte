@@ -6,6 +6,7 @@
 
   import { Image } from '$lib/components';
   import { ShieldCheckRegularIcon } from '$lib/icons';
+  import { linkWithReturn } from '$lib/navigation';
   import { state } from '$lib/stores';
   import { formatRelativeDateTime } from '$lib/utils';
   import { countInteractions } from '$lib/utils/history';
@@ -97,7 +98,7 @@
     <section class="w-full">
       <EcosystemsSummary
         {ecosystems}
-        href={`/activity/connection/${connection.id}/ecosystems${page.url.search}`}
+        href={linkWithReturn(`/activity/connection/${connection.id}/ecosystems`)}
         isTempAsset={false}
       />
     </section>

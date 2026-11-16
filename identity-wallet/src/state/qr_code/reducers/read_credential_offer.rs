@@ -283,6 +283,7 @@ mod tests {
                 domain_validation: None,
                 linked_verifiable_presentations: None,
                 ecosystems: None,
+                ecosystems_check: None,
             }),
             _ => None,
         };

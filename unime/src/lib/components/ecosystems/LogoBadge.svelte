@@ -1,15 +1,16 @@
 <script lang="ts">
   import { twMerge } from 'tailwind-merge';
 
-  import { Image } from '$lib/components';
   import { hash } from '$lib/utils';
+
+  import Image from '../image/Image.svelte';
 
   export let logoUri: string | null | undefined = undefined;
   export let initials: string;
   // A whole `bg-*` class string. May carry a `text-*` with it, which the monogram inherits: a pale
   // tint needs dark initials. Defaults to white below, which suits the dark tints.
   export let tint: string;
-  export let isTempAsset = true;
+  export let isTempAsset: boolean | 'fallback' = true;
 
   let className = '';
   export { className as class };
@@ -45,9 +46,12 @@ the monogram says and which tint it takes.
   )}
 >
   {#if imageId}
-    <Image id={imageId} {isTempAsset} bind:useFallback imgClass="size-full object-contain">
-      <span slot="fallback" class={twMerge('font-semibold', textClass)}>{initials}</span>
-    </Image>
+    <!-- Keyed, since <Image> loads only once: a refresh may change the logo. -->
+    {#key imageId}
+      <Image id={imageId} {isTempAsset} bind:useFallback imgClass="size-full object-contain">
+        <span slot="fallback" class={twMerge('font-semibold', textClass)}>{initials}</span>
+      </Image>
+    {/key}
   {:else}
     <span class={twMerge('font-semibold', textClass)}>{initials}</span>
   {/if}

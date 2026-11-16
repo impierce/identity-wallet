@@ -6,7 +6,7 @@
   // component marks ecosystems, leaders and members alike.
   export let name: string;
   export let logoUri: string | null = null;
-  export let isTempAsset = true;
+  export let isTempAsset: boolean | 'fallback' = true;
 
   let className = '';
   export { className as class };

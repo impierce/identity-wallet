@@ -321,13 +321,21 @@ impl DnsCnameResolver {
     /// Built per validation rather than shared, since a resolver's connections belong to the runtime they were made
     /// on.
     fn resolver() -> Result<TokioResolver, String> {
-        let mut builder = TokioResolver::builder_tokio().unwrap_or_else(|err| {
-            warn!("Failed to read the system DNS configuration, using public resolvers instead: {err}");
+        let public_resolvers = || {
             TokioResolver::builder_with_config(
                 ResolverConfig::udp_and_tcp(&CLOUDFLARE),
                 TokioRuntimeProvider::default(),
             )
+        };
+        // iOS offers no API to read the system DNS configuration: hickory reads it through `SCDynamicStore`, which is
+        // macOS-only and does not link on iOS. The `system-config` feature is therefore not enabled for iOS.
+        #[cfg(not(target_os = "ios"))]
+        let mut builder = TokioResolver::builder_tokio().unwrap_or_else(|err| {
+            warn!("Failed to read the system DNS configuration, using public resolvers instead: {err}");
+            public_resolvers()
         });
+        #[cfg(target_os = "ios")]
+        let mut builder = public_resolvers();
         builder.options_mut().timeout = DNS_TIMEOUT;
         builder.options_mut().attempts = 1;
         builder.build().map_err(|err| err.to_string())

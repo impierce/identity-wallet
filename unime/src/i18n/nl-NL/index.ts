@@ -349,6 +349,7 @@ const nl_NL = {
       ECOSYSTEM_MEMBERS_HEADING: 'Leden',
       ECOSYSTEM_ABOUT: 'Over',
       ECOSYSTEM_OWNER: 'Eigenaar van ecosysteem',
+      ECOSYSTEM_LED_BY: 'Geleid door {name}',
       ECOSYSTEM_COUNT: '{count} {{ecosysteem|ecosystemen}}',
     },
     SHARE_CREDENTIALS: {
@@ -470,6 +471,7 @@ const nl_NL = {
       BY_THE_ISSUER: 'Door de uitgever',
       VALID_FROM: 'Vanaf {date}',
       ISSUED_BY: 'Uitgegeven door',
+      ENDORSED_BY: 'Erkend door',
       SELF_SIGNED: 'jezelf',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {

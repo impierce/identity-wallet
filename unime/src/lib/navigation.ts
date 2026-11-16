@@ -26,7 +26,12 @@ export function useParentRoute(parentRoute: string | (() => string)): () => void
     () => goto(parentUrl(), { replaceState: true }),
     (to) => {
       const parent = parentUrl();
-      return to?.pathname === parent.pathname && to.search === parent.search;
+      // Compared as parameters: a route from `returnRoute` may spell out characters (such as the `/` of a nested
+      // return route) that the browser's URL encodes.
+      return (
+        to?.pathname === parent.pathname &&
+        new URLSearchParams(to.search).toString() === new URLSearchParams(parent.search).toString()
+      );
     },
   );
 

@@ -7,12 +7,11 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
+  import EcosystemHeader from '$lib/components/ecosystems/EcosystemHeader.svelte';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
-  import { tintFor } from '../../ecosystem';
-  import EcosystemAvatar from '../../EcosystemAvatar.svelte';
   import MemberRow from '../../MemberRow.svelte';
 
   const navigateUp = useParentRoute(() => `/prompt/accept-connection/ecosystems${page.url.search}`);
@@ -48,20 +47,7 @@
 
   {#if ecosystem}
     <div class="flex min-h-full flex-col px-4 pb-7">
-      <div class="flex flex-col items-center gap-3 rounded-2xl {tintFor(ecosystem.name)} px-4 py-6">
-        <EcosystemAvatar
-          name={ecosystem.name}
-          logoUri={ecosystem.logo_uri}
-          class="size-[75px] rounded-2xl bg-white/50"
-          textClass="text-[22px]/[30px]"
-        />
-        <p class="text-center text-[20px]/[28px] font-semibold">
-          {ecosystem.name}
-        </p>
-        <span class="rounded-md bg-white/50 px-2 py-1 text-[12px]/[18px] font-medium">
-          {$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEM_MEMBERS({ count: ecosystem.member_count })}
-        </span>
-      </div>
+      <EcosystemHeader {ecosystem} />
 
       <!-- Same `description` as the card subtitle: one field, not a tagline and a body. -->
       {#if ecosystem.description}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Member } from '@bindings/user_prompt/Member';
 
-  import EcosystemAvatar from './EcosystemAvatar.svelte';
+  import EcosystemAvatar from '$lib/components/ecosystems/EcosystemAvatar.svelte';
 
   export let member: Member;
   export let isTempAsset = true;
