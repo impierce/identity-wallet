@@ -194,8 +194,10 @@ pub async fn fetch_credential_status(
         AppError::GetCredentialStatusError
     })?;
 
-    // TODO: use `StatusListToken::status_of`, which also checks that `sub` is the referenced URI and that the token
-    // has not expired (Token Status List §8.3).
+    check_status_list_token(&status_list_token, chrono::Utc::now().timestamp())?;
+
+    // TODO: use `StatusListToken::status_of`, which also checks that `sub` is the referenced URI (Token Status List
+    // §8.3). The status list tokens in the integration tests carry a different `sub`.
     let status = status_list_token
         .status_list
         .get(credential_status_data.idx)
@@ -233,4 +235,68 @@ pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
         .await
         .map(|body| body.trim().to_owned())
         .map_err(AppError::FetchCredentialListError)
+}
+
+/// Rejects a status list token with an empty `sub` or list, one issued after `now`, or one that expired before `now`
+/// (`exp` is optional).
+fn check_status_list_token(token: &StatusListToken, now: i64) -> Result<(), AppError> {
+    let reason = if token.sub.is_empty() || token.status_list.is_empty() {
+        "it has an empty `sub` or status list"
+    } else if token.iat > now {
+        "it was issued in the future"
+    } else if token.exp.is_some_and(|exp| exp < now) {
+        "it has expired"
+    } else {
+        return Ok(());
+    };
+    warn!("Rejected the status list token: {reason}");
+    Err(AppError::GetCredentialStatusError)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::{DateTime, Utc};
+    use identity_kit::status_list::StatusList;
+
+    const NOW: i64 = 1_800_000_000;
+
+    fn token(iat: i64) -> StatusListToken {
+        StatusListToken::new(
+            "https://example.com/statuslists/1",
+            DateTime::<Utc>::from_timestamp(iat, 0).unwrap(),
+            StatusList::new(1, 16).unwrap(),
+        )
+    }
+
+    fn at(timestamp: i64) -> DateTime<Utc> {
+        DateTime::<Utc>::from_timestamp(timestamp, 0).unwrap()
+    }
+
+    #[test]
+    fn accepts_a_token_without_exp() {
+        assert!(check_status_list_token(&token(NOW - 60), NOW).is_ok());
+    }
+
+    #[test]
+    fn accepts_a_token_that_has_not_expired() {
+        assert!(check_status_list_token(&token(NOW - 60).with_expires_at(at(NOW + 60)), NOW).is_ok());
+    }
+
+    #[test]
+    fn rejects_an_expired_token() {
+        assert!(check_status_list_token(&token(NOW - 120).with_expires_at(at(NOW - 60)), NOW).is_err());
+    }
+
+    #[test]
+    fn rejects_a_token_issued_in_the_future() {
+        assert!(check_status_list_token(&token(NOW + 3600), NOW).is_err());
+    }
+
+    #[test]
+    fn rejects_a_token_with_an_empty_sub() {
+        let mut token = token(NOW - 60);
+        token.sub = String::new();
+        assert!(check_status_list_token(&token, NOW).is_err());
+    }
 }
