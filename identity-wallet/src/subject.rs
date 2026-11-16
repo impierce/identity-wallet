@@ -12,7 +12,7 @@ use identity_iota::{
 };
 use jsonwebtoken::Algorithm;
 use log::debug;
-use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
+use oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
 use tokio::sync::{Mutex, OnceCell};
 
@@ -79,7 +79,7 @@ impl Sign for Subject {
         let mut secret_manager = self.secret_manager.lock().await;
 
         secret_manager
-            .produce_document(method, None, algorithm.into_jws_algorithm())
+            .produce_document(method, None, algorithm.into_jws_algorithm().ok()?)
             .await
             .ok()
             .and_then(|document| document.verification_method().first().cloned())
@@ -90,7 +90,7 @@ impl Sign for Subject {
         let secret_manager = self.secret_manager.lock().await;
 
         Ok(secret_manager
-            .sign(message.as_bytes(), algorithm.into_jws_algorithm())
+            .sign(message.as_bytes(), algorithm.into_jws_algorithm()?)
             .await?)
     }
 
@@ -100,13 +100,13 @@ impl Sign for Subject {
 }
 
 #[async_trait]
-impl oid4vc::oid4vc_core::Subject for Subject {
+impl oid4vc_core::Subject for Subject {
     async fn identifier(&self, subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<String> {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}"))?;
         let mut secret_manager = self.secret_manager.lock().await;
 
         Ok(secret_manager
-            .produce_document(method, None, algorithm.into_jws_algorithm())
+            .produce_document(method, None, algorithm.into_jws_algorithm()?)
             .await
             .map(|document| document.id().to_string())?)
     }
@@ -183,12 +183,12 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
 }
 
 trait IntoJwsAlgorithm {
-    fn into_jws_algorithm(self) -> JwsAlgorithm;
+    fn into_jws_algorithm(self) -> anyhow::Result<JwsAlgorithm>;
 }
 
 impl IntoJwsAlgorithm for Algorithm {
-    fn into_jws_algorithm(self) -> JwsAlgorithm {
-        match self {
+    fn into_jws_algorithm(self) -> anyhow::Result<JwsAlgorithm> {
+        Ok(match self {
             Algorithm::HS256 => JwsAlgorithm::HS256,
             Algorithm::HS384 => JwsAlgorithm::HS384,
             Algorithm::HS512 => JwsAlgorithm::HS512,
@@ -201,6 +201,8 @@ impl IntoJwsAlgorithm for Algorithm {
             Algorithm::PS384 => JwsAlgorithm::PS384,
             Algorithm::PS512 => JwsAlgorithm::PS512,
             Algorithm::EdDSA => JwsAlgorithm::EdDSA,
-        }
+            // `jsonwebtoken::Algorithm` is `#[non_exhaustive]` since 10.0.
+            unsupported => return Err(anyhow!("Unsupported signing algorithm: {unsupported:?}")),
+        })
     }
 }

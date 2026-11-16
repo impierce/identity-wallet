@@ -89,7 +89,6 @@ pub fn run() {
                 .level(LevelFilter::Info)
                 .level_for("unime", wallet_log_level)
                 .level_for("identity_wallet", wallet_log_level)
-                .level_for("oid4vc", oid4vc_log_level)
                 .level_for("oid4vc_core", oid4vc_log_level)
                 .level_for("oid4vci", oid4vc_log_level)
                 .level_for("oid4vp", oid4vc_log_level)

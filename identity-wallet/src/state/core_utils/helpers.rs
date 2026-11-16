@@ -7,8 +7,8 @@ use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use log::{debug, info, warn};
-use oid4vc::oid4vc_core::utils::did::extract_normalized_did_kid_from_jwt;
-use oid4vc::oid4vc_core::Verify;
+use oid4vc_core::utils::did::extract_normalized_did_kid_from_jwt;
+use oid4vc_core::Verify;
 use serde_json::Value;
 use std::fs::File;
 

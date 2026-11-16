@@ -1,6 +1,6 @@
 use identity_iota::did::CoreDID;
-use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
-use oid4vc::oid4vci::credential_offer::TxCodeConstraints;
+use oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
+use oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;

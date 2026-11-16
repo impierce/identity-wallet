@@ -404,7 +404,7 @@ mod tests {
     use super::*;
 
     use identity_iota::verification::jws::JwsAlgorithm;
-    use oid4vc::oid4vc_core::{Sign, Subject, Verify};
+    use oid4vc_core::{Sign, Subject, Verify};
 
     use serde_json::json;
     use tempfile::NamedTempFile;

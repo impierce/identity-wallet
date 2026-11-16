@@ -11,7 +11,7 @@ pub mod user_error;
 pub mod well_known;
 
 // Re-exports
-pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};
+pub use {oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};
 
 // This folder is where the main backend rust code lives together with all the business logic.
 // The folder state is where our appstate and it's features are defined, completely according to the redux pattern.

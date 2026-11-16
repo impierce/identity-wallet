@@ -1,11 +1,11 @@
 use identity_wallet::oid4vc_core::Subject as _;
 use identity_wallet::persistence::{STATE_FILE, STRONGHOLD};
+use identity_wallet::state::credentials::CredentialStatusType;
 use identity_wallet::state::credentials::DisplayCredential;
 use identity_wallet::state::profile_settings::Locale;
 use identity_wallet::state::user_prompt::CurrentUserPrompt;
 use identity_wallet::state::{actions::Action, AppState, AppStateContainer};
 use jsonwebtoken::Algorithm;
-use oauth_tsl::status_list::StatusType;
 use serde_json::json;
 use std::path::Path;
 use tauri::Manager;
@@ -110,11 +110,11 @@ async fn test_profile_v0_18_0_unlocks() {
     assert_eq!(credentials.len(), 5);
 
     let expected_credentials = [
-        ("Dutch Driver's Licence", "Mira", StatusType::VALID),
-        ("My first badge", "Mira", StatusType::VALID),
-        ("Complete VC", "Mira", StatusType::INVALID),
-        ("Full Badge", "Capella", StatusType::VALID),
-        ("Testing Credential", "Capella", StatusType::VALID),
+        ("Dutch Driver's Licence", "Mira", CredentialStatusType::Valid),
+        ("My first badge", "Mira", CredentialStatusType::Valid),
+        ("Complete VC", "Mira", CredentialStatusType::Invalid),
+        ("Full Badge", "Capella", CredentialStatusType::Valid),
+        ("Testing Credential", "Capella", CredentialStatusType::Valid),
     ];
     for (display_name, issuer_name, status) in expected_credentials {
         let credential = credential(credentials, display_name);

@@ -26,11 +26,9 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::{
-    oid4vc_core::Subject,
-    oid4vc_manager::ProviderManager,
-    oid4vci::{credential_format_profiles::CredentialFormats, Wallet},
-};
+use oid4vc_core::Subject;
+use oid4vc_manager::ProviderManager;
+use oid4vci::{credential_format_profiles::CredentialFormats, Wallet};
 use serde_json::json;
 use std::{collections::HashMap, fs::File, io::Write, sync::Arc};
 

@@ -32,11 +32,11 @@ use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
 use identity_iota::did::DID;
 use log::{debug, info};
-use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
-use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
-use oid4vc::oid4vc_core::{jwt, Sign, Subject as _};
-use oid4vc::oid4vp::token::vp_token::Presentations;
-use oid4vc::oid4vp::{
+use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vc_core::types::string_or_object::StringOrObject;
+use oid4vc_core::{jwt, Sign, Subject as _};
+use oid4vp::token::vp_token::Presentations;
+use oid4vp::{
     dcql::dcql_query::{CredentialQuery, Format},
     oid4vp::OID4VP,
     token::{
@@ -44,9 +44,13 @@ use oid4vc::oid4vp::{
     },
 };
 
-use identity_credential::{credential::Jwt, presentation::Presentation};
+use identity_credential::presentation::Presentation;
 use identity_iota::core::Url;
 use identity_iota::did::DIDUrl;
+use identity_kit::{
+    did::Did,
+    vc::{Jwt, Presentation as IdentityKitPresentation},
+};
 use jsonwebtoken::Algorithm;
 use jsonwebtoken::Header;
 use sd_jwt::{KeyBindingJwtBuilder, RequiredKeyBinding, SdJwt};
@@ -394,20 +398,17 @@ async fn get_vp_token(
                         .await
                         .map_err(|e| AppError::Error(format!("Failed to get DID identifier: {e}")))?;
 
-                    let holder_url: Url = Url::parse(&full_did)
-                        .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
+                    let holder = Did::parse(&full_did)
+                        .map_err(|e| AppError::Error(format!("Failed to parse holder DID: {e}")))?;
 
-                    let raw_vc_jwt_string = vc_value
+                    let vc_jwt = vc_value
                         .as_str()
-                        .ok_or(AppError::InvalidCredentialFormatError)?
-                        .to_string();
+                        .ok_or(AppError::InvalidCredentialFormatError)
+                        .and_then(|vc_jwt| Jwt::new(vc_jwt).map_err(|_| AppError::InvalidCredentialFormatError))?;
 
-                    let vc_jwt: Jwt = raw_vc_jwt_string.into();
-
-                    let presentation = Presentation::builder(holder_url.clone(), IotaObject::default())
-                        .credential(vc_jwt)
-                        .build()
-                        .map_err(AppError::PresentationBuilderError)?;
+                    let presentation = IdentityKitPresentation::new()
+                        .with_holder(holder)
+                        .with_credential(vc_jwt);
 
                     let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
                         .iss(full_did.clone())

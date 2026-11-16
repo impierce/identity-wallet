@@ -42,11 +42,12 @@ tauri = { workspace = true, features = ["test"] }
 unime = { path = ".", features = ["test_utils"] }
 
 base64 = "0.22"
+chrono = "0.4"
 did_manager.workspace = true
 identity-wallet = { path = "../../identity-wallet", features = ["test_utils"] }
+identity-kit = { workspace = true, features = ["status-list"] }
 jsonwebtoken.workspace = true
-oauth_tsl.workspace = true
-oid4vc.workspace = true
+oid4vci.workspace = true
 rand.workspace = true
 serde = { version = "1.0", features = ["derive"] }
 serial_test.workspace = true

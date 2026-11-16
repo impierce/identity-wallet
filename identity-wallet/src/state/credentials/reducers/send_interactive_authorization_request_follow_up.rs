@@ -16,7 +16,7 @@ use crate::{
     },
 };
 use log::{debug, info};
-use oid4vc::oid4vci::InteractiveAuthorizationFollowUpRequest;
+use oid4vci::InteractiveAuthorizationFollowUpRequest;
 use std::sync::Arc;
 
 /// Handles the interactive `CredentialsSelected` action, which is triggered after accepting the `ShareCredentials` prompt set by `handle_credential_offer`.

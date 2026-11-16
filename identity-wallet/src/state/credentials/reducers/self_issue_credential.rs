@@ -6,7 +6,8 @@ use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
 use log::{debug, info};
-use oid4vc::{oid4vc_core::Sign, oid4vci::credential_format_profiles::CredentialFormats};
+use oid4vc_core::Sign;
+use oid4vci::credential_format_profiles::CredentialFormats;
 use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding, SdJwtBuilder};
 use serde_json::{json, Map, Value};
 use uuid::Uuid;
@@ -25,7 +26,7 @@ use crate::{
 };
 
 pub struct SubjectWrapper {
-    pub subject: Arc<dyn oid4vc::oid4vc_core::Subject>,
+    pub subject: Arc<dyn oid4vc_core::Subject>,
     pub preferred_did_method: String,
 }
 
@@ -67,7 +68,7 @@ pub struct SelfIssuedSdJwt {
 
 /// Signs `credential_subject` as a self-issued `vc+sd-jwt` with every claim selectively disclosable.
 pub async fn sign_self_issued_sd_jwt(
-    subject: Arc<dyn oid4vc::oid4vc_core::Subject>,
+    subject: Arc<dyn oid4vc_core::Subject>,
     did_method: &str,
     issuer_did: &str,
     key_type: &str,

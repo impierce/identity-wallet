@@ -13,7 +13,7 @@ use crate::{
 };
 
 use log::{debug, info, warn};
-use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
+use oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 
 /// Sets the `CredentialOffer` prompt after the `AcceptConnetion` prompt was accepted, triggering the `ConnectionAccepted` action.
 /// Accepting the prompt set in this reducer would result in the `CredentialOffersSelected` action, which is handled by `handle_credential_offer`.
@@ -118,18 +118,18 @@ mod tests {
     use crate::stronghold::StrongholdManager;
     use crate::subject::subject;
 
-    use oid4vc::oid4vc_manager::ProviderManager;
-    use oid4vc::oid4vci::credential_format_profiles::{
+    use oid4vc_manager::ProviderManager;
+    use oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json, CredentialFormats, Parameters, WithParameters,
     };
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+    use oid4vci::credential_issuer::credential_configurations_supported::{
         CredentialConfigurationsSupportedDisplay, CredentialMetadata, Logo,
     };
-    use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
-    use oid4vc::oid4vci::credential_offer::{
+    use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
+    use oid4vci::credential_offer::{
         CredentialConfigurationIds, CredentialOfferParameters, Grants, InputMode, PreAuthorizedCode, TxCodeConstraints,
     };
-    use oid4vc::oid4vci::Wallet;
+    use oid4vci::Wallet;
 
     use std::sync::Arc;
     use tempfile::{NamedTempFile, TempDir};

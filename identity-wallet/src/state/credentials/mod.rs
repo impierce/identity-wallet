@@ -11,16 +11,14 @@ use identity_iota::{
     core::{FromJson as _, Object},
     credential::CredentialV2,
 };
-use oauth_tsl::status_list::StatusType;
-use oid4vc::{
-    oid4vc_core::{
-        claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
-        utils::jwt::get_unverified_jwt_claims,
-    },
-    oid4vci::{
-        credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::ClaimDescription,
-    },
+use identity_kit::status_list::StatusType;
+use oid4vc_core::{
+    claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
+    utils::jwt::get_unverified_jwt_claims,
+};
+use oid4vci::{
+    credential_format_profiles::CredentialFormats,
+    credential_issuer::credential_configurations_supported::ClaimDescription,
 };
 use sd_jwt::{SdJwt, Sha256Hasher};
 use serde::{Deserialize, Serialize};
@@ -74,13 +72,42 @@ pub struct DisplayCredential {
 #[ts(export, export_to = "bindings/credentials/CredentialStatus.ts")]
 pub struct CredentialStatus {
     #[ts(type = "'VALID' | 'INVALID' | 'SUSPENDED' | 'UNDEFINED'")]
-    pub status: StatusType,
+    pub status: CredentialStatusType,
     #[ts(skip)]
     pub idx: u64,
     #[ts(skip)]
     pub uri: Url,
     #[derivative(PartialEq = "ignore")]
     pub last_checked: String,
+}
+
+/// The status of a credential as the wallet stores and shows it, read from the credential's Token Status List.
+///
+/// It serializes as its name, as persisted state and the frontend expect.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum CredentialStatusType {
+    Valid,
+    Invalid,
+    Suspended,
+    /// An application-specific status, or a status that has not been fetched yet.
+    Undefined,
+}
+
+impl TryFrom<StatusType> for CredentialStatusType {
+    type Error = AppError;
+
+    fn try_from(status: StatusType) -> Result<Self, AppError> {
+        match status.value() {
+            0 => Ok(Self::Valid),
+            1 => Ok(Self::Invalid),
+            2 => Ok(Self::Suspended),
+            // Application-specific values.
+            3 | 11..=15 => Ok(Self::Undefined),
+            // Every other value is reserved for future registration.
+            _ => Err(AppError::GetCredentialStatusError),
+        }
+    }
 }
 
 #[typetag::serde(name = "display_credential")]
@@ -396,7 +423,7 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::ClaimDescriptionDisplay;
+    use oid4vci::credential_issuer::credential_configurations_supported::ClaimDescriptionDisplay;
 
     #[test]
     fn test_get_display_claims_uses_claim_path_as_key_when_display_name_is_missing() {

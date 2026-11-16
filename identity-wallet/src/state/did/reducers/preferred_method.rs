@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use log::debug;
-use oid4vc::oid4vc_core::SubjectSyntaxType;
+use oid4vc_core::SubjectSyntaxType;
 
 use crate::{
     error::AppError,

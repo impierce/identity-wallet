@@ -10,8 +10,8 @@ use crate::{
         },
         credentials::{
             actions::authorization_code_received::CodeReceived,
-            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, DisplayCredential,
-            VerifiableCredentialRecord,
+            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, CredentialStatusType,
+            DisplayCredential, VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
@@ -21,15 +21,13 @@ use crate::{
     well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
 use identity_iota::did::DID;
+use identity_kit::status_list::Status;
 use log::{debug, info, warn};
-use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
-use oid4vc::{
-    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
-    oid4vci::{
-        credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-        credential_response::CredentialResponseType, token_request::TokenRequest,
-    },
+use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
+use oid4vci::{
+    credential_format_profiles::CredentialFormats,
+    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
+    credential_response::CredentialResponseType, token_request::TokenRequest,
 };
 use serde_json::json;
 use std::collections::HashMap;
@@ -585,19 +583,20 @@ pub async fn get_credential_status(
         }
     };
 
-    let credential_status_claim = match serde_json::from_value::<StatusClaim>(status_value.clone()) {
-        Ok(claim) => claim,
-        Err(_) => {
-            warn!("The credential status claim/property is not in the OAuth Token Status List format: {status_value}");
-            return None;
-        }
+    let Some((idx, uri)) = serde_json::from_value::<Status>(status_value)
+        .ok()
+        .and_then(|status| status.status_list)
+        .and_then(|reference| Some((reference.idx, reference.uri.parse().ok()?)))
+    else {
+        warn!("The credential status claim/property is not in the OAuth Token Status List format");
+        return None;
     };
 
     // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
     let mut credential_status_data = CredentialStatus {
-        status: StatusType::UNDEFINED,
-        idx: credential_status_claim.referenced_status_list.idx,
-        uri: credential_status_claim.referenced_status_list.uri,
+        status: CredentialStatusType::Undefined,
+        idx,
+        uri,
         last_checked: String::new(),
     };
 
@@ -622,7 +621,7 @@ pub async fn get_credential_status(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+    use oid4vci::credential_issuer::credential_configurations_supported::{
         CredentialConfigurationsSupportedDisplay, CredentialMetadata,
     };
 
