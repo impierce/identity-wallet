@@ -2,6 +2,8 @@ use crate::common::{
     assert_state_update::{setup_state_file, setup_stronghold},
     json_example, test_managers,
 };
+use identity_kit::status_list::{StatusList, StatusListToken, StatusType};
+use identity_wallet::oid4vc_core::jwt;
 use identity_wallet::state::credentials::reducers::{
     refresh_all_credential_statuses::refresh_all_credential_statuses,
     refresh_credential_status::refresh_credential_status,
@@ -9,6 +11,7 @@ use identity_wallet::state::credentials::reducers::{
 use identity_wallet::state::credentials::CredentialStatusType;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::state::{actions::Action, AppState};
+use jsonwebtoken::{Algorithm, Header};
 use serde_json::json;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -275,4 +278,96 @@ async fn test_unreachable_credential_status() {
             .unwrap()
             .last_checked
     );
+}
+
+/// Refreshes the status of the first credential in `credential_with_status.json` against a status list token that the
+/// test wallet's own did:key signs, which marks the credential INVALID and, with `expired`, expired an hour ago.
+/// Returns the credential's status and `last_checked` before and after the refresh.
+async fn refresh_against_signed_status_list(
+    expired: bool,
+) -> ((CredentialStatusType, String), (CredentialStatusType, String)) {
+    setup_state_file();
+    let mut state = json_example::<AppState>("tests/fixtures/states/credential_with_status.json");
+    let managers = test_managers(vec![]).await;
+    let subject = managers.lock().await.identity_manager.as_ref().unwrap().subject.clone();
+    state.core_utils.managers = managers;
+
+    let mock_server = MockServer::start().await;
+    let uri = mock_server.uri() + "/ietf-oauth-token-status-list/0";
+    let status = state
+        .credentials
+        .get_mut(0)
+        .unwrap()
+        .credential_status
+        .as_mut()
+        .unwrap();
+    status.uri = uri.parse().unwrap();
+    let before = (status.status, status.last_checked.clone());
+
+    let mut status_list = StatusList::new(1, 1024).unwrap();
+    status_list.set(status.idx, StatusType::INVALID).unwrap();
+    let now = chrono::Utc::now();
+    let mut token = StatusListToken::new(&uri, now - chrono::Duration::hours(2), status_list);
+    if expired {
+        token = token.with_expires_at(now - chrono::Duration::hours(1));
+    }
+    let header = Header {
+        alg: Algorithm::EdDSA,
+        typ: Some(StatusListToken::TYP.to_string()),
+        ..Default::default()
+    };
+    let status_list_jwt = jwt::encode(subject, header, &token, "did:key").await.unwrap();
+
+    Mock::given(method("GET"))
+        .and(path("/ietf-oauth-token-status-list/0"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(status_list_jwt, StatusListToken::MEDIA_TYPE))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    // A successful refresh rewrites the credential in Stronghold, so it has to be there.
+    let stronghold_manager = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .as_ref()
+        .unwrap()
+        .clone();
+    let credential = state.credentials.first().unwrap().clone();
+    let verifiable_credential_record = VerifiableCredentialRecord {
+        verifiable_credential: serde_json::to_value(&credential).unwrap(),
+        display_credential: credential,
+    };
+    stronghold_manager
+        .insert(
+            verifiable_credential_record.display_credential.id.parse().unwrap(),
+            json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
+        )
+        .unwrap();
+
+    let action = json_example::<Action>("tests/fixtures/actions/refresh_credential_status.json");
+    let state = refresh_credential_status(state, action).await.unwrap();
+
+    let status = state.credentials.first().unwrap().credential_status.as_ref().unwrap();
+    (before, (status.status, status.last_checked.clone()))
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_credential_status_from_signed_status_list() {
+    let (before, after) = refresh_against_signed_status_list(false).await;
+
+    assert_eq!(before.0, CredentialStatusType::Valid);
+    assert_eq!(after.0, CredentialStatusType::Invalid);
+    assert_ne!(before.1, after.1);
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_credential_status_ignores_an_expired_status_list() {
+    let (before, after) = refresh_against_signed_status_list(true).await;
+
+    assert_eq!(before, after);
 }

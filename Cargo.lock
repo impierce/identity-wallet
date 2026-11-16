@@ -14739,8 +14739,10 @@ name = "unime"
 version = "0.19.4"
 dependencies = [
  "base64 0.22.1",
+ "chrono",
  "did_manager",
  "dotenvy",
+ "identity-kit",
  "identity-wallet",
  "iota-sdk 1.22.0-alpha",
  "jni 0.21.1",

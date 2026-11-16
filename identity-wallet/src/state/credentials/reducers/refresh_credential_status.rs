@@ -237,14 +237,14 @@ pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
         .map_err(AppError::FetchCredentialListError)
 }
 
-/// Rejects a status list token with an empty `sub` or list, one issued after `now`, or one that expired before `now`
-/// (`exp` is optional).
+/// Rejects a status list token with an empty `sub` or list, one issued after `now`, or one that has expired by `now`
+/// (`exp` is optional; RFC 7519 §4.1.4 accepts a token only before its `exp`).
 fn check_status_list_token(token: &StatusListToken, now: i64) -> Result<(), AppError> {
     let reason = if token.sub.is_empty() || token.status_list.is_empty() {
         "it has an empty `sub` or status list"
     } else if token.iat > now {
         "it was issued in the future"
-    } else if token.exp.is_some_and(|exp| exp < now) {
+    } else if token.exp.is_some_and(|exp| exp <= now) {
         "it has expired"
     } else {
         return Ok(());
@@ -286,6 +286,11 @@ mod tests {
     #[test]
     fn rejects_an_expired_token() {
         assert!(check_status_list_token(&token(NOW - 120).with_expires_at(at(NOW - 60)), NOW).is_err());
+    }
+
+    #[test]
+    fn rejects_a_token_at_its_exp() {
+        assert!(check_status_list_token(&token(NOW - 60).with_expires_at(at(NOW)), NOW).is_err());
     }
 
     #[test]
