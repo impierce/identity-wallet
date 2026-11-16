@@ -7,19 +7,17 @@ use crate::{
         actions::{listen, Action},
         core_utils::DateUtils,
         credentials::{
-            actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, VerifiableCredentialRecord,
+            actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, CredentialStatusType,
+            VerifiableCredentialRecord,
         },
         AppState,
     },
     subject::Subject,
 };
-use jsonwebtoken::{decode_header, Algorithm, DecodingKey};
+use identity_kit::{status_list::StatusListToken, vc::Jwt};
+use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use log::{info, warn};
-use oauth_tsl::{
-    relying_party::{decompress_gzip, decrypt_status_list_token, StatusListTokenResponseType},
-    status_list::{StatusList, StatusType},
-};
-use oid4vc::oid4vc_core::{utils::did::extract_normalized_did_kid_from_jwt, Verify};
+use oid4vc_core::{utils::did::extract_normalized_did_kid_from_jwt, Verify};
 use reqwest::{header, redirect::Policy};
 
 #[tracing::instrument(skip_all, err)]
@@ -159,13 +157,17 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 pub async fn fetch_credential_status(
     credential_status_data: &CredentialStatus,
     subject: &Subject,
-) -> Result<StatusType, AppError> {
-    let status_list_jwt = fetch_status_list(
-        credential_status_data.uri.as_str(),
-        // TODO: the response type is hardcoded to be JWT, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
-        StatusListTokenResponseType::Jwt,
-    )
-    .await?;
+) -> Result<CredentialStatusType, AppError> {
+    // TODO: we only request JWTs, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
+    let status_list_jwt = fetch_status_list(credential_status_data.uri.as_str()).await?;
+
+    // Checks that `typ` is `statuslist+jwt` and reads the claims; the signature is verified below.
+    let invalid_token = |e: &dyn std::fmt::Display| {
+        warn!("Invalid status list token: {e}");
+        AppError::GetCredentialStatusError
+    };
+    let jwt = Jwt::new(status_list_jwt.as_str()).map_err(|e| invalid_token(&e))?;
+    let (_, status_list_token) = StatusListToken::decode(&jwt).map_err(|e| invalid_token(&e))?;
 
     let jwt_header = decode_header(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
     let key_id =
@@ -183,20 +185,22 @@ pub async fn fetch_credential_status(
             return Err(AppError::GetCredentialStatusError);
         }
     };
-    let status_list_token =
-        decrypt_status_list_token(&status_list_jwt, decoding_key).map_err(|_| AppError::GetCredentialStatusError)?;
-    let status_list: StatusList = status_list_token
-        .claims
-        .encoded_status_list
-        .try_into()
-        .map_err(|_| AppError::GetCredentialStatusError)?;
+    let mut validation = Validation::new(jwt_header.alg);
+    validation.set_required_spec_claims(&["sub", "iat"]);
+    validation.validate_exp = false;
+    validation.validate_aud = false;
+    decode::<serde_json::Value>(&status_list_jwt, &decoding_key, &validation).map_err(|e| {
+        warn!("The status list token signature does not verify: {e}");
+        AppError::GetCredentialStatusError
+    })?;
 
-    let status = StatusType::try_from(
-        status_list
-            .get_status(credential_status_data.idx as usize)
-            .map_err(|_| AppError::GetCredentialStatusError)?,
-    )
-    .map_err(|_| AppError::GetCredentialStatusError)?;
+    // TODO: use `StatusListToken::status_of`, which also checks that `sub` is the referenced URI and that the token
+    // has not expired (Token Status List §8.3).
+    let status = status_list_token
+        .status_list
+        .get(credential_status_data.idx)
+        .ok_or(AppError::GetCredentialStatusError)
+        .and_then(CredentialStatusType::try_from)?;
 
     info!(
         "Successfully fetched status list from `{}` with status: `{:?}`",
@@ -206,11 +210,10 @@ pub async fn fetch_credential_status(
     Ok(status)
 }
 
-/// Sends a status list request to the provided URI and returns the response body as a String.
-/// The `accept_header` parameter determines the expected response format (e.g., JWT, compressed JWT).
-/// If the response is gzip encoded, it will be decompressed before being returned.
+/// Requests the status list token from the provided URI and returns the response body as a String.
+/// A gzip encoded response is decompressed by `reqwest`.
 #[tracing::instrument(skip_all, err)]
-pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
+pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
     // The timeout of 10 seconds is an estimated guess of how long a status list request should take at maximum.
     let client = get_http_client_builder()
@@ -219,30 +222,15 @@ pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponse
         .build()
         .map_err(AppError::FetchCredentialListError)?;
 
-    let res = client
+    client
         .get(uri)
-        .header(header::ACCEPT, accept_header.to_string())
+        .header(header::ACCEPT, StatusListToken::MEDIA_TYPE)
         .send()
         .await
         .and_then(reqwest::Response::error_for_status)
-        .map_err(AppError::FetchCredentialListError)?;
-
-    let is_gzipped = res
-        .headers()
-        .get(header::CONTENT_ENCODING)
-        .is_some_and(|encoding| encoding == "gzip");
-
-    let bytes = res.bytes().await.map_err(AppError::FetchCredentialListError)?;
-
-    if is_gzipped {
-        decompress_gzip(&bytes).map_err(|e| {
-            warn!("Failed to decompress gzip status list: {}", e);
-            AppError::GetCredentialStatusError
-        })
-    } else {
-        String::from_utf8(bytes.to_vec()).map_err(|e| {
-            warn!("Status list was not valid UTF-8: {}", e);
-            AppError::GetCredentialStatusError
-        })
-    }
+        .map_err(AppError::FetchCredentialListError)?
+        .text()
+        .await
+        .map(|body| body.trim().to_owned())
+        .map_err(AppError::FetchCredentialListError)
 }

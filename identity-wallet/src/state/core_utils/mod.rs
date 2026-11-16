@@ -15,7 +15,7 @@ use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
 pub use helpers::DateUtils;
 
-use oid4vc::{
+use crate::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vc_manager::ProviderManager,
     oid4vci::{credential_offer::CredentialOfferParameters, Wallet},

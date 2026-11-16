@@ -3,16 +3,15 @@ use crate::state::{
     connections::Connection,
     credentials::{
         selective_disclosure::{claim_sets, concealable_claims, supports_selective_disclosure},
-        VerifiableCredentialRecord,
+        CredentialStatusType, VerifiableCredentialRecord,
     },
 };
 use chrono::{DateTime, Utc};
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::debug;
-use oauth_tsl::status_list::StatusType;
-use oid4vc::oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims};
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-use oid4vc::oid4vp::{
+use oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims};
+use oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vp::{
     dcql::dcql_query::{CredentialQuery, DcqlQuery, Format, MetaTypes},
     dcql_evaluation::evaluate_credential_query,
     token::vp_token_validator::DecodedPresentations,
@@ -166,10 +165,12 @@ fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCred
 fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
     let display_credential = &record.display_credential;
     let now = Utc::now();
-    let revoked_or_suspended = display_credential
-        .credential_status
-        .as_ref()
-        .is_some_and(|status| matches!(status.status, StatusType::INVALID | StatusType::SUSPENDED));
+    let revoked_or_suspended = display_credential.credential_status.as_ref().is_some_and(|status| {
+        matches!(
+            status.status,
+            CredentialStatusType::Invalid | CredentialStatusType::Suspended
+        )
+    });
     let not_yet_valid = display_credential
         .metadata
         .valid_from

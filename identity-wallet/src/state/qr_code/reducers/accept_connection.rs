@@ -17,20 +17,20 @@ use crate::{
     },
     well_known::{get_credential_issuer_metadata, get_did_document_id},
 };
-use identity_iota::did::CoreDID;
-use log::{info, warn};
-use oid4vc::siopv2::siopv2::SIOPv2;
-use oid4vc::{
+use crate::{
     oid4vc_core::{
         authorization_request::{AuthorizationRequest, Object},
         client_metadata::ClientMetadataResource,
     },
     oid4vci::credential_offer::CredentialOffer,
 };
-use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
+use crate::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
+use identity_iota::did::CoreDID;
+use log::{info, warn};
 use openid_federation::{
     extract_claims_unverified, EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata, TrustChain,
 };
+use siopv2::siopv2::SIOPv2;
 use std::time::Duration;
 
 /// The kind of request encoded in a scanned QR-code.
@@ -399,7 +399,7 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
 }
 
 fn strip_client_id_prefix(client_id: &str) -> String {
-    use oid4vc::oid4vp::authorization_request::ClientId;
+    use oid4vp::authorization_request::ClientId;
     use std::str::FromStr as _;
 
     ClientId::from_str(client_id)
@@ -786,10 +786,10 @@ mod tests {
     use crate::subject::subject;
 
     use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
-    use oid4vc::oid4vc_manager::ProviderManager;
-    use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
-    use oid4vc::oid4vci::credential_offer::CredentialConfigurationIds;
-    use oid4vc::oid4vci::Wallet;
+    use oid4vc_manager::ProviderManager;
+    use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
+    use oid4vci::credential_offer::CredentialConfigurationIds;
+    use oid4vci::Wallet;
     use openid_federation::{
         expires_in, EntityConfiguration, FederationEntityMetadata, Jwk, JwkSet, SubordinateStatement,
     };

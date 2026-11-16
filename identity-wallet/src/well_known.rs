@@ -6,7 +6,7 @@
 //! [`well_known_candidates`].
 
 use log::debug;
-use oid4vc::oid4vci::credential_issuer::{
+use oid4vci::credential_issuer::{
     authorization_server_metadata::AuthorizationServerMetadata, credential_issuer_metadata::CredentialIssuerMetadata,
 };
 use serde::{de::DeserializeOwned, Deserialize};

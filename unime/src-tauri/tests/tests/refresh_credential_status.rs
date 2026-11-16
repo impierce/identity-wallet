@@ -6,9 +6,9 @@ use identity_wallet::state::credentials::reducers::{
     refresh_all_credential_statuses::refresh_all_credential_statuses,
     refresh_credential_status::refresh_credential_status,
 };
+use identity_wallet::state::credentials::CredentialStatusType;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::state::{actions::Action, AppState};
-use oauth_tsl::status_list::StatusType;
 use serde_json::json;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -90,7 +90,7 @@ async fn test_refresh_credential_status() {
         .unwrap()
         .status;
 
-    assert_eq!(result, StatusType::INVALID);
+    assert_eq!(result, CredentialStatusType::Invalid);
     assert_ne!(
         last_checked,
         state
@@ -178,7 +178,7 @@ async fn test_refresh_all_credential_statuses() {
     let state = refresh_all_credential_statuses(state, action).await.unwrap();
 
     // Collect the updated `status` and `last_checked` fields
-    let results: Vec<StatusType> = state
+    let results: Vec<CredentialStatusType> = state
         .credentials
         .iter()
         .map(|cred| cred.credential_status.as_ref().unwrap().status)
@@ -189,7 +189,7 @@ async fn test_refresh_all_credential_statuses() {
         .map(|cred| cred.credential_status.as_ref().unwrap().last_checked.clone())
         .collect();
 
-    assert_eq!(results, vec![StatusType::INVALID; 3]);
+    assert_eq!(results, vec![CredentialStatusType::Invalid; 3]);
     assert_ne!(last_checked, updated_last_checked);
 }
 
@@ -263,7 +263,7 @@ async fn test_unreachable_credential_status() {
         .unwrap()
         .status;
 
-    assert_eq!(result, StatusType::VALID);
+    assert_eq!(result, CredentialStatusType::Valid);
     assert_eq!(
         last_checked,
         state

@@ -1,6 +1,6 @@
 use crate::error::AppError;
-use oid4vc::oid4vc_core::claim_path_pointer::{ClaimPathElement, ClaimPathPointer};
-use oid4vc::oid4vp::dcql::dcql_query::{CredentialQuery, Format};
+use oid4vc_core::claim_path_pointer::{ClaimPathElement, ClaimPathPointer};
+use oid4vp::dcql::dcql_query::{CredentialQuery, Format};
 use sd_jwt::{SdJwt, SdJwtPresentationBuilder, Sha256Hasher};
 use serde_json::Value;
 

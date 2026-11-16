@@ -21,14 +21,14 @@ use crate::{
     },
 };
 use log::{debug, info};
-use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
-use oid4vc::oid4vci::InteractionType;
-use oid4vc::oid4vci::{
+use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vci::InteractionType;
+use oid4vci::{
     authorization_details::{AuthorizationDetailsObject, OpenidCredential},
     credential_offer::Grants,
     pkce,
 };
-use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vp::oid4vp::OID4VP;
 use tauri_plugin_opener::OpenerExt;
 use uuid::Uuid;
 

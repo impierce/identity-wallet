@@ -14,9 +14,9 @@ use crate::{
 
 use jsonwebtoken::Algorithm;
 use log::{debug, info};
-use oid4vc::oid4vc_core::Subject as _;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use oid4vc_core::Subject as _;
+use oid4vc_manager::ProviderManager;
+use oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.

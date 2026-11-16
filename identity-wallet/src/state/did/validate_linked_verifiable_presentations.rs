@@ -4,7 +4,7 @@ use crate::{
         core_utils::helpers::{download_logo, get_issuer_document},
         credentials::{
             reducers::send_token_request::{get_credential_status, has_token_status_list_claim},
-            CredentialStatus, DisplayCredential, VerifiableCredentialRecord,
+            CredentialStatus, CredentialStatusType, DisplayCredential, VerifiableCredentialRecord,
         },
         did::validate_domain_linkage::{ValidationResult, Verifier},
     },
@@ -26,8 +26,7 @@ use identity_iota::{
     document::{CoreDocument, Service},
 };
 use log::{debug, info, warn};
-use oauth_tsl::status_list::StatusType;
-use oid4vc::oid4vci::{
+use oid4vci::{
     credential_format_profiles::CredentialFormats,
     credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
 };
@@ -257,7 +256,7 @@ async fn get_validated_linked_credential_data(
                         // UniMe cannot check other status mechanisms, so such a credential is shown like one
                         // without a status, as the validator above does with `StatusCheck::SkipUnsupported`.
                         match &credential_status {
-                            Some(CredentialStatus { status: StatusType::VALID, .. }) => {}
+                            Some(CredentialStatus { status: CredentialStatusType::Valid, .. }) => {}
                             None if !has_token_status_list_claim(&verifiable_credential_record) => {}
                             _ => {
                                 warn!("Skipping linked verifiable credential that is not valid: {credential_status:?}");
