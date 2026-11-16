@@ -585,12 +585,12 @@ pub async fn get_credential_status(
         }
     };
 
-    let Some((idx, uri)) = serde_json::from_value::<Status>(status_value.clone())
+    let Some((idx, uri)) = serde_json::from_value::<Status>(status_value)
         .ok()
         .and_then(|status| status.status_list)
         .and_then(|reference| Some((reference.idx, reference.uri.parse().ok()?)))
     else {
-        warn!("The credential status claim/property is not in the OAuth Token Status List format: {status_value}");
+        warn!("The credential status claim/property is not in the OAuth Token Status List format");
         return None;
     };
 
