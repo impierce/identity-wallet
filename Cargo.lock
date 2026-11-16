@@ -2231,7 +2231,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d045de693cb712d0b22c6a64be5b953f67b3ce00ab5ad3dd5d8b441886ab8e1a"
 dependencies = [
  "quote",
- "syn 2.0.106",
+ "syn 3.0.10",
 ]
 
 [[package]]
@@ -9383,7 +9383,8 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.6.0"
-source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "479b38ddabab40466598dc463c1f37783bfc8f5b4d753d408d0e3d45995ac5e7"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9408,8 +9409,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vc-manager"
-version = "0.6.0"
-source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3a54215508edfe2c0134afe9e00c22c0e7996a9550c1e35c819ebdee536da44"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9437,8 +9439,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vci"
-version = "0.6.0"
-source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c435b935639e9dd1e78f988edf323567ba83cca2d4a4098617e0ff7c8246f120"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9463,8 +9466,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vp"
-version = "0.6.0"
-source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb2101a603bf54ceda514189603bc3e9ac9342479ded0c203fd489718cec14b9"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12483,7 +12487,8 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.6.0"
-source = "git+https://github.com/impierce/openid4vc?rev=80196c9#80196c90acd72f43360c8aaa19d4f409168aa1ba"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "34c6924150a5770ed1af936415ea158d03d7904345840d51446d128cce27e382"
 dependencies = [
  "anyhow",
  "async-trait",
