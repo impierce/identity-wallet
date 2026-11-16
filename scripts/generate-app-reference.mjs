@@ -668,6 +668,17 @@ function buildReference() {
       problems.push(`The screen name "${name}" is used more than once.`);
     }
   }
+  // Links to a screen point at its heading, so no other heading may produce the same anchor.
+  const headingAnchor = (heading) =>
+    heading
+      .toLowerCase()
+      .replace(/[^a-z0-9 -]/g, '')
+      .replaceAll(' ', '-');
+  const otherHeadings = ['How to read an entry', 'Screens', 'Layouts', ...config.groups.map((group) => group.title)];
+  for (const screen of described) {
+    const clash = otherHeadings.find((heading) => headingAnchor(heading) === headingAnchor(screen.name ?? ''));
+    if (clash) problems.push(`The screen name "${screen.name}" clashes with the heading "${clash}". Rename one.`);
+  }
   for (const key of omittedKeys) {
     if (![...translations.keys()].some((known) => known === key || known.startsWith(`${key}.`))) {
       problems.push(`"omittedTranslations" names the key ${key}, which does not exist. Remove the entry.`);

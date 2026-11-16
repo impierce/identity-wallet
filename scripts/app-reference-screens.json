@@ -59,7 +59,7 @@
       ]
     },
     {
-      "title": "Me tab",
+      "title": "Me: credentials and own data",
       "description": "The home of the wallet: the list of credentials, search, and adding data that the user enters themselves.",
       "screens": [
         {
@@ -167,7 +167,7 @@
       ]
     },
     {
-      "title": "Activity tab",
+      "title": "Activity: connections and history",
       "description": "The organizations the user has exchanged credentials with, and the history of every exchange.",
       "screens": [
         {
@@ -203,7 +203,7 @@
       ]
     },
     {
-      "title": "Settings",
+      "title": "Settings and developer tools",
       "description": "What is personal to this wallet. The profile picture at the top of the Me tab opens the settings.",
       "screens": [
         {
