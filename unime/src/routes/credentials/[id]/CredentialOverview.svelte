@@ -102,7 +102,7 @@
         </div>
       {:else}
         <div>{$LL.CREDENTIAL.DETAILS.VALID()}</div>
-        <div class="grid h-20 place-items-center self-stretch rounded-xl bg-green-50 text-green-600 dark:bg-background">
+        <div class="grid h-20 place-items-center self-stretch rounded-xl bg-ex-blue-1 text-primary dark:bg-background">
           <SealCheckFillIcon class="size-7" />
         </div>
       {/if}

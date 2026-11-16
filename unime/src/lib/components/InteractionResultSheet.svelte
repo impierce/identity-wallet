@@ -15,7 +15,12 @@
   import Button from './Button.svelte';
   import Toast from './Toast.svelte';
 
-  const AUTO_CLOSE_SECONDS = 3;
+  const AUTO_CLOSE_SECONDS = 5;
+  // The auto-close countdown fills a ring around the seal, in a 96 × 96 viewBox: its stroke is the outer edge of the
+  // light 96 px ring around the 72 px seal.
+  const RING_STROKE_WIDTH = 3;
+  const RING_RADIUS = 48 - RING_STROKE_WIDTH / 2;
+  const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;
 
   type Phase = 'waiting' | InteractionOutcome['status'];
   type StepState = 'pending' | 'loading' | 'done' | 'failed';
@@ -212,7 +217,10 @@
     if (outcome.status === 'approved') {
       secondStepRevealed = false;
       later(() => (secondStepRevealed = true), 400);
-      later(() => (countdown = AUTO_CLOSE_SECONDS), 450);
+      // The seconds left, counted down once a second: 5, 4, 3, 2, 1.
+      for (let elapsed = 0; elapsed < AUTO_CLOSE_SECONDS; elapsed++) {
+        later(() => (countdown = AUTO_CLOSE_SECONDS - elapsed), 450 + elapsed * 1000);
+      }
       later(() => close(), 450 + AUTO_CLOSE_SECONDS * 1000);
     }
   }
@@ -321,6 +329,27 @@
         ></div>
       {:else if phase === 'approved'}
         <div class="absolute size-[96px] rounded-full bg-primary/15 motion-safe:animate-[burst_600ms_ease-out]"></div>
+        <!-- Auto-close countdown: the ring fills clockwise from the top, and the sheet closes once it is full. -->
+        <svg
+          class="absolute size-[96px] -rotate-90"
+          class:opacity-0={countdown === undefined}
+          viewBox="0 0 96 96"
+          aria-hidden="true"
+          data-testid="auto-close-ring"
+        >
+          <circle
+            cx="48"
+            cy="48"
+            r={RING_RADIUS}
+            fill="none"
+            stroke-width={RING_STROKE_WIDTH}
+            stroke-linecap="round"
+            class="stroke-primary"
+            stroke-dasharray={RING_CIRCUMFERENCE}
+            style:stroke-dashoffset={countdown === undefined ? RING_CIRCUMFERENCE : 0}
+            style:transition={countdown === undefined ? 'none' : `stroke-dashoffset ${AUTO_CLOSE_SECONDS}s linear`}
+          />
+        </svg>
         <div
           class="flex size-[72px] items-center justify-center rounded-full bg-primary motion-safe:animate-[pop_450ms_cubic-bezier(0.34,1.56,0.64,1)]"
         >
@@ -391,22 +420,15 @@
       </div>
     {/if}
 
-    <!-- Auto-close countdown -->
+    <!-- Auto-close countdown, see the ring around the seal. The line keeps its space so that nothing moves. -->
     {#if phase === 'approved'}
-      <div class="flex w-full flex-col gap-2" transition:fade={{ duration: 150 }}>
-        <div class="h-1 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-600">
-          <div
-            class="h-full rounded-full bg-primary"
-            style:width={countdown === undefined ? '100%' : '0%'}
-            style:transition={countdown === undefined ? 'none' : `width ${AUTO_CLOSE_SECONDS}s linear`}
-          ></div>
-        </div>
-        {#if countdown !== undefined}
-          <p class="text-center text-[12px]/[16px] font-medium text-slate-500 dark:text-slate-300">
-            {$LL.INTERACTION_RESULT.AUTO_CLOSE({ seconds: AUTO_CLOSE_SECONDS })}
-          </p>
-        {/if}
-      </div>
+      <p
+        class="w-full text-center text-[12px]/[16px] font-medium text-slate-500 dark:text-slate-300"
+        class:invisible={countdown === undefined}
+        transition:fade={{ duration: 150 }}
+      >
+        {$LL.INTERACTION_RESULT.AUTO_CLOSE({ seconds: countdown ?? AUTO_CLOSE_SECONDS })}
+      </p>
     {/if}
 
     <!-- Actions -->
