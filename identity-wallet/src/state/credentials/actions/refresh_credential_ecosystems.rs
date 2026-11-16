@@ -17,7 +17,7 @@ use ts_rs::TS;
 /// alongside.
 const STATE_LOCK_ALLOWANCE: Duration = DEFAULT_ACTION_TIME_LIMIT.saturating_mul(2);
 
-/// Resolves the ecosystems of a credential's issuer again, together with the trust chains into them.
+/// Resolves the ecosystems of a credential's issuer again.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/RefreshCredentialEcosystems.ts")]
 pub struct RefreshCredentialEcosystems {

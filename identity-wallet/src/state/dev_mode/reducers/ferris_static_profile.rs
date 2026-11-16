@@ -332,13 +332,6 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
     ];
 
-    let impierce_demo_portal = Member {
-        logo_uri: None,
-        name: "Impierce Demo Portal".to_string(),
-        description: None,
-        identifier: Some("https://demo.impierce.com".to_string()),
-    };
-
     let impierce_ecosystems = vec![
         EcosystemProfile {
             logo_uri: Some(EUROPEAN_DIGITAL_IDENTITY_NETWORK_LOGO.to_string()),
@@ -368,21 +361,6 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                     identifier: Some("https://tanglelabs.io".to_string()),
                 },
             ],
-            trust_chain: vec![
-                impierce_demo_portal.clone(),
-                Member {
-                    logo_uri: None,
-                    name: "Dutch Digital Identity Coalition".to_string(),
-                    description: Some("Regional member organisation".to_string()),
-                    identifier: Some("https://digital-identity-coalition.example".to_string()),
-                },
-                Member {
-                    logo_uri: None,
-                    name: "European Digital Trust Foundation".to_string(),
-                    description: Some("Ecosystem coordinator".to_string()),
-                    identifier: Some("https://digital-trust.example".to_string()),
-                },
-            ],
         },
         EcosystemProfile {
             logo_uri: Some(OPEN_SKILLS_ALLIANCE_LOGO.to_string()),
@@ -401,15 +379,6 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 description: Some("Digital skills issuer".to_string()),
                 identifier: Some("https://academy.impierce.com".to_string()),
             }],
-            trust_chain: vec![
-                impierce_demo_portal,
-                Member {
-                    logo_uri: None,
-                    name: "Skills Europe".to_string(),
-                    description: Some("Alliance owner".to_string()),
-                    identifier: Some("https://skills.example".to_string()),
-                },
-            ],
         },
     ];
 
@@ -433,16 +402,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             identifier: Some("https://digital-trust.example".to_string()),
         },
         member_count: 1,
-        members: vec![road_authority.clone()],
-        trust_chain: vec![
-            road_authority,
-            Member {
-                logo_uri: None,
-                name: "European Digital Trust Foundation".to_string(),
-                description: Some("Ecosystem coordinator".to_string()),
-                identifier: Some("https://digital-trust.example".to_string()),
-            },
-        ],
+        members: vec![road_authority],
     }];
     let road_authority_interaction = "2024-03-04T09:12:00Z".to_string();
 

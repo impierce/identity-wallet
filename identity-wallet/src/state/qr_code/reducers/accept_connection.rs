@@ -29,8 +29,7 @@ use oid4vc::{
 };
 use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
 use openid_federation::{
-    extract_claims_unverified, EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata,
-    SubordinateStatement, TrustChain,
+    extract_claims_unverified, EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata, TrustChain,
 };
 use std::time::Duration;
 
@@ -442,11 +441,10 @@ pub(crate) async fn discover_ecosystems_within(
 }
 
 /// Discovers every OpenID Federation trust chain reachable from `entity_id`, a connection's `connection_url`, and
-/// resolves the ecosystem profile of each chain's trust anchor (see `resolve_ecosystem_profile`) together with the
-/// entities on the chain. Returns no ecosystems for an entity outside any federation.
+/// resolves the ecosystem profile of each chain's trust anchor (see `resolve_ecosystem_profile`). Returns no ecosystems
+/// for an entity outside any federation.
 ///
-/// Anchors are deduplicated first: one ecosystem per trust anchor, not one per path to it. Each keeps the shortest
-/// chain to it.
+/// Anchors are deduplicated first: one ecosystem per trust anchor, not one per path to it.
 async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfile>, EcosystemsUnavailable> {
     // Every entity configuration and federation endpoint on the way is named by a remote party, see
     // `PublicDestinationHttpClient`.
@@ -493,10 +491,7 @@ async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfil
             continue;
         };
 
-        if let Some((_, _, shortest)) = trust_anchors.iter_mut().find(|(id, ..)| *id == trust_anchor_id) {
-            if trust_chain.len() < shortest.len() {
-                *shortest = trust_chain;
-            }
+        if trust_anchors.iter().any(|(id, ..)| *id == trust_anchor_id) {
             continue;
         }
 
@@ -509,18 +504,10 @@ async fn discover_ecosystems(entity_id: &url::Url) -> Result<Vec<EcosystemProfil
     }
 
     let ecosystems: Vec<EcosystemProfile> =
-        futures::future::join_all(trust_anchors.iter().map(|(id, configuration, trust_chain)| async {
+        futures::future::join_all(trust_anchors.iter().map(|(id, configuration, trust_chain)| {
             // The trust anchor's own entity configuration ends the chain, which verified it.
             let trust_anchor_statement = trust_chain.chain.last().map(String::as_str);
-            let (ecosystem_profile, trust_chain) = futures::future::join(
-                resolve_ecosystem_profile(&federation_client, id, configuration, trust_anchor_statement),
-                trust_chain_members(&federation_client, trust_chain),
-            )
-            .await;
-            EcosystemProfile {
-                trust_chain,
-                ..ecosystem_profile
-            }
+            resolve_ecosystem_profile(&federation_client, id, configuration, trust_anchor_statement)
         }))
         .await;
 
@@ -577,54 +564,6 @@ async fn serves_entity_statement(response: reqwest::Response) -> bool {
         .text()
         .await
         .is_ok_and(|body| extract_claims_unverified::<serde_json::Value>(body.trim()).is_ok())
-}
-
-/// The entities on a trust chain, from its leaf up to its trust anchor.
-///
-/// The leaf's and the trust anchor's entity configurations are part of the chain. The intermediates in between are
-/// only the issuers of the subordinate statements, so their own configurations are fetched to describe them; one that
-/// cannot be fetched is still listed, by its entity identifier.
-async fn trust_chain_members(federation_client: &FederationClient, trust_chain: &TrustChain) -> Vec<Member> {
-    let (Ok((leaf_id, leaf_configuration)), Ok((trust_anchor_id, trust_anchor_configuration))) = (
-        trust_chain.leaf_entity_id_and_configuration(),
-        trust_chain.trust_anchor_entity_id_and_configuration(),
-    ) else {
-        warn!("Failed to read the ends of trust chain, which should not be possible: {trust_chain:?}");
-        return Vec::new();
-    };
-
-    // The subordinate statements, lowest first, are issued by the leaf's superior up to the trust anchor.
-    let statements = &trust_chain.chain[1..trust_chain.chain.len() - 1];
-    let intermediate_ids: Vec<EntityId> = statements
-        .iter()
-        .filter_map(|jwt| extract_claims_unverified::<SubordinateStatement>(jwt).ok())
-        .map(|statement| statement.claims.iss)
-        .filter(|issuer| *issuer != trust_anchor_id)
-        .collect();
-
-    let intermediates = futures::future::join_all(
-        intermediate_ids
-            .iter()
-            .map(|id| resolve_federation_member(federation_client, id)),
-    )
-    .await;
-
-    let mut members = Vec::with_capacity(intermediates.len() + 2);
-    members.push(federation_member(
-        &leaf_id,
-        federation_entity_metadata(&leaf_configuration),
-    ));
-    members.extend(intermediates);
-    members.push(federation_member(
-        &trust_anchor_id,
-        federation_entity_metadata(&trust_anchor_configuration),
-    ));
-
-    for logo_uri in members.iter().filter_map(|member| member.logo_uri.as_deref()) {
-        download_logo(logo_uri).await;
-    }
-
-    members
 }
 
 /// Prefers the proprietary profile a trust anchor hosts at `/public/ecosystem-profile`. Trust anchors that do not host
@@ -753,7 +692,6 @@ async fn federation_ecosystem_profile(
         ecosystem_leader,
         member_count: member_ids.len(),
         members,
-        trust_chain: Vec::new(),
     }
 }
 
@@ -1565,13 +1503,6 @@ mod tests {
         );
         // The trust anchor publishes no `organization_uri`, and its own identifier is the ecosystem's, not the leader's.
         assert_eq!(ecosystem.ecosystem_leader.identifier, None);
-
-        let trust_chain: Vec<_> = ecosystem
-            .trust_chain
-            .iter()
-            .map(|member| member.name.as_str())
-            .collect();
-        assert_eq!(trust_chain, vec!["Sargas", "Community Learning Network"]);
     }
 
     #[tokio::test]
@@ -1628,103 +1559,6 @@ mod tests {
             .map(|member| (member.name.as_str(), member.identifier.as_deref()))
             .collect();
         assert_eq!(members, vec![("Capella", Some(leader_id.as_str()))]);
-    }
-
-    #[tokio::test]
-    async fn discover_ecosystems_lists_the_entities_on_the_shortest_chain_to_each_trust_anchor() {
-        let leaf_server = MockServer::start().await;
-        let intermediate_server = MockServer::start().await;
-        let trust_anchor_server = MockServer::start().await;
-
-        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
-        let intermediate_id: url::Url = intermediate_server.uri().parse().unwrap();
-        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
-
-        // Only through the intermediate, so the chain to the trust anchor has three entities.
-        mount_entity_configuration(&leaf_server, &leaf_id, "Leaf", vec![intermediate_id.clone()]).await;
-        mount_entity_configuration(
-            &intermediate_server,
-            &intermediate_id,
-            "Intermediate",
-            vec![trust_anchor_id.clone()],
-        )
-        .await;
-        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
-        mount_subordinate_statement(&intermediate_server, &intermediate_id, &leaf_id).await;
-        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &intermediate_id).await;
-        mount_ecosystem_profile(&trust_anchor_server, "Ecosystem One").await;
-
-        let ecosystems = discover_ecosystems(&leaf_id).await.unwrap();
-
-        // Each ecosystem with the identifiers on its chain, from the leaf up.
-        let trust_chains: Vec<(&str, Vec<Option<&str>>)> = ecosystems
-            .iter()
-            .map(|ecosystem| {
-                let identifiers = ecosystem
-                    .trust_chain
-                    .iter()
-                    .map(|member| member.identifier.as_deref())
-                    .collect();
-                (ecosystem.name.as_str(), identifiers)
-            })
-            .collect();
-        assert_eq!(
-            trust_chains,
-            vec![
-                (
-                    "Intermediate",
-                    vec![Some(leaf_id.as_str()), Some(intermediate_id.as_str())]
-                ),
-                (
-                    "Ecosystem One",
-                    vec![
-                        Some(leaf_id.as_str()),
-                        Some(intermediate_id.as_str()),
-                        Some(trust_anchor_id.as_str())
-                    ]
-                ),
-            ]
-        );
-
-        // Named by their own entity configurations, the intermediate's fetched separately.
-        let names: Vec<_> = ecosystems[1]
-            .trust_chain
-            .iter()
-            .map(|member| member.name.as_str())
-            .collect();
-        assert_eq!(names, vec!["Leaf", "Intermediate", "Trust Anchor"]);
-    }
-
-    #[tokio::test]
-    async fn discover_ecosystems_overwrites_a_trust_chain_sent_by_the_ecosystem_profile() {
-        let leaf_server = MockServer::start().await;
-        let trust_anchor_server = MockServer::start().await;
-
-        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
-        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
-
-        mount_entity_configuration(&leaf_server, &leaf_id, "Leaf", vec![trust_anchor_id.clone()]).await;
-        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
-        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
-        Mock::given(method("GET"))
-            .and(path("/public/ecosystem-profile"))
-            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-                "name": "Ecosystem One",
-                "ecosystemLeader": { "name": "Ecosystem One" },
-                "memberCount": 1,
-                "trust_chain": [{ "name": "Forged Endorser" }],
-            })))
-            .mount(&trust_anchor_server)
-            .await;
-
-        let ecosystems = discover_ecosystems(&leaf_id).await.unwrap();
-
-        let names: Vec<_> = ecosystems[0]
-            .trust_chain
-            .iter()
-            .map(|member| member.name.as_str())
-            .collect();
-        assert_eq!(names, vec!["Leaf", "Trust Anchor"]);
     }
 
     #[tokio::test]

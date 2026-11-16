@@ -99,14 +99,10 @@ pub(crate) async fn resolve_issuer_ecosystems(url: &url::Url) -> Result<Vec<Ecos
     let result = discover_ecosystems_within(url, ECOSYSTEMS_TIMEOUT).await;
 
     if let Ok(ecosystems) = &result {
-        let logo_uris = ecosystems.iter().flat_map(|ecosystem| {
-            ecosystem.logo_uri.iter().chain(
-                ecosystem
-                    .trust_chain
-                    .iter()
-                    .filter_map(|member| member.logo_uri.as_ref()),
-            )
-        });
+        let logo_uris = ecosystems
+            .iter()
+            .flat_map(|ecosystem| [&ecosystem.logo_uri, &ecosystem.ecosystem_leader.logo_uri])
+            .flatten();
         for logo_uri in logo_uris {
             keep_asset(&hash(logo_uri)).ok();
         }
@@ -142,7 +138,6 @@ mod tests {
             },
             member_count: 0,
             members: vec![],
-            trust_chain: vec![],
         }
     }
 

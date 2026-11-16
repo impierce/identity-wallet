@@ -15,7 +15,6 @@ const ecosystem = (name: string, leaderName: string): EcosystemProfile => ({
   ecosystem_leader: { logo_uri: null, name: leaderName, description: null, identifier: null },
   member_count: 3,
   members: [],
-  trust_chain: [],
 });
 
 describe('EcosystemHeader', () => {

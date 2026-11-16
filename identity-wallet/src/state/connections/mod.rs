@@ -341,7 +341,6 @@ mod tests {
             },
             member_count: 0,
             members: vec![],
-            trust_chain: vec![],
         }
     }
 
@@ -362,6 +361,24 @@ mod tests {
         assert!(!recorded.resolved);
         assert_eq!(recorded.last_checked, failed_check.last_checked);
         assert_eq!(recorded.last_resolved, check.last_resolved);
+    }
+
+    /// Versions 0.19.3 and 0.19.4 stored the trust chain into each ecosystem.
+    #[test]
+    fn ecosystems_stored_with_a_trust_chain_still_load() {
+        let stored = serde_json::json!({
+            "logo_uri": null,
+            "name": "Ecosystem One",
+            "description": null,
+            "ecosystem_leader": { "logo_uri": null, "name": "Ecosystem One", "description": null },
+            "member_count": 0,
+            "members": [],
+            "trust_chain": [{ "logo_uri": null, "name": "Leaf", "description": null }],
+        });
+
+        let loaded: EcosystemProfile = serde_json::from_value(stored).unwrap();
+
+        assert_eq!(loaded, ecosystem("Ecosystem One"));
     }
 
     #[test]

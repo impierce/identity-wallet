@@ -164,8 +164,6 @@ const ecosystem = (
   ecosystem_leader: members[0],
   member_count,
   members,
-  // A connection prompt shows no trust chains.
-  trust_chain: [],
 });
 
 const universities = ecosystem('Dutch Organization for Universities', 'Education & research network', [
