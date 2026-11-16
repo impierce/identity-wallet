@@ -56,7 +56,11 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .inspect_err(|err| warn!("Failed to parse credential claims: {err:#?}"))
         .ok()?;
 
-    info!("jwt_vc_json Credential claims: {claims:#?}");
+    debug!(
+        "Decoded jwt_vc_json Credential claims (issuer: {})",
+        claims.iss().unwrap_or("<missing>")
+    );
+    crate::log_payload!("jwt_vc_json Credential claims: {claims:#?}");
 
     // Resolve the DID
     resolver

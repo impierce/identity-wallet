@@ -47,11 +47,12 @@ enum ParsedQrCode {
 pub async fn accept_connection(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action).map(|payload| payload.form_urlencoded) {
         let parsed_qr_code = parse_qr_code(&state, qr_code_scanned).await?;
-        info!("QR code parsed as: {parsed_qr_code:?}");
+        info!("QR code parsed");
+        crate::log_payload!("Parsed QR code: {parsed_qr_code:?}");
 
         let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed_qr_code.clone()).await?;
         info!("Retrieved client metadata: {client_metadata:?}");
-        info!("Initializing active flow: {active_flow:?}");
+        crate::log_payload!("Initializing active flow: {active_flow:?}");
 
         let did = client_metadata.client_id.to_string();
         let connection_data = state
@@ -154,7 +155,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             ecosystems,
         });
 
-        info!("Setting current user prompt to: {current_user_prompt:?}");
+        crate::log_payload!("Setting current user prompt to: {current_user_prompt:?}");
 
         Ok(AppState {
             current_user_prompt,

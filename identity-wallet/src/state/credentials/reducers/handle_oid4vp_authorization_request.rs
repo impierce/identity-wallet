@@ -105,7 +105,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .generate_response(&oid4vp_authorization_request, vp_token_payload)
             .await
             .map_err(GenerateAuthorizationResponseError)?;
-        debug!("Generated OID4VP authorization response: {response:?}");
+        debug!("Generated OID4VP authorization response");
+        crate::log_payload!("OID4VP authorization response: {response:?}");
 
         let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::FlowExpiredError("Expected pending connection data for OID4VP authorization request".to_string())
