@@ -1,4 +1,4 @@
-use std::net::IpAddr;
+use std::net::{IpAddr, SocketAddr};
 
 use async_trait::async_trait;
 use identity_kit::methods::web::{HttpError, HttpResponse};
@@ -59,11 +59,16 @@ pub fn request_error(err: reqwest_middleware::Error) -> anyhow::Error {
 ///
 /// Follows no redirects: [`fetch_public_destination`] follows them by hand so every hop passes
 /// [`assert_public_destination`]. A default client would follow ten of them unchecked.
+///
+/// Connects only to public addresses, see [`PublicAddressResolver`].
 async fn get_public_destination_http_client() -> Result<Client, AppError> {
     PUBLIC_DESTINATION_HTTP_CLIENT
         .get_or_try_init(|| async {
             get_http_client_builder()
                 .redirect(reqwest::redirect::Policy::none())
+                .dns_resolver(PublicAddressResolver {
+                    allow_private: private_destinations_allowed(),
+                })
                 .build()
                 .map_err(|err| {
                     log::error!("Failed to build reqwest client for remote-supplied URLs: {err}");
@@ -226,8 +231,10 @@ fn private_destinations_allowed() -> bool {
 /// Rejects URLs a remote party should not be able to make the wallet request: anything not
 /// `http(s)`, and anything resolving to a non-routable address (CWE-918).
 ///
-/// Resolving here cannot bind the address the socket ends up on, so this removes the trivial cases
-/// rather than closing the race.
+/// Resolving here cannot bind the address the socket ends up on: a host can resolve to a public address now and to a
+/// private one when the client connects (DNS rebinding). The public-destination client therefore checks the addresses
+/// again in its resolver, see [`PublicAddressResolver`]. This check stays so that a refused destination is reported as
+/// one, see [`is_refused_destination`].
 pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
     if !matches!(url.scheme(), "http" | "https") {
         return Err(AppError::DownloadAborted(NOT_HTTP));
@@ -258,6 +265,40 @@ pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
     }
 
     Ok(())
+}
+
+/// The DNS resolver of the public-destination client: it connects only to the public addresses of a host, so that the
+/// addresses [`assert_public_destination`] checked are the kind the connection uses, however the host resolves in
+/// between. Debug builds allow private addresses, as [`assert_public_destination`] does.
+///
+/// An IP literal never reaches a resolver; [`assert_public_destination`] checks it. Through a proxy, including one
+/// taken from the environment, the proxy resolves the host and this resolver is not used.
+struct PublicAddressResolver {
+    allow_private: bool,
+}
+
+impl reqwest::dns::Resolve for PublicAddressResolver {
+    fn resolve(&self, name: reqwest::dns::Name) -> reqwest::dns::Resolving {
+        let host = name.as_str().to_owned();
+        let allow_private = self.allow_private;
+        Box::pin(async move {
+            // The port is replaced by the URL's when connecting.
+            let addresses = public_addresses(tokio::net::lookup_host((host.as_str(), 0)).await?, allow_private);
+            if addresses.is_empty() {
+                log::warn!("Refusing to connect to `{host}`: it resolves to no public address");
+                return Err(NON_PUBLIC_ADDRESS.into());
+            }
+            Ok(Box::new(addresses.into_iter()) as reqwest::dns::Addrs)
+        })
+    }
+}
+
+/// The public ones of `addresses`, or all of them when private addresses are allowed.
+fn public_addresses(addresses: impl IntoIterator<Item = SocketAddr>, allow_private: bool) -> Vec<SocketAddr> {
+    addresses
+        .into_iter()
+        .filter(|address| allow_private || is_public(&address.ip()))
+        .collect()
 }
 
 /// Whether an address is publicly routable. Spelled out because `IpAddr::is_global` is unstable.
@@ -311,6 +352,51 @@ mod tests {
 
     fn ip(address: &str) -> IpAddr {
         address.parse().unwrap()
+    }
+
+    #[test]
+    fn the_resolver_keeps_only_public_addresses() {
+        let addresses: Vec<SocketAddr> = [
+            "1.1.1.1:0",
+            "127.0.0.1:0",
+            "10.0.0.1:0",
+            "[2606:4700:4700::1111]:0",
+            "[::1]:0",
+        ]
+        .into_iter()
+        .map(|address| address.parse().unwrap())
+        .collect();
+
+        assert_eq!(
+            public_addresses(addresses.clone(), false),
+            vec![addresses[0], addresses[3]]
+        );
+        assert_eq!(public_addresses(addresses.clone(), true), addresses);
+        assert!(public_addresses(["127.0.0.1:0".parse().unwrap()], false).is_empty());
+    }
+
+    /// The resolver is what the connection uses: with private addresses refused, a host that resolves to one is never
+    /// connected to, even when nothing checked the URL before.
+    #[tokio::test]
+    async fn the_resolver_refuses_to_connect_to_private_addresses() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+        let url = Url::parse(&format!("http://localhost:{}/", server.address().port())).unwrap();
+        let client = |allow_private| {
+            get_http_client_builder()
+                .no_proxy()
+                .dns_resolver(PublicAddressResolver { allow_private })
+                .build()
+                .unwrap()
+        };
+
+        assert!(client(false).get(url.clone()).send().await.is_err());
+        assert!(client(true).get(url).send().await.unwrap().status().is_success());
+        assert_eq!(server.received_requests().await.unwrap().len(), 1);
     }
 
     #[test]
