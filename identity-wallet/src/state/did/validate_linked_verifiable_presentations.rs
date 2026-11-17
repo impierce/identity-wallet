@@ -42,22 +42,14 @@ pub struct LinkedVerifiableCredentialData {
     pub issuer_domain_validations: Vec<ValidationResult>,
 }
 
-/// Validate the linked verifiable presentations for the given holder DID. Returns a list of linked verifiable
-/// credential data. It starts by resolving the holder DID and then iterates over the linked verifiable presentation
-/// URLs. For each linked verifiable presentation, it validates the presentation and then validates the linked
-/// verifiable credentials. It only considers linked verifiable credentials with successful domain linkage validation.
+/// Validate the linked verifiable presentations for the given holder DID. It starts by resolving the holder DID and
+/// then iterates over the linked verifiable presentation URLs. For each linked verifiable presentation, it validates the
+/// presentation and then validates the linked verifiable credentials. It only considers linked verifiable credentials
+/// with successful domain linkage validation.
+///
+/// Returns the number of linked verifiable presentations the holder DID document lists, and the linked verifiable
+/// credential data of each presentation that validated. The difference tells how many presentations failed.
 pub async fn validate_linked_verifiable_presentations(
-    subject: &Subject,
-    holder_did: &str,
-) -> Vec<Vec<LinkedVerifiableCredentialData>> {
-    validate_linked_verifiable_presentations_with_count(subject, holder_did)
-        .await
-        .1
-}
-
-/// Same as [`validate_linked_verifiable_presentations`], but also returns the number of linked verifiable
-/// presentations found in the holder's DID document, so callers can tell how many failed validation.
-pub async fn validate_linked_verifiable_presentations_with_count(
     subject: &Subject,
     holder_did: &str,
 ) -> (usize, Vec<Vec<LinkedVerifiableCredentialData>>) {
@@ -821,10 +813,11 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        let validated =
+        let (found, validated) =
             validate_linked_verifiable_presentations(&holder.subject, holder.did_document.id().to_string().as_ref())
                 .await;
 
+        assert_eq!(found, 2);
         assert_eq!(validated.len(), 2);
         assert_eq!(validated[0].len(), 1);
         assert_eq!(validated[1].len(), 1);
@@ -881,7 +874,7 @@ mod tests {
             validate_linked_verifiable_presentations(&holder.subject, holder.did_document.id().to_string().as_ref(),)
                 .await,
             // The domain linkage validation of the issuer failed, so the linked verifiable credential is not considered.
-            vec![vec![]]
+            (1, vec![vec![]])
         );
     }
 

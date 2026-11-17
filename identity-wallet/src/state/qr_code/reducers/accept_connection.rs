@@ -10,7 +10,7 @@ use crate::{
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage, PendingConnectionData,
         },
         did::validate_linked_verifiable_presentations::{
-            validate_linked_verifiable_presentations_with_count, LinkedVerifiableCredentialData,
+            validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
@@ -176,7 +176,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         info!("Domain validation result: {domain_validation:?}");
 
         let (linked_verifiable_presentations_found, validated_linked_verifiable_presentations) =
-            validate_linked_verifiable_presentations_with_count(&subject, &did).await;
+            validate_linked_verifiable_presentations(&subject, &did).await;
         let linked_verifiable_presentations_valid = validated_linked_verifiable_presentations.len();
         let linked_verifiable_presentations = match validated_linked_verifiable_presentations
             .into_iter()
