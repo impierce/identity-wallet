@@ -335,7 +335,7 @@ const nl_NL = {
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
       UNVERIFIED_IDENTITY_TITLE: 'Identiteit niet geverifieerd',
       UNVERIFIED_IDENTITY_DESCRIPTION:
-        'Deze uitgever publiceert geen DID. Het credential wordt gecontroleerd en de connectie wordt gekoppeld aan de DID die het heeft ondertekend.',
+        'UniMe vindt geen DID-document van deze uitgever. Het credential wordt gecontroleerd en de connectie wordt gekoppeld aan de DID die het heeft ondertekend.',
       KNOWN_CONNECTION: 'Bekende connectie',
       FIRST_INTERACTION: 'Eerste interactie: {duration}',
       LAST_INTERACTION: 'Laatste interactie: {duration}',

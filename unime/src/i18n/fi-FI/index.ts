@@ -336,7 +336,7 @@ const fi_FI = {
       DESCRIPTION: 'Hyväksy vain yhteydet jotka tunnistat ja joihin luotat',
       UNVERIFIED_IDENTITY_TITLE: 'Identiteettiä ei ole vahvistettu',
       UNVERIFIED_IDENTITY_DESCRIPTION:
-        'Tämä myöntäjä ei julkaise DID-tunnistetta. Sen todiste tarkistetaan, ja yhteys liitetään DID-tunnisteeseen, joka allekirjoitti sen.',
+        'UniMe ei löydä tämän myöntäjän DID-dokumenttia. Sen todiste tarkistetaan, ja yhteys liitetään DID-tunnisteeseen, joka allekirjoitti sen.',
       KNOWN_CONNECTION: 'Tunnettu yhteys',
       FIRST_INTERACTION: 'Ensimmäinen vuorovaikutus: {duration}',
       LAST_INTERACTION: 'Viimeisin vuorovaikutus: {duration}',

@@ -123,7 +123,7 @@ pub async fn send_interactive_authorization_request_follow_up(
             "Authorization code is missing in the response".to_string(),
         ))?;
 
-        let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
+        let mut pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::FlowExpiredError(
                 "Expected pending connection data for interactive OID4VP authorization".to_string(),
             )
@@ -131,14 +131,20 @@ pub async fn send_interactive_authorization_request_follow_up(
         let mut connections = state.connections;
         let mut history = state.history;
 
-        update_history_and_connections(
-            history_credentials,
-            last_shared,
-            &pending_connection_data,
-            &mut connections,
-            &mut history,
-        )
-        .await?;
+        if pending_connection_data.client_metadata.client_id.is_some() {
+            update_history_and_connections(
+                history_credentials,
+                last_shared,
+                &pending_connection_data,
+                &mut connections,
+                &mut history,
+            )
+            .await?;
+        } else {
+            // An issuer without a DID document has no DID yet, and so no connection. The share is recorded once its
+            // credential binds its DID (ADR 0005).
+            pending_connection_data.shared_before_binding = Some((history_credentials, last_shared));
+        }
 
         drop(state_guard);
         let state = AppState {
@@ -151,6 +157,7 @@ pub async fn send_interactive_authorization_request_follow_up(
                     credential_offer,
                     logo_uri,
                 }),
+                pending_connection_data: Some(pending_connection_data),
                 ..state.core_utils
             },
             connections,

@@ -335,7 +335,7 @@ const sv_FI = {
       DESCRIPTION: 'Acceptera bara anslutningar du känner igen och litar på',
       UNVERIFIED_IDENTITY_TITLE: 'Identiteten är inte verifierad',
       UNVERIFIED_IDENTITY_DESCRIPTION:
-        'Den här utfärdaren publicerar ingen DID. Dess intyg kontrolleras och anslutningen kopplas till den DID som signerade det.',
+        'UniMe hittar inget DID-dokument för den här utfärdaren. Dess intyg kontrolleras och anslutningen kopplas till den DID som signerade det.',
       KNOWN_CONNECTION: 'Känd anslutning',
       FIRST_INTERACTION: 'Första interaktionen: {duration}',
       LAST_INTERACTION: 'Senaste interaktionen: {duration}',

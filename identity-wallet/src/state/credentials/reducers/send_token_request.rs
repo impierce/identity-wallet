@@ -9,9 +9,13 @@ use crate::{
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived, issuer_signature::verify_issuer_signature,
-            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, CredentialStatusType,
-            DisplayCredential, VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived,
+            issuer_signature::verify_issuer_signature,
+            reducers::{
+                handle_oid4vp_authorization_request::update_history_and_connections,
+                refresh_credential_status::fetch_credential_status,
+            },
+            CredentialStatus, CredentialStatusType, DisplayCredential, VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
@@ -397,12 +401,28 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             );
         }
 
-        // Create or update the connection.
-        let previously_connected = state.connections.contains(&connection_did);
+        // Create or update the connection. It is part of the returned state only, so it is dropped with it on an error.
+        let mut previously_connected = state.connections.contains(&connection_did);
         let mut connections = state.connections;
+        let mut history = state.history;
+        // Credentials the user shared in an interactive authorization before the issuer's DID was known are recorded
+        // now that it is (ADR 0005).
+        if let Some((shared, last_shared)) = pending_connection_data.shared_before_binding.take() {
+            update_history_and_connections(
+                shared,
+                last_shared,
+                &pending_connection_data,
+                &mut connections,
+                &mut history,
+            )
+            .await?;
+            previously_connected = true;
+        }
         let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data)?;
 
-        let mut history_credentials = vec![];
+        // Every record is built and validated before the first one is stored, so that a credential that fails leaves
+        // none of the others behind (ADR 0005).
+        let mut records = vec![];
 
         for (credential_configuration_id, credential_configuration, credential, _) in received_credentials {
             let display = credential_configuration
@@ -452,11 +472,18 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 .parse()
                 .map_err(|err| AppError::Error(format!("Failed to parse credential id as UUID: {err}")))?;
 
-            display
+            let logo_uri = display
                 .first()
                 .and_then(|display| display.logo.clone())
-                .map(|logo| logo.uri.clone())
-                .and_then(|uri| persist_asset(&hash(uri.as_str()), key.to_string().as_str()).ok());
+                .map(|logo| logo.uri.clone());
+
+            records.push((key, verifiable_credential_record, logo_uri));
+        }
+
+        let mut history_credentials = vec![];
+
+        for (key, verifiable_credential_record, logo_uri) in records {
+            logo_uri.and_then(|uri| persist_asset(&hash(uri.as_str()), key.to_string().as_str()).ok());
 
             // Remove the old credential from the stronghold if it exists.
             stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
@@ -472,7 +499,10 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 "Received and stored credential `{}`",
                 verifiable_credential_record.display_credential.id
             );
-            crate::log_payload!("Received credential: {credential:?}");
+            crate::log_payload!(
+                "Received credential: {:?}",
+                verifiable_credential_record.verifiable_credential
+            );
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
@@ -488,7 +518,6 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         }
 
         // History
-        let mut history = state.history;
         if !history_credentials.is_empty() {
             // Only add a `ConnectionAdded` event if the connection was not previously connected.
             if !previously_connected {
@@ -861,6 +890,11 @@ mod issuance_tests {
 
         /// A `dc+sd-jwt` naming `iss` and `kid`, with `given_name` selectively disclosable, signed by this issuer.
         async fn sd_jwt(&self, iss: &str, kid: &str) -> String {
+            self.sd_jwt_with_typ(iss, kid, "dc+sd-jwt").await
+        }
+
+        /// As [`Self::sd_jwt`], with the `typ` header `typ`.
+        async fn sd_jwt_with_typ(&self, iss: &str, kid: &str, typ: &str) -> String {
             let claims = json!({
                 "vct": "https://example.com/pid",
                 "iss": iss,
@@ -871,7 +905,7 @@ mod issuance_tests {
                 .conceal(ClaimPath::new(["given_name"]))
                 .encode()
                 .unwrap();
-            let header = JwsHeader::new(JwsAlgorithm::ES256).with_typ("dc+sd-jwt").with_kid(kid);
+            let header = JwsHeader::new(JwsAlgorithm::ES256).with_typ(typ).with_kid(kid);
             let signer = self.identity.signer(&did_jwk(), JwsAlgorithm::ES256).await.unwrap();
             let jwt = encode_compact(&header, &serde_json::to_vec(&encoded.payload).unwrap(), signer.as_ref())
                 .await
@@ -964,9 +998,20 @@ mod issuance_tests {
         server: &MockServer,
         client_id: Option<&str>,
     ) -> AppState {
+        accepted_offer_of(state, managers, server, client_id, &[CONFIGURATION_ID])
+    }
+
+    /// As [`accepted_offer`], for an offer of the credential configurations `configuration_ids`.
+    fn accepted_offer_of(
+        state: AppState,
+        managers: Arc<tauri::async_runtime::Mutex<Managers>>,
+        server: &MockServer,
+        client_id: Option<&str>,
+        configuration_ids: &[&str],
+    ) -> AppState {
         let credential_offer: CredentialOfferParameters = serde_json::from_value(json!({
             "credential_issuer": server.uri(),
-            "credential_configuration_ids": [CONFIGURATION_ID],
+            "credential_configuration_ids": configuration_ids,
             "grants": { "urn:ietf:params:oauth:grant-type:pre-authorized_code": { "pre-authorized_code": "code" } }
         }))
         .unwrap();
@@ -990,6 +1035,7 @@ mod issuance_tests {
                     linked_verifiable_presentations: None,
                     ecosystems: None,
                     ecosystems_check: None,
+                    shared_before_binding: None,
                 }),
                 ..CoreUtils::default()
             },
@@ -1161,6 +1207,117 @@ mod issuance_tests {
                 assert_eq!(stored_credentials(&managers).await, 0);
             }
         }
+    }
+
+    /// Every credential record is built and validated before the first is stored: when the second of two credentials
+    /// is refused, the first, valid and already verified, is not stored either.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_refused_credential_leaves_the_other_credentials_of_the_offer_unstored() {
+        let issuer = TestIssuer::new().await;
+        let server = MockServer::start().await;
+        let uri = server.uri();
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-credential-issuer"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "credential_issuer": uri,
+                "credential_endpoint": format!("{uri}/credential"),
+                "credential_configurations_supported": {
+                    "a_valid": { "format": "dc+sd-jwt", "vct": "https://example.com/pid" },
+                    "b_wrong_typ": { "format": "dc+sd-jwt", "vct": "https://example.com/pid" }
+                }
+            })))
+            .mount(&server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/oauth-authorization-server"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "issuer": uri,
+                "token_endpoint": format!("{uri}/token"),
+                "pre-authorized_grant_anonymous_access_supported": true
+            })))
+            .mount(&server)
+            .await;
+        Mock::given(method("POST"))
+            .and(path("/token"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(json!({ "access_token": "access", "token_type": "bearer" })),
+            )
+            .mount(&server)
+            .await;
+        // Both are signed by the issuer; the second carries a `typ` the record refuses.
+        for (configuration_id, typ) in [("a_valid", "dc+sd-jwt"), ("b_wrong_typ", "vc+sd-jwt")] {
+            let credential = issuer.sd_jwt_with_typ(&issuer.did, &issuer.kid, typ).await;
+            Mock::given(method("POST"))
+                .and(path("/credential"))
+                .and(wiremock::matchers::body_partial_json(
+                    json!({ "credential_configuration_id": configuration_id }),
+                ))
+                .respond_with(
+                    ResponseTemplate::new(200).set_body_json(json!({ "credentials": [{ "credential": credential }] })),
+                )
+                .mount(&server)
+                .await;
+        }
+        let managers = test_managers().await;
+
+        let state = accepted_offer_of(
+            AppState::default(),
+            managers.clone(),
+            &server,
+            None,
+            &["a_valid", "b_wrong_typ"],
+        );
+        let result = send_token_request(state, code_received()).await;
+
+        assert!(result.is_err(), "{result:?}");
+        assert_eq!(stored_credentials(&managers).await, 0);
+    }
+
+    /// Credentials shared in an interactive authorization before the issuer's DID was known are recorded on the
+    /// connection that the issuer's credential binds, before the credentials it issues.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_share_before_the_did_is_bound_is_recorded_on_the_bound_connection() {
+        let issuer = TestIssuer::new().await;
+        let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
+        let managers = test_managers().await;
+        let shared = HistoryCredential {
+            title: "Proof of address".to_string(),
+            issuer_name: "Municipality".to_string(),
+            id: "e3b6c0a6-0000-4000-8000-000000000001".to_string(),
+        };
+
+        let mut state = accepted_offer(AppState::default(), managers.clone(), &server, None);
+        state
+            .core_utils
+            .pending_connection_data
+            .as_mut()
+            .unwrap()
+            .shared_before_binding = Some((
+            vec![shared.clone()],
+            vec![("address".to_string(), vec![shared.id.clone()])],
+        ));
+        let state = send_token_request(state, code_received()).await.unwrap();
+
+        assert_eq!(state.connections.0.len(), 1);
+        let connection = &state.connections.0[0];
+        assert_eq!(connection.did, issuer.did);
+        assert_eq!(connection.last_shared_credentials["address"], vec![shared.id.clone()]);
+        let events: Vec<_> = state
+            .history
+            .iter()
+            .map(|event| (event.event_type.clone(), event.connection_id.clone()))
+            .collect();
+        assert_eq!(
+            events,
+            vec![
+                (EventType::ConnectionAdded, connection.id.clone()),
+                (EventType::CredentialsShared, connection.id.clone()),
+                (EventType::CredentialsAdded, connection.id.clone()),
+            ]
+        );
+        assert_eq!(state.history[1].credentials, vec![shared]);
     }
 
     #[test]

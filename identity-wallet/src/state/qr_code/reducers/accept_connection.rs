@@ -183,6 +183,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             linked_verifiable_presentations: linked_verifiable_presentations.clone(),
             ecosystems: ecosystems.clone(),
             ecosystems_check: Some(ecosystems_check),
+            shared_before_binding: None,
         };
 
         let current_user_prompt = Some(CurrentUserPrompt::AcceptConnection {

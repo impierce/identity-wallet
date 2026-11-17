@@ -877,7 +877,7 @@ type RootTranslation = {
 			 */
 			UNVERIFIED_IDENTITY_TITLE: string
 			/**
-			 * T​h​i​s​ ​i​s​s​u​e​r​ ​p​u​b​l​i​s​h​e​s​ ​n​o​ ​D​I​D​.​ ​I​t​s​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​c​h​e​c​k​e​d​,​ ​a​n​d​ ​t​h​e​ ​c​o​n​n​e​c​t​i​o​n​ ​i​s​ ​l​i​n​k​e​d​ ​t​o​ ​t​h​e​ ​D​I​D​ ​t​h​a​t​ ​s​i​g​n​e​d​ ​i​t​.
+			 * U​n​i​M​e​ ​c​a​n​’​t​ ​f​i​n​d​ ​t​h​i​s​ ​i​s​s​u​e​r​’​s​ ​D​I​D​ ​d​o​c​u​m​e​n​t​.​ ​I​t​s​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​c​h​e​c​k​e​d​,​ ​a​n​d​ ​t​h​e​ ​c​o​n​n​e​c​t​i​o​n​ ​i​s​ ​l​i​n​k​e​d​ ​t​o​ ​t​h​e​ ​D​I​D​ ​t​h​a​t​ ​s​i​g​n​e​d​ ​i​t​.
 			 */
 			UNVERIFIED_IDENTITY_DESCRIPTION: string
 			/**
@@ -3124,7 +3124,7 @@ export type TranslationFunctions = {
 			 */
 			UNVERIFIED_IDENTITY_TITLE: () => LocalizedString
 			/**
-			 * This issuer publishes no DID. Its credential is checked, and the connection is linked to the DID that signed it.
+			 * UniMe can’t find this issuer’s DID document. Its credential is checked, and the connection is linked to the DID that signed it.
 			 */
 			UNVERIFIED_IDENTITY_DESCRIPTION: () => LocalizedString
 			/**

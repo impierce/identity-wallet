@@ -52,7 +52,9 @@ For these issuers the user accepts before the issuer's identity is known. The pr
 the credential's signature verifies, and the connection is stored under it, so a later offer from the same issuer finds
 the same connection.
 
-A stored connection always has a DID, so the persisted state does not change. Only the prompt and the pending connection
+A stored connection always has a DID, so the persisted state does not change. A new connection's id is derived from
+its name, URL and DID, so an issuer that signs with a new DID gets a connection of its own; stored connections keep
+their ids. Only the prompt and the pending connection
 data can be without one.
 
 Credentials whose issuer signature does not verify, whose `kid` is not a DID URL, or whose `iss` names another DID than

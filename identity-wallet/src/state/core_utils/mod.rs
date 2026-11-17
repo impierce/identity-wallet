@@ -7,6 +7,8 @@ use url::Url;
 
 use crate::command::Runtime;
 use crate::state::connections::EcosystemsCheck;
+use crate::state::core_utils::history_event::HistoryCredential;
+use crate::state::credentials::reducers::handle_oid4vp_authorization_request::LastShared;
 use crate::state::did::{
     validate_domain_linkage::ValidationStatus, validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
 };
@@ -80,6 +82,10 @@ pub struct PendingConnectionData {
     pub linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
     pub ecosystems: Option<Vec<EcosystemProfile>>,
     pub ecosystems_check: Option<EcosystemsCheck>,
+    /// Credentials shared in an interactive authorization with an OID4VCI issuer whose DID is not known yet, with the
+    /// last-shared entries they add to its connection. They are recorded once the issuer's credential binds its DID
+    /// (ADR 0005).
+    pub shared_before_binding: Option<(Vec<HistoryCredential>, LastShared)>,
 }
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.

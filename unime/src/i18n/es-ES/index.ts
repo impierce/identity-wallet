@@ -336,7 +336,7 @@ const es_ES = {
       DESCRIPTION: 'Acepta únicamente las nuevas conexiones que reconozcas y en las que confíes',
       UNVERIFIED_IDENTITY_TITLE: 'Identidad no verificada',
       UNVERIFIED_IDENTITY_DESCRIPTION:
-        'Este emisor no publica ningún DID. Se comprueba su credencial y la conexión se vincula al DID que la firmó.',
+        'UniMe no encuentra el documento DID de este emisor. Se comprueba su credencial y la conexión se vincula al DID que la firmó.',
       KNOWN_CONNECTION: 'Conexión conocida',
       FIRST_INTERACTION: 'Primera interacción: {duration}',
       LAST_INTERACTION: 'Última interacción: {duration}',

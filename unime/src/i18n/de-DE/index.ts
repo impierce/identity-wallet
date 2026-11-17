@@ -335,7 +335,7 @@ const de_DE = {
       DESCRIPTION: 'Akzeptiere nur Verbindungen, die du erwartest und denen du vertraust.',
       UNVERIFIED_IDENTITY_TITLE: 'Identität nicht verifiziert',
       UNVERIFIED_IDENTITY_DESCRIPTION:
-        'Dieser Aussteller veröffentlicht keine DID. Sein Credential wird geprüft und die Verbindung mit der DID verknüpft, die es signiert hat.',
+        'UniMe findet kein DID-Dokument dieses Ausstellers. Sein Credential wird geprüft und die Verbindung mit der DID verknüpft, die es signiert hat.',
       KNOWN_CONNECTION: 'Bekannte Verbindung',
       FIRST_INTERACTION: 'Erste Interaktion: {duration}',
       LAST_INTERACTION: 'Letzte Interaktion: {duration}',
