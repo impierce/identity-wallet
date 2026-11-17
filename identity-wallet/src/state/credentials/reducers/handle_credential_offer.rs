@@ -281,7 +281,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 
                         let connection = state.core_utils.pending_connection_data.as_ref().and_then(|pending| {
-                            let client_id = pending.client_metadata.client_id.to_string();
+                            // An unverified issuer has no DID yet, and so no connection (ADR 0005).
+                            let client_id = pending.client_metadata.client_id.as_ref()?.to_string();
                             state
                                 .connections
                                 .0

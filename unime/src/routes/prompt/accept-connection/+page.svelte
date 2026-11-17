@@ -108,6 +108,25 @@
     </div>
 
     <div class="w-full space-y-3">
+      <!-- An OID4VCI issuer without a DID document: no DID yet, bound to the DID that signs its credential (ADR 0005) -->
+      {#if client_metadata.client_id === null}
+        <div
+          class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+        >
+          <span class="mr-4 h-6 w-6">
+            <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
+          </span>
+          <div class="flex flex-col">
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+              {$LL.SCAN.CONNECTION_REQUEST.UNVERIFIED_IDENTITY_TITLE()}
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.CONNECTION_REQUEST.UNVERIFIED_IDENTITY_DESCRIPTION()}
+            </p>
+          </div>
+        </div>
+      {/if}
+
       {#if !connection_data}
         <div
           class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"

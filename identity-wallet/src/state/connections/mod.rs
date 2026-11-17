@@ -1,6 +1,7 @@
 pub mod actions;
 pub mod reducers;
 
+use crate::error::AppError;
 use crate::state::{
     did::{
         validate_domain_linkage::ValidationStatus,
@@ -36,14 +37,21 @@ impl Connections {
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
     /// its display data with what was just fetched, updates the last interaction time and returns a reference to the
     /// connection.
+    ///
+    /// Connections are keyed by DID, so a counterparty whose DID is not known yet (an unverified OID4VCI issuer before
+    /// its credential was verified, see ADR 0005) cannot become a connection.
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
-    ) -> &mut Connection {
+    ) -> Result<&mut Connection, AppError> {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
-        let did = client_metadata.client_id.clone();
+        let did = client_metadata.client_id.clone().ok_or_else(|| {
+            AppError::UntrustedError(format!(
+                "The identity of {url} is not verified, so it cannot be a connection"
+            ))
+        })?;
         let did_string = did.to_string();
 
         // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
@@ -77,7 +85,7 @@ impl Connections {
             index
         };
 
-        &mut self.0[connection_index]
+        Ok(&mut self.0[connection_index])
     }
 }
 
@@ -243,7 +251,7 @@ mod tests {
                 logo_uri: None,
                 connection_url: url.to_string(),
                 redirect_uri: None,
-                client_id: did,
+                client_id: Some(did),
             },
             domain_validation: None,
             linked_verifiable_presentations: None,
@@ -258,16 +266,18 @@ mod tests {
         let url = "https://example.com";
         let name = "Example";
         let did = CoreDID::from_str("did:example:123").unwrap();
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(did.as_str()));
 
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
@@ -285,11 +295,12 @@ mod tests {
                 "Old name",
                 did.clone(),
             ))
+            .unwrap()
             .clone();
 
         let mut refreshed = pending_connection_data("https://new.example.com", "New name", did.clone());
         refreshed.domain_validation = Some((ValidationStatus::Success, DateUtils::new_date_string()));
-        let updated = connections.update_last_interaction_or_insert_new(&refreshed);
+        let updated = connections.update_last_interaction_or_insert_new(&refreshed).unwrap();
 
         assert_eq!(updated.id, connection.id);
         assert_eq!(updated.first_interacted, connection.first_interacted);
@@ -308,8 +319,9 @@ mod tests {
         let did = CoreDID::from_str("did:example:123").unwrap();
         let url = "https://example.com";
         let name = "Example";
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -318,14 +330,26 @@ mod tests {
 
         // A different DID is a different connection, even when the display name and url is identical.
         let other_did = CoreDID::from_str("did:example:456").unwrap();
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 2);
         assert!(connections.contains(did.as_str()));
         assert!(connections.contains(other_did.as_str()));
+    }
+
+    #[test]
+    fn a_counterparty_without_a_did_does_not_become_a_connection() {
+        let mut connections = Connections::new();
+        let mut unverified =
+            pending_connection_data("https://example.com", "Example", "did:example:123".parse().unwrap());
+        unverified.client_metadata.client_id = None;
+
+        assert!(connections.update_last_interaction_or_insert_new(&unverified).is_err());
+        assert!(connections.0.is_empty());
     }
 
     fn ecosystem(name: &str) -> EcosystemProfile {

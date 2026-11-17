@@ -17,7 +17,7 @@ const base: AcceptConnectionPrompt = {
     logo_uri: 'https://bestdex.com/logo.png',
     connection_url: 'https://www.bestdex.com',
     redirect_uri: 'https://www.bestdex.com/callback',
-    // Always a DID: the backend rejects a client_id it cannot parse as one.
+    // A DID, or `null` for an OID4VCI issuer that publishes no DID document (see `unverified-issuer`).
     client_id: 'did:web:bestdex.com',
   },
   domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
@@ -228,6 +228,11 @@ export const mocks = {
     },
   },
   'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
+  // An OID4VCI issuer without a DID document, such as one identified by did:jwk: no DID yet (ADR 0005).
+  'unverified-issuer': {
+    ...withClientMetadata({ client_id: null }),
+    domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' },
+  },
   'long-name': withClientMetadata({ client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' }),
   'no-logo': withClientMetadata({ logo_uri: null }),
   // A `connection_url` that does not parse: `hostname` gives up, so the domain line

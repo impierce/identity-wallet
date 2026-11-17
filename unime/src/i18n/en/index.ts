@@ -332,6 +332,9 @@ const en = {
       NAVBAR_TITLE: 'Connection Request',
       TITLE: 'New connection',
       DESCRIPTION: 'Only accept new connections that you recognize and trust',
+      UNVERIFIED_IDENTITY_TITLE: 'Identity not verified',
+      UNVERIFIED_IDENTITY_DESCRIPTION:
+        'This issuer publishes no DID. Its credential is checked, and the connection is linked to the DID that signed it.',
       KNOWN_CONNECTION: 'Known connection',
       FIRST_INTERACTION: 'First interaction: {duration:string}',
       LAST_INTERACTION: 'Last interaction: {duration:string}',
