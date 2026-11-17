@@ -1,8 +1,9 @@
 use crate::error::AppError;
+use identity_kit::sd_jwt_vc::{ClaimPath, PathComponent, Processed, SdJwt};
 use oid4vc_core::claim_path_pointer::{ClaimPathElement, ClaimPathPointer};
 use oid4vp::dcql::dcql_query::{CredentialQuery, Format};
-use sd_jwt::{SdJwt, SdJwtPresentationBuilder, Sha256Hasher};
 use serde_json::Value;
+use std::collections::HashSet;
 
 /// Whether the claims of a credential in this format can be disclosed one by one.
 pub fn supports_selective_disclosure(format: &Format) -> bool {
@@ -71,108 +72,100 @@ pub fn claims_to_disclose(
 }
 
 /// The paths in `value` that `path` points to, where `null` matches every element of an array.
-pub fn concrete_paths(path: &ClaimPathPointer, value: &Value) -> Vec<Vec<String>> {
-    let mut selections: Vec<(Vec<String>, &Value)> = vec![(vec![], value)];
+pub fn concrete_paths(path: &ClaimPathPointer, value: &Value) -> Vec<ClaimPath> {
+    let mut selections: Vec<(Vec<PathComponent>, &Value)> = vec![(vec![], value)];
     for element in path.as_ref() {
         selections = selections
             .into_iter()
             .flat_map(|(prefix, value)| {
-                let children: Vec<(String, &Value)> = match (element, value) {
-                    (ClaimPathElement::String(key), Value::Object(object)) => {
-                        object.get(key).map(|child| (key.clone(), child)).into_iter().collect()
-                    }
+                let children: Vec<(PathComponent, &Value)> = match (element, value) {
+                    (ClaimPathElement::String(key), Value::Object(object)) => object
+                        .get(key)
+                        .map(|child| (PathComponent::Key(key.clone()), child))
+                        .into_iter()
+                        .collect(),
                     (ClaimPathElement::Integer(index), Value::Array(array)) => array
                         .get(*index as usize)
-                        .map(|child| (index.to_string(), child))
+                        .map(|child| (PathComponent::Index(*index as usize), child))
                         .into_iter()
                         .collect(),
                     (ClaimPathElement::Null, Value::Array(array)) => array
                         .iter()
                         .enumerate()
-                        .map(|(index, child)| (index.to_string(), child))
+                        .map(|(index, child)| (PathComponent::Index(index), child))
                         .collect(),
                     _ => vec![],
                 };
-                children.into_iter().map(move |(segment, child)| {
+                children.into_iter().map(move |(component, child)| {
                     let mut path = prefix.clone();
-                    path.push(segment);
+                    path.push(component);
                     (path, child)
                 })
             })
             .collect();
     }
-    selections.into_iter().map(|(path, _)| path).collect()
+    selections.into_iter().map(|(path, _)| ClaimPath::new(path)).collect()
 }
 
-fn with_descendants(path: Vec<String>, value: &Value, paths: &mut Vec<Vec<String>>) {
-    let children: Vec<(String, &Value)> = match value {
-        Value::Object(object) => object.iter().map(|(key, child)| (key.clone(), child)).collect(),
-        Value::Array(array) => array
-            .iter()
-            .enumerate()
-            .map(|(index, child)| (index.to_string(), child))
-            .collect(),
-        _ => vec![],
-    };
-    for (segment, child) in children {
-        let mut child_path = path.clone();
-        child_path.push(segment);
-        with_descendants(child_path, child, paths);
-    }
-    paths.push(path);
+fn parse(sd_jwt: &str) -> Result<(SdJwt, Processed), AppError> {
+    let sd_jwt = SdJwt::parse(sd_jwt).map_err(|err| AppError::Error(format!("Failed to parse SD-JWT: {err}")))?;
+    let processed = sd_jwt
+        .process()
+        .map_err(|err| AppError::Error(format!("Failed to decode SD-JWT: {err}")))?;
+    Ok((sd_jwt, processed))
 }
 
-fn pointer(path: &[String]) -> String {
-    format!("/{}", path.join("/"))
-}
-
-fn decoded_object(sd_jwt: &SdJwt) -> Result<Value, AppError> {
-    sd_jwt
-        .clone()
-        .into_disclosed_object(&Sha256Hasher::new())
-        .map(Value::Object)
-        .map_err(|err| AppError::Error(format!("Failed to decode SD-JWT: {err}")))
-}
-
-fn presentation_builder(sd_jwt: SdJwt) -> Result<SdJwtPresentationBuilder, AppError> {
-    sd_jwt
-        .into_presentation(&Sha256Hasher::new())
-        .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))
+/// The disclosures needed to reveal the claims at the concrete `paths`: those at or beneath a path, and those a path
+/// lies inside. A disclosure's parents are among them too, since a parent's path is a prefix of its child's, so it is
+/// either beneath the same path or one the path lies inside.
+fn disclosures_revealing<'a>(sd_jwt: &'a SdJwt, processed: &Processed, paths: &[ClaimPath]) -> HashSet<&'a str> {
+    processed
+        .disclosed
+        .iter()
+        .filter(|claim| {
+            paths
+                .iter()
+                .any(|path| path.is_prefix_of(&claim.path) || claim.path.is_prefix_of(path))
+        })
+        .map(|claim| sd_jwt.disclosures()[claim.disclosure].as_str())
+        .collect()
 }
 
 /// For each claim path, whether the holder can leave it out of a presentation of `sd_jwt` while still disclosing all
 /// other claims. A claim inside a disclosure that also holds other claims cannot be left out on its own.
 pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Vec<bool> {
-    let Ok(sd_jwt) = sd_jwt.parse::<SdJwt>() else {
+    let Ok((sd_jwt, processed)) = parse(sd_jwt) else {
         return vec![false; claim_paths.len()];
     };
-    let (Ok(decoded), Ok(builder)) = (decoded_object(&sd_jwt), presentation_builder(sd_jwt)) else {
-        return vec![false; claim_paths.len()];
-    };
+    let issued = Value::Object(processed.as_issued().clone());
     let value_counts = |value: &Value| -> Vec<usize> {
         claim_paths
             .iter()
             .map(|claim_path| claim_path.get_values_from_json(value).len())
             .collect()
     };
-    let before = value_counts(&decoded);
+    let before = value_counts(&Value::Object(processed.payload.clone()));
 
     (0..claim_paths.len())
         .map(|index| {
-            let paths = concrete_paths(claim_paths[index], &decoded);
+            let paths = concrete_paths(claim_paths[index], &issued);
             if paths.is_empty() {
                 return false;
             }
-            let concealed = paths
+            // Leave out every disclosure at or beneath the claim.
+            let concealed: HashSet<&str> = processed
+                .disclosed
                 .iter()
-                .try_fold(builder.clone(), |builder, path| builder.conceal(&pointer(path)));
-            let Ok(after) = concealed
-                .map(|builder| builder.finish().0)
-                .and_then(|sd_jwt| sd_jwt.into_disclosed_object(&Sha256Hasher::new()).map(Value::Object))
+                .filter(|claim| paths.iter().any(|path| path.is_prefix_of(&claim.path)))
+                .map(|claim| sd_jwt.disclosures()[claim.disclosure].as_str())
+                .collect();
+            let Ok(after) = sd_jwt
+                .select(|disclosure| !concealed.contains(disclosure.as_str()))
+                .and_then(|presented| presented.process())
             else {
                 return false;
             };
-            let after = value_counts(&after);
+            let after = value_counts(&Value::Object(after.payload));
             after[index] == 0 && (0..claim_paths.len()).all(|other| other == index || after[other] == before[other])
         })
         .collect()
@@ -185,53 +178,29 @@ pub fn conceal_unrequested_claims(
     format: &Format,
     claim_paths: &[&ClaimPathPointer],
 ) -> Result<String, AppError> {
-    let sd_jwt = sd_jwt
-        .parse::<SdJwt>()
-        .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT: {err}")))?;
-    let decoded = decoded_object(&sd_jwt)?;
+    let (sd_jwt, processed) = parse(sd_jwt)?;
+    let issued = Value::Object(processed.as_issued().clone());
 
-    let mut kept: Vec<Vec<String>> = claim_paths
+    let mut kept: Vec<ClaimPath> = claim_paths
         .iter()
-        .flat_map(|claim_path| concrete_paths(claim_path, &decoded))
+        .flat_map(|claim_path| concrete_paths(claim_path, &issued))
         .collect();
     if matches!(format, Format::VcSdJwt) {
-        if let Value::Object(object) = &decoded {
-            kept.extend(
-                object
-                    .keys()
-                    .filter(|key| *key != "credentialSubject")
-                    .map(|key| vec![key.clone()]),
-            );
-        }
-        kept.push(vec!["credentialSubject".to_string(), "id".to_string()]);
+        kept.extend(
+            processed
+                .as_issued()
+                .keys()
+                .filter(|key| *key != "credentialSubject")
+                .map(|key| ClaimPath::new([key.as_str()])),
+        );
+        kept.push(ClaimPath::new(["credentialSubject", "id"]));
     }
 
-    let mut disclosed = vec![];
-    for path in kept {
-        let mut current = &decoded;
-        for segment in &path {
-            current = match current {
-                Value::Object(object) => object.get(segment).unwrap_or(&Value::Null),
-                Value::Array(array) => segment
-                    .parse::<usize>()
-                    .ok()
-                    .and_then(|index| array.get(index))
-                    .unwrap_or(&Value::Null),
-                _ => &Value::Null,
-            };
-        }
-        with_descendants(path, current, &mut disclosed);
-    }
-
-    let mut builder = presentation_builder(sd_jwt)?.conceal_all();
-    for path in disclosed {
-        // A path that holds no disclosable value is disclosed already.
-        if let Ok(next) = builder.clone().disclose(&pointer(&path)) {
-            builder = next;
-        }
-    }
-    let (sd_jwt, _) = builder.finish();
-    Ok(sd_jwt.to_string())
+    let disclosed = disclosures_revealing(&sd_jwt, &processed, &kept);
+    sd_jwt
+        .select(|disclosure| disclosed.contains(disclosure.as_str()))
+        .map(|presented| presented.to_string())
+        .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))
 }
 
 #[cfg(test)]
@@ -253,11 +222,14 @@ mod tests {
 
         assert_eq!(
             concrete_paths(&path(json!(["nationalities", null])), &value),
-            vec![vec!["nationalities", "0"], vec!["nationalities", "1"]]
+            vec![
+                ClaimPath::new([PathComponent::from("nationalities"), PathComponent::Index(0)]),
+                ClaimPath::new([PathComponent::from("nationalities"), PathComponent::Index(1)])
+            ]
         );
         assert_eq!(
             concrete_paths(&path(json!(["address", "city"])), &value),
-            vec![vec!["address", "city"]]
+            vec![ClaimPath::new(["address", "city"])]
         );
         assert!(concrete_paths(&path(json!(["address", "street"])), &value).is_empty());
     }
@@ -315,7 +287,7 @@ mod tests {
             .unwrap()
             .disclosures()
             .iter()
-            .filter_map(|disclosure| disclosure.claim_name.clone())
+            .filter_map(|disclosure| disclosure.name().map(str::to_owned))
             .collect();
         names.sort();
         names
@@ -342,34 +314,39 @@ mod tests {
         assert!(disclosed_claim_names(&presented).is_empty());
     }
 
-    struct UnsignedSigner;
-
-    #[async_trait::async_trait]
-    impl sd_jwt::JwsSigner for UnsignedSigner {
-        type Error = String;
-        async fn sign(&self, header: &sd_jwt::JsonObject, payload: &sd_jwt::JsonObject) -> Result<Vec<u8>, String> {
-            use base64::Engine as _;
-            let encode = |object: &sd_jwt::JsonObject| {
-                base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(serde_json::to_vec(object).unwrap())
-            };
-            Ok(format!("{}.{}.c2lnbmF0dXJl", encode(header), encode(payload)).into_bytes())
-        }
+    /// An SD-JWT of `claims` with the claims at `concealed` selectively disclosable, under a fake signature.
+    fn unsigned_sd_jwt(claims: Value, concealed: Vec<ClaimPath>) -> String {
+        use base64::Engine as _;
+        let Value::Object(claims) = claims else {
+            panic!("claims must be an object")
+        };
+        let encoded = concealed
+            .into_iter()
+            .fold(identity_kit::sd_jwt_vc::SdJwtBuilder::new(claims), |builder, path| {
+                builder.conceal(path)
+            })
+            .encode()
+            .unwrap();
+        let encode = |value: &Value| base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(value.to_string());
+        let jwt = format!(
+            "{}.{}.c2lnbmF0dXJl",
+            encode(&json!({ "alg": "ES256", "typ": "vc+sd-jwt" })),
+            encode(&Value::Object(encoded.payload))
+        );
+        SdJwt::new(identity_kit::vc::Jwt::new(jwt).unwrap(), encoded.disclosures).to_string()
     }
 
-    #[tokio::test]
-    async fn concealable_claims_rejects_claims_that_share_a_disclosure() {
-        let sd_jwt = sd_jwt::SdJwtBuilder::new(json!({
-            "credentialSubject": { "achievement": { "name": "Badge", "description": "First" }, "nickname": "Ferris" }
-        }))
-        .unwrap()
-        .make_concealable("/credentialSubject/achievement")
-        .unwrap()
-        .make_concealable("/credentialSubject/nickname")
-        .unwrap()
-        .finish(&UnsignedSigner, "ES256")
-        .await
-        .unwrap()
-        .to_string();
+    #[test]
+    fn concealable_claims_rejects_claims_that_share_a_disclosure() {
+        let sd_jwt = unsigned_sd_jwt(
+            json!({
+                "credentialSubject": { "achievement": { "name": "Badge", "description": "First" }, "nickname": "Ferris" }
+            }),
+            vec![
+                ClaimPath::new(["credentialSubject", "achievement"]),
+                ClaimPath::new(["credentialSubject", "nickname"]),
+            ],
+        );
 
         assert_eq!(
             concealable_claims(
@@ -381,6 +358,61 @@ mod tests {
                 ]
             ),
             vec![false, false, true]
+        );
+    }
+
+    #[test]
+    fn conceal_unrequested_claims_keeps_the_disclosures_a_requested_claim_lies_in() {
+        let sd_jwt = unsigned_sd_jwt(
+            json!({
+                "credentialSubject": {
+                    "achievement": { "name": "Badge", "description": "First" },
+                    "nickname": "Ferris",
+                    "nationalities": ["NL", "DE"]
+                }
+            }),
+            vec![
+                ClaimPath::new(["credentialSubject", "achievement", "name"]),
+                ClaimPath::new(["credentialSubject", "achievement"]),
+                ClaimPath::new(["credentialSubject", "nickname"]),
+                ClaimPath::new([
+                    PathComponent::from("credentialSubject"),
+                    PathComponent::from("nationalities"),
+                    PathComponent::Index(0),
+                ]),
+            ],
+        );
+
+        // `name` is disclosed on its own, inside the `achievement` disclosure, which must come along.
+        let presented = conceal_unrequested_claims(
+            &sd_jwt,
+            &Format::DcSdJwt,
+            &[&path(json!(["credentialSubject", "achievement", "name"]))],
+        )
+        .unwrap();
+        assert_eq!(disclosed_claim_names(&presented), vec!["achievement", "name"]);
+
+        // `description` is no disclosure of its own: the `achievement` disclosure holds it, without `name`.
+        let presented = conceal_unrequested_claims(
+            &sd_jwt,
+            &Format::DcSdJwt,
+            &[&path(json!(["credentialSubject", "achievement", "description"]))],
+        )
+        .unwrap();
+        assert_eq!(disclosed_claim_names(&presented), vec!["achievement"]);
+
+        // An array element is disclosed through the wildcard; `DE` was never concealable.
+        let presented = conceal_unrequested_claims(
+            &sd_jwt,
+            &Format::DcSdJwt,
+            &[&path(json!(["credentialSubject", "nationalities", null]))],
+        )
+        .unwrap();
+        let presented = SdJwt::parse(&presented).unwrap();
+        assert_eq!(presented.disclosures().len(), 1);
+        assert_eq!(
+            presented.process().unwrap().payload["credentialSubject"],
+            json!({ "nationalities": ["NL", "DE"] })
         );
     }
 

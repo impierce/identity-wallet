@@ -5129,7 +5129,6 @@ dependencies = [
  "reqwest-middleware",
  "reqwest-retry",
  "rustls",
- "sd-jwt-payload",
  "serde",
  "serde_json",
  "serde_with",

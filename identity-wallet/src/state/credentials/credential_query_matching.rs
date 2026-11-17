@@ -7,7 +7,7 @@ use crate::state::{
     },
 };
 use chrono::{DateTime, Utc};
-use identity_credential::sd_jwt_vc::SdJwtVc;
+use identity_kit::sd_jwt_vc::{SdJwt, SdJwtVc};
 use log::debug;
 use oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims};
 use oid4vci::credential_format_profiles::CredentialFormats;
@@ -16,7 +16,6 @@ use oid4vp::{
     dcql_evaluation::evaluate_credential_query,
     token::vp_token_validator::DecodedPresentations,
 };
-use sd_jwt::{SdJwt, Sha256Hasher};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use ts_rs::TS;
@@ -279,18 +278,21 @@ pub fn credential_data(
     let verifiable_credential = &verifiable_credential_record.verifiable_credential;
 
     match (&credential_query.format, format) {
-        (Format::DcSdJwt, CredentialFormats::DcSdJwt(())) => Some(serde_json::json!(verifiable_credential
-            .as_str()?
-            .parse::<SdJwtVc>()
-            .ok()?
-            .into_disclosed_object(&Sha256Hasher::new())
-            .ok()?)),
-        (Format::VcSdJwt, CredentialFormats::VcSdJwt(())) => Some(serde_json::json!(verifiable_credential
-            .as_str()?
-            .parse::<SdJwt>()
-            .ok()?
-            .into_disclosed_object(&Sha256Hasher::new())
-            .ok()?)),
+        (Format::DcSdJwt, CredentialFormats::DcSdJwt(())) => Some(Value::Object(
+            SdJwtVc::parse(verifiable_credential.as_str()?)
+                .ok()?
+                .sd_jwt()
+                .process()
+                .ok()?
+                .payload,
+        )),
+        (Format::VcSdJwt, CredentialFormats::VcSdJwt(())) => Some(Value::Object(
+            SdJwt::parse(verifiable_credential.as_str()?)
+                .ok()?
+                .process()
+                .ok()?
+                .payload,
+        )),
         // JWT_VC_JSON must be accessed from the vc values.
         (Format::JwtVcJson, CredentialFormats::JwtVcJson(())) => {
             let full_jwt_payload = get_unverified_jwt_claims(verifiable_credential).unwrap_or_default();

@@ -77,6 +77,19 @@ impl Subject {
             .await
             .map_err(|err| anyhow!("Failed to resolve the public key of `{did_url}`: {err:#}"))
     }
+
+    /// The algorithm the key of `did_url` signs with: the `alg` of its JWK, or else the one its key type implies.
+    pub async fn signing_algorithm(&self, did_url: &str) -> anyhow::Result<Algorithm> {
+        let jwk = self.resolve_public_key(did_url).await?;
+        match (jwk.alg(), jwk.kty(), jwk.crv()) {
+            (Some(alg), _, _) => alg
+                .parse()
+                .map_err(|_| anyhow!("Unsupported algorithm `{alg}` for `{did_url}`")),
+            (None, "OKP", Some("Ed25519")) => Ok(Algorithm::EdDSA),
+            (None, "EC", Some("P-256")) => Ok(Algorithm::ES256),
+            (None, kty, crv) => Err(anyhow!("Unsupported key type `{kty}` ({crv:?}) for `{did_url}`")),
+        }
+    }
 }
 
 #[async_trait]
