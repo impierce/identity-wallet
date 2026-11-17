@@ -435,7 +435,7 @@ const es_ES = {
     },
     DETAILS: {
       TITLE: 'Detalles de conexión',
-      DID: 'DID',
+      IDENTITY: 'Identidad',
       VIEW_ON_EXPLORER: 'Ver en el explorador',
     },
   },

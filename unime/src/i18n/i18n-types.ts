@@ -1234,9 +1234,9 @@ type RootTranslation = {
 			 */
 			TITLE: string
 			/**
-			 * D​I​D
+			 * I​d​e​n​t​i​t​y
 			 */
-			DID: string
+			IDENTITY: string
 			/**
 			 * V​i​e​w​ ​o​n​ ​e​x​p​l​o​r​e​r
 			 */
@@ -3442,9 +3442,9 @@ export type TranslationFunctions = {
 			 */
 			TITLE: () => LocalizedString
 			/**
-			 * DID
+			 * Identity
 			 */
-			DID: () => LocalizedString
+			IDENTITY: () => LocalizedString
 			/**
 			 * View on explorer
 			 */

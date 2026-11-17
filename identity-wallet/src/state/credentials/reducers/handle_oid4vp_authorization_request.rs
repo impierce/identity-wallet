@@ -30,7 +30,6 @@ use chrono::{Duration, Utc};
 use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
-use identity_iota::did::DID;
 use log::{debug, info};
 use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc_core::types::string_or_object::StringOrObject;
@@ -337,7 +336,7 @@ pub async fn update_history_and_connections(
     history: &mut Vec<HistoryEvent>,
 ) -> Result<(), AppError> {
     let client_metadata = &pending_connection_data.client_metadata;
-    let previously_connected = connections.contains(client_metadata.client_id.as_str());
+    let previously_connected = connections.contains(&client_metadata.identity);
     let connection = connections.update_last_interaction_or_insert_new(pending_connection_data);
     connection.last_shared_credentials.extend(last_shared);
 

@@ -142,18 +142,21 @@ async fn test_profile_v0_18_0_unlocks() {
         .connections
         .0
         .iter()
-        .map(|connection| (connection.name.as_str(), connection.did.as_str()))
+        .map(|connection| (connection.name.as_str(), connection.identity.to_string()))
         .collect();
     connections.sort();
     assert_eq!(
         connections,
         vec![
-            ("Capella", "did:web:capella.dev2.impierce.com"),
-            ("Mira", "did:web:mira.dev2.impierce.com"),
+            ("Capella", "did:web:capella.dev2.impierce.com".to_string()),
+            ("Mira", "did:web:mira.dev2.impierce.com".to_string()),
         ]
     );
 
     assert_eq!(state.history.len(), 7);
+
+    // The profile was written by `AppState` version 1, which stored each connection's `did`; it is migrated.
+    assert_eq!(state.version, identity_wallet::state::APP_STATE_VERSION);
 
     // The keys in the Stronghold snapshot still produce the DIDs the profile was created with.
     let subject = state

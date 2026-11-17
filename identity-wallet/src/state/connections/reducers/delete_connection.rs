@@ -70,7 +70,7 @@ mod tests {
             id: "conn-123".to_string(),
             name: "Test Connection".to_string(),
             url: "https://test.com".to_string(),
-            did: "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+            identity: crate::identity::Identity::from("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"),
             ..Default::default()
         };
 

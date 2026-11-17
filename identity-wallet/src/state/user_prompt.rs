@@ -1,4 +1,4 @@
-use identity_iota::did::CoreDID;
+use crate::identity::Identity;
 use oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
@@ -80,8 +80,10 @@ pub struct ClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub redirect_uri: Option<String>,
+    /// Who the party is, proven by a DID or an X.509 certificate (ADR 0004). Stored as `client_id` before `AppState`
+    /// version 2.
     #[ts(type = "string")]
-    pub client_id: CoreDID,
+    pub identity: Identity,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -150,7 +152,7 @@ mod tests {
                 logo_uri: None,
                 connection_url: "https://example.com".to_string(),
                 redirect_uri: Some("https://example.com".to_string()),
-                client_id: "did:example:123".parse().unwrap(),
+                identity: Identity::did("did:example:123").unwrap(),
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {
@@ -166,7 +168,7 @@ mod tests {
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_metadata":{"client_name":"Test Client","logo_uri":null,"connection_url":"https://example.com","redirect_uri":"https://example.com","client_id":"did:example:123"},"domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
+            r#"{"type":"accept-connection","client_metadata":{"client_name":"Test Client","logo_uri":null,"connection_url":"https://example.com","redirect_uri":"https://example.com","identity":"did:example:123"},"domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
         );
     }
 

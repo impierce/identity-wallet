@@ -434,7 +434,7 @@ const nl_NL = {
     },
     DETAILS: {
       TITLE: 'Verbindingsdetails',
-      DID: 'DID',
+      IDENTITY: 'Identiteit',
       VIEW_ON_EXPLORER: 'Bekijk in explorer',
     },
   },

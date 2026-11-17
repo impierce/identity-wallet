@@ -6,7 +6,7 @@ const connection: Connection = {
   id: '0',
   url: '',
   name: '',
-  did: '',
+  identity: '',
   verified: false,
   first_interacted: '',
   last_interacted: '',

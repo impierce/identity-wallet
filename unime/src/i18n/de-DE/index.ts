@@ -433,7 +433,7 @@ const de_DE = {
     },
     DETAILS: {
       TITLE: 'Verbindungsdetails',
-      DID: 'DID',
+      IDENTITY: 'Identität',
       VIEW_ON_EXPLORER: 'Im Explorer anzeigen',
     },
   },

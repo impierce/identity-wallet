@@ -26,6 +26,8 @@ tokio = { version = "1.46", features = ["macros"] }
 wiremock = "0.5"
 
 [patch.crates-io]
+# Prototype: identity-kit with `x5c` certificate chain validation (impierce/identity-kit#172), unreleased.
+identity-kit = { git = "https://github.com/impierce/identity-kit", rev = "9087666e1b592fcb76e552610b1d60d3a2d4449e" }
 # We need this patch because it makes the `Hasher` trait `Send` and `Sync`. See: https://github.com/iotaledger/sd-jwt-payload/compare/main...impierce:sd-jwt-payload:fix/hasher-send-sync
 sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }
 

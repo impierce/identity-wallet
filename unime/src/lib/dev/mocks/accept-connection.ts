@@ -17,8 +17,8 @@ const base: AcceptConnectionPrompt = {
     logo_uri: 'https://bestdex.com/logo.png',
     connection_url: 'https://www.bestdex.com',
     redirect_uri: 'https://www.bestdex.com/callback',
-    // Always a DID: the backend rejects a client_id it cannot parse as one.
-    client_id: 'did:web:bestdex.com',
+    // A DID, or `x509_san_dns:<DNS name>` for an issuer proven by a certificate (ADR 0004).
+    identity: 'did:web:bestdex.com',
   },
   domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
   linked_verifiable_presentations: [],

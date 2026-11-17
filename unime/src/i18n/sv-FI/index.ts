@@ -433,7 +433,7 @@ const sv_FI = {
     },
     DETAILS: {
       TITLE: 'Anslutningsdetaljer',
-      DID: 'DID',
+      IDENTITY: 'Identitet',
       VIEW_ON_EXPLORER: 'Visa i utforskaren',
     },
   },

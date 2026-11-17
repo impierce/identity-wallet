@@ -281,12 +281,11 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 
                         let connection = state.core_utils.pending_connection_data.as_ref().and_then(|pending| {
-                            let client_id = pending.client_metadata.client_id.to_string();
                             state
                                 .connections
                                 .0
                                 .iter()
-                                .find(|connection| connection.did == client_id)
+                                .find(|connection| connection.identity == pending.client_metadata.identity)
                         });
                         let requested_credentials = with_last_shared(
                             match_credential_queries(dcql_query, &verifiable_credentials),

@@ -1,3 +1,4 @@
+use crate::identity::Identity;
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -20,7 +21,6 @@ use crate::{
     subject::Subject,
     well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
-use identity_iota::did::DID;
 use identity_kit::status_list::Status;
 use log::{debug, info, warn};
 use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
@@ -294,7 +294,9 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         })?;
         let previously_connected = state
             .connections
-            .contains(pending_connection_data.client_metadata.client_id.as_str());
+            .contains(&pending_connection_data.client_metadata.identity);
+        let issuer_identity = pending_connection_data.client_metadata.identity.clone();
+        let trust_anchors = state.trust_anchors.clone();
         let mut connections = state.connections;
         let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data);
 
@@ -365,14 +367,33 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 }
             };
 
-            // TODO: add validation for other credential formats.
-            if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
-                // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = credential
-                    .as_str()
-                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+            match &issuer_identity {
+                // An issuer proven by a certificate signs every credential under a chain that proves the same identity,
+                // whatever its format (ADR 0004).
+                Identity::X509 { .. } => {
+                    let credential_jws = credential.as_str().ok_or(AppError::UntrustedError(
+                        "The credential of an issuer proven by a certificate is not signed under it".to_string(),
+                    ))?;
+                    crate::x509::validate_credential(credential_jws, &issuer_identity, &trust_anchors)
+                        .await
+                        .map_err(|err| {
+                            warn!("The credential is not signed under the issuer's certificate: {err:#}");
+                            AppError::UntrustedError(format!(
+                                "The credential's signature does not prove its issuer: {err}"
+                            ))
+                        })?;
+                }
+                // TODO: add validation for other credential formats.
+                Identity::Did(_) => {
+                    if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
+                        // Convert the received credential (as a string) into a Jwt instance for validation.
+                        let credential_jwt = credential
+                            .as_str()
+                            .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
 
-                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
+                        validate_jwt_vc_json(credential_jwt, identity_manager).await?;
+                    }
+                }
             }
 
             let display = credential_configuration

@@ -18,7 +18,9 @@
     elements: { overlay, content, title, close, portalled },
   } = createDialog({ open, portal: '#portal' });
 
-  $: explorerLink = connection.did.startsWith('did:iota') ? buildIotaExplorerSearchLink(connection.did) : undefined;
+  $: explorerLink = connection.identity.startsWith('did:iota')
+    ? buildIotaExplorerSearchLink(connection.identity)
+    : undefined;
 </script>
 
 <div use:melt={$portalled}>
@@ -35,10 +37,10 @@
 
       <div class="mt-5 rounded-xl border border-slate-200 bg-background-alt p-4 dark:border-slate-600">
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-          {$LL.CONNECTION.DETAILS.DID()}
+          {$LL.CONNECTION.DETAILS.IDENTITY()}
         </p>
         <p class="pt-1 font-mono text-[12px]/[19px] font-medium break-all text-slate-800 select-text dark:text-grey">
-          {connection.did || '-'}
+          {connection.identity || '-'}
         </p>
       </div>
 

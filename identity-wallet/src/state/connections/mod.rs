@@ -15,6 +15,7 @@ use super::{
     FeatTrait,
 };
 
+use crate::identity::Identity;
 use log::info;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -29,8 +30,8 @@ impl Connections {
         Self(Vec::new())
     }
 
-    pub fn contains(&self, did: &str) -> bool {
-        self.0.iter().any(|connection| connection.did == did)
+    pub fn contains(&self, identity: &Identity) -> bool {
+        self.0.iter().any(|connection| &connection.identity == identity)
     }
 
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
@@ -43,39 +44,39 @@ impl Connections {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
-        let did = client_metadata.client_id.clone();
-        let did_string = did.to_string();
+        let identity = &client_metadata.identity;
 
         // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
-        let connection_index = if let Some(index) = self.0.iter().position(|connection| connection.did == did_string) {
-            info!("Updating existing connection: {name}, {url}, {did}");
-            let connection = &mut self.0[index];
-            // The `id` is kept even if the name or url changed, since history events and credentials refer to it.
-            connection.name = name.to_string();
-            connection.url = url.to_string();
-            connection.domain_validation = pending_connection_data.domain_validation.clone();
-            connection.linked_verifiable_presentations =
-                pending_connection_data.linked_verifiable_presentations.clone();
-            connection.update_ecosystems(
-                pending_connection_data.ecosystems.clone(),
-                pending_connection_data.ecosystems_check.clone(),
-            );
-            connection.update_last_interaction_time();
-            index
-        } else {
-            info!("Inserting new connection: {name}, {url}, {did}");
-            self.0.push(Connection::new(
-                name.to_string(),
-                url.to_string(),
-                did_string,
-                pending_connection_data.domain_validation.clone(),
-                pending_connection_data.linked_verifiable_presentations.clone(),
-                pending_connection_data.ecosystems.clone(),
-            ));
-            let index = self.0.len() - 1;
-            self.0[index].ecosystems_check = pending_connection_data.ecosystems_check.clone();
-            index
-        };
+        let connection_index =
+            if let Some(index) = self.0.iter().position(|connection| &connection.identity == identity) {
+                info!("Updating existing connection: {name}, {url}, {identity}");
+                let connection = &mut self.0[index];
+                // The `id` is kept even if the name or url changed, since history events and credentials refer to it.
+                connection.name = name.to_string();
+                connection.url = url.to_string();
+                connection.domain_validation = pending_connection_data.domain_validation.clone();
+                connection.linked_verifiable_presentations =
+                    pending_connection_data.linked_verifiable_presentations.clone();
+                connection.update_ecosystems(
+                    pending_connection_data.ecosystems.clone(),
+                    pending_connection_data.ecosystems_check.clone(),
+                );
+                connection.update_last_interaction_time();
+                index
+            } else {
+                info!("Inserting new connection: {name}, {url}, {identity}");
+                self.0.push(Connection::new(
+                    name.to_string(),
+                    url.to_string(),
+                    identity.clone(),
+                    pending_connection_data.domain_validation.clone(),
+                    pending_connection_data.linked_verifiable_presentations.clone(),
+                    pending_connection_data.ecosystems.clone(),
+                ));
+                let index = self.0.len() - 1;
+                self.0[index].ecosystems_check = pending_connection_data.ecosystems_check.clone();
+                index
+            };
 
         &mut self.0[connection_index]
     }
@@ -97,7 +98,10 @@ pub struct Connection {
     pub id: String,
     pub name: String,
     pub url: String,
-    pub did: String,
+    /// Who the connection is, proven by a DID or an X.509 certificate (ADR 0004). Stored as `did` before `AppState`
+    /// version 2.
+    #[ts(type = "string")]
+    pub identity: Identity,
     // TODO: is this needed?
     pub verified: bool,
     pub first_interacted: String,
@@ -125,7 +129,7 @@ impl Connection {
     pub fn new(
         name: String,
         url: String,
-        did: String,
+        identity: Identity,
         domain_validation: Option<(ValidationStatus, String)>,
         linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
         ecosystems: Option<Vec<EcosystemProfile>>,
@@ -137,7 +141,7 @@ impl Connection {
             id,
             name,
             url,
-            did,
+            identity,
             verified: false,
             first_interacted: current_datetime.clone(),
             last_interacted: current_datetime,
@@ -228,22 +232,19 @@ impl PartialEq for Connection {
 
 #[cfg(test)]
 mod tests {
-    use std::str::FromStr;
-
     use crate::state::core_utils::PendingConnectionData;
     use crate::state::user_prompt::ClientMetadata;
-    use identity_iota::did::{CoreDID, DID};
 
     use super::*;
 
-    fn pending_connection_data(url: &str, name: &str, did: CoreDID) -> PendingConnectionData {
+    fn pending_connection_data(url: &str, name: &str, identity: Identity) -> PendingConnectionData {
         PendingConnectionData {
             client_metadata: ClientMetadata {
                 client_name: name.to_string(),
                 logo_uri: None,
                 connection_url: url.to_string(),
                 redirect_uri: None,
-                client_id: did,
+                identity,
             },
             domain_validation: None,
             linked_verifiable_presentations: None,
@@ -257,14 +258,14 @@ mod tests {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Identity::did("did:example:123").unwrap();
         let connection =
             connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
-        assert!(connections.contains(did.as_str()));
+        assert!(connections.contains(&did));
 
         let connection =
             connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
@@ -278,7 +279,7 @@ mod tests {
     #[test]
     fn test_update_or_insert_refreshes_display_data_of_existing_connection() {
         let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Identity::did("did:example:123").unwrap();
         let connection = connections
             .update_last_interaction_or_insert_new(&pending_connection_data(
                 "https://example.com",
@@ -305,7 +306,7 @@ mod tests {
     #[test]
     fn test_update_or_insert_distinguishes_connections_by_did() {
         let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Identity::did("did:example:123").unwrap();
         let url = "https://example.com";
         let name = "Example";
         let connection =
@@ -314,18 +315,18 @@ mod tests {
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
-        assert!(connections.contains(did.as_str()));
+        assert!(connections.contains(&did));
 
         // A different DID is a different connection, even when the display name and url is identical.
-        let other_did = CoreDID::from_str("did:example:456").unwrap();
+        let other_did = Identity::did("did:example:456").unwrap();
         let connection =
             connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()));
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 2);
-        assert!(connections.contains(did.as_str()));
-        assert!(connections.contains(other_did.as_str()));
+        assert!(connections.contains(&did));
+        assert!(connections.contains(&other_did));
     }
 
     fn ecosystem(name: &str) -> EcosystemProfile {
