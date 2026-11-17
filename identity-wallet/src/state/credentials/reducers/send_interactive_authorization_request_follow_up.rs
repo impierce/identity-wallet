@@ -2,7 +2,7 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        core_utils::{ActiveFlow, CoreUtils, Oid4vciStage},
+        core_utils::{ActiveFlow, CoreUtils, Oid4vciStage, PendingConnectionData},
         credentials::{
             actions::{authorization_code_received::CodeReceived, credentials_selected::CredentialsSelected},
             reducers::{
@@ -36,6 +36,9 @@ pub async fn send_interactive_authorization_request_follow_up(
                 .map(|selection| selection.credential_uuids.len())
                 .sum::<usize>()
         );
+
+        // Checked before anything is sent, as `handle_credential_offer` did before the prompt.
+        refuse_presentation_to_unverified_issuer(state.core_utils.pending_connection_data.as_ref())?;
 
         let state_guard = state.core_utils.managers.lock().await;
 
@@ -123,7 +126,7 @@ pub async fn send_interactive_authorization_request_follow_up(
             "Authorization code is missing in the response".to_string(),
         ))?;
 
-        let mut pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
+        let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::FlowExpiredError(
                 "Expected pending connection data for interactive OID4VP authorization".to_string(),
             )
@@ -131,20 +134,14 @@ pub async fn send_interactive_authorization_request_follow_up(
         let mut connections = state.connections;
         let mut history = state.history;
 
-        if pending_connection_data.client_metadata.client_id.is_some() {
-            update_history_and_connections(
-                history_credentials,
-                last_shared,
-                &pending_connection_data,
-                &mut connections,
-                &mut history,
-            )
-            .await?;
-        } else {
-            // An issuer without a DID document has no DID yet, and so no connection. The share is recorded once its
-            // credential binds its DID (ADR 0005).
-            pending_connection_data.shared_before_binding = Some((history_credentials, last_shared));
-        }
+        update_history_and_connections(
+            history_credentials,
+            last_shared,
+            &pending_connection_data,
+            &mut connections,
+            &mut history,
+        )
+        .await?;
 
         drop(state_guard);
         let state = AppState {
@@ -180,4 +177,50 @@ pub async fn send_interactive_authorization_request_follow_up(
     }
 
     Ok(state)
+}
+
+/// An Interactive Authorization asks the user for a presentation. UniMe shares no credentials with an issuer whose
+/// identity is not verified, one that publishes no DID document: its DID is only known once its credential is received,
+/// so the share could be recorded on no connection (ADR 0005).
+pub(crate) fn refuse_presentation_to_unverified_issuer(
+    pending_connection_data: Option<&PendingConnectionData>,
+) -> Result<(), AppError> {
+    match pending_connection_data {
+        Some(pending) if pending.client_metadata.client_id.is_none() => Err(UntrustedError(
+            "The issuer asks for credentials in an interactive authorization, but its identity is not verified"
+                .to_string(),
+        )),
+        _ => Ok(()),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::user_prompt::ClientMetadata;
+
+    fn pending(client_id: Option<&str>) -> PendingConnectionData {
+        PendingConnectionData {
+            client_metadata: ClientMetadata {
+                client_name: "Issuer".to_string(),
+                redirect_uri: None,
+                connection_url: "issuer.example".to_string(),
+                logo_uri: None,
+                client_id: client_id.map(|did| did.parse().unwrap()),
+            },
+            domain_validation: None,
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            ecosystems_check: None,
+        }
+    }
+
+    #[test]
+    fn no_credentials_are_presented_to_an_issuer_whose_identity_is_not_verified() {
+        assert!(matches!(
+            refuse_presentation_to_unverified_issuer(Some(&pending(None))),
+            Err(UntrustedError(_))
+        ));
+        assert!(refuse_presentation_to_unverified_issuer(Some(&pending(Some("did:web:issuer.example")))).is_ok());
+    }
 }

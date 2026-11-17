@@ -9,13 +9,9 @@ use crate::{
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived,
-            issuer_signature::verify_issuer_signature,
-            reducers::{
-                handle_oid4vp_authorization_request::update_history_and_connections,
-                refresh_credential_status::fetch_credential_status,
-            },
-            CredentialStatus, CredentialStatusType, DisplayCredential, VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived, issuer_signature::verify_issuer_signature,
+            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, CredentialStatusType,
+            DisplayCredential, VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
@@ -402,22 +398,9 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         }
 
         // Create or update the connection. It is part of the returned state only, so it is dropped with it on an error.
-        let mut previously_connected = state.connections.contains(&connection_did);
+        let previously_connected = state.connections.contains(&connection_did);
         let mut connections = state.connections;
         let mut history = state.history;
-        // Credentials the user shared in an interactive authorization before the issuer's DID was known are recorded
-        // now that it is (ADR 0005).
-        if let Some((shared, last_shared)) = pending_connection_data.shared_before_binding.take() {
-            update_history_and_connections(
-                shared,
-                last_shared,
-                &pending_connection_data,
-                &mut connections,
-                &mut history,
-            )
-            .await?;
-            previously_connected = true;
-        }
         let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data)?;
 
         // Every record is built and validated before the first one is stored, so that a credential that fails leaves
@@ -1035,7 +1018,6 @@ mod issuance_tests {
                     linked_verifiable_presentations: None,
                     ecosystems: None,
                     ecosystems_check: None,
-                    shared_before_binding: None,
                 }),
                 ..CoreUtils::default()
             },
@@ -1272,52 +1254,6 @@ mod issuance_tests {
 
         assert!(result.is_err(), "{result:?}");
         assert_eq!(stored_credentials(&managers).await, 0);
-    }
-
-    /// Credentials shared in an interactive authorization before the issuer's DID was known are recorded on the
-    /// connection that the issuer's credential binds, before the credentials it issues.
-    #[tokio::test]
-    #[serial_test::serial]
-    async fn a_share_before_the_did_is_bound_is_recorded_on_the_bound_connection() {
-        let issuer = TestIssuer::new().await;
-        let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
-        let managers = test_managers().await;
-        let shared = HistoryCredential {
-            title: "Proof of address".to_string(),
-            issuer_name: "Municipality".to_string(),
-            id: "e3b6c0a6-0000-4000-8000-000000000001".to_string(),
-        };
-
-        let mut state = accepted_offer(AppState::default(), managers.clone(), &server, None);
-        state
-            .core_utils
-            .pending_connection_data
-            .as_mut()
-            .unwrap()
-            .shared_before_binding = Some((
-            vec![shared.clone()],
-            vec![("address".to_string(), vec![shared.id.clone()])],
-        ));
-        let state = send_token_request(state, code_received()).await.unwrap();
-
-        assert_eq!(state.connections.0.len(), 1);
-        let connection = &state.connections.0[0];
-        assert_eq!(connection.did, issuer.did);
-        assert_eq!(connection.last_shared_credentials["address"], vec![shared.id.clone()]);
-        let events: Vec<_> = state
-            .history
-            .iter()
-            .map(|event| (event.event_type.clone(), event.connection_id.clone()))
-            .collect();
-        assert_eq!(
-            events,
-            vec![
-                (EventType::ConnectionAdded, connection.id.clone()),
-                (EventType::CredentialsShared, connection.id.clone()),
-                (EventType::CredentialsAdded, connection.id.clone()),
-            ]
-        );
-        assert_eq!(state.history[1].credentials, vec![shared]);
     }
 
     #[test]

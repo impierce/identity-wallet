@@ -140,8 +140,9 @@ impl Connection {
     ) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
         // The DID is part of the hash: connections are keyed by DID, so two with the same name and URL but different DIDs
-        // (an issuer that signs with a new `did:jwk`, see ADR 0005) must not share an id. Stored connections keep theirs.
-        let id = sha256::digest([name.as_bytes(), url.as_bytes(), did.as_bytes()].concat()).to_string();
+        // (an issuer that signs with a new `did:jwk`, see ADR 0005) must not share an id. The fields are hashed as a JSON
+        // array, so that no two triples give the same bytes. Stored connections keep their ids.
+        let id = sha256::digest(serde_json::json!([name, url, did]).to_string()).to_string();
         let current_datetime = DateUtils::new_date_string();
         Self {
             id,
@@ -259,7 +260,6 @@ mod tests {
             linked_verifiable_presentations: None,
             ecosystems: None,
             ecosystems_check: None,
-            shared_before_binding: None,
         }
     }
 
@@ -344,6 +344,26 @@ mod tests {
         assert!(connections.contains(other_did.as_str()));
         // Each has its own id, so the credentials and history events of one are not attributed to the other.
         assert_ne!(connections.0[0].id, connections.0[1].id);
+    }
+
+    #[test]
+    fn connection_ids_keep_the_fields_apart() {
+        // Joined, both give `Example` + `https://issuer.test/did:web:a:` + `did:web:b`.
+        let connection = |url: &str, did: &str| {
+            Connection::new(
+                "Example".to_string(),
+                url.to_string(),
+                did.to_string(),
+                None,
+                None,
+                None,
+            )
+        };
+
+        assert_ne!(
+            connection("https://issuer.test/", "did:web:a:did:web:b").id,
+            connection("https://issuer.test/did:web:a:", "did:web:b").id
+        );
     }
 
     #[test]

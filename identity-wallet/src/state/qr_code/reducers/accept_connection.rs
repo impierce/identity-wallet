@@ -183,7 +183,6 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             linked_verifiable_presentations: linked_verifiable_presentations.clone(),
             ecosystems: ecosystems.clone(),
             ecosystems_check: Some(ecosystems_check),
-            shared_before_binding: None,
         };
 
         let current_user_prompt = Some(CurrentUserPrompt::AcceptConnection {
@@ -405,22 +404,23 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
 
     // An issuer that publishes a DID document at `/.well-known/did.json` is verified with it before the user accepts
     // (ADR 0001). One that publishes none is accepted as unverified, and bound to the DID that signs its credential
-    // (ADR 0005). A request that fails outright, or a document whose `id` is no DID, is still refused.
-    let client_id = match get_did_document_id(&credential_issuer_url).await {
-        Ok(client_id) => Some(
+    // (ADR 0005). A DID document that is unavailable, such as behind a 503, or whose `id` is no DID, is refused.
+    let did_document_id = get_did_document_id(&credential_issuer_url).await.map_err(|err| {
+        warn!("Failed to get the DID document of {credential_issuer_url}: {err:#}");
+        match err.downcast::<reqwest::Error>() {
+            Ok(reqwest_error) => AppError::DownloadFailed(reqwest_error),
+            Err(_) => AppError::DidParseError,
+        }
+    })?;
+    let client_id = match did_document_id {
+        Some(client_id) => Some(
             CoreDID::parse(&client_id)
                 .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?,
         ),
-        Err(err) => match err.downcast::<reqwest::Error>() {
-            Ok(reqwest_error) => {
-                warn!("Failed to get the DID document of {credential_issuer_url}: {reqwest_error}");
-                return Err(AppError::DownloadFailed(reqwest_error));
-            }
-            Err(err) => {
-                info!("No DID document for {credential_issuer_url}, its identity is not verified: {err:#}");
-                None
-            }
-        },
+        None => {
+            info!("No DID document for {credential_issuer_url}, its identity is not verified");
+            None
+        }
     };
 
     Ok(ClientMetadata {
@@ -1099,6 +1099,24 @@ mod tests {
         let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri())).await;
 
         assert!(matches!(result, Err(UntrustedError(_))), "{result:?}");
+    }
+
+    /// A DID document that is unavailable is not taken for a missing one: the offer of an issuer whose `did.json`
+    /// answers 503 is refused, rather than accepted as unverified (ADR 0005).
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_issuer_whose_did_document_is_unavailable_is_refused() {
+        let mock_server = MockServer::start().await;
+        mount_issuer_metadata(&mock_server, None).await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(503))
+            .mount(&mock_server)
+            .await;
+
+        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri())).await;
+
+        assert!(matches!(result, Err(DidParseError)), "{result:?}");
     }
 
     #[tokio::test]

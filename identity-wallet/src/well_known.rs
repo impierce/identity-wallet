@@ -9,6 +9,7 @@ use log::debug;
 use oid4vci::credential_issuer::{
     authorization_server_metadata::AuthorizationServerMetadata, credential_issuer_metadata::CredentialIssuerMetadata,
 };
+use reqwest::StatusCode;
 use serde::{de::DeserializeOwned, Deserialize};
 use url::Url;
 
@@ -19,7 +20,8 @@ const OAUTH_AUTHORIZATION_SERVER: &str = "oauth-authorization-server";
 const OPENID_CONFIGURATION: &str = "openid-configuration";
 const DID_JSON: &str = "did.json";
 
-/// Only the `id` is needed. Requiring it makes a JSON body that is not a DID document move on to the next candidate.
+/// Only the `id` is needed. Requiring it makes a JSON body that is not a DID document move on to the next candidate,
+/// and count as an unavailable DID document when no candidate serves one.
 #[derive(Deserialize)]
 struct DidDocumentId {
     id: String,
@@ -74,11 +76,61 @@ pub async fn get_authorization_server_metadata(
     .await
 }
 
-/// Fetches the `id` of the DID document that `base` publishes at `.well-known/did.json`.
-pub async fn get_did_document_id(base: &Url) -> anyhow::Result<String> {
-    fetch_well_known::<DidDocumentId>(base, &[DID_JSON], "DID document")
-        .await
-        .map(|did_document| did_document.id)
+/// Fetches the `id` of the DID document that `base` publishes at `.well-known/did.json`, trying every candidate URL
+/// (see [`well_known_candidates`]) until one serves a DID document. `None` when `base` publishes none: every candidate
+/// answers 404 or 410, or a success whose body is not JSON, such as a site's page served for any path.
+///
+/// Any other answer is an error, since the document may exist but be unavailable: another HTTP error status, such as
+/// a 503, or JSON that is no DID document. An issuer must not lose its verification to an outage (ADR 0005). A
+/// request that fails outright stops the search, as in [`fetch_well_known`].
+pub async fn get_did_document_id(base: &Url) -> anyhow::Result<Option<String>> {
+    let client = get_http_client().await;
+    let mut unavailable = None;
+
+    for url in well_known_candidates(base, DID_JSON) {
+        debug!("Trying DID document at {url}");
+
+        let response = client
+            .get(url.clone())
+            .send()
+            .await
+            .map_err(|err| request_error(err).context(format!("Failed to get DID document from {url}")))?;
+        let status = response.status();
+        let text = response
+            .text()
+            .await
+            .map_err(|err| anyhow::Error::new(err).context(format!("Failed to read DID document from {url}")))?;
+
+        if matches!(status, StatusCode::NOT_FOUND | StatusCode::GONE) {
+            debug!("No DID document at {url} (HTTP {status})");
+            continue;
+        }
+        if !status.is_success() {
+            debug!("DID document at {url} unavailable (HTTP {status})");
+            unavailable.get_or_insert_with(|| {
+                anyhow::anyhow!("Failed to get DID document from {url} (HTTP {status}): {text}")
+            });
+            continue;
+        }
+        let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) else {
+            debug!("No DID document at {url}: the body is not JSON");
+            continue;
+        };
+        match serde_json::from_value::<DidDocumentId>(json) {
+            Ok(did_document) => {
+                debug!("Found DID document at {url}");
+                return Ok(Some(did_document.id));
+            }
+            Err(err) => {
+                debug!("Unparseable DID document at {url}: {err}");
+                unavailable.get_or_insert_with(|| {
+                    anyhow::anyhow!("Failed to parse DID document from {url} (HTTP {status}): {err}")
+                });
+            }
+        }
+    }
+
+    unavailable.map_or(Ok(None), Err)
 }
 
 /// Fetches the `.well-known` resource of `base` and parses it as `T`, trying every candidate URL of each suffix in
@@ -330,7 +382,7 @@ mod tests {
 
         let did = get_did_document_id(&url(&issuer)).await.unwrap();
 
-        assert_eq!(did, "did:web:issuer.example");
+        assert_eq!(did.as_deref(), Some("did:web:issuer.example"));
     }
 
     #[tokio::test]
@@ -350,9 +402,49 @@ mod tests {
         .await;
 
         assert_eq!(
-            get_did_document_id(&url(&issuer)).await.unwrap(),
-            "did:web:issuer.example"
+            get_did_document_id(&url(&issuer)).await.unwrap().as_deref(),
+            Some("did:web:issuer.example")
         );
+    }
+
+    #[tokio::test]
+    async fn an_issuer_publishes_no_did_document_when_every_candidate_is_missing_or_no_json() {
+        let mock_server = MockServer::start().await;
+        let issuer = format!("{}/tenant", mock_server.uri());
+        Mock::given(method("GET"))
+            .and(path("/tenant/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(200).set_body_string("<!doctype html><html></html>"))
+            .mount(&mock_server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json/tenant"))
+            .respond_with(ResponseTemplate::new(410))
+            .mount(&mock_server)
+            .await;
+        // `/.well-known/did.json` is not mounted: the mock server answers 404.
+
+        assert_eq!(get_did_document_id(&url(&issuer)).await.unwrap(), None);
+    }
+
+    #[tokio::test]
+    async fn a_did_document_that_is_unavailable_is_not_taken_for_a_missing_one() {
+        for response in [
+            ResponseTemplate::new(503),
+            ResponseTemplate::new(403),
+            ResponseTemplate::new(200).set_body_json(json!({ "error": "not_found" })),
+        ] {
+            let mock_server = MockServer::start().await;
+            Mock::given(method("GET"))
+                .and(path("/.well-known/did.json"))
+                .respond_with(response)
+                .mount(&mock_server)
+                .await;
+
+            let error = get_did_document_id(&url(&mock_server.uri())).await.unwrap_err();
+
+            let did_json = format!("DID document from {}/.well-known/did.json (HTTP ", mock_server.uri());
+            assert!(error.to_string().contains(&did_json), "{error}");
+        }
     }
 
     #[tokio::test]

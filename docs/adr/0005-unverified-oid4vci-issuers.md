@@ -28,10 +28,13 @@ stored without a check, and nothing tied it to the connection's DID.
 An OID4VCI issuer that publishes no DID document is accepted as **not verified**. Its DID is taken from the credential
 it issues.
 
-1. **Before acceptance.** When no candidate URL of ADR 0001 serves a DID document, the issuer has no DID yet
-   (`ClientMetadata.client_id` is `None`). The prompt shows the credential issuer URL and that the issuer's identity is
-   not verified. Domain linkage and linked verifiable presentations are checked on a DID, so they are skipped. A request
-   that fails outright, or a DID document whose `id` is not a DID, is still refused.
+1. **Before acceptance.** When the issuer publishes no DID document, it has no DID yet (`ClientMetadata.client_id` is
+   `None`). It publishes none when every candidate URL of ADR 0001 answers 404 or 410, or a success whose body is not
+   JSON, such as a site's page served for any path. The prompt shows the credential issuer URL and that the issuer's
+   identity is not verified. Domain linkage and linked verifiable presentations are checked on a DID, so they are
+   skipped. Any other answer is refused, since the document may exist but be unavailable: a request that fails
+   outright, another HTTP error status such as a 503, JSON that is no DID document, or a DID document whose `id` is
+   not a DID. An outage must not cost an issuer its verification.
 2. **On receipt.** Every received credential's issuer signature is verified before anything is stored: `jwt_vc_json`,
    `dc+sd-jwt` and `vc+sd-jwt`. The key is the one the JWT's `kid` names: a DID URL resolved with the wallet's
    resolver, to a method listed under `verificationMethod`, as for every other signature UniMe verifies. When the JWT
@@ -41,6 +44,9 @@ it issues.
    credentials are refused. An unverified issuer is bound to the signing DID, which all its credentials must share. The
    connection is created, or found, under that DID only after the credentials verified. A credential that fails leaves
    neither a credential nor a connection behind.
+4. **No presentation before binding.** UniMe presents no credentials to an unverified issuer. An issuer that asks for
+   a presentation in an Interactive Authorization is refused: the user would share credentials with a party whose
+   identity is unknown, and the share could be recorded on no connection if the issuance then failed.
 
 An issuer that publishes a DID document is verified with it before the user accepts, as ADR 0001 decided.
 
@@ -52,10 +58,12 @@ For these issuers the user accepts before the issuer's identity is known. The pr
 the credential's signature verifies, and the connection is stored under it, so a later offer from the same issuer finds
 the same connection.
 
-A stored connection always has a DID, so the persisted state does not change. A new connection's id is derived from
-its name, URL and DID, so an issuer that signs with a new DID gets a connection of its own; stored connections keep
-their ids. Only the prompt and the pending connection
-data can be without one.
+A stored connection always has a DID, so the persisted state does not change. Only the prompt and the pending
+connection data can be without one. A new connection's id is the hash of its name, URL and DID, as a JSON array, so an
+issuer that signs with a new DID gets a connection of its own; stored connections keep their ids.
+
+An unverified issuer cannot ask for a presentation in an Interactive Authorization. Interactive Authorization is not
+part of DIIP v5.
 
 Credentials whose issuer signature does not verify, whose `kid` is not a DID URL, or whose `iss` names another DID than
 the signing key's are now refused, in every supported format. Before, only `jwt_vc_json` credentials were verified.

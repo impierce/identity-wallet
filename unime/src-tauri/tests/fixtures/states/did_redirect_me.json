@@ -1,7 +1,7 @@
 {
   "connections": [
     {
-      "id": "ffe268ae7b5d7d4fd5eff0af452a0d83aeb9718b66272ecb371261c5def0bfc1",
+      "id": "68aeac8e93deaf8e1547da6ab4327d7ab13e1ece04483a760c1c9900faa9cf50",
       "name": "example123",
       "url": "https://example.com",
       "did": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
@@ -23,7 +23,7 @@
   },
   "history": [
     {
-      "connection_id": "ffe268ae7b5d7d4fd5eff0af452a0d83aeb9718b66272ecb371261c5def0bfc1",
+      "connection_id": "68aeac8e93deaf8e1547da6ab4327d7ab13e1ece04483a760c1c9900faa9cf50",
       "connection_name": "example123",
       "event_type": "ConnectionAdded",
       "date": "2024-03-15T01:17:34.692691163+00:00",

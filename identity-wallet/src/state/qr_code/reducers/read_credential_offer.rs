@@ -284,7 +284,6 @@ mod tests {
                 linked_verifiable_presentations: None,
                 ecosystems: None,
                 ecosystems_check: None,
-                shared_before_binding: None,
             }),
             _ => None,
         };
