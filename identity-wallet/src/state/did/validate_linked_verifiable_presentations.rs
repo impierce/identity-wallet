@@ -993,6 +993,37 @@ mod tests {
         assert_eq!(validated[0].credential.display_name, "Holder's");
     }
 
+    /// identity-kit requires the holder to sign its linked presentation with a key under `authentication` (DIF Linked
+    /// Verifiable Presentation). The same presentation is rejected once that key is listed only under
+    /// `assertionMethod`.
+    #[tokio::test]
+    async fn a_linked_presentation_signed_with_a_key_outside_authentication_is_rejected() {
+        let mut issuer = TestEntity::new().await;
+        issuer.add_well_known_did_json().await;
+        let mut holder = TestEntity::new().await;
+        let logo: url::Url = format!("{}logo.png", issuer.domain).parse().unwrap();
+
+        let credential = issuer.issue_credential(&holder.did(), "Holder's", logo).await;
+        holder
+            .add_linked_verifiable_presentation(
+                "linked-verifiable-presentation",
+                vec![("linked-verifiable-presentation.jwt".to_string(), vec![credential])],
+            )
+            .await;
+        let url = holder.domain.join("linked-verifiable-presentation.jwt").unwrap();
+        let resolver = holder.subject.resolver().await;
+
+        let validated = validate_linked_verifiable_presentation(&resolver, &holder.did_document(), url.clone()).await;
+        assert_eq!(validated.map(|credentials| credentials.len()), Some(1));
+
+        holder.document["authentication"] = json!([]);
+        assert!(
+            validate_linked_verifiable_presentation(&resolver, &holder.did_document(), url)
+                .await
+                .is_none()
+        );
+    }
+
     #[tokio::test]
     async fn get_validated_linked_domains_returns_only_successfully_validated_linked_domains() {
         let mut issuer1 = TestEntity::new().await;
