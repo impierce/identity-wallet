@@ -115,11 +115,12 @@ async function handleService(req, res, path) {
     log(`${req.method} ${path} → 404`);
     return send(res, 404, { error: 'Unknown case (mock)' });
   }
+  // Read the body first, so that a case that expires while it arrives is refused.
+  const body = await readJson(req);
   if (expiresInSecs(verification) <= 0) {
     log(`POST ${path} → 400 (expired)`);
     return send(res, 400, { error: 'Case expired (mock)' });
   }
-  const body = await readJson(req);
   if (body?.code !== config.code) {
     log(`POST ${path} → 400 (wrong code)`);
     return send(res, 400, { error: 'Wrong code (mock)' });
