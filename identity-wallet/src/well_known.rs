@@ -11,6 +11,7 @@ use oid4vci::credential_issuer::{
 };
 use reqwest::StatusCode;
 use serde::{de::DeserializeOwned, Deserialize};
+use serde_json::{Map, Value};
 use url::Url;
 
 use crate::http_client::{get_http_client, request_error};
@@ -69,8 +70,24 @@ pub async fn get_verified_credential_issuer_metadata(
     credential_issuer_url: &Url,
     trust_anchors: &[String],
 ) -> anyhow::Result<CredentialIssuerMetadata> {
-    let metadata = get_credential_issuer_metadata(credential_issuer_url).await?;
-    Ok(crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors).await)
+    let metadata = fetch_well_known_with(
+        credential_issuer_url,
+        &[OPENID_CREDENTIAL_ISSUER],
+        "credential issuer metadata",
+        parse_credential_issuer_metadata,
+    )
+    .await?;
+    crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors).await
+}
+
+/// The JSON of credential issuer metadata, which must be complete unless it carries `signed_metadata`: an issuer that
+/// enforces signed metadata leaves its parameters out of the unsigned metadata (OID4VCI 1.0 §11.2.3).
+fn parse_credential_issuer_metadata(text: &str) -> serde_json::Result<Map<String, Value>> {
+    let metadata: Map<String, Value> = serde_json::from_str(text)?;
+    if !metadata.contains_key("signed_metadata") {
+        serde_json::from_value::<CredentialIssuerMetadata>(Value::Object(metadata.clone()))?;
+    }
+    Ok(metadata)
 }
 
 /// Fetches the metadata of `authorization_server_url`. RFC 8414 OAuth metadata is preferred, with an OpenID Provider
@@ -153,6 +170,16 @@ pub async fn get_did_document_id(base: &Url) -> anyhow::Result<Option<String>> {
 /// The error messages keep the `(HTTP <status>)` and `Failed to parse` wording that
 /// [`ErrorCause`](crate::user_error::ErrorCause) recognises.
 async fn fetch_well_known<T: DeserializeOwned>(base: &Url, suffixes: &[&str], resource: &str) -> anyhow::Result<T> {
+    fetch_well_known_with(base, suffixes, resource, |text| serde_json::from_str(text)).await
+}
+
+/// [`fetch_well_known`], with `parse` deciding whether a candidate's body is the resource.
+async fn fetch_well_known_with<T>(
+    base: &Url,
+    suffixes: &[&str],
+    resource: &str,
+    parse: impl Fn(&str) -> serde_json::Result<T>,
+) -> anyhow::Result<T> {
     let client = get_http_client().await;
     let mut last_error = None;
 
@@ -178,7 +205,7 @@ async fn fetch_well_known<T: DeserializeOwned>(base: &Url, suffixes: &[&str], re
             continue;
         }
 
-        match serde_json::from_str::<T>(&text) {
+        match parse(&text) {
             Ok(resource_value) => {
                 debug!("Found {resource} at {url}");
                 return Ok(resource_value);
@@ -206,6 +233,20 @@ mod tests {
 
     fn url(url: &str) -> Url {
         Url::parse(url).unwrap()
+    }
+
+    #[test]
+    fn credential_issuer_metadata_must_be_complete_unless_it_is_signed() {
+        let incomplete =
+            json!({ "credential_issuer": "https://example.com", "credential_configurations_supported": {} });
+        assert!(parse_credential_issuer_metadata(&incomplete.to_string()).is_err());
+
+        let mut signed = incomplete.clone();
+        signed["signed_metadata"] = json!("eyJ...");
+        assert_eq!(
+            parse_credential_issuer_metadata(&signed.to_string()).unwrap(),
+            *signed.as_object().unwrap()
+        );
     }
 
     fn strings(urls: Vec<Url>) -> Vec<String> {
