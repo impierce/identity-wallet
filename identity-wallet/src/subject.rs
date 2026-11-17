@@ -3,13 +3,10 @@ use crate::state::SUPPORTED_DID_METHODS;
 use crate::stronghold::{StrongholdManager, ED25519_KEY_ID, ES256_KEY_ID};
 use anyhow::anyhow;
 use async_trait::async_trait;
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use identity_iota::verification::jwk::Jwk;
-use identity_iota::{did::DID, document::DIDUrlQuery, verification::jwk::JwkParams};
 use identity_kit::{
     did::DidMethod,
     identity::{Identity, IdentityKind, KeyStoreIdentity},
-    jose::JwsAlgorithm,
+    jose::{Jwk, JwsAlgorithm},
     keys::KeyId,
     methods::{DidJwk, DidKey},
 };
@@ -74,27 +71,11 @@ impl Subject {
     // https://github.com/impierce/ssi-agent/blob/beta/agent_secret_manager/src/subject.rs
     /// Resolves the public key for a given DID URL.
     pub async fn resolve_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
-        let did_url =
-            identity_iota::did::DIDUrl::parse(did_url).map_err(|err| anyhow!("Failed to parse DID URL: {err}"))?;
-
-        let document = self
-            .resolver()
+        self.resolver()
             .await
-            .resolve(did_url.did().as_str())
+            .public_key(did_url)
             .await
-            .map_err(|err| anyhow!("Failed to resolve DID Document for DID: `{did_url}`, error: {err}"))?;
-
-        let verification_method = document
-            .resolve_method(DIDUrlQuery::from(&did_url), None)
-            .ok_or(anyhow!(
-                "Failed to resolve verification method for DID URL: `{did_url}`"
-            ))?;
-
-        verification_method
-            .data()
-            .public_key_jwk()
-            .ok_or_else(|| anyhow!("Failed to resolve public key for DID URL: `{did_url}`"))
-            .cloned()
+            .map_err(|err| anyhow!("Failed to resolve the public key of `{did_url}`: {err:#}"))
     }
 }
 
@@ -138,46 +119,15 @@ impl oid4vc_core::Subject for Subject {
 
 #[async_trait]
 impl Verify for Subject {
+    /// The public key of `did_url` in the form `jsonwebtoken` verifies with: an Ed25519 key as its 32 bytes, a P-256
+    /// key as its uncompressed SEC1 point.
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
-        let did_url = identity_iota::did::DIDUrl::parse(did_url)?;
-
-        let document = self.resolver().await.resolve(did_url.did().as_str()).await?;
-
-        let verification_method = document
-            .resolve_method(
-                DIDUrlQuery::from(&did_url),
-                Some(identity_iota::verification::MethodScope::VerificationMethod),
-            )
-            .ok_or(anyhow::anyhow!(
-                "Failed to resolve verification method for DID URL: {did_url}"
-            ))?;
-
-        // Try decode from `MethodData` directly, else use public JWK params.
-        verification_method.data().try_decode().or_else(|_| {
-            verification_method
-                .data()
-                .public_key_jwk()
-                .and_then(|public_key_jwk| match public_key_jwk.params() {
-                    JwkParams::Okp(okp_params) => URL_SAFE_NO_PAD.decode(&okp_params.x).ok(),
-                    JwkParams::Ec(ec_params) => {
-                        let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).ok()?;
-                        let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).ok()?;
-
-                        let encoded_point = p256::EncodedPoint::from_affine_coordinates(
-                            p256::FieldBytes::from_slice(&x_bytes),
-                            p256::FieldBytes::from_slice(&y_bytes),
-                            false, // false for uncompressed point
-                        );
-
-                        let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)
-                            .expect("Failed to create verifying key from encoded point");
-
-                        Some(verifying_key.to_encoded_point(false).as_bytes().to_vec())
-                    }
-                    _ => None,
-                })
-                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {did_url}"))
-        })
+        let jwk = self.resolve_public_key(did_url).await?;
+        match (jwk.kty(), jwk.crv()) {
+            ("OKP", Some("Ed25519")) => Ok(jwk.ed25519_public_bytes()?.to_vec()),
+            ("EC", Some("P-256")) => Ok(jwk.p256_public_bytes()?.to_vec()),
+            (kty, crv) => Err(anyhow!("Unsupported key type `{kty}` ({crv:?}) for `{did_url}`")),
+        }
     }
 }
 

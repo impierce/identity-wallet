@@ -1,37 +1,60 @@
 //! DID resolution with identity-kit.
 
-use crate::http_client::DidWebHttpClient;
-use anyhow::Context as _;
-use identity_iota::{core::FromJson as _, document::CoreDocument};
+use crate::http_client::IdentityKitHttpClient;
+use anyhow::{anyhow, Context as _};
 use identity_kit::{
-    did::Did,
+    did::{Did, DidDocument, DidUrl},
+    jose::Jwk,
     methods::{key::KeyFormat, DidJwk, DidKey, DidWeb},
 };
+use std::sync::Arc;
 
 /// Resolves `did:key`, `did:jwk` and `did:web` DIDs.
 ///
-/// Documents are returned as IOTA `CoreDocument`s for the credential, domain linkage and linked VP validators, which
-/// still use the IOTA types. `did:key` methods carry the key as `publicKeyJwk`, as they did with `did_manager`, since
-/// those validators only verify with a JWK.
+/// `did:key` methods carry the key as `publicKeyJwk`, as they did with `did_manager`.
 #[derive(Debug)]
-pub struct Resolver(identity_kit::resolver::Resolver);
+pub struct Resolver(Arc<identity_kit::resolver::Resolver>);
 
 impl Resolver {
     pub fn new() -> Self {
-        Self(
+        Self(Arc::new(
             identity_kit::resolver::Resolver::builder()
                 .with(DidKey::new().with_format(KeyFormat::JsonWebKey))
                 .with(DidJwk)
-                .with(DidWeb::new(DidWebHttpClient))
+                .with(DidWeb::new(IdentityKitHttpClient))
                 .build(),
-        )
+        ))
+    }
+
+    /// The identity-kit resolver, which also resolves the keys of DID URLs for identity-kit's validators.
+    pub fn inner(&self) -> &identity_kit::resolver::Resolver {
+        &self.0
+    }
+
+    /// The identity-kit resolver, shared, for a key resolver that combines it with others.
+    pub fn shared(&self) -> Arc<identity_kit::resolver::Resolver> {
+        self.0.clone()
     }
 
     /// The DID document of `did`.
-    pub async fn resolve(&self, did: &str) -> anyhow::Result<CoreDocument> {
+    pub async fn resolve(&self, did: &str) -> anyhow::Result<DidDocument> {
         let did = Did::parse(did).context("Invalid DID")?;
-        let document = self.0.resolve_document(&did).await?;
-        CoreDocument::from_json_value(serde_json::to_value(document)?).context("Unsupported DID document")
+        Ok(self.0.resolve_document(&did).await?)
+    }
+
+    /// The public key of the verification method `did_url`, from its `publicKeyJwk` or its `publicKeyMultibase`.
+    pub async fn public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        let did_url = DidUrl::parse(did_url).context("Invalid DID URL")?;
+        let document = self.0.resolve_document(did_url.did()).await?;
+        let method = document
+            .verification_method(&did_url)
+            .ok_or_else(|| anyhow!("No verification method `{did_url}`"))?;
+
+        match (method.public_key_jwk(), method.public_key_multibase()) {
+            (Some(jwk), _) => Ok(jwk.public()),
+            (None, Some(multikey)) => Ok(Jwk::from_multikey(multikey)?),
+            (None, None) => Err(anyhow!("The verification method `{did_url}` has no public key")),
+        }
     }
 }
 
@@ -44,7 +67,6 @@ impl Default for Resolver {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use identity_iota::did::DID as _;
     use serde_json::json;
     use wiremock::{
         matchers::{method, path},
@@ -57,14 +79,17 @@ mod tests {
     async fn resolves_a_did_key_with_a_public_key_jwk() {
         let document = Resolver::new().resolve(DID_KEY).await.unwrap();
 
-        assert_eq!(document.id().as_str(), DID_KEY);
-        let method = document.verification_method().first().unwrap();
+        assert_eq!(document.id.as_str(), DID_KEY);
+        let method = document.verification_method.first().unwrap();
         assert_eq!(
-            method.id().to_string(),
+            method.id.to_string(),
             format!("{DID_KEY}#{}", &DID_KEY["did:key:".len()..])
         );
-        assert_eq!(method.data().public_key_jwk().unwrap().alg(), None);
-        assert_eq!(method.data().public_key_jwk().unwrap().kty().name(), "OKP");
+        assert_eq!(method.public_key_jwk().unwrap().alg(), None);
+        assert_eq!(method.public_key_jwk().unwrap().kty(), "OKP");
+
+        let key = Resolver::new().public_key(method.id.as_str()).await.unwrap();
+        assert_eq!(key.crv(), Some("Ed25519"));
     }
 
     #[tokio::test]
@@ -72,9 +97,9 @@ mod tests {
         let did = "did:jwk:eyJhbGciOiJFZERTQSIsImNydiI6IkVkMjU1MTkiLCJraWQiOiJwZVFoTEdqcUd2b1hEUlNIZ2E0RWpvU3NKLWFuaUlrUXdmOUdTOFN5b3o4Iiwia3R5IjoiT0tQIiwieCI6Ikxzc0xoemNOU0VwTXFiWm9Mc1VPejVXQ0t6UjRuYno3WVVOcE1HcmR0Q3MifQ";
         let document = Resolver::new().resolve(did).await.unwrap();
 
-        let method = document.verification_method().first().unwrap();
-        assert_eq!(method.id().to_string(), format!("{did}#0"));
-        assert_eq!(method.data().public_key_jwk().unwrap().alg(), Some("EdDSA"));
+        let method = document.verification_method.first().unwrap();
+        assert_eq!(method.id.to_string(), format!("{did}#0"));
+        assert_eq!(method.public_key_jwk().unwrap().alg(), Some("EdDSA"));
     }
 
     #[tokio::test]
@@ -99,8 +124,8 @@ mod tests {
 
         let document = Resolver::new().resolve(&did).await.unwrap();
 
-        assert_eq!(document.id().as_str(), did);
-        assert_eq!(document.verification_method().len(), 1);
+        assert_eq!(document.id.as_str(), did);
+        assert_eq!(document.verification_method.len(), 1);
     }
 
     #[tokio::test]

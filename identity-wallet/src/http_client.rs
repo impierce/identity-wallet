@@ -156,18 +156,19 @@ impl HttpClient for PublicDestinationHttpClient {
     }
 }
 
-/// The largest DID document [`DidWebHttpClient`] reads, as identity-kit's own client does.
-const MAX_DID_DOCUMENT_SIZE: usize = 1 << 20;
+/// The largest response [`IdentityKitHttpClient`] reads, as identity-kit's own client does: far above any DID
+/// document, DID configuration or linked presentation.
+const MAX_DOCUMENT_SIZE: usize = 1 << 20;
 
-/// An identity-kit HTTP client for `did:web` resolution that only requests public destinations, see
-/// [`assert_public_destination`].
+/// The HTTP client identity-kit fetches with: `did:web` documents, DID configurations (domain linkage) and linked
+/// verifiable presentations. It only requests public destinations, see [`assert_public_destination`].
 ///
-/// Unlike [`fetch_public_destination`] it follows no redirect: a DID document is served at the URL of its DID, and
-/// identity-kit treats a redirect as a failed resolution.
-pub struct DidWebHttpClient;
+/// Unlike [`fetch_public_destination`] it follows no redirect: identity-kit treats a redirect as a failed fetch, so a
+/// document is served at the URL it is asked for.
+pub struct IdentityKitHttpClient;
 
 #[async_trait]
-impl identity_kit::methods::web::HttpClient for DidWebHttpClient {
+impl identity_kit::methods::web::HttpClient for IdentityKitHttpClient {
     async fn get(&self, url: &Url) -> Result<HttpResponse, HttpError> {
         let url = local_development_url(url);
         assert_public_destination(&url).await.map_err(HttpError::new)?;
@@ -191,9 +192,9 @@ impl identity_kit::methods::web::HttpClient for DidWebHttpClient {
 
         let mut body = Vec::new();
         while let Some(chunk) = response.chunk().await.map_err(HttpError::new)? {
-            if body.len() + chunk.len() > MAX_DID_DOCUMENT_SIZE {
+            if body.len() + chunk.len() > MAX_DOCUMENT_SIZE {
                 return Err(HttpError::msg(format!(
-                    "response body exceeds {MAX_DID_DOCUMENT_SIZE} bytes"
+                    "response body exceeds {MAX_DOCUMENT_SIZE} bytes"
                 )));
             }
             body.extend_from_slice(&chunk);
@@ -204,6 +205,13 @@ impl identity_kit::methods::web::HttpClient for DidWebHttpClient {
             Some(location) => response.with_location(location),
             None => response,
         })
+    }
+
+    /// identity-kit fetches DID configurations and linked presentations only over `https`, unless the client allows
+    /// plain `http`. Debug builds allow it, as they allow private destinations, so local issuers and the `wiremock`
+    /// tests work.
+    fn allows_plain_http(&self, _url: &Url) -> bool {
+        private_destinations_allowed()
     }
 }
 
