@@ -25,10 +25,6 @@ tempfile = "3.5.0"
 tokio = { version = "1.46", features = ["macros"] }
 wiremock = "0.5"
 
-[patch.crates-io]
-# We need this patch because it makes the `Hasher` trait `Send` and `Sync`. See: https://github.com/iotaledger/sd-jwt-payload/compare/main...impierce:sd-jwt-payload:fix/hasher-send-sync
-sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }
-
 [workspace.package]
 version = "0.19.4"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"

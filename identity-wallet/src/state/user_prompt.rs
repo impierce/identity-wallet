@@ -1,4 +1,4 @@
-use identity_iota::did::CoreDID;
+use identity_kit::did::Did;
 use oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
@@ -81,7 +81,7 @@ pub struct ClientMetadata {
     pub connection_url: String,
     pub redirect_uri: Option<String>,
     #[ts(type = "string")]
-    pub client_id: CoreDID,
+    pub client_id: Did,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]

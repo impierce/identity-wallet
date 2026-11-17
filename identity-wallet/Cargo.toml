@@ -20,18 +20,7 @@ dyn-clone = "1.0"
 futures = "0.3"
 hickory-resolver = { version = "0.26", default-features = false, features = ["tokio"] }
 icu = "1.4.0"
-identity-kit = { workspace = true, features = ["did-jwk", "did-key", "did-web", "status-list"] }
-identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1", default-features = false, features = [
-    "credential",
-    "domain-linkage",
-    "presentation",
-    "validator",
-    "sd-jwt-vc",
-] }
-identity_core = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_iota = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_jose = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
+identity-kit = { workspace = true, features = ["did-jwk", "did-key", "did-web", "domain-linkage", "linked-vp", "sd-jwt", "status-list"] }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10"
 jsonschema = "0.29"
@@ -53,9 +42,6 @@ reqwest-middleware = { version = "0.5", features = ["json"] }
 reqwest-retry = "0.9"
 rustls.workspace = true
 webpki-roots.workspace = true
-sd-jwt = { package = "sd-jwt-payload", version = "0.5.1", default-features = false, features = [
-    "sha",
-] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json.workspace = true
 serde_with = "3.8"

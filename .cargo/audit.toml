@@ -1,12 +1,11 @@
 # Configuration for `cargo audit`, run by `.github/workflows/audit.yaml`.
 #
 # Every entry below needs a semver-incompatible upgrade of a crate reached only transitively,
-# through a git-pinned dependency (`iotaledger/iota`, `iotaledger/identity`), through `tauri`, or
-# through a test-only dependency. Anything `cargo update` can fix is fixed there instead. Each
-# entry records why the vulnerable code is unreachable from a wallet that makes outbound HTTPS
-# requests, holds keys in Stronghold, and runs no server, QUIC endpoint or IOTA node.
+# through `tauri` or through a test-only dependency. Anything `cargo update` can fix is fixed there
+# instead. Each entry records why the vulnerable code is unreachable from a wallet that makes
+# outbound HTTPS requests, holds keys in Stronghold, and runs no server.
 #
-# Revisit whenever the pinned revisions move.
+# Revisit whenever `tauri` or the test dependencies move.
 
 [advisories]
 ignore = [
@@ -15,13 +14,8 @@ ignore = [
     # no 0.3.x patch; the app itself is on h2 0.4.
     "RUSTSEC-2026-0258",
 
-    # quick-xml — denial-of-service on untrusted XML. Neither path parses any: `plist <- tauri`
-    # reads the app's own bundled property lists, `object_store <- iota-config` serves an object
-    # store the wallet never configures.
+    # quick-xml — denial-of-service on untrusted XML. Only through `plist <- tauri`, which reads the
+    # app's own bundled property lists, never untrusted XML.
     "RUSTSEC-2026-0194",
     "RUSTSEC-2026-0195",
-
-    # rsa 0.8.2 — Marvin attack. Needs observable RSA private-key operations; the wallet performs
-    # none. No fixed version upstream.
-    "RUSTSEC-2023-0071",
 ]

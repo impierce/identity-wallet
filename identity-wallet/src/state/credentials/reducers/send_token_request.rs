@@ -20,7 +20,6 @@ use crate::{
     subject::Subject,
     well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
-use identity_iota::did::DID;
 use identity_kit::status_list::Status;
 use log::{debug, info, warn};
 use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
