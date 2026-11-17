@@ -1,6 +1,7 @@
 use std::net::IpAddr;
 
 use async_trait::async_trait;
+use identity_kit::methods::web::{HttpError, HttpResponse};
 use openid_federation::{FederationError, FederationResult, HttpClient};
 use reqwest::{Client, Url};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
@@ -153,6 +154,68 @@ impl HttpClient for PublicDestinationHttpClient {
 
         response.text().await.map_err(FederationError::from)
     }
+}
+
+/// The largest DID document [`DidWebHttpClient`] reads, as identity-kit's own client does.
+const MAX_DID_DOCUMENT_SIZE: usize = 1 << 20;
+
+/// An identity-kit HTTP client for `did:web` resolution that only requests public destinations, see
+/// [`assert_public_destination`].
+///
+/// Unlike [`fetch_public_destination`] it follows no redirect: a DID document is served at the URL of its DID, and
+/// identity-kit treats a redirect as a failed resolution.
+pub struct DidWebHttpClient;
+
+#[async_trait]
+impl identity_kit::methods::web::HttpClient for DidWebHttpClient {
+    async fn get(&self, url: &Url) -> Result<HttpResponse, HttpError> {
+        let url = local_development_url(url);
+        assert_public_destination(&url).await.map_err(HttpError::new)?;
+
+        let client = get_public_destination_http_client().await.map_err(HttpError::new)?;
+        let mut response = client.get(url).send().await.map_err(HttpError::new)?;
+
+        let status = response.status().as_u16();
+        let location = response
+            .status()
+            .is_redirection()
+            .then(|| {
+                response
+                    .headers()
+                    .get(reqwest::header::LOCATION)?
+                    .to_str()
+                    .ok()
+                    .map(str::to_owned)
+            })
+            .flatten();
+
+        let mut body = Vec::new();
+        while let Some(chunk) = response.chunk().await.map_err(HttpError::new)? {
+            if body.len() + chunk.len() > MAX_DID_DOCUMENT_SIZE {
+                return Err(HttpError::msg(format!(
+                    "response body exceeds {MAX_DID_DOCUMENT_SIZE} bytes"
+                )));
+            }
+            body.extend_from_slice(&chunk);
+        }
+
+        let response = HttpResponse::new(status, body);
+        Ok(match location {
+            Some(location) => response.with_location(location),
+            None => response,
+        })
+    }
+}
+
+/// identity-kit fetches every `did:web` document over `https`. Debug builds fetch the documents of `localhost` over
+/// plain `http` instead, so the app and its tests can resolve the `did:web` of a local issuer or `wiremock`.
+fn local_development_url(url: &Url) -> Url {
+    let mut url = url.clone();
+    if private_destinations_allowed() && url.scheme() == "https" && url.host_str() == Some("localhost") {
+        // Switching between the special schemes `https` and `http` cannot fail.
+        let _ = url.set_scheme("http");
+    }
+    url
 }
 
 /// Allowed in debug builds so the app and its tests can reach a local issuer or `wiremock`.

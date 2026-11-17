@@ -34,8 +34,8 @@
     },
   ];
 
-  // Capabilities of `did-manager`
-  const verifiableMethods: string[] = ['did:iota', 'did:jwk', 'did:key', 'did:web'];
+  // DID methods the wallet resolves (identity-kit)
+  const verifiableMethods: string[] = ['did:jwk', 'did:key', 'did:web'];
 
   const handleClick = (method: Method) => {
     if (method.did) {

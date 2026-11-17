@@ -1,7 +1,7 @@
+use crate::did_resolver::Resolver;
 use crate::error::AppError;
 use crate::persistence::{download_asset, hash};
 use crate::state::core_utils::IdentityManager;
-use did_manager::Resolver;
 use identity_iota::{credential::Jwt, document::CoreDocument, verification::jws::Decoder};
 use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;

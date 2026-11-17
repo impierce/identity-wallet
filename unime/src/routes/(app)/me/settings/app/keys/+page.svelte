@@ -14,7 +14,7 @@
   interface Key {
     type: KeyType;
     alias?: string;
-    key_id: string; // Corresponds to the `JwkStorage` in `did-manager`
+    key_id: string; // The id of the key in the Stronghold vault
     enabled: boolean;
   }
 
