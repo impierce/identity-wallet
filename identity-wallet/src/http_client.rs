@@ -68,6 +68,7 @@ async fn get_public_destination_http_client() -> Result<Client, AppError> {
                 .redirect(reqwest::redirect::Policy::none())
                 .dns_resolver(PublicAddressResolver {
                     allow_private: private_destinations_allowed(),
+                    proxy_hosts: env_proxy_hosts(),
                 })
                 .build()
                 .map_err(|err| {
@@ -271,16 +272,22 @@ pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
 /// addresses [`assert_public_destination`] checked are the kind the connection uses, however the host resolves in
 /// between. Debug builds allow private addresses, as [`assert_public_destination`] does.
 ///
-/// An IP literal never reaches a resolver; [`assert_public_destination`] checks it. Through a proxy, including one
-/// taken from the environment, the proxy resolves the host and this resolver is not used.
+/// An IP literal never reaches a resolver; [`assert_public_destination`] checks it. Through a proxy configured in the
+/// environment, the proxy resolves the destination and this resolver is not asked for it.
+///
+/// reqwest also resolves the proxy's own host through this resolver. The proxy is the user's choice and often runs on
+/// the local machine or a private network, so the hosts of the environment's proxies, `proxy_hosts`, are resolved
+/// without the filter.
 struct PublicAddressResolver {
     allow_private: bool,
+    proxy_hosts: Vec<String>,
 }
 
 impl reqwest::dns::Resolve for PublicAddressResolver {
     fn resolve(&self, name: reqwest::dns::Name) -> reqwest::dns::Resolving {
         let host = name.as_str().to_owned();
-        let allow_private = self.allow_private;
+        let allow_private =
+            self.allow_private || self.proxy_hosts.iter().any(|proxy| proxy.eq_ignore_ascii_case(&host));
         Box::pin(async move {
             // The port is replaced by the URL's when connecting.
             let addresses = public_addresses(tokio::net::lookup_host((host.as_str(), 0)).await?, allow_private);
@@ -291,6 +298,39 @@ impl reqwest::dns::Resolve for PublicAddressResolver {
             Ok(Box::new(addresses.into_iter()) as reqwest::dns::Addrs)
         })
     }
+}
+
+/// The hosts of the proxies reqwest takes from the environment when a client is built: `ALL_PROXY`, `HTTP_PROXY` and
+/// `HTTPS_PROXY`, each also in lowercase.
+fn env_proxy_hosts() -> Vec<String> {
+    proxy_hosts(
+        [
+            "ALL_PROXY",
+            "all_proxy",
+            "HTTP_PROXY",
+            "http_proxy",
+            "HTTPS_PROXY",
+            "https_proxy",
+        ]
+        .into_iter()
+        .filter_map(|name| std::env::var(name).ok()),
+    )
+}
+
+/// The host of each proxy URL in `values`. A value without a scheme is an `http` proxy, as reqwest reads it.
+fn proxy_hosts(values: impl IntoIterator<Item = String>) -> Vec<String> {
+    values
+        .into_iter()
+        .filter_map(|value| {
+            let value = value.trim();
+            let url = if value.contains("://") {
+                Url::parse(value)
+            } else {
+                Url::parse(&format!("http://{value}"))
+            };
+            Some(url.ok()?.host_str()?.to_owned())
+        })
+        .collect()
 }
 
 /// The public ones of `addresses`, or all of them when private addresses are allowed.
@@ -389,7 +429,10 @@ mod tests {
         let client = |allow_private| {
             get_http_client_builder()
                 .no_proxy()
-                .dns_resolver(PublicAddressResolver { allow_private })
+                .dns_resolver(PublicAddressResolver {
+                    allow_private,
+                    proxy_hosts: Vec::new(),
+                })
                 .build()
                 .unwrap()
         };
@@ -397,6 +440,55 @@ mod tests {
         assert!(client(false).get(url.clone()).send().await.is_err());
         assert!(client(true).get(url).send().await.unwrap().status().is_success());
         assert_eq!(server.received_requests().await.unwrap().len(), 1);
+    }
+
+    /// reqwest connects to a proxy through the same resolver, so the proxy's own host must not be filtered, even when it
+    /// is private. The destination is left to the proxy.
+    #[tokio::test]
+    async fn the_resolver_lets_the_client_reach_a_private_proxy() {
+        let proxy = MockServer::start().await;
+        Mock::given(method("GET"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&proxy)
+            .await;
+        let proxy_url = format!("http://localhost:{}", proxy.address().port());
+        let client = |proxy_hosts| {
+            get_http_client_builder()
+                .proxy(reqwest::Proxy::http(&proxy_url).unwrap())
+                .dns_resolver(PublicAddressResolver {
+                    allow_private: false,
+                    proxy_hosts,
+                })
+                .build()
+                .unwrap()
+        };
+        let destination = Url::parse("http://destination.example/").unwrap();
+
+        assert!(client(Vec::new()).get(destination.clone()).send().await.is_err());
+        let response = client(proxy_hosts([proxy_url.clone()]))
+            .get(destination)
+            .send()
+            .await
+            .unwrap();
+        assert!(response.status().is_success());
+        assert_eq!(proxy.received_requests().await.unwrap().len(), 1);
+    }
+
+    #[test]
+    fn proxy_hosts_are_read_like_reqwest_reads_them() {
+        let values = [
+            "http://proxy.corp:3128",
+            "socks5h://user:secret@socks.corp:1080",
+            "localhost:8080",
+            " https://Upper.Example/ ",
+            "",
+        ]
+        .map(String::from);
+
+        assert_eq!(
+            proxy_hosts(values),
+            ["proxy.corp", "socks.corp", "localhost", "upper.example"]
+        );
     }
 
     #[test]
