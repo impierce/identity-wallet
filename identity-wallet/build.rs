@@ -12,8 +12,10 @@ const WINDOWS_TEST_MANIFEST: &str = r#"<assembly xmlns="urn:schemas-microsoft-co
 "#;
 
 fn main() {
-    // Re-run the build script if the .env file changes
+    // Re-run the build script if the .env file changes, or the variables are set in the environment instead
     println!("cargo:rerun-if-changed=.env");
+    println!("cargo:rerun-if-env-changed=EMAIL_VERIFICATION_SERVICE_HOST");
+    println!("cargo:rerun-if-env-changed=EMAIL_VERIFICATION_SERVICE_API_KEY");
 
     let email_verification_service_host = dotenvy::var("EMAIL_VERIFICATION_SERVICE_HOST")
         .unwrap_or_else(|_| "https://email-verification.impierce.com".to_string());

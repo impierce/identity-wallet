@@ -80,10 +80,11 @@ pub struct ClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub redirect_uri: Option<String>,
-    /// Who the party is, verified with a DID or an X.509 certificate (ADR 0004). Stored as `client_id` before
-    /// `AppState` version 2.
-    #[ts(type = "string")]
-    pub identity: Identity,
+    /// Who the party is, verified with a DID or an X.509 certificate (ADR 0004), or `None` while it is unverified: an
+    /// OID4VCI issuer that is verified with neither gets its DID only from the credential it signs (ADR 0005). Stored
+    /// as `client_id` before `AppState` version 2.
+    #[ts(type = "string | null")]
+    pub identity: Option<Identity>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -152,7 +153,7 @@ mod tests {
                 logo_uri: None,
                 connection_url: "https://example.com".to_string(),
                 redirect_uri: Some("https://example.com".to_string()),
-                identity: Identity::did("did:example:123").unwrap(),
+                identity: Some(Identity::did("did:example:123").unwrap()),
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {

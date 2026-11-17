@@ -1,6 +1,7 @@
 pub mod actions;
 pub mod reducers;
 
+use crate::error::AppError;
 use crate::state::{
     did::{
         validate_domain_linkage::ValidationStatus,
@@ -37,14 +38,21 @@ impl Connections {
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
     /// its display data with what was just fetched, updates the last interaction time and returns a reference to the
     /// connection.
+    ///
+    /// Connections are keyed by identity, so a counterparty whose identity is not known yet (an unverified OID4VCI issuer
+    /// before its credential was verified, see ADR 0005) cannot become a connection.
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
-    ) -> &mut Connection {
+    ) -> Result<&mut Connection, AppError> {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
-        let identity = &client_metadata.identity;
+        let identity = client_metadata.identity.as_ref().ok_or_else(|| {
+            AppError::UntrustedError(format!(
+                "The identity of {url} is not verified, so it cannot be a connection"
+            ))
+        })?;
 
         // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
         let connection_index =
@@ -78,7 +86,7 @@ impl Connections {
                 index
             };
 
-        &mut self.0[connection_index]
+        Ok(&mut self.0[connection_index])
     }
 }
 
@@ -135,7 +143,11 @@ impl Connection {
         ecosystems: Option<Vec<EcosystemProfile>>,
     ) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
-        let id = sha256::digest([name.as_bytes(), url.as_bytes()].concat()).to_string();
+        // The identity is part of the hash: connections are keyed by identity, so two with the same name and URL but
+        // different identities (an issuer that signs with a new `did:jwk`, see ADR 0005) must not share an id. The
+        // fields are hashed as a JSON array, so that no two triples give the same bytes. A DID identity hashes as the DID.
+        // Stored connections keep their ids.
+        let id = sha256::digest(serde_json::json!([name, url, identity.to_string()]).to_string()).to_string();
         let current_datetime = DateUtils::new_date_string();
         Self {
             id,
@@ -244,7 +256,7 @@ mod tests {
                 logo_uri: None,
                 connection_url: url.to_string(),
                 redirect_uri: None,
-                identity,
+                identity: Some(identity),
             },
             domain_validation: None,
             linked_verifiable_presentations: None,
@@ -259,16 +271,18 @@ mod tests {
         let url = "https://example.com";
         let name = "Example";
         let did = Identity::did("did:example:123").unwrap();
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(&did));
 
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
@@ -286,11 +300,12 @@ mod tests {
                 "Old name",
                 did.clone(),
             ))
+            .unwrap()
             .clone();
 
         let mut refreshed = pending_connection_data("https://new.example.com", "New name", did.clone());
         refreshed.domain_validation = Some((ValidationStatus::Success, DateUtils::new_date_string()));
-        let updated = connections.update_last_interaction_or_insert_new(&refreshed);
+        let updated = connections.update_last_interaction_or_insert_new(&refreshed).unwrap();
 
         assert_eq!(updated.id, connection.id);
         assert_eq!(updated.first_interacted, connection.first_interacted);
@@ -309,8 +324,9 @@ mod tests {
         let did = Identity::did("did:example:123").unwrap();
         let url = "https://example.com";
         let name = "Example";
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -319,14 +335,51 @@ mod tests {
 
         // A different DID is a different connection, even when the display name and url is identical.
         let other_did = Identity::did("did:example:456").unwrap();
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 2);
         assert!(connections.contains(&did));
         assert!(connections.contains(&other_did));
+        // Each has its own id, so the credentials and history events of one are not attributed to the other.
+        assert_ne!(connections.0[0].id, connections.0[1].id);
+    }
+
+    #[test]
+    fn connection_ids_keep_the_fields_apart() {
+        // Joined, both give `Example` + `https://issuer.test/did:web:a:` + `did:web:b`.
+        let connection = |url: &str, did: &str| {
+            Connection::new(
+                "Example".to_string(),
+                url.to_string(),
+                Identity::did(did).unwrap(),
+                None,
+                None,
+                None,
+            )
+        };
+
+        assert_ne!(
+            connection("https://issuer.test/", "did:web:a:did:web:b").id,
+            connection("https://issuer.test/did:web:a:", "did:web:b").id
+        );
+    }
+
+    #[test]
+    fn a_counterparty_without_an_identity_does_not_become_a_connection() {
+        let mut connections = Connections::new();
+        let mut unverified = pending_connection_data(
+            "https://example.com",
+            "Example",
+            Identity::did("did:example:123").unwrap(),
+        );
+        unverified.client_metadata.identity = None;
+
+        assert!(connections.update_last_interaction_or_insert_new(&unverified).is_err());
+        assert!(connections.0.is_empty());
     }
 
     fn ecosystem(name: &str) -> EcosystemProfile {

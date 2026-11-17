@@ -97,6 +97,15 @@ Closing the app window ends the whole instance. Killing only the launcher (a clo
 esbuild, cargo and the app running on Windows, so `pnpm dev:instance` also starts a hidden watchdog that stops them
 once the launcher is gone. `pnpm dev:stop` ends every process started from the current checkout.
 
+### Mock email verification service
+
+`pnpm mock:email-verification` runs a local mock of the email verification service on port 5180. It answers the
+requests UniMe sends, accepts a fixed code (`1234`) and has a control API under `/__mock` to set the case lifetime,
+clock skew, delays and injected errors, or to change when a case expires. See the header of
+`scripts/mock-email-verification-service.mjs` for the API. Start an instance against it with
+`EMAIL_VERIFICATION_SERVICE_HOST=http://localhost:5180 pnpm dev:instance --name email-mock`; the host is compiled in,
+so the next build without the variable switches back to `identity-wallet/.env`.
+
 Mobile commands are `pnpm tauri android init|dev|build` and `pnpm tauri ios init|dev|build`. Do not initialize or
 regenerate a mobile project unless the task calls for it. Tracked platform customizations live under
 `unime/src-tauri/gen-static/`; `scripts/override-generated-mobile-files.sh` overwrites the matching files in Tauri's

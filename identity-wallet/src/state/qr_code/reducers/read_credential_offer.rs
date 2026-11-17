@@ -243,7 +243,7 @@ mod tests {
                 logo_uri: Some(CLIENT_LOGO_URI.to_string()),
                 connection_url: connection_url.to_string(),
                 redirect_uri: None,
-                identity: crate::identity::Identity::did("did:example:123").unwrap(),
+                identity: Some(crate::identity::Identity::did("did:example:123").unwrap()),
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {

@@ -68,11 +68,13 @@ The identity is verified before the user accepts the connection, as ADR 0001 req
 2. Otherwise, the credential issuer metadata's `signed_metadata` gives an X.509 identity when its `x5c` chain
    validates against a trust anchor, its signature verifies with the leaf's key, its `sub` is the
    `credential_issuer` URL, and the leaf certificate has that URL's host as a DNS name.
-3. Otherwise the issuer is rejected, as before.
+3. Otherwise an issuer that publishes no DID document is accepted as unverified, and bound to the DID that signs its
+   credential ([ADR 0005](0005-unverified-oid4vci-issuers.md)). One whose DID document is unavailable is rejected.
 
 The connection's identity decides how its credentials are checked. Every credential of an issuer with an X.509
 identity, whatever its format, must be signed under an `x5c` chain that validates against a trust anchor and whose
-leaf has the identity's DNS name. The credentials of an issuer with a DID identity are validated as before.
+leaf has the identity's DNS name. The credentials of an issuer with a DID identity, or of an unverified one, are
+verified with the DID that signs them, as ADR 0005 describes.
 
 ### Verifiers
 

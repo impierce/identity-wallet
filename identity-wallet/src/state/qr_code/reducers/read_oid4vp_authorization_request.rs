@@ -58,7 +58,7 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 .connections
                 .0
                 .iter()
-                .find(|connection| connection.identity == client_metadata.identity);
+                .find(|connection| Some(&connection.identity) == client_metadata.identity.as_ref());
             let requested_credentials = with_last_shared(requested_credentials, connection);
             ensure_shareable(&requested_credentials)?;
             Ok(AppState {
