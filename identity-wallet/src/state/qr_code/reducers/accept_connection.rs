@@ -11,7 +11,7 @@ use crate::{
         did::validate_linked_verifiable_presentations::{
             validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
         },
-        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        qr_code::{actions::qrcode_scanned::QrCodeScanned, oid4vp_refusal},
         user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
         AppState,
     },
@@ -243,6 +243,18 @@ async fn parse_qr_code(state: &AppState, qr_code_scanned: String) -> Result<Pars
         .validate_request(qr_code_scanned.clone())
         .await
         .map_err(|_| InvalidQRCodeError(qr_code_scanned.clone()))?;
+
+    // A request UniMe can read and trust, but must not answer with credentials: the Verifier gets an Authorization
+    // Error Response, the user an error.
+    if let Some(refusal) = oid4vp_refusal::refusal_of(&generic_authorization_request) {
+        drop(state_guard);
+        info!("Refusing the authorization request: {}", refusal.error);
+        if let Some(response_uri) = oid4vp_refusal::error_response_uri(&generic_authorization_request) {
+            let state = generic_authorization_request.body.state.as_deref();
+            oid4vp_refusal::send_error_response(&response_uri, state, &refusal).await;
+        }
+        return Err(UnsupportedError(refusal.description));
+    }
 
     if let Result::Ok(siopv2_authorization_request) =
         AuthorizationRequest::<Object<SIOPv2>>::from_generic(&generic_authorization_request)

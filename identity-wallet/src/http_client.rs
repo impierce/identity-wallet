@@ -128,6 +128,17 @@ pub async fn fetch_public_destination(mut url: Url) -> Result<reqwest::Response,
     Err(AppError::DownloadAborted(TOO_MANY_REDIRECTS))
 }
 
+/// Sends `form` as a form POST to a remote-supplied `url`, once: the destination must pass
+/// [`assert_public_destination`], and a redirect is returned as the response rather than followed.
+pub async fn post_form_to_public_destination<T: serde::Serialize + ?Sized>(
+    url: &Url,
+    form: &T,
+) -> Result<reqwest::Response, AppError> {
+    assert_public_destination(url).await?;
+    let client = get_public_destination_http_client().await?;
+    Ok(client.post(url.clone()).form(form).send().await?)
+}
+
 /// An `openid-federation` HTTP client that only requests public destinations, see [`fetch_public_destination`].
 ///
 /// Entity identifiers, authority hints and federation endpoints all come from remote entity configurations, and the
