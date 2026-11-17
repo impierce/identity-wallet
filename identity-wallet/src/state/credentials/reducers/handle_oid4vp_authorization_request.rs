@@ -39,7 +39,6 @@ use oid4vp::{
     },
 };
 
-use identity_iota::did::DID as _;
 use identity_kit::{
     did::{Did, DidUrl},
     sd_jwt_vc::{KeyBinding, SdJwt, SdJwtVc},

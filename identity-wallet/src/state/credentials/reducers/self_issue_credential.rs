@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
 use async_trait::async_trait;
-use identity_iota::core::{Timestamp, Url};
+use chrono::{DateTime, SecondsFormat, Utc};
 use identity_kit::{
+    did::Did,
     jose::{encode_compact, JwsAlgorithm, JwsHeader, SignError, Signer},
     sd_jwt_vc::{ClaimPath, SdJwt, SdJwtBuilder},
     vc::Jwt,
@@ -89,16 +90,15 @@ pub async fn sign_self_issued_sd_jwt(
     key_type: &str,
     credential_type: &str,
     mut credential_subject: Map<String, Value>,
-    valid_from: Timestamp,
+    valid_from: DateTime<Utc>,
 ) -> Result<SelfIssuedSdJwt, AppError> {
     let algorithm = match key_type {
         "EdDSA" => Algorithm::EdDSA,
         "ES256" => Algorithm::ES256,
         _ => return Err(AppError::Error("Unsupported key type".to_string())),
     };
-    let issuer_did: Url = issuer_did
-        .parse()
-        .map_err(|_| AppError::Error("Failed to parse the did into a <Url>".to_string()))?;
+    let issuer_did =
+        Did::parse(issuer_did).map_err(|err| AppError::Error(format!("Failed to parse the DID: {err}")))?;
 
     let kid = subject.key_id(did_method, algorithm).await.ok_or(AppError::Error(
         "Failed to create a key id necessary to self-issue the credential".to_string(),
@@ -119,7 +119,7 @@ pub async fn sign_self_issued_sd_jwt(
         "@context": ["https://www.w3.org/ns/credentials/v2"],
         "type": types,
         "issuer": issuer_did,
-        "validFrom": valid_from.to_string(),
+        "validFrom": valid_from.to_rfc3339_opts(SecondsFormat::Secs, true),
         "credentialSubject": credential_subject,
         "iss": issuer_did.to_string(),
     });
@@ -200,7 +200,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             SelfIssuedCredentialType::Address => "ResidenceCredential",
         };
 
-        let now = Timestamp::now_utc();
+        let now = Utc::now();
 
         let self_issued = sign_self_issued_sd_jwt(
             subject,
@@ -240,7 +240,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .to_owned();
 
         // Metadata
-        vcr.display_credential.metadata.date_issued = now.to_string();
+        vcr.display_credential.metadata.date_issued = now.to_rfc3339_opts(SecondsFormat::Secs, true);
         vcr.display_credential.metadata.is_favorite = self_issue_credential.is_favorite;
         vcr.display_credential.metadata.icon = self_issue_credential.icon;
 
@@ -326,7 +326,7 @@ mod tests {
                 key_type,
                 "NaturalPersonCredential",
                 credential_subject,
-                Timestamp::parse("2026-01-01T00:00:00Z").unwrap(),
+                "2026-01-01T00:00:00Z".parse().unwrap(),
             )
             .await
             .unwrap();

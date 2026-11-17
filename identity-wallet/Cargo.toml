@@ -21,17 +21,6 @@ futures = "0.3"
 hickory-resolver = { version = "0.26", default-features = false, features = ["tokio"] }
 icu = "1.4.0"
 identity-kit = { workspace = true, features = ["did-jwk", "did-key", "did-web", "domain-linkage", "linked-vp", "sd-jwt", "status-list"] }
-identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1", default-features = false, features = [
-    "credential",
-    "domain-linkage",
-    "presentation",
-    "validator",
-    "sd-jwt-vc",
-] }
-identity_core = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_iota = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_jose = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10"
 jsonschema = "0.29"
