@@ -55,18 +55,39 @@ pub fn well_known_candidates(base: &Url, suffix: &str) -> Vec<Url> {
     candidates
 }
 
-/// Fetches the credential issuer metadata of `credential_issuer_url`.
+/// Fetches the credential issuer metadata of `credential_issuer_url`. Metadata naming another Credential Issuer is
+/// not used, see [`ensure_credential_issuer`].
 pub async fn get_credential_issuer_metadata(credential_issuer_url: &Url) -> anyhow::Result<CredentialIssuerMetadata> {
     fetch_well_known(
         credential_issuer_url,
         &[OPENID_CREDENTIAL_ISSUER],
         "credential issuer metadata",
+        |metadata: &CredentialIssuerMetadata| {
+            ensure_credential_issuer(Some(metadata.credential_issuer.as_str()), credential_issuer_url)
+        },
     )
     .await
 }
 
+/// "If the Credential Issuer metadata contains a credential_issuer parameter that is not identical to the Credential
+/// Issuer Identifier, the metadata MUST NOT be used" (OpenID4VCI 1.0, Section 12.2.4). Both are compared as parsed
+/// URLs, so a difference `url::Url` normalizes away (a trailing slash on an origin) is not seen.
+fn ensure_credential_issuer(credential_issuer: Option<&str>, credential_issuer_url: &Url) -> anyhow::Result<()> {
+    anyhow::ensure!(
+        credential_issuer
+            .and_then(|credential_issuer| Url::parse(credential_issuer).ok())
+            .as_ref()
+            == Some(credential_issuer_url),
+        "its credential_issuer {} is not the Credential Issuer Identifier {credential_issuer_url}",
+        credential_issuer.unwrap_or("(none)")
+    );
+    Ok(())
+}
+
 /// Fetches the credential issuer metadata of `credential_issuer_url`, with the values of its `signed_metadata` taking
-/// precedence when it verifies the credential issuer under `trust_anchors` (OID4VCI 1.0 §11.2.3, ADR 0004).
+/// precedence when it verifies the credential issuer under `trust_anchors` (OID4VCI 1.0 §11.2.3, ADR 0004). Metadata
+/// naming another Credential Issuer is not used, before or after the signed values are applied
+/// ([`ensure_credential_issuer`]).
 pub async fn get_verified_credential_issuer_metadata(
     credential_issuer_url: &Url,
     trust_anchors: &[String],
@@ -77,11 +98,20 @@ pub async fn get_verified_credential_issuer_metadata(
         &[OPENID_CREDENTIAL_ISSUER],
         resource,
         parse_credential_issuer_metadata,
+        |metadata: &Map<String, Value>| {
+            ensure_credential_issuer(
+                metadata.get("credential_issuer").and_then(Value::as_str),
+                credential_issuer_url,
+            )
+        },
     )
     .await?;
-    crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors)
+    let metadata = crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors)
         .await
-        .with_context(|| format!("Failed to parse {resource} from {url} (HTTP {status})"))
+        .with_context(|| format!("Failed to parse {resource} from {url} (HTTP {status})"))?;
+    ensure_credential_issuer(Some(metadata.credential_issuer.as_str()), credential_issuer_url)
+        .with_context(|| format!("The {resource} at {url} is not used"))?;
+    Ok(metadata)
 }
 
 /// The JSON of credential issuer metadata, which must be complete unless it carries `signed_metadata`: an issuer that
@@ -103,6 +133,7 @@ pub async fn get_authorization_server_metadata(
         authorization_server_url,
         &[OAUTH_AUTHORIZATION_SERVER, OPENID_CONFIGURATION],
         "authorization server metadata",
+        |_: &AuthorizationServerMetadata| Ok(()),
     )
     .await
 }
@@ -173,8 +204,14 @@ pub async fn get_did_document_id(base: &Url) -> anyhow::Result<Option<String>> {
 ///
 /// The error messages keep the `(HTTP <status>)` and `Failed to parse` wording that
 /// [`ErrorCause`](crate::user_error::ErrorCause) recognises.
-async fn fetch_well_known<T: DeserializeOwned>(base: &Url, suffixes: &[&str], resource: &str) -> anyhow::Result<T> {
-    fetch_well_known_with(base, suffixes, resource, |text| serde_json::from_str(text))
+/// The first candidate URL that answers with a `T` that `accept` takes; a `T` it refuses counts as not found there.
+async fn fetch_well_known<T: DeserializeOwned>(
+    base: &Url,
+    suffixes: &[&str],
+    resource: &str,
+    accept: impl Fn(&T) -> anyhow::Result<()>,
+) -> anyhow::Result<T> {
+    fetch_well_known_with(base, suffixes, resource, |text| serde_json::from_str(text), accept)
         .await
         .map(|(resource_value, _, _)| resource_value)
 }
@@ -186,6 +223,7 @@ async fn fetch_well_known_with<T>(
     suffixes: &[&str],
     resource: &str,
     parse: impl Fn(&str) -> serde_json::Result<T>,
+    accept: impl Fn(&T) -> anyhow::Result<()>,
 ) -> anyhow::Result<(T, Url, StatusCode)> {
     let client = get_http_client().await;
     let mut last_error = None;
@@ -213,10 +251,16 @@ async fn fetch_well_known_with<T>(
         }
 
         match parse(&text) {
-            Ok(resource_value) => {
-                debug!("Found {resource} at {url}");
-                return Ok((resource_value, url, status));
-            }
+            Ok(resource_value) => match accept(&resource_value) {
+                Ok(()) => {
+                    debug!("Found {resource} at {url}");
+                    return Ok((resource_value, url, status));
+                }
+                Err(err) => {
+                    debug!("Not using the {resource} at {url}: {err}");
+                    last_error = Some(err.context(format!("The {resource} at {url} is not used")));
+                }
+            },
             Err(err) => {
                 debug!("Unparseable {resource} at {url}: {err}");
                 last_error = Some(anyhow::anyhow!(
@@ -404,6 +448,64 @@ mod tests {
             )),
             crate::user_error::ErrorCause::InvalidResponse
         );
+    }
+
+    #[tokio::test]
+    async fn metadata_naming_another_credential_issuer_is_not_used() {
+        for verified in [false, true] {
+            let mock_server = MockServer::start().await;
+            let issuer = mock_server.uri();
+            mount_json(
+                &mock_server,
+                "/.well-known/openid-credential-issuer",
+                credential_issuer_metadata("https://other.example"),
+            )
+            .await;
+
+            let error = load_credential_issuer_metadata(&url(&issuer), verified)
+                .await
+                .unwrap_err();
+
+            assert!(
+                format!("{error:#}").contains("is not the Credential Issuer Identifier"),
+                "{error:#}"
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn a_candidate_naming_another_issuer_is_skipped_for_the_next() {
+        for verified in [false, true] {
+            let mock_server = MockServer::start().await;
+            let issuer = format!("{}/tenant", mock_server.uri());
+            // The first candidate tried names another issuer; the second, the specification's location, this one.
+            mount_json(
+                &mock_server,
+                "/tenant/.well-known/openid-credential-issuer",
+                credential_issuer_metadata("https://other.example"),
+            )
+            .await;
+            mount_json(
+                &mock_server,
+                "/.well-known/openid-credential-issuer/tenant",
+                credential_issuer_metadata(&issuer),
+            )
+            .await;
+
+            let metadata = load_credential_issuer_metadata(&url(&issuer), verified).await.unwrap();
+
+            assert_eq!(metadata.credential_issuer, url(&issuer));
+        }
+    }
+
+    /// The credential issuer metadata of `issuer`, with [`get_verified_credential_issuer_metadata`] (without trust
+    /// anchors) when `verified`, else with [`get_credential_issuer_metadata`].
+    async fn load_credential_issuer_metadata(issuer: &Url, verified: bool) -> anyhow::Result<CredentialIssuerMetadata> {
+        if verified {
+            get_verified_credential_issuer_metadata(issuer, &[]).await
+        } else {
+            get_credential_issuer_metadata(issuer).await
+        }
     }
 
     #[tokio::test]

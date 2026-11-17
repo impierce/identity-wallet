@@ -5062,9 +5062,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vc-manager"
-version = "0.6.1"
+version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3a54215508edfe2c0134afe9e00c22c0e7996a9550c1e35c819ebdee536da44"
+checksum = "303c79dc2c1d73b4d72f142aec6c669a203c27a24dd55de3b1197b526c95c031"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5119,9 +5119,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vp"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb2101a603bf54ceda514189603bc3e9ac9342479ded0c203fd489718cec14b9"
+checksum = "73d75fd464abb58eadf3a2bfd21c79c29a137285e4854bffed0525071de6ec68"
 dependencies = [
  "anyhow",
  "chrono",
@@ -6922,9 +6922,9 @@ dependencies = [
 
 [[package]]
 name = "siopv2"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34c6924150a5770ed1af936415ea158d03d7904345840d51446d128cce27e382"
+checksum = "86ebe9d6210dd4f2f1fe92df54683e99f18c70c423eb650ecfb71ad729c920ab"
 dependencies = [
  "anyhow",
  "async-trait",

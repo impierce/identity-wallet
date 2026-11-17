@@ -11,16 +11,16 @@ identity-kit = { version = "0.5.1", default-features = false }
 jsonwebtoken = { version = "11.1", features = ["aws_lc_rs"] }
 log = "^0.4"
 oid4vc-core = "0.6.0"
-oid4vc-manager = "0.6.1"
+oid4vc-manager = "0.6.2"
 oid4vci = "0.6.1"
-oid4vp = "0.6.1"
+oid4vp = "0.7.0"
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
 webpki-roots = "0.26"
 serde_json = "1.0"
 serial_test = "2.0"
-siopv2 = "0.6.0"
+siopv2 = "0.6.1"
 tempfile = "3.5.0"
 tokio = { version = "1.46", features = ["macros"] }
 wiremock = "0.5"
