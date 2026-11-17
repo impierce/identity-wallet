@@ -135,7 +135,13 @@ impl Verify for Subject {
     /// The public key of `did_url` in the form `jsonwebtoken` verifies with: an Ed25519 key as its 32 bytes, a P-256
     /// key as its uncompressed SEC1 point.
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
-        let jwk = self.resolve_public_key(did_url).await?;
+        // Only a method listed under `verificationMethod`, as with IOTA's `MethodScope::VerificationMethod` before.
+        let jwk = self
+            .resolver()
+            .await
+            .listed_public_key(did_url)
+            .await
+            .map_err(|err| anyhow!("Failed to resolve the public key of `{did_url}`: {err:#}"))?;
         match (jwk.kty(), jwk.crv()) {
             ("OKP", Some("Ed25519")) => Ok(jwk.ed25519_public_bytes()?.to_vec()),
             ("EC", Some("P-256")) => Ok(jwk.p256_public_bytes()?.to_vec()),

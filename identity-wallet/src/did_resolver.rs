@@ -9,6 +9,14 @@ use identity_kit::{
 };
 use std::sync::Arc;
 
+/// Where to look for a verification method in a DID document.
+enum MethodScope {
+    /// Under `verificationMethod`, or embedded in a verification relationship.
+    Any,
+    /// Under `verificationMethod` only.
+    Listed,
+}
+
 /// Resolves `did:key`, `did:jwk` and `did:web` DIDs.
 ///
 /// `did:key` methods carry the key as `publicKeyJwk`, as they did with `did_manager`.
@@ -42,13 +50,27 @@ impl Resolver {
         Ok(self.0.resolve_document(&did).await?)
     }
 
-    /// The public key of the verification method `did_url`, from its `publicKeyJwk` or its `publicKeyMultibase`.
+    /// The public key of the verification method `did_url`, listed under `verificationMethod` or embedded in a
+    /// verification relationship, from its `publicKeyJwk` or its `publicKeyMultibase`.
     pub async fn public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        self.method_public_key(did_url, MethodScope::Any).await
+    }
+
+    /// The public key of the verification method `did_url` listed under `verificationMethod`. A method embedded only
+    /// in a relationship, such as `authentication`, is not found. Signatures on credentials, status lists and requests
+    /// are verified with this key, as with IOTA's `MethodScope::VerificationMethod` before.
+    pub async fn listed_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        self.method_public_key(did_url, MethodScope::Listed).await
+    }
+
+    async fn method_public_key(&self, did_url: &str, scope: MethodScope) -> anyhow::Result<Jwk> {
         let did_url = DidUrl::parse(did_url).context("Invalid DID URL")?;
         let document = self.0.resolve_document(did_url.did()).await?;
-        let method = document
-            .verification_method(&did_url)
-            .ok_or_else(|| anyhow!("No verification method `{did_url}`"))?;
+        let method = match scope {
+            MethodScope::Any => document.verification_method(&did_url),
+            MethodScope::Listed => document.verification_method.iter().find(|method| method.id == did_url),
+        }
+        .ok_or_else(|| anyhow!("No verification method `{did_url}`"))?;
 
         match (method.public_key_jwk(), method.public_key_multibase()) {
             (Some(jwk), _) => Ok(jwk.public()),
@@ -126,6 +148,40 @@ mod tests {
 
         assert_eq!(document.id.as_str(), did);
         assert_eq!(document.verification_method.len(), 1);
+    }
+
+    /// A key embedded only in `authentication` is the holder's, so it is found for holder keys but not for signatures
+    /// on credentials, which use the methods listed under `verificationMethod`.
+    #[tokio::test]
+    async fn a_method_embedded_in_a_relationship_is_not_a_listed_method() {
+        let mock_server = MockServer::start().await;
+        let did = format!("did:web:localhost%3A{}", mock_server.address().port());
+        let jwk = json!({ "kty": "OKP", "crv": "Ed25519", "x": "G80iskrv_nE69qbGLSpeOHJgmV4MKIzsy5l5iT6pCww" });
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "@context": ["https://www.w3.org/ns/did/v1", "https://w3id.org/security/suites/jws-2020/v1"],
+                "id": did,
+                "verificationMethod": [{
+                    "id": format!("{did}#listed"),
+                    "type": "JsonWebKey2020",
+                    "controller": did,
+                    "publicKeyJwk": jwk
+                }],
+                "authentication": [{
+                    "id": format!("{did}#embedded"),
+                    "type": "JsonWebKey2020",
+                    "controller": did,
+                    "publicKeyJwk": jwk
+                }]
+            })))
+            .mount(&mock_server)
+            .await;
+        let resolver = Resolver::new();
+
+        assert!(resolver.listed_public_key(&format!("{did}#listed")).await.is_ok());
+        assert!(resolver.public_key(&format!("{did}#embedded")).await.is_ok());
+        assert!(resolver.listed_public_key(&format!("{did}#embedded")).await.is_err());
     }
 
     #[tokio::test]
