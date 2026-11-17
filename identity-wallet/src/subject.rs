@@ -91,6 +91,23 @@ impl Subject {
             (None, kty, crv) => Err(anyhow!("Unsupported key type `{kty}` ({crv:?}) for `{did_url}`")),
         }
     }
+
+    /// The algorithm of the wallet's own key whose public part is `jwk`, for a credential that names the holder's
+    /// key by value (`cnf.jwk`, RFC 7800). The keys are compared by their RFC 7638 thumbprint, so members such as
+    /// `alg` or `kid` do not matter. An error when `jwk` is none of the wallet's keys.
+    pub async fn signing_algorithm_of_key(&self, jwk: &Jwk) -> anyhow::Result<Algorithm> {
+        let wanted = jwk.thumbprint_sha256()?;
+        for algorithm in [Algorithm::ES256, Algorithm::EdDSA] {
+            // A `did:jwk` is the key itself, so resolving it needs no network.
+            let Some(did_url) = Sign::key_id(self, "did:jwk", algorithm).await else {
+                continue;
+            };
+            if self.resolve_public_key(&did_url).await?.thumbprint_sha256()? == wanted {
+                return Ok(algorithm);
+            }
+        }
+        Err(anyhow!("The key is none of this wallet's keys"))
+    }
 }
 
 #[async_trait]
@@ -169,5 +186,49 @@ fn jws_algorithm(algorithm: Algorithm) -> anyhow::Result<JwsAlgorithm> {
         Algorithm::EdDSA => Ok(JwsAlgorithm::EdDSA),
         Algorithm::ES256 => Ok(JwsAlgorithm::ES256),
         unsupported => Err(anyhow!("Unsupported signing algorithm: {unsupported:?}")),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::persistence::STRONGHOLD;
+    use serde_json::{json, Value};
+    use tempfile::NamedTempFile;
+
+    /// The public key of `did_url` with only the members an issuer copies into `cnf.jwk`.
+    async fn bare_public_key(subject: &Subject, did_url: &str) -> Jwk {
+        let jwk = serde_json::to_value(subject.resolve_public_key(did_url).await.unwrap()).unwrap();
+        let bare: serde_json::Map<String, Value> = ["kty", "crv", "x", "y"]
+            .into_iter()
+            .filter_map(|member| Some((member.to_string(), jwk.get(member)?.clone())))
+            .collect();
+        serde_json::from_value(Value::Object(bare)).unwrap()
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_key_named_by_value_is_found_among_the_wallets_keys() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+        let subject = Subject::new(Arc::new(StrongholdManager::create("sup3rSecr3t").unwrap()))
+            .await
+            .unwrap();
+
+        for algorithm in [Algorithm::ES256, Algorithm::EdDSA] {
+            let did_url = Sign::key_id(&subject, "did:jwk", algorithm).await.unwrap();
+            let cnf_jwk = bare_public_key(&subject, &did_url).await;
+            assert_eq!(subject.signing_algorithm_of_key(&cnf_jwk).await.unwrap(), algorithm);
+        }
+
+        // RFC 7515, Appendix A.3.1: a P-256 key the wallet does not hold.
+        let foreign: Jwk = serde_json::from_value(json!({
+            "kty": "EC",
+            "crv": "P-256",
+            "x": "f83OJ3D2xF1Bg8vub9tLe1gHMzV76e8Tus9uPHvRVEU",
+            "y": "x_FEzRu9m36HLN_tue659LNpXW6pCyStikYjKIWI5a0"
+        }))
+        .unwrap();
+        assert!(subject.signing_algorithm_of_key(&foreign).await.is_err());
     }
 }
