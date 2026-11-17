@@ -78,7 +78,8 @@ async fn verify_sd_jwt(token: &str, subject: &Subject) -> Result<(), AppError> {
     let kid =
         extract_normalized_did_kid_from_jwt(sd_jwt.jwt().as_str()).map_err(|err| untrusted(format!("{err:#}")))?;
     let public_key = subject
-        .resolve_public_key(&kid)
+        // Only a method listed under `verificationMethod`, as for every other signature the wallet verifies.
+        .resolve_listed_public_key(&kid)
         .await
         .map_err(|err| untrusted(format!("{err:#}")))?;
     // The resolver returns the key in its own JWK type; identity-kit verifies with its own.

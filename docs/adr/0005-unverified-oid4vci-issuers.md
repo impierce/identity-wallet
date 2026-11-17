@@ -33,7 +33,7 @@ it issues.
    not verified. Domain linkage and linked verifiable presentations are checked on a DID, so they are skipped. A request
    that fails outright, or a DID document whose `id` is not a DID, is still refused.
 2. **On receipt.** Every received credential's issuer signature is verified before anything is stored: `jwt_vc_json`,
-   `dc+sd-jwt` and `vc+sd-jwt`. The key is the one the JWT's `kid` names, a DID URL resolved with the wallet's resolver.
+   `dc+sd-jwt` and `vc+sd-jwt`. The key is the one the JWT's `kid` names: a DID URL resolved with the wallet's resolver, to a method listed under `verificationMethod`, as for every other signature UniMe verifies.
    When the JWT has an `iss`, it must be the DID of that key. For an SD-JWT, every disclosure must match a digest of the
    signed payload. The DID of the key is the **signing DID**.
 3. **Binding.** An issuer proven by its DID document must have signed every credential with that DID; otherwise the

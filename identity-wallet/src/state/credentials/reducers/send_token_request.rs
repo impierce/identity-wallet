@@ -820,6 +820,8 @@ mod issuance_tests {
 
     /// An issuer that signs with a did:jwk held in memory.
     struct TestIssuer {
+        store: Arc<InMemoryKeyStore>,
+        key: identity_kit::keys::KeyId,
         identity: KeyStoreIdentity,
         did: String,
         kid: String,
@@ -832,15 +834,29 @@ mod issuance_tests {
                 .generate(KeySpec::new(KeyType::P256, JwsAlgorithm::ES256))
                 .await
                 .unwrap();
-            let identity = KeyStoreIdentity::new(store).with_producer(DidJwk);
-            identity.bind(did_jwk(), JwsAlgorithm::ES256, key).await.unwrap();
+            let identity = KeyStoreIdentity::new(store.clone()).with_producer(DidJwk);
+            identity
+                .bind(did_jwk(), JwsAlgorithm::ES256, key.clone())
+                .await
+                .unwrap();
             let did = identity
                 .identifier(&did_jwk(), JwsAlgorithm::ES256)
                 .await
                 .unwrap()
                 .to_string();
             let kid = format!("{did}#0");
-            TestIssuer { identity, did, kid }
+            TestIssuer {
+                store,
+                key,
+                identity,
+                did,
+                kid,
+            }
+        }
+
+        /// The issuer's public key as a JWK.
+        async fn public_jwk(&self) -> serde_json::Value {
+            serde_json::to_value(self.store.public_jwk(&self.key).await.unwrap()).unwrap()
         }
 
         /// A `dc+sd-jwt` naming `iss` and `kid`, with `given_name` selectively disclosable, signed by this issuer.
@@ -871,6 +887,11 @@ mod issuance_tests {
     /// Serves the metadata, token and credential endpoints of an issuer handing out `credential`, and no DID document.
     async fn mount_issuer(credential: &str) -> MockServer {
         let server = MockServer::start().await;
+        mount_issuer_on(&server, credential).await;
+        server
+    }
+
+    async fn mount_issuer_on(server: &MockServer, credential: &str) {
         let uri = server.uri();
         Mock::given(method("GET"))
             .and(path("/.well-known/openid-credential-issuer"))
@@ -881,7 +902,7 @@ mod issuance_tests {
                     CONFIGURATION_ID: { "format": "dc+sd-jwt", "vct": "https://example.com/pid" }
                 }
             })))
-            .mount(&server)
+            .mount(server)
             .await;
         Mock::given(method("GET"))
             .and(path("/.well-known/oauth-authorization-server"))
@@ -890,23 +911,22 @@ mod issuance_tests {
                 "token_endpoint": format!("{uri}/token"),
                 "pre-authorized_grant_anonymous_access_supported": true
             })))
-            .mount(&server)
+            .mount(server)
             .await;
         Mock::given(method("POST"))
             .and(path("/token"))
             .respond_with(
                 ResponseTemplate::new(200).set_body_json(json!({ "access_token": "access", "token_type": "bearer" })),
             )
-            .mount(&server)
+            .mount(server)
             .await;
         Mock::given(method("POST"))
             .and(path("/credential"))
             .respond_with(
                 ResponseTemplate::new(200).set_body_json(json!({ "credentials": [{ "credential": credential }] })),
             )
-            .mount(&server)
+            .mount(server)
             .await;
-        server
     }
 
     async fn test_managers() -> Arc<tauri::async_runtime::Mutex<Managers>> {
@@ -1089,6 +1109,58 @@ mod issuance_tests {
         assert_eq!(state.connections.0.len(), 1);
         assert_eq!(state.connections.0[0].did, issuer.did);
         assert_eq!(stored_credentials(&managers).await, 1);
+    }
+
+    /// A credential's signature is verified only with a key listed under `verificationMethod`, as every other signature
+    /// the wallet verifies. A did:web whose key is embedded only in `authentication` is refused; with the same key listed,
+    /// the credential is stored.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_credential_signed_with_a_key_embedded_only_in_authentication_is_refused() {
+        let issuer = TestIssuer::new().await;
+        let public_jwk = issuer.public_jwk().await;
+
+        for listed in [false, true] {
+            let server = MockServer::start().await;
+            let did = format!("did:web:localhost%3A{}", server.address().port());
+            let kid = format!("{did}#key-0");
+            let method_json = json!({
+                "id": kid,
+                "type": "JsonWebKey2020",
+                "controller": did,
+                "publicKeyJwk": public_jwk,
+            });
+            let document = if listed {
+                json!({ "id": did, "verificationMethod": [method_json], "assertionMethod": [kid] })
+            } else {
+                json!({ "id": did, "authentication": [method_json] })
+            };
+            Mock::given(method("GET"))
+                .and(path("/.well-known/did.json"))
+                .respond_with(ResponseTemplate::new(200).set_body_json(document))
+                .mount(&server)
+                .await;
+            mount_issuer_on(&server, &issuer.sd_jwt(&did, &kid).await).await;
+            let managers = test_managers().await;
+
+            let state = accepted_offer(AppState::default(), managers.clone(), &server, None);
+            let result = send_token_request(state, code_received()).await;
+
+            if listed {
+                let state = result.unwrap();
+                assert_eq!(state.connections.0[0].did, did);
+                assert_eq!(stored_credentials(&managers).await, 1);
+            } else {
+                // The key is in the document, embedded, so only the scope of the lookup refuses it.
+                let subject = managers.lock().await.identity_manager.as_ref().unwrap().subject.clone();
+                assert!(subject.resolve_public_key(&kid).await.is_ok());
+                assert!(
+                    matches!(&result, Err(AppError::UntrustedError(reason)) if reason.contains("The credential's signature is invalid")),
+                    "{result:?}"
+                );
+                assert_eq!(stored_credentials(&managers).await, 0);
+            }
+        }
     }
 
     #[test]

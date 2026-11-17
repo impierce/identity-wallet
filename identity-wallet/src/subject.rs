@@ -72,8 +72,28 @@ impl Subject {
     // TODO(ssi-agent): Duplicate of ssi-agent `Subject::resolve_public_key`.
     // Replace this local implementation with the original implementation from `ssi-agent`:
     // https://github.com/impierce/ssi-agent/blob/beta/agent_secret_manager/src/subject.rs
-    /// Resolves the public key for a given DID URL.
+    /// Resolves the public key for a given DID URL: a method listed under `verificationMethod` or embedded in a
+    /// verification relationship.
     pub async fn resolve_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        self.resolve_public_key_in(did_url, None).await
+    }
+
+    /// Resolves the public key of the method `did_url` listed under `verificationMethod`, the scope
+    /// [`Verify::public_key`] verifies signatures with. A method embedded only in a relationship, such as
+    /// `authentication`, is not found.
+    pub async fn resolve_listed_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        self.resolve_public_key_in(
+            did_url,
+            Some(identity_iota::verification::MethodScope::VerificationMethod),
+        )
+        .await
+    }
+
+    async fn resolve_public_key_in(
+        &self,
+        did_url: &str,
+        scope: Option<identity_iota::verification::MethodScope>,
+    ) -> anyhow::Result<Jwk> {
         let did_url =
             identity_iota::did::DIDUrl::parse(did_url).map_err(|err| anyhow!("Failed to parse DID URL: {err}"))?;
 
@@ -85,7 +105,7 @@ impl Subject {
             .map_err(|err| anyhow!("Failed to resolve DID Document for DID: `{did_url}`, error: {err}"))?;
 
         let verification_method = document
-            .resolve_method(DIDUrlQuery::from(&did_url), None)
+            .resolve_method(DIDUrlQuery::from(&did_url), scope)
             .ok_or(anyhow!(
                 "Failed to resolve verification method for DID URL: `{did_url}`"
             ))?;
