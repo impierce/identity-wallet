@@ -9,10 +9,15 @@ use log::{info, warn};
 use oid4vc_core::authorization_request::{AuthorizationRequest, Object, RedirectOrResponseUri};
 use oid4vp::oid4vp::OID4VP;
 use serde_json::Value;
+use std::time::Duration;
 use url::Url;
 
-use crate::http_client::get_http_client;
+use crate::http_client::post_form_to_public_destination;
 use crate::logging::url_host;
+
+/// How long sending an Authorization Error Response may take. It is sent while the action holds the state, so it
+/// stays well inside the action's time limit.
+const ERROR_RESPONSE_TIME_LIMIT: Duration = Duration::from_secs(5);
 
 /// Why UniMe refuses a request, as the Authorization Error Response says it.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -97,7 +102,9 @@ pub fn missing_credentials() -> Refusal {
 }
 
 /// Sends an Authorization Error Response (`error`, `error_description`, and `state` when the request had one) as a
-/// form POST to `response_uri`. What the Verifier answers is logged, not returned: the flow ends either way.
+/// form POST to `response_uri`. It can be sent before the user has accepted anything, so it goes to a public
+/// destination only, once, without following a redirect, and within [`ERROR_RESPONSE_TIME_LIMIT`]. What the Verifier
+/// answers is logged, not returned: the flow ends either way.
 pub async fn send_error_response(response_uri: &Url, state: Option<&str>, refusal: &Refusal) {
     let mut form = vec![
         ("error", refusal.error.to_string()),
@@ -107,19 +114,22 @@ pub async fn send_error_response(response_uri: &Url, state: Option<&str>, refusa
         form.push(("state", state.to_string()));
     }
     let host = url_host(response_uri);
-    match get_http_client()
-        .await
-        .post(response_uri.clone())
-        .form(&form)
-        .send()
-        .await
-    {
-        Ok(response) => info!(
+    let sent = tokio::time::timeout(
+        ERROR_RESPONSE_TIME_LIMIT,
+        post_form_to_public_destination(response_uri, &form),
+    )
+    .await;
+    match sent {
+        Ok(Ok(response)) => info!(
             "Sent the error response {} to {host}: HTTP {}",
             refusal.error,
             response.status()
         ),
-        Err(error) => warn!("Failed to send the error response {} to {host}: {error}", refusal.error),
+        Ok(Err(error)) => warn!("Failed to send the error response {} to {host}: {error}", refusal.error),
+        Err(_) => warn!(
+            "Gave up sending the error response {} to {host} after {ERROR_RESPONSE_TIME_LIMIT:?}",
+            refusal.error
+        ),
     }
 }
 
@@ -202,6 +212,30 @@ mod tests {
     fn transaction_data_is_refused_with_invalid_transaction_data() {
         let refusal = refusal_of(&request(json!({ "transaction_data": ["eyJ0eXBlIjoieCJ9"] }))).unwrap();
         assert_eq!(refusal.error, "invalid_transaction_data");
+    }
+
+    #[tokio::test]
+    async fn the_error_response_is_posted_once_and_a_redirect_is_not_followed() {
+        use wiremock::matchers::{body_string_contains, method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/response"))
+            .and(body_string_contains("error=access_denied"))
+            .and(body_string_contains("state=s-1"))
+            .respond_with(ResponseTemplate::new(307).insert_header("location", "/elsewhere"))
+            .expect(1)
+            .mount(&server)
+            .await;
+        Mock::given(path("/elsewhere"))
+            .respond_with(ResponseTemplate::new(200))
+            .expect(0)
+            .mount(&server)
+            .await;
+
+        let response_uri = Url::parse(&format!("{}/response", server.uri())).unwrap();
+        send_error_response(&response_uri, Some("s-1"), &missing_credentials()).await;
     }
 
     #[test]
