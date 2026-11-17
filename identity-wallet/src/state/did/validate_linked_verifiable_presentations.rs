@@ -81,13 +81,25 @@ pub async fn validate_linked_verifiable_presentations(
 fn get_linked_verifiable_presentation_urls(document: &DidDocument) -> Vec<Url> {
     identity_kit::linked_vp::services(document)
         .filter_map(|service| {
+            // The rejected endpoint URIs stay out of the log (ADR 0003): only the service id and why.
             service
-                .inspect_err(|err| warn!("Skipping an invalid LinkedVerifiablePresentation service: {err}"))
+                .inspect_err(|err| match err {
+                    LinkedVpError::InvalidService { id, source, .. } => match source {
+                        Some(source) => {
+                            warn!("Skipping the invalid LinkedVerifiablePresentation service `{id}`: {source}")
+                        }
+                        None => warn!("Skipping the invalid LinkedVerifiablePresentation service `{id}`"),
+                    },
+                    _ => warn!("Skipping an invalid LinkedVerifiablePresentation service"),
+                })
                 .ok()
         })
         .flat_map(|service| {
-            for (uri, err) in &service.invalid_urls {
-                warn!("Failed to parse linked verifiable presentation URL `{uri}`: {err}");
+            for (_, err) in &service.invalid_urls {
+                warn!(
+                    "Skipping an endpoint of LinkedVerifiablePresentation service `{}` that is not a URL: {err}",
+                    service.id()
+                );
             }
             service.urls
         })

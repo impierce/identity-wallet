@@ -193,11 +193,22 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
             if paths.is_empty() {
                 return false;
             }
-            // Leave out every disclosure at or beneath the claim.
-            let concealed: HashSet<&str> = processed
-                .disclosed
+            // Leave out the claim's own disclosure or, when it has none, the nearest disclosure it lies inside, together
+            // with every disclosure beneath it.
+            let concealed: HashSet<&str> = paths
                 .iter()
-                .filter(|claim| paths.iter().any(|path| path.is_prefix_of(&claim.path)))
+                .flat_map(|path| {
+                    let root = processed
+                        .disclosed
+                        .iter()
+                        .filter(|claim| claim.path.is_prefix_of(path))
+                        .max_by_key(|claim| claim.path.components().len())
+                        .map_or(path, |claim| &claim.path);
+                    processed
+                        .disclosed
+                        .iter()
+                        .filter(move |claim| root.is_prefix_of(&claim.path))
+                })
                 .map(|claim| sd_jwt.disclosures()[claim.disclosure].as_str())
                 .collect();
             let Ok(after) = sd_jwt
@@ -398,6 +409,28 @@ mod tests {
                 ]
             ),
             vec![false, false, true]
+        );
+    }
+
+    #[test]
+    fn a_claim_without_a_disclosure_of_its_own_is_concealed_with_the_disclosure_it_lies_in() {
+        let sd_jwt = unsigned_sd_jwt(
+            json!({ "credentialSubject": { "achievement": { "name": "Badge" }, "nickname": "Ferris" } }),
+            vec![
+                ClaimPath::new(["credentialSubject", "achievement"]),
+                ClaimPath::new(["credentialSubject", "nickname"]),
+            ],
+        );
+
+        assert_eq!(
+            concealable_claims(
+                &sd_jwt,
+                &[
+                    &path(json!(["credentialSubject", "achievement", "name"])),
+                    &path(json!(["credentialSubject", "nickname"]))
+                ]
+            ),
+            vec![true, true]
         );
     }
 
