@@ -8,7 +8,7 @@ for an OID4VCI credential issuer.
 ## Context
 
 ADR 0001 identifies every connection by a DID. An OID4VCI credential offer carries only the credential issuer URL, so
-UniMe proves the issuer's DID before the user accepts, by fetching `/.well-known/did.json`. An issuer that publishes no
+UniMe verifies the issuer's DID with `/.well-known/did.json` before the user accepts. An issuer that publishes no
 DID document is rejected. In practice this limits issuers to `did:web`.
 
 The Decentralized Identity Interop Profile (DIIP) v5 requires more:
@@ -33,15 +33,16 @@ it issues.
    not verified. Domain linkage and linked verifiable presentations are checked on a DID, so they are skipped. A request
    that fails outright, or a DID document whose `id` is not a DID, is still refused.
 2. **On receipt.** Every received credential's issuer signature is verified before anything is stored: `jwt_vc_json`,
-   `dc+sd-jwt` and `vc+sd-jwt`. The key is the one the JWT's `kid` names: a DID URL resolved with the wallet's resolver, to a method listed under `verificationMethod`, as for every other signature UniMe verifies.
-   When the JWT has an `iss`, it must be the DID of that key. For an SD-JWT, every disclosure must match a digest of the
-   signed payload. The DID of the key is the **signing DID**.
-3. **Binding.** An issuer proven by its DID document must have signed every credential with that DID; otherwise the
+   `dc+sd-jwt` and `vc+sd-jwt`. The key is the one the JWT's `kid` names: a DID URL resolved with the wallet's
+   resolver, to a method listed under `verificationMethod`, as for every other signature UniMe verifies. When the JWT
+   has an `iss`, it must be the DID of that key. For an SD-JWT, every disclosure must match a digest of the signed
+   payload. The DID of the key is the **signing DID**.
+3. **Binding.** An issuer verified with its DID document must have signed every credential with that DID; otherwise the
    credentials are refused. An unverified issuer is bound to the signing DID, which all its credentials must share. The
    connection is created, or found, under that DID only after the credentials verified. A credential that fails leaves
    neither a credential nor a connection behind.
 
-An issuer that publishes a DID document is proven by it before the user accepts, as ADR 0001 decided.
+An issuer that publishes a DID document is verified with it before the user accepts, as ADR 0001 decided.
 
 ## Consequences
 

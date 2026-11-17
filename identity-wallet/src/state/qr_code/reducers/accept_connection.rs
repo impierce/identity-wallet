@@ -402,7 +402,7 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
         None => (connection_url.clone(), None),
     };
 
-    // An issuer that publishes a DID document at `/.well-known/did.json` is proven by it before the user accepts
+    // An issuer that publishes a DID document at `/.well-known/did.json` is verified with it before the user accepts
     // (ADR 0001). One that publishes none is accepted as unverified, and bound to the DID that signs its credential
     // (ADR 0005). A request that fails outright, or a document whose `id` is no DID, is still refused.
     let client_id = match get_did_document_id(&credential_issuer_url).await {

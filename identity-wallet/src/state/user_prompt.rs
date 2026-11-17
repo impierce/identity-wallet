@@ -80,7 +80,7 @@ pub struct ClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub redirect_uri: Option<String>,
-    /// The DID that proves the identity of the counterparty, or `None` while it is unverified: an OID4VCI issuer that
+    /// The DID the counterparty's identity is verified with, or `None` while it is unverified: an OID4VCI issuer that
     /// publishes no `/.well-known/did.json` gets its DID only from the credential it signs (ADR 0005).
     #[ts(type = "string | null")]
     pub client_id: Option<CoreDID>,

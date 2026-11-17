@@ -377,8 +377,8 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             ));
         }
 
-        // An issuer proven by its DID document must have signed every credential with that DID. An unverified issuer
-        // is bound to the DID that signed them.
+        // An issuer verified with its DID document must have signed every credential with that DID. An unverified
+        // issuer is bound to the DID that signed them.
         let connection_did = connection_did(
             pending_connection_data
                 .client_metadata
@@ -531,14 +531,14 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
 // Helpers
 
-/// The DID of the connection to an issuer whose credentials `signing_dids` signed: `proven`, the DID its DID document
-/// proved before the user accepted, which must have signed every credential; or for an unverified issuer (`None`), the
-/// single DID that signed them all (ADR 0005).
+/// The DID of the connection to an issuer whose credentials `signing_dids` signed: `verified`, the DID the issuer was
+/// verified with, by its DID document, before the user accepted, which must have signed every credential; or for an
+/// unverified issuer (`None`), the single DID that signed them all (ADR 0005).
 fn connection_did<'a>(
-    proven: Option<String>,
+    verified: Option<String>,
     mut signing_dids: impl Iterator<Item = &'a str>,
 ) -> Result<String, AppError> {
-    let did = match proven {
+    let did = match verified {
         Some(did) => did,
         None => signing_dids
             .next()
@@ -956,8 +956,8 @@ mod issuance_tests {
         }))
     }
 
-    /// The state after the user accepted an offer from `server`, whose DID document proved `client_id` (`None`: it
-    /// publishes none).
+    /// The state after the user accepted an offer from `server`, verified with the DID `client_id` of its DID document
+    /// (`None`: it publishes none).
     fn accepted_offer(
         state: AppState,
         managers: Arc<tauri::async_runtime::Mutex<Managers>>,
@@ -1076,7 +1076,7 @@ mod issuance_tests {
 
     #[tokio::test]
     #[serial_test::serial]
-    async fn an_issuer_proven_by_its_did_document_must_sign_with_that_did() {
+    async fn an_issuer_verified_with_its_did_document_must_sign_with_that_did() {
         let issuer = TestIssuer::new().await;
         let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
         let managers = test_managers().await;
@@ -1164,7 +1164,7 @@ mod issuance_tests {
     }
 
     #[test]
-    fn the_connection_did_is_the_proven_did_or_else_the_one_signing_did() {
+    fn the_connection_did_is_the_verified_did_or_else_the_one_signing_did() {
         let a = "did:jwk:a";
         let b = "did:jwk:b";
         assert_eq!(connection_did(Some(a.to_string()), [a, a].into_iter()).unwrap(), a);
