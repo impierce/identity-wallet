@@ -203,13 +203,13 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         crate::debug_log_info!(
             debug_log,
-            "Trust check for {} took {}ms: domain linkage {:?}; linked VPs {} found, {} valid, {} failed; ecosystems {ecosystems_summary}",
+            "Trust check for {} took {}ms: domain linkage {:?}; linked VPs {} found, {} valid with {} credential(s); ecosystems {ecosystems_summary}",
             client_metadata.client_name,
             trust_check_start.elapsed().as_millis(),
             domain_validation.status,
             linked_verifiable_presentations_found,
             linked_verifiable_presentations_valid,
-            linked_verifiable_presentations_found.saturating_sub(linked_verifiable_presentations_valid)
+            linked_verifiable_presentations.as_ref().map_or(0, Vec::len)
         );
 
         // The pending connection data remains pending until the active flow is completed successfully.
