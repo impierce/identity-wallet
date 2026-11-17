@@ -1,4 +1,4 @@
-//! Identities proven by X.509 certificate chains, see `docs/adr/0004-identities-proven-by-did-or-x509.md`.
+//! Identities verified by X.509 certificate chains, see `docs/adr/0004-identities-verified-by-did-or-x509.md`.
 
 use crate::identity::Identity;
 use anyhow::{anyhow, bail, Context as _};
@@ -29,7 +29,7 @@ async fn validate(
     Ok((leaf, jwt.claims))
 }
 
-/// The X.509 identity of the credential issuer `credential_issuer`, proven by its `signed_metadata` (OID4VCI 1.0
+/// The X.509 identity of the credential issuer `credential_issuer`, verified by its `signed_metadata` (OID4VCI 1.0
 /// §11.2.3): a JWT signed under an `x5c` chain that validates against `trust_anchors`, whose `sub` is the credential
 /// issuer and whose leaf certificate has the credential issuer's host as a DNS name.
 pub async fn credential_issuer_identity(
@@ -48,7 +48,7 @@ pub async fn credential_issuer_identity(
 }
 
 /// Checks that `credential`, a JWT or the issuer-signed JWT of an SD-JWT, is signed under an `x5c` chain that
-/// validates against `trust_anchors` and whose leaf certificate proves `identity`, the X.509 identity of the issuer's
+/// validates against `trust_anchors` and whose leaf certificate certifies `identity`, the X.509 identity of the issuer's
 /// connection.
 pub async fn validate_credential(
     credential: &str,
@@ -56,7 +56,7 @@ pub async fn validate_credential(
     trust_anchors: &[String],
 ) -> anyhow::Result<()> {
     let Identity::X509 { dns_name } = identity else {
-        bail!("The issuer's identity is not proven by an X.509 certificate");
+        bail!("The issuer's identity is not verified by an X.509 certificate");
     };
     // The issuer-signed JWT of an SD-JWT is the part before the first disclosure.
     let issuer_jwt = credential.split('~').next().unwrap_or(credential);
@@ -72,7 +72,7 @@ pub async fn validate_credential(
 fn identity_of(leaf: &X509Certificate, url: &Url) -> anyhow::Result<Identity> {
     let host = match url.host() {
         Some(url::Host::Domain(host)) if url.scheme() == "https" => host.to_ascii_lowercase(),
-        _ => bail!("Only an `https` URL with a DNS name can be proven by a certificate"),
+        _ => bail!("Only an `https` URL with a DNS name can be verified by a certificate"),
     };
     if !has_dns_name(leaf, &host) {
         return Err(anyhow!("The certificate does not name `{host}`"));

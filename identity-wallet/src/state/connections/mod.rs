@@ -98,7 +98,7 @@ pub struct Connection {
     pub id: String,
     pub name: String,
     pub url: String,
-    /// Who the connection is, proven by a DID or an X.509 certificate (ADR 0004). Stored as `did` before `AppState`
+    /// Who the connection is, verified by a DID or an X.509 certificate (ADR 0004). Stored as `did` before `AppState`
     /// version 2.
     #[ts(type = "string")]
     pub identity: Identity,

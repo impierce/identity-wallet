@@ -2,7 +2,7 @@
 
 ## Status
 
-Superseded by [ADR 0004](0004-identities-proven-by-did-or-x509.md), which also accepts identities proven by an
+Superseded by [ADR 0004](0004-identities-verified-by-did-or-x509.md), which also accepts identities verified by an
 X.509 certificate.
 
 ## Context

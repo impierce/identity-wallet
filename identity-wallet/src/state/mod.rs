@@ -105,7 +105,7 @@ pub struct AppState {
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
     pub trust_lists: TrustLists,
-    /// The CA certificates, in PEM, that X.509 identities are proven against (ADR 0004). None by default.
+    /// The CA certificates, in PEM, that X.509 identities are verified against (ADR 0004). None by default.
     pub trust_anchors: Vec<String>,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.

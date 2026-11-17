@@ -368,18 +368,18 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             };
 
             match &issuer_identity {
-                // An issuer proven by a certificate signs every credential under a chain that proves the same identity,
+                // An issuer verified by a certificate signs every credential under a chain that certifies the same identity,
                 // whatever its format (ADR 0004).
                 Identity::X509 { .. } => {
                     let credential_jws = credential.as_str().ok_or(AppError::UntrustedError(
-                        "The credential of an issuer proven by a certificate is not signed under it".to_string(),
+                        "The credential of an issuer verified by a certificate is not signed under it".to_string(),
                     ))?;
                     crate::x509::validate_credential(credential_jws, &issuer_identity, &trust_anchors)
                         .await
                         .map_err(|err| {
                             warn!("The credential is not signed under the issuer's certificate: {err:#}");
                             AppError::UntrustedError(format!(
-                                "The credential's signature does not prove its issuer: {err}"
+                                "The credential's signature does not verify its issuer: {err}"
                             ))
                         })?;
                 }

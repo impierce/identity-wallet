@@ -410,7 +410,7 @@ async fn get_oid4vci_client_metadata(
     })
 }
 
-/// The identity of the credential issuer at `credential_issuer_url`, proven before the user accepts the connection
+/// The identity of the credential issuer at `credential_issuer_url`, verified before the user accepts the connection
 /// (ADR 0004): by the DID document it publishes at `.well-known/did.json`, as ADR 0001 required, or else by its
 /// `signed_metadata`, signed under an `x5c` certificate chain that validates against `trust_anchors`.
 async fn credential_issuer_identity(
@@ -430,7 +430,7 @@ async fn credential_issuer_identity(
     if let (Some(signed_metadata), false) = (signed_metadata, trust_anchors.is_empty()) {
         match crate::x509::credential_issuer_identity(signed_metadata, credential_issuer_url, trust_anchors).await {
             Ok(identity) => return Ok(identity),
-            Err(err) => warn!("The signed metadata of {credential_issuer_url} does not prove its identity: {err:#}"),
+            Err(err) => warn!("The signed metadata of {credential_issuer_url} does not verify its identity: {err:#}"),
         }
     }
 

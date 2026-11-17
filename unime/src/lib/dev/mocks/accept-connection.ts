@@ -17,7 +17,7 @@ const base: AcceptConnectionPrompt = {
     logo_uri: 'https://bestdex.com/logo.png',
     connection_url: 'https://www.bestdex.com',
     redirect_uri: 'https://www.bestdex.com/callback',
-    // A DID, or `x509_san_dns:<DNS name>` for an issuer proven by a certificate (ADR 0004).
+    // A DID, or `x509_san_dns:<DNS name>` for an issuer verified by a certificate (ADR 0004).
     identity: 'did:web:bestdex.com',
   },
   domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
