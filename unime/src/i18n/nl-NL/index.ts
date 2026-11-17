@@ -333,6 +333,9 @@ const nl_NL = {
       NAVBAR_TITLE: 'Credential Aanvraag',
       TITLE: 'Nieuwe connectie',
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
+      UNVERIFIED_IDENTITY_TITLE: 'Identiteit niet geverifieerd',
+      UNVERIFIED_IDENTITY_DESCRIPTION:
+        'UniMe vindt geen DID-document van deze uitgever. Het credential wordt gecontroleerd en de connectie wordt gekoppeld aan de DID die het heeft ondertekend.',
       KNOWN_CONNECTION: 'Bekende connectie',
       FIRST_INTERACTION: 'Eerste interactie: {duration}',
       LAST_INTERACTION: 'Laatste interactie: {duration}',

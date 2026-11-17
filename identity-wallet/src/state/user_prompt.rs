@@ -1,4 +1,4 @@
-use identity_iota::did::CoreDID;
+use identity_kit::did::Did;
 use oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
@@ -80,8 +80,10 @@ pub struct ClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub redirect_uri: Option<String>,
-    #[ts(type = "string")]
-    pub client_id: CoreDID,
+    /// The DID the counterparty's identity is verified with, or `None` while it is unverified: an OID4VCI issuer that
+    /// publishes no `/.well-known/did.json` gets its DID only from the credential it signs (ADR 0005).
+    #[ts(type = "string | null")]
+    pub client_id: Option<Did>,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -150,7 +152,7 @@ mod tests {
                 logo_uri: None,
                 connection_url: "https://example.com".to_string(),
                 redirect_uri: Some("https://example.com".to_string()),
-                client_id: "did:example:123".parse().unwrap(),
+                client_id: Some("did:example:123".parse().unwrap()),
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {

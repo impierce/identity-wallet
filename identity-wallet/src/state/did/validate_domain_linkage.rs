@@ -1,5 +1,4 @@
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use did_manager::Resolver;
+use crate::did_resolver::Resolver;
 use futures::future::join_all;
 use hickory_resolver::{
     config::{ResolverConfig, CLOUDFLARE},
@@ -7,26 +6,22 @@ use hickory_resolver::{
     proto::rr::{RData, RecordType},
     TokioResolver,
 };
-use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
-use identity_iota::{
-    core::{FromJson, ToJson},
-    credential::JwtCredentialValidationOptions,
-    document::CoreDocument,
-    verification::{
-        jwk::Jwk as IotaIdentityJwk,
-        jws::{JwsVerifier, SignatureVerificationError, SignatureVerificationErrorKind, VerificationInput},
-    },
+use identity_kit::{
+    did::{Did, DidDocument},
+    domain_linkage::{fetch_configuration, DomainLinkageValidator},
+    jose::DefaultVerifier,
+    resolver::{DocumentKeyResolver, KeyResolver},
+    vc::validation::CredentialValidationOptions,
 };
-use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, DecodingKey, Validation};
 use log::{debug, info, warn};
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
-use std::{future::Future, str::FromStr, time::Duration};
+use std::{future::Future, time::Duration};
 use ts_rs::TS;
 use url::{Host, Url};
 
 use crate::{
-    http_client::fetch_public_destination, state::did::validate_linked_verifiable_presentations::get_linked_domains,
+    http_client::IdentityKitHttpClient, state::did::validate_linked_verifiable_presentations::get_linked_domains,
 };
 
 #[skip_serializing_none]
@@ -51,47 +46,6 @@ pub enum ValidationStatus {
     Unknown,
 }
 
-/// This `Verifier` uses `jsonwebtoken` under the hood to verify verification input.
-pub struct Verifier;
-impl JwsVerifier for Verifier {
-    fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
-        use SignatureVerificationErrorKind::*;
-
-        debug!("Verifying input signature with alg: {}", input.alg);
-
-        let algorithm =
-            Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
-
-        // Convert the `IotaIdentityJwk` first into a `JsonWebTokenJwk` and then into a `DecodingKey`.
-        let decoding_key = public_key
-            .to_json()
-            .ok()
-            .and_then(|public_key| JsonWebTokenJwk::from_json(&public_key).ok())
-            .and_then(|jwk| DecodingKey::from_jwk(&jwk).ok())
-            .ok_or(SignatureVerificationError::new(KeyDecodingFailure))?;
-
-        let mut validation = Validation::new(algorithm);
-        validation.validate_aud = false;
-        validation.required_spec_claims.clear();
-
-        match verify(
-            &URL_SAFE_NO_PAD.encode(input.decoded_signature),
-            &input.signing_input,
-            &decoding_key,
-            algorithm,
-        ) {
-            Ok(true) => {
-                debug!("Signature successfully verified");
-                Ok(())
-            }
-            Err(_) | Ok(false) => Err(SignatureVerificationError::new(
-                // TODO: more fine-grained error handling?
-                InvalidSignature,
-            )),
-        }
-    }
-}
-
 impl ValidationResult {
     fn new(status: ValidationStatus, url: Url, message: Option<String>) -> Self {
         ValidationResult {
@@ -106,29 +60,13 @@ impl ValidationResult {
 }
 
 /// Validates the domain linkage between `did` and the origin of `url`: the DID Configuration resource at that origin
-/// must hold a Domain Linkage Credential of `did` for exactly that origin.
-///
-/// https://wiki.iota.org/identity.rs/how-tos/domain-linkage/create-and-verify/#verifying-a-did-and-domain-linkage
+/// must hold a Domain Linkage Credential of `did` for exactly that origin (DIF Well Known DID Configuration), validated
+/// by identity-kit with the key `resolver` resolves for `did`.
 pub async fn validate_domain_linkage(resolver: &Resolver, url: Url, did: &str) -> ValidationResult {
-    let configuration = match fetch_configuration(url.clone()).await {
-        Ok(configuration) => configuration,
-        Err(err) => {
-            return ValidationResult::new(
-                ValidationStatus::Unknown,
-                url,
-                Some(format!("Error while fetching configuration: {err}")),
-            )
-        }
-    };
-
-    let document = match resolver.resolve(did).await {
-        Ok(document) => document,
-        Err(err) => return ValidationResult::new(ValidationStatus::Unknown, url, Some(err.to_string())),
-    };
-
-    debug!("Resolved document: {document:?}");
-
-    check_linkage(&document, &configuration, url)
+    match Did::parse(did) {
+        Ok(did) => validate_linkage_at(resolver.inner(), &did, url).await,
+        Err(err) => ValidationResult::new(ValidationStatus::Unknown, url, Some(format!("Invalid DID: {err}"))),
+    }
 }
 
 /// How many `LinkedDomains` origins of a DID document are checked, so that a long list cannot stall the prompt.
@@ -157,11 +95,14 @@ pub async fn validate_connection_domain(resolver: &Resolver, url: Url, did: &str
 }
 
 async fn validate_connection_domain_with(
-    document: &CoreDocument,
+    document: &DidDocument,
     url: Url,
     cnames: &impl CnameResolver,
 ) -> ValidationResult {
-    let direct = validate_linkage_at(document, url.clone()).await;
+    // The document is resolved already: its keys are taken from it rather than resolved again for every origin.
+    let keys = DocumentKeyResolver::new(document.clone());
+    let did = &document.id;
+    let direct = validate_linkage_at(&keys, did, url.clone()).await;
     if direct.status == ValidationStatus::Success {
         return direct;
     }
@@ -176,10 +117,11 @@ async fn validate_connection_domain_with(
         .take(MAX_LINKED_DOMAINS)
         .collect();
 
+    let keys = &keys;
     let linked_results = join_all(linked_domains.into_iter().map(|linked_domain| {
         let connection_host = connection_host.to_owned();
         async move {
-            let result = validate_linkage_at(document, linked_domain.clone()).await;
+            let result = validate_linkage_at(keys, did, linked_domain.clone()).await;
             if result.status != ValidationStatus::Success {
                 return result;
             }
@@ -243,28 +185,32 @@ async fn validate_connection_domain_with(
     ValidationResult::new(status, url, (!message.is_empty()).then_some(message))
 }
 
-/// Validates the domain linkage between the DID of `document` and the origin of `url`.
-async fn validate_linkage_at(document: &CoreDocument, url: Url) -> ValidationResult {
-    match fetch_configuration(url.clone()).await {
-        Ok(configuration) => check_linkage(document, &configuration, url),
-        Err(err) => ValidationResult::new(
-            ValidationStatus::Unknown,
-            url,
-            Some(format!("Error while fetching configuration: {err}")),
-        ),
-    }
-}
+/// Validates the domain linkage between `did` and the origin of `url`, with the keys of `did` from `keys`.
+///
+/// A configuration that cannot be fetched, or is not published, leaves the linkage unknown; one that does not link
+/// `did` to the origin fails it.
+async fn validate_linkage_at(keys: &impl KeyResolver, did: &Did, url: Url) -> ValidationResult {
+    debug!(
+        "Fetching the DID configuration of {}",
+        url.origin().ascii_serialization()
+    );
+    let configuration = match fetch_configuration(&IdentityKitHttpClient, &url).await {
+        Ok(configuration) => configuration,
+        Err(err) => {
+            return ValidationResult::new(
+                ValidationStatus::Unknown,
+                url,
+                Some(format!("Error while fetching configuration: {err}")),
+            )
+        }
+    };
 
-fn check_linkage(document: &CoreDocument, configuration: &DomainLinkageConfiguration, url: Url) -> ValidationResult {
-    let validator = JwtDomainLinkageValidator::with_signature_verifier(Verifier);
-
-    match validator.validate_linkage(
-        document,
-        configuration,
-        &identity_iota::core::Url::from(url.clone()),
-        &JwtCredentialValidationOptions::default(),
-    ) {
-        Ok(()) => ValidationResult::new(ValidationStatus::Success, url, None),
+    let validator = DomainLinkageValidator::new(keys, DefaultVerifier);
+    match validator
+        .validate_linkage(&configuration, did, &url, &CredentialValidationOptions::new())
+        .await
+    {
+        Ok(_) => ValidationResult::new(ValidationStatus::Success, url, None),
         Err(err) => ValidationResult::new(ValidationStatus::Failure, url, Some(err.to_string())),
     }
 }
@@ -358,43 +304,6 @@ impl CnameResolver for DnsCnameResolver {
     }
 }
 
-/// Acts as a replacement for `fetch_configuration()` from `identity_credential` which fails on JSON-LD inside `linked_dids`.
-/// This implementation is also less strict (allows `http` scheme, does not fail on JSON-LD)
-/// The resource at the `.well-known` endpoint is fetched and any non-string values from `linked_dids` before deserializing.
-/// Returns a `DomainLinkageConfiguration` which can be verified using a verifier from `identity_credential`.
-async fn fetch_configuration(mut url: Url) -> Result<DomainLinkageConfiguration, String> {
-    // 1. Prepare the URL
-    url.set_fragment(None);
-    url.set_query(None);
-    url.set_path(".well-known/did-configuration.json");
-
-    debug!("Fetching DID configuration from: {url}");
-
-    // 2. Fetch the resource. The URL is remote-supplied: from a QR code or from a DID document.
-    let response = fetch_public_destination(url.clone())
-        .await
-        .map_err(|_| format!("failed to get response from resource url: {url}"))?;
-
-    // 3. Parse to JSON value (mutable)
-    let mut json = response
-        .json::<serde_json::Value>()
-        .await
-        .map_err(|_| "failed to parse response into JSON value".to_string())?;
-
-    // 4. Remove all non-string values from `linked_dids` (JSON-LD)
-    if let serde_json::Value::Object(ref mut root) = json {
-        if let Some(serde_json::Value::Array(ref mut linked_dids)) = root.get_mut("linked_dids") {
-            linked_dids.retain(|did| matches!(did, serde_json::Value::String(_)));
-            debug!("Removed non-string values from `linked_dids`");
-        }
-    }
-
-    // 5. Deserialize to `DomainLinkageConfiguration`
-    let config = DomainLinkageConfiguration::from_json_value(json)
-        .map_err(|_| "failed to deserialize DomainLinkageConfiguration from JSON".to_string())?;
-    Ok(config)
-}
-
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
@@ -403,7 +312,8 @@ mod tests {
 
     use super::*;
 
-    use identity_iota::verification::jws::JwsAlgorithm;
+    use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
+    use jsonwebtoken::{crypto::verify, Algorithm, DecodingKey};
     use oid4vc_core::{Sign, Subject, Verify};
 
     use serde_json::json;
@@ -454,8 +364,10 @@ mod tests {
         assert!(result.message.is_some());
     }
 
+    /// identity-kit reads a Linked Data Proof entry as data and validates only JWT entries, so a configuration without a
+    /// JWT for the DID does not link it. The IOTA crates failed to read such a configuration (`Unknown`).
     #[tokio::test]
-    async fn when_well_known_only_contains_json_ld_credential_then_return_unknown() {
+    async fn when_well_known_only_contains_json_ld_credential_then_return_failure() {
         let mock_server = MockServer::start().await;
 
         Mock::given(method("GET"))
@@ -481,23 +393,20 @@ mod tests {
         assert_eq!(
             result,
             ValidationResult {
-                status: ValidationStatus::Unknown,
+                status: ValidationStatus::Failure,
                 url,
                 name: None,
                 logo_uri: None,
                 issuance_date: None,
-                message: Some(
-                    "Error while fetching configuration: failed to deserialize DomainLinkageConfiguration from JSON"
-                        .to_string()
-                ),
+                message: Some("the configuration holds no JWT credential for `did:foo:bar`".to_string()),
             }
         );
     }
 
     #[tokio::test]
-    async fn when_well_known_contains_json_ld_and_jwt_then_remove_json_ld_during_fetch() {
+    async fn when_well_known_contains_json_ld_and_jwt_then_the_jwt_is_read() {
         // Mocking a `DomainLinkageCredential` in a local test is difficult since the `mock_server` does not have an actual domain.
-        // We thereby only test if `fetch_configuration()` builds a `DomainLinkageConfiguration` that could be verified.
+        // We thereby only test that `fetch_configuration()` reads the JWT next to the Linked Data Proof entry.
 
         let mock_server = MockServer::start().await;
 
@@ -516,9 +425,12 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let domain_linkage_configuration = fetch_configuration(mock_server.uri().parse().unwrap()).await.unwrap();
+        let domain_linkage_configuration =
+            fetch_configuration(&IdentityKitHttpClient, &mock_server.uri().parse().unwrap())
+                .await
+                .unwrap();
 
-        assert!(domain_linkage_configuration.linked_dids().len() == 1);
+        assert_eq!(domain_linkage_configuration.jwts().count(), 1);
     }
 
     #[tokio::test]
@@ -558,7 +470,10 @@ mod tests {
                 name: None,
                 logo_uri: None,
                 issuance_date: None,
-                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
+                message: Some(
+                    "the configuration holds no JWT credential for `did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp`"
+                        .to_string()
+                ),
             }
         );
     }
@@ -602,89 +517,43 @@ mod tests {
                 name: None,
                 logo_uri: None,
                 issuance_date: None,
-                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
+                message: Some(
+                    "the configuration holds no JWT credential for `did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp`"
+                        .to_string()
+                ),
             }
         );
     }
 
+    /// `Subject::public_key` returns the key in the form `jsonwebtoken` verifies with, as openid4vc uses it.
     #[tokio::test]
     #[serial_test::serial]
-    async fn verifier_successfully_verifies_es256_signed_data() {
+    async fn subject_public_keys_verify_its_signatures() {
         let path = NamedTempFile::new().unwrap().into_temp_path();
         *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+        let stronghold_manager = Arc::new(StrongholdManager::create("sup3rSecr3t").unwrap());
+        let subject = subject(stronghold_manager.clone()).await.unwrap();
 
-        let password = "sup3rSecr3t".to_string();
+        for algorithm in [Algorithm::EdDSA, Algorithm::ES256] {
+            let identifier = subject.identifier("did:key", algorithm).await.unwrap();
+            let fragment = identifier.split(':').next_back().unwrap();
+            let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
+            let decoding_key = match algorithm {
+                Algorithm::EdDSA => DecodingKey::from_ed_der(&public_key),
+                _ => DecodingKey::from_ec_der(&public_key),
+            };
 
-        let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
+            let message = URL_SAFE_NO_PAD.encode("foobar");
+            let signature = subject.sign(&message, "did:key", algorithm).await.unwrap();
 
-        let subject = subject(stronghold_manager.clone(), password).await;
-
-        let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
-        let fragment = identifier.split(':').next_back().unwrap();
-        let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
-
-        // x and y are each 32 bytes, they represent the public key
-        let x = URL_SAFE_NO_PAD.encode(&public_key[1..33]);
-        let y = URL_SAFE_NO_PAD.encode(&public_key[33..65]);
-
-        let jwk = IotaIdentityJwk::from_json_value(serde_json::json!({
-            "kty": "EC",
-            "crv": "P-256",
-            "x": x,
-            "y": y,
-        }))
-        .unwrap();
-
-        let message = URL_SAFE_NO_PAD.encode("foobar");
-
-        let signature = subject.sign(&message, "did:key", Algorithm::ES256).await.unwrap();
-
-        let input = VerificationInput {
-            signing_input: message.to_string().as_bytes().into(),
-            decoded_signature: signature.into(),
-            alg: JwsAlgorithm::ES256,
-        };
-
-        assert!(Verifier.verify(input, &jwk).is_ok());
-    }
-
-    #[tokio::test]
-    #[serial_test::serial]
-    async fn verifier_successfully_verifies_eddsa_signed_data() {
-        let path = NamedTempFile::new().unwrap().into_temp_path();
-        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
-
-        let password = "sup3rSecr3t".to_string();
-
-        let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
-
-        let subject = subject(stronghold_manager.clone(), password).await;
-
-        let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
-        let fragment = identifier.split(':').next_back().unwrap();
-        let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
-
-        // x represents the public key
-        let x = URL_SAFE_NO_PAD.encode(public_key);
-
-        let jwk = IotaIdentityJwk::from_json_value(serde_json::json!({
-            "kty": "OKP",
-            "crv": "Ed25519",
-            "x": x,
-        }))
-        .unwrap();
-
-        let message = URL_SAFE_NO_PAD.encode("foobar");
-
-        let signature = subject.sign(&message, "did:key", Algorithm::EdDSA).await.unwrap();
-
-        let input = VerificationInput {
-            signing_input: message.to_string().as_bytes().into(),
-            decoded_signature: signature.into(),
-            alg: JwsAlgorithm::EdDSA,
-        };
-
-        assert!(Verifier.verify(input, &jwk).is_ok());
+            assert!(verify(
+                &URL_SAFE_NO_PAD.encode(signature),
+                message.as_bytes(),
+                &decoding_key,
+                algorithm
+            )
+            .unwrap());
+        }
     }
 }
 
@@ -692,14 +561,9 @@ mod tests {
 mod connection_domain_tests {
     use super::*;
 
-    use identity_credential::domain_linkage::DomainLinkageCredentialBuilder;
-    use identity_iota::{
-        core::{Duration, Object, Timestamp},
-        did::CoreDID,
-        document::{Service, ServiceEndpoint},
-        verification::VerificationMethod,
-    };
-    use jsonwebtoken::{EncodingKey, Header};
+    use chrono::Utc;
+    use identity_kit::domain_linkage::DomainLinkageCredentialBuilder;
+    use jsonwebtoken::{Algorithm, EncodingKey, Header};
     use p256::pkcs8::{EncodePrivateKey as _, LineEnding};
     use serde_json::json;
     use std::{collections::HashMap, sync::Mutex};
@@ -708,9 +572,10 @@ mod connection_domain_tests {
         Mock, MockServer, ResponseTemplate,
     };
 
-    /// A DID document with one ES256 key, which signs the Domain Linkage Credentials of the tests.
+    /// A DID document with one ES256 key under `assertionMethod`, which signs the Domain Linkage Credentials of the
+    /// tests.
     struct TestIssuer {
-        document: CoreDocument,
+        document: DidDocument,
         key: EncodingKey,
         kid: String,
     }
@@ -718,51 +583,63 @@ mod connection_domain_tests {
     impl TestIssuer {
         fn new(linked_domain: Option<&Url>) -> Self {
             let secret_key = p256::SecretKey::from_slice(&[7; 32]).unwrap();
-            let did: CoreDID = "did:web:service.example".parse().unwrap();
-            let jwk = IotaIdentityJwk::from_json(&secret_key.public_key().to_jwk_string()).unwrap();
-            let method = VerificationMethod::new_from_jwk(did.clone(), jwk, Some("key-1")).unwrap();
+            let did = "did:web:service.example";
+            let kid = format!("{did}#key-1");
+            let public_jwk: serde_json::Value = serde_json::from_str(&secret_key.public_key().to_jwk_string()).unwrap();
 
-            let mut builder = CoreDocument::builder(Object::new())
-                .id(did.clone())
-                .verification_method(method);
+            let mut document = json!({
+                "@context": ["https://www.w3.org/ns/did/v1"],
+                "id": did,
+                "verificationMethod": [{
+                    "id": kid,
+                    "type": "JsonWebKey2020",
+                    "controller": did,
+                    "publicKeyJwk": public_jwk,
+                }],
+                "assertionMethod": [kid],
+            });
             if let Some(linked_domain) = linked_domain {
-                let origin = identity_iota::core::Url::parse(linked_domain.origin().ascii_serialization()).unwrap();
-                builder = builder.service(
-                    Service::builder(Object::new())
-                        .id(format!("{did}#linked-domains").parse().unwrap())
-                        .type_("LinkedDomains")
-                        .service_endpoint(ServiceEndpoint::from(origin))
-                        .build()
-                        .unwrap(),
-                );
+                document["service"] = json!([{
+                    "id": format!("{did}#linked-domains"),
+                    "type": "LinkedDomains",
+                    "serviceEndpoint": linked_domain.origin().ascii_serialization(),
+                }]);
             }
 
             let pem = secret_key.to_pkcs8_pem(LineEnding::LF).unwrap();
             TestIssuer {
-                document: builder.build().unwrap(),
+                document: serde_json::from_value(document).unwrap(),
                 key: EncodingKey::from_ec_pem(pem.as_bytes()).unwrap(),
-                kid: format!("{did}#key-1"),
+                kid,
             }
         }
 
         /// Serves, at `server`, a DID Configuration that links the DID to `origin`.
         async fn serve_configuration(&self, server: &MockServer, origin: &Url) {
-            let payload = DomainLinkageCredentialBuilder::new()
-                .issuer(self.document.id().clone())
-                .origin(identity_iota::core::Url::parse(origin.origin().ascii_serialization()).unwrap())
-                .issuance_date(Timestamp::now_utc())
-                .expiration_date(Timestamp::now_utc().checked_add(Duration::hours(1)).unwrap())
-                .build()
-                .and_then(|credential| credential.serialize_jwt(Default::default()))
-                .unwrap();
-            let mut header = Header::new(Algorithm::ES256);
-            header.kid = Some(self.kid.clone());
-            let jwt = jsonwebtoken::encode(
-                &header,
-                &serde_json::from_str::<serde_json::Value>(&payload).unwrap(),
-                &self.key,
+            self.serve_configuration_with(server, origin, |_| {}).await;
+        }
+
+        /// Like `serve_configuration`, with `edit_header` applied to the credential's JWS header.
+        async fn serve_configuration_with(
+            &self,
+            server: &MockServer,
+            origin: &Url,
+            edit_header: impl FnOnce(&mut Header),
+        ) {
+            let claims = DomainLinkageCredentialBuilder::new(
+                self.document.id.clone(),
+                origin,
+                Utc::now(),
+                Utc::now() + chrono::Duration::hours(1),
             )
-            .unwrap();
+            .unwrap()
+            .jwt_claims();
+            // A domain linkage credential has no `typ` (DIF Well Known DID Configuration).
+            let mut header = Header::new(Algorithm::ES256);
+            header.typ = None;
+            header.kid = Some(self.kid.clone());
+            edit_header(&mut header);
+            let jwt = jsonwebtoken::encode(&header, &claims, &self.key).unwrap();
 
             Mock::given(method("GET"))
                 .and(path("/.well-known/did-configuration.json"))
@@ -915,6 +792,69 @@ mod connection_domain_tests {
         let result = validate_connection_domain_with(&issuer.document, service_url, &FakeCnames::default()).await;
 
         assert_eq!(result.status, ValidationStatus::Unknown, "{result:?}");
+    }
+
+    /// identity-kit follows the DIF Well Known DID Configuration: a domain linkage credential has no `typ` header. The
+    /// IOTA validator accepted one.
+    #[tokio::test]
+    async fn a_domain_linkage_credential_with_a_typ_fails() {
+        let service = MockServer::start().await;
+        let service_url: Url = format!("http://localhost:{}", service.address().port())
+            .parse()
+            .unwrap();
+        let issuer = TestIssuer::new(None);
+        issuer
+            .serve_configuration_with(&service, &service_url, |header| header.typ = Some("JWT".to_string()))
+            .await;
+
+        let result = validate_connection_domain_with(&issuer.document, service_url, &FakeCnames::default()).await;
+
+        assert_eq!(result.status, ValidationStatus::Failure, "{result:?}");
+    }
+
+    /// identity-kit resolves the key of a domain linkage credential under `assertionMethod`, as for any credential
+    /// issuer. The IOTA validator accepted any verification method of the document.
+    #[tokio::test]
+    async fn a_domain_linkage_credential_signed_with_a_key_outside_assertion_method_fails() {
+        let service = MockServer::start().await;
+        let service_url: Url = format!("http://localhost:{}", service.address().port())
+            .parse()
+            .unwrap();
+        let mut issuer = TestIssuer::new(None);
+        let mut document = serde_json::to_value(&issuer.document).unwrap();
+        document.as_object_mut().unwrap().remove("assertionMethod");
+        issuer.document = serde_json::from_value(document).unwrap();
+        issuer.serve_configuration(&service, &service_url).await;
+
+        let result = validate_connection_domain_with(&issuer.document, service_url, &FakeCnames::default()).await;
+
+        assert_eq!(result.status, ValidationStatus::Failure, "{result:?}");
+    }
+
+    /// identity-kit follows no redirect to a DID configuration: it must be served at the origin's well-known URL. The
+    /// IOTA-based fetch followed redirects.
+    #[tokio::test]
+    async fn a_redirected_did_configuration_is_unknown() {
+        let service = MockServer::start().await;
+        let service_url: Url = format!("http://localhost:{}", service.address().port())
+            .parse()
+            .unwrap();
+        let elsewhere = MockServer::start().await;
+        let issuer = TestIssuer::new(None);
+        issuer.serve_configuration(&elsewhere, &service_url).await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did-configuration.json"))
+            .respond_with(ResponseTemplate::new(302).insert_header(
+                "location",
+                format!("{}/.well-known/did-configuration.json", elsewhere.uri()).as_str(),
+            ))
+            .mount(&service)
+            .await;
+
+        let result = validate_connection_domain_with(&issuer.document, service_url, &FakeCnames::default()).await;
+
+        assert_eq!(result.status, ValidationStatus::Unknown, "{result:?}");
+        assert!(elsewhere.received_requests().await.unwrap().is_empty());
     }
 
     fn host(name: &str) -> Host {

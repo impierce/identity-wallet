@@ -22,7 +22,6 @@ tauri.workspace = true
 
 dotenvy = { version = "0.15" }
 identity-wallet = { path = "../../identity-wallet" }
-iota-sdk = { git = "https://github.com/iotaledger/iota", package = "iota-sdk", rev = "96196f0da231883ec69cda04892c600ef6afa982" }
 jni = "0.21"
 log.workspace = true
 rustls.workspace = true
@@ -43,7 +42,6 @@ unime = { path = ".", features = ["test_utils"] }
 
 base64 = "0.22"
 chrono = "0.4"
-did_manager.workspace = true
 identity-wallet = { path = "../../identity-wallet", features = ["test_utils"] }
 identity-kit = { workspace = true, features = ["status-list"] }
 jsonwebtoken.workspace = true

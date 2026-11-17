@@ -26,8 +26,8 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         name,
         picture,
         theme,
-        password,
         biometrics_enabled,
+        ..
     }) = listen::<CreateNew>(action)
     {
         info!("Creating new identity profile");
@@ -38,7 +38,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),

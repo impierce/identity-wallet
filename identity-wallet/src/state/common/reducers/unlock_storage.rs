@@ -20,7 +20,9 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),

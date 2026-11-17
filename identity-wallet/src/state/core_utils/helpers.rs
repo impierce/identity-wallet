@@ -1,9 +1,6 @@
 use crate::error::AppError;
 use crate::persistence::{download_asset, hash};
 use crate::state::core_utils::IdentityManager;
-use did_manager::Resolver;
-use identity_iota::{credential::Jwt, document::CoreDocument, verification::jws::Decoder};
-use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use log::{debug, info, warn};
@@ -40,34 +37,6 @@ pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
             None
         }
     }
-}
-
-/// This function uses the credential in jwt format from the jwt_vc_json to resolve the issuer document.
-pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
-    let decoder = Decoder::new();
-
-    // Decode the linked verifiable credential.
-    let decoded_credential_jwt = decoder
-        .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
-        .inspect_err(|err| warn!("Failed to decode credential jwt: {err:#?}"))
-        .ok()?;
-
-    let claims: JwtClaims<Value> = serde_json::from_slice(decoded_credential_jwt.claims())
-        .inspect_err(|err| warn!("Failed to parse credential claims: {err:#?}"))
-        .ok()?;
-
-    debug!(
-        "Decoded jwt_vc_json Credential claims (issuer: {})",
-        claims.iss().unwrap_or("<missing>")
-    );
-    crate::log_payload!("jwt_vc_json Credential claims: {claims:#?}");
-
-    // Resolve the DID
-    resolver
-        .resolve(claims.iss()?)
-        .await
-        .inspect_err(|err| warn!("Failed to resolve issuer DID.: {err:#?}"))
-        .ok()
 }
 
 // TODO: Implement one single verifier that can be used for all our JWT validation purposes. See `struct Verifier`. Also consider

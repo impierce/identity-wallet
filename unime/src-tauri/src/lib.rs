@@ -134,8 +134,8 @@ pub mod tauri_command {
 /// platform certificate verifier environment.
 ///
 /// Note: While the wallet application uses `webpki-roots` for its HTTP clients,
-/// transitive dependencies (such as `jsonrpsee` via `iota-sdk`) require this
-/// initialization when running on Android.
+/// transitive dependencies (such as `reqwest` 0.13 in the openid4vc crates) verify
+/// with the platform verifier, which requires this initialization on Android.
 #[cfg(target_os = "android")]
 #[no_mangle]
 pub extern "C" fn Java_com_impierce_identity_1wallet_MainActivity_java_1init(

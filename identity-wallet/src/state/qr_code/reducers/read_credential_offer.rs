@@ -185,7 +185,7 @@ mod tests {
 
         let password = "sup3rSecr3t".to_string();
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone()).await.unwrap();
 
         let provider_manager = ProviderManager::new(
             subject.clone(),
@@ -281,7 +281,7 @@ mod tests {
                 logo_uri: Some(CLIENT_LOGO_URI.to_string()),
                 connection_url: connection_url.to_string(),
                 redirect_uri: None,
-                client_id: "did:example:123".parse().unwrap(),
+                client_id: Some("did:example:123".parse().unwrap()),
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {
