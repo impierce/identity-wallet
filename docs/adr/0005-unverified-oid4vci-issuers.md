@@ -35,8 +35,9 @@ it issues.
    identity is not verified. Domain linkage and linked verifiable presentations are checked on a DID, so they are
    skipped. Any other answer is refused, since the document may exist but be unavailable: a request that fails
    outright, another HTTP error status such as a 503, JSON that is no DID document, or a DID document whose `id` is
-   not a DID. An outage must not cost an issuer its verification. An issuer whose signed metadata verifies it with a
-   certificate is accepted with that identity, whatever its DID document answers.
+   not a DID. An outage must not cost an issuer its verification. A DID document that is served still decides: a valid
+   one gives the DID identity, and one whose `id` is no DID is refused. Only when the DID document is missing or
+   unavailable does signed metadata that verifies the issuer with a certificate give it that identity (ADR 0004).
 2. **On receipt.** Every received credential's issuer signature is verified before anything is stored: `jwt_vc_json`,
    `dc+sd-jwt` and `vc+sd-jwt`. The key is the one the JWT's `kid` names: a DID URL resolved with the wallet's
    resolver, to a method listed under `verificationMethod`, as for every other signature UniMe verifies. When the JWT

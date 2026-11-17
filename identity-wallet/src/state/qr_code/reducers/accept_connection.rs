@@ -16,7 +16,7 @@ use crate::{
         user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
         AppState,
     },
-    well_known::{get_credential_issuer_metadata, get_did_document_id},
+    well_known::{get_did_document_id, get_verified_credential_issuer_metadata},
 };
 use log::{info, warn};
 use oid4vc_core::{
@@ -386,7 +386,9 @@ async fn get_oid4vci_client_metadata(
     info!("credential issuer url: {credential_issuer_url:?}");
     info!("connection url: {connection_url:?}");
 
-    let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+    let credential_issuer_metadata = get_verified_credential_issuer_metadata(&credential_issuer_url, trust_anchors)
+        .await
+        .ok();
 
     let display = credential_issuer_metadata
         .as_ref()

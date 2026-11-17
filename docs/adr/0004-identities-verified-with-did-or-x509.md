@@ -68,6 +68,8 @@ The identity is verified before the user accepts the connection, as ADR 0001 req
 2. Otherwise, the credential issuer metadata's `signed_metadata` gives an X.509 identity when its `x5c` chain
    validates against a trust anchor, its signature verifies with the leaf's key, its `sub` is the
    `credential_issuer` URL, and the leaf certificate has that URL's host as a DNS name.
+   When the signed metadata verifies, its values take precedence over the unsigned metadata, as OID4VCI 1.0
+   §11.2.3 requires: UniMe uses its endpoints and credential configurations, whatever the identity it ends up with.
 3. Otherwise an issuer that publishes no DID document is accepted as unverified, and bound to the DID that signs its
    credential ([ADR 0005](0005-unverified-oid4vci-issuers.md)). One whose DID document is unavailable is rejected.
 

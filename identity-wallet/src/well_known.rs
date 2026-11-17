@@ -63,6 +63,16 @@ pub async fn get_credential_issuer_metadata(credential_issuer_url: &Url) -> anyh
     .await
 }
 
+/// Fetches the credential issuer metadata of `credential_issuer_url`, with the values of its `signed_metadata` taking
+/// precedence when it verifies the credential issuer under `trust_anchors` (OID4VCI 1.0 §11.2.3, ADR 0004).
+pub async fn get_verified_credential_issuer_metadata(
+    credential_issuer_url: &Url,
+    trust_anchors: &[String],
+) -> anyhow::Result<CredentialIssuerMetadata> {
+    let metadata = get_credential_issuer_metadata(credential_issuer_url).await?;
+    Ok(crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors).await)
+}
+
 /// Fetches the metadata of `authorization_server_url`. RFC 8414 OAuth metadata is preferred, with an OpenID Provider
 /// configuration as the fallback (RFC 8414 section 5).
 pub async fn get_authorization_server_metadata(

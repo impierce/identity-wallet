@@ -19,7 +19,7 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
     subject::Subject,
-    well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
+    well_known::{get_authorization_server_metadata, get_verified_credential_issuer_metadata},
 };
 use identity_kit::status_list::Status;
 use log::{debug, info, warn};
@@ -153,9 +153,10 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         debug!("Credential issuer URL: {credential_issuer_url}");
 
         // Get the credential issuer metadata.
-        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
-            .await
-            .map_err(GetCredentialIssuerMetadataError)?;
+        let credential_issuer_metadata =
+            get_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors)
+                .await
+                .map_err(GetCredentialIssuerMetadataError)?;
 
         // Check that the specified authorization servers are listed in the Credential Issuer Metadata's `authorization_servers` parameter.
         let specified_authorization_server = &credential_offer.grants.as_ref().and_then(|grants| {

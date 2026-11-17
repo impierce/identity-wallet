@@ -9,7 +9,7 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState,
     },
-    well_known::get_credential_issuer_metadata,
+    well_known::get_verified_credential_issuer_metadata,
 };
 
 use log::{debug, info, warn};
@@ -35,7 +35,10 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         info!("credential issuer url: {credential_issuer_url:?}");
 
-        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+        let credential_issuer_metadata =
+            get_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors)
+                .await
+                .ok();
 
         info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
