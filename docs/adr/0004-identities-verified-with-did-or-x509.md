@@ -94,5 +94,4 @@ Both stay DID-only. An X.509 identity's domain is already bound: it is the DNS n
 - `AppState` version 2 renames `did` to `identity`. Older versions of UniMe cannot read a state written by version 2.
 - The frontend shows an identity instead of a DID, and recognizes the `x509_san_dns:` form.
 - X.509 verifiers wait for openid4vc to verify requests under `x5c`.
-- identity-kit's `x5c` support is not released yet. UniMe can depend on it only once impierce/identity-kit#172 is
-  released.
+- UniMe depends on identity-kit 0.5.1, the first release with `x5c` support (impierce/identity-kit#172).

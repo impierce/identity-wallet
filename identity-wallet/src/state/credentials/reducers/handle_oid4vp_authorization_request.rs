@@ -1,7 +1,6 @@
 use crate::state::connections::Connections;
 use crate::state::core_utils::IdentityManager;
-use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
-use crate::state::credentials::Sha256Hasher;
+use crate::state::credentials::reducers::self_issue_credential::SubjectSigner;
 #[cfg(not(feature = "test_utils"))]
 use crate::state::interaction_result::send_authorization_response;
 use crate::stronghold::StrongholdManager;
@@ -26,10 +25,7 @@ use crate::{
         AppState,
     },
 };
-use chrono::{Duration, Utc};
-use identity_core::common::Object as IotaObject;
-use identity_credential::sd_jwt_vc::SdJwtVc;
-use identity_iota::credential::{EnvelopedVc, VcDataUrl};
+use chrono::{DateTime, Duration, Utc};
 use log::{debug, info};
 use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc_core::types::string_or_object::StringOrObject;
@@ -43,18 +39,13 @@ use oid4vp::{
     },
 };
 
-use identity_credential::presentation::Presentation;
-use identity_iota::core::Url;
-use identity_iota::did::DIDUrl;
 use identity_kit::{
-    did::Did,
-    vc::{Jwt, Presentation as IdentityKitPresentation},
+    did::{Did, DidUrl},
+    sd_jwt_vc::{KeyBinding, SdJwt, SdJwtVc},
+    vc::{EnvelopedVc, Jwt, Presentation as IdentityKitPresentation, PresentationV2},
 };
-use jsonwebtoken::Algorithm;
-use jsonwebtoken::Header;
-use sd_jwt::{KeyBindingJwtBuilder, RequiredKeyBinding, SdJwt};
+use jsonwebtoken::{Algorithm, Header};
 use serde_json::Value;
-use std::str::FromStr as _;
 use std::sync::Arc;
 use uuid::Uuid;
 
@@ -366,6 +357,25 @@ pub async fn update_history_and_connections(
     Ok(())
 }
 
+/// The VCDM 2.0 presentation of the VCDM 2.0 SD-JWT `sd_jwt` by `holder` to `audience`, as a JWT claims set valid for
+/// ten minutes from `now`.
+fn enveloped_presentation(
+    sd_jwt: &SdJwt,
+    holder: &Did,
+    audience: &str,
+    nonce: &str,
+    now: DateTime<Utc>,
+) -> PresentationV2 {
+    PresentationV2::new()
+        .with_holder(holder)
+        .with_credential(EnvelopedVc::from_sd_jwt(sd_jwt))
+        .with_property("iss", holder.to_string())
+        .with_property("aud", audience)
+        .with_property("nonce", nonce)
+        .with_property("iat", now.timestamp())
+        .with_property("exp", (now + Duration::minutes(10)).timestamp())
+}
+
 async fn get_vp_token(
     selected_verifiable_credentials: Vec<(CredentialQuery, Vec<Value>)>,
     did_method: &str,
@@ -439,102 +449,83 @@ async fn get_vp_token(
                     StringOrObject::from(signed_vc_presentation_jwt_string)
                 }
                 Format::DcSdJwt => {
-                    let mut sd_jwt_vc = vc_value
+                    let sd_jwt_vc = vc_value
                         .as_str()
-                        .ok_or(AppError::InvalidCredentialFormatError)?
-                        .to_string()
-                        .parse::<SdJwtVc>()
-                        .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))?;
+                        .ok_or(AppError::InvalidCredentialFormatError)
+                        .and_then(|sd_jwt_vc| {
+                            SdJwtVc::parse(sd_jwt_vc)
+                                .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))
+                        })?;
 
-                    let subject_wrapper = SubjectWrapper {
-                        subject: subject_manager.clone(),
-                        preferred_did_method: did_method.to_string(),
-                    };
-
-                    let Some(RequiredKeyBinding::Kid(cnf_kid)) = sd_jwt_vc.claims().cnf.as_ref() else {
+                    let Some(cnf_kid) = sd_jwt_vc.claims().cnf.as_ref().and_then(|cnf| cnf.kid.as_deref()) else {
                         return Err(AppError::Error("Unsupported `cnf` claim in SD-JWT VC".to_string()));
                     };
 
-                    let cnf_jwk = subject_manager
-                        .resolve_public_key(cnf_kid)
+                    let algorithm = subject_manager
+                        .signing_algorithm(cnf_kid)
                         .await
                         .map_err(|e| AppError::Error(format!("Failed to resolve `cnf` key from DID URL: {e}")))?;
+                    let signer = SubjectSigner::new(subject_manager.clone(), did_method, algorithm)?;
 
-                    let algorithm = cnf_jwk
-                        .alg()
-                        .ok_or_else(|| AppError::Error("JWK missing `alg` parameter".to_string()))?;
-
-                    let key_binding_jwt = KeyBindingJwtBuilder::new()
-                        .iat(Utc::now().timestamp())
-                        .aud(verifier_audience.to_string())
-                        .nonce(required_nonce.to_string())
-                        .finish(&sd_jwt_vc, &Sha256Hasher::new(), algorithm, &subject_wrapper)
+                    let key_binding =
+                        KeyBinding::new(verifier_audience.to_string(), required_nonce.to_string(), Utc::now());
+                    let presented = sd_jwt_vc
+                        .sd_jwt()
+                        .clone()
+                        .sign_key_binding(&key_binding, &signer)
                         .await
                         .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
 
-                    sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
-
-                    StringOrObject::from(sd_jwt_vc.to_string())
+                    StringOrObject::from(presented.to_string())
                 }
                 Format::VcSdJwt => {
                     let vcdm2_sd_jwt = vc_value
                         .as_str()
-                        .ok_or(AppError::InvalidCredentialFormatError)?
-                        .to_string();
-
-                    let vcdm2_sd_jwt = vcdm2_sd_jwt
-                        .parse::<SdJwt>()
-                        .map_err(|err| AppError::Error(format!("Failed to parse VCDM 2.0 SD-JWT: {err}")))?;
+                        .ok_or(AppError::InvalidCredentialFormatError)
+                        .and_then(|sd_jwt| {
+                            SdJwt::parse(sd_jwt)
+                                .map_err(|err| AppError::Error(format!("Failed to parse VCDM 2.0 SD-JWT: {err}")))
+                        })?;
 
                     // TODO: unify holder DID/key selection into a single helper.
                     // "Which DID/key do we sign with?" is answered differently at every call site: the `cnf`
                     // claim here, from `credentialSubject.id` when signing a DACT, and from the preferred
                     // DID method elsewhere. Each answer has to match the DID the credential was issued to, so they
                     // all need to behave identically. This should be unified into a single helper.
-                    let Some(RequiredKeyBinding::Kid(cnf_kid)) = vcdm2_sd_jwt.claims().cnf.as_ref() else {
+                    let payload = vcdm2_sd_jwt
+                        .payload()
+                        .map_err(|err| AppError::Error(format!("Failed to parse VCDM 2.0 SD-JWT: {err}")))?;
+                    let Some(cnf_kid) = payload
+                        .get("cnf")
+                        .and_then(|cnf| cnf.get("kid"))
+                        .and_then(Value::as_str)
+                    else {
                         return Err(AppError::Error(
                             "Unsupported `cnf` claim in VCDM 2.0 SD-JWT".to_string(),
                         ));
                     };
 
-                    let cnf_jwk = subject_manager
-                        .resolve_public_key(cnf_kid)
+                    let algorithm = subject_manager
+                        .signing_algorithm(cnf_kid)
                         .await
                         .map_err(|e| AppError::Error(format!("Failed to resolve `cnf` key from DID URL: {e}")))?;
 
-                    let algorithm = cnf_jwk
-                        .alg()
-                        .ok_or_else(|| AppError::Error("JWK missing `alg` parameter".to_string()))?;
-
-                    let holder_did = DIDUrl::parse(cnf_kid)
+                    let holder_did = DidUrl::parse(cnf_kid)
                         .map_err(|e| AppError::Error(format!("Failed to parse 'cnf' DID URL: {e}")))?
                         .did()
-                        .to_string();
-                    let holder_url = Url::parse(&holder_did)
-                        .map_err(|e| AppError::Error(format!("Failed to parse holder URL: {e}")))?;
+                        .clone();
 
-                    let id = VcDataUrl::parse(&format!("data:application/vc+sd-jwt,{vcdm2_sd_jwt}"))
-                        .map_err(|e| AppError::Error(format!("Failed to parse VcDataUrl: {e}")))?;
-                    let enveloped_credential = EnvelopedVc::new(id);
-
-                    let mut properties = IotaObject::default();
-                    properties.insert("iss".to_string(), holder_did.clone().into());
-                    properties.insert("aud".to_string(), verifier_audience.clone().into());
-                    properties.insert("nonce".to_string(), required_nonce.clone().into());
-                    properties.insert("iat".to_string(), Utc::now().timestamp().into());
-                    properties.insert(
-                        "exp".to_string(),
-                        (Utc::now() + Duration::minutes(10)).timestamp().into(),
+                    let presentation = enveloped_presentation(
+                        &vcdm2_sd_jwt,
+                        &holder_did,
+                        &verifier_audience,
+                        &required_nonce,
+                        Utc::now(),
                     );
 
-                    let presentation = Presentation::builder(holder_url.clone(), properties)
-                        .credential(enveloped_credential)
-                        .build_v2()
-                        .map_err(|e| AppError::Error(format!("Failed to build Presentation: {e}")))?;
-
                     let jwt_header = Header {
-                        alg: Algorithm::from_str(algorithm).unwrap(),
-                        kid: Some(cnf_kid.clone()),
+                        alg: algorithm,
+                        kid: Some(cnf_kid.to_string()),
                         typ: Some("JWT".to_string()),
                         ..Default::default()
                     };
@@ -564,4 +555,38 @@ async fn get_vp_token(
     builder
         .build()
         .map_err(|e| AppError::Error(format!("Failed to build VpToken: {e:?}",)))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn a_vcdm2_sd_jwt_is_presented_enveloped_with_the_jwt_claims() {
+        let sd_jwt = SdJwt::parse("eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJkaWQ6ZXhhbXBsZTppc3N1ZXIifQ.c2ln~").unwrap();
+        let holder = Did::parse("did:example:holder").unwrap();
+        let now = DateTime::from_timestamp(1_700_000_000, 0).unwrap();
+
+        let presentation = enveloped_presentation(&sd_jwt, &holder, "https://verifier.example", "n-0S6", now);
+
+        assert_eq!(
+            json!(presentation),
+            json!({
+                "@context": "https://www.w3.org/ns/credentials/v2",
+                "type": "VerifiablePresentation",
+                "holder": "did:example:holder",
+                "verifiableCredential": [{
+                    "@context": "https://www.w3.org/ns/credentials/v2",
+                    "id": format!("data:application/vc+sd-jwt,{sd_jwt}"),
+                    "type": "EnvelopedVerifiableCredential"
+                }],
+                "iss": "did:example:holder",
+                "aud": "https://verifier.example",
+                "nonce": "n-0S6",
+                "iat": 1_700_000_000,
+                "exp": 1_700_000_600
+            })
+        );
+    }
 }

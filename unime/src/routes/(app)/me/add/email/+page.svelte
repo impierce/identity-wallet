@@ -15,6 +15,7 @@
   import CircularProgressBar from '$lib/components/CircularProgressBar.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { state as appState } from '$lib/stores';
+  import { fillPinInput } from '$lib/utils/pinInput';
 
   // When the current verification case has expired, the user should be informed about it.
   // However, we do not want to leave the expired case open forever, but reset the forms after a given period.
@@ -24,7 +25,7 @@
     type: 'numeric',
     maxLength: 4,
     placeholder: '',
-    allowPaste: false,
+    onPaste: (text) => fillPinInput(pinInput, text),
     onValueChange() {
       showError = false;
     },
