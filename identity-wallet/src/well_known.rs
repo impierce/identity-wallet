@@ -5,6 +5,7 @@
 //! and some deployments only serve it at the host (`/.well-known/x`). UniMe tries all three, in the order of
 //! [`well_known_candidates`].
 
+use anyhow::Context as _;
 use log::debug;
 use oid4vci::credential_issuer::{
     authorization_server_metadata::AuthorizationServerMetadata, credential_issuer_metadata::CredentialIssuerMetadata,
@@ -70,14 +71,17 @@ pub async fn get_verified_credential_issuer_metadata(
     credential_issuer_url: &Url,
     trust_anchors: &[String],
 ) -> anyhow::Result<CredentialIssuerMetadata> {
-    let metadata = fetch_well_known_with(
+    let resource = "credential issuer metadata";
+    let (metadata, url, status) = fetch_well_known_with(
         credential_issuer_url,
         &[OPENID_CREDENTIAL_ISSUER],
-        "credential issuer metadata",
+        resource,
         parse_credential_issuer_metadata,
     )
     .await?;
-    crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors).await
+    crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors)
+        .await
+        .with_context(|| format!("Failed to parse {resource} from {url} (HTTP {status})"))
 }
 
 /// The JSON of credential issuer metadata, which must be complete unless it carries `signed_metadata`: an issuer that
@@ -170,16 +174,19 @@ pub async fn get_did_document_id(base: &Url) -> anyhow::Result<Option<String>> {
 /// The error messages keep the `(HTTP <status>)` and `Failed to parse` wording that
 /// [`ErrorCause`](crate::user_error::ErrorCause) recognises.
 async fn fetch_well_known<T: DeserializeOwned>(base: &Url, suffixes: &[&str], resource: &str) -> anyhow::Result<T> {
-    fetch_well_known_with(base, suffixes, resource, |text| serde_json::from_str(text)).await
+    fetch_well_known_with(base, suffixes, resource, |text| serde_json::from_str(text))
+        .await
+        .map(|(resource_value, _, _)| resource_value)
 }
 
-/// [`fetch_well_known`], with `parse` deciding whether a candidate's body is the resource.
+/// [`fetch_well_known`], with `parse` deciding whether a candidate's body is the resource, which is returned with the
+/// URL and status it was served with.
 async fn fetch_well_known_with<T>(
     base: &Url,
     suffixes: &[&str],
     resource: &str,
     parse: impl Fn(&str) -> serde_json::Result<T>,
-) -> anyhow::Result<T> {
+) -> anyhow::Result<(T, Url, StatusCode)> {
     let client = get_http_client().await;
     let mut last_error = None;
 
@@ -208,7 +215,7 @@ async fn fetch_well_known_with<T>(
         match parse(&text) {
             Ok(resource_value) => {
                 debug!("Found {resource} at {url}");
-                return Ok(resource_value);
+                return Ok((resource_value, url, status));
             }
             Err(err) => {
                 debug!("Unparseable {resource} at {url}: {err}");
@@ -375,6 +382,28 @@ mod tests {
         let metadata = get_credential_issuer_metadata(&url(&issuer)).await.unwrap();
 
         assert_eq!(metadata.credential_issuer.as_str(), url(&issuer).as_str());
+    }
+
+    #[tokio::test]
+    async fn incomplete_metadata_whose_signed_metadata_is_not_applied_is_an_invalid_response() {
+        let mock_server = MockServer::start().await;
+        let issuer = mock_server.uri();
+        let mut metadata = credential_issuer_metadata(&issuer);
+        metadata.as_object_mut().unwrap().remove("credential_endpoint");
+        metadata["signed_metadata"] = json!("not.a.jwt");
+        mount_json(&mock_server, "/.well-known/openid-credential-issuer", metadata).await;
+
+        let error = get_verified_credential_issuer_metadata(&url(&issuer), &[])
+            .await
+            .unwrap_err();
+
+        assert!(error.to_string().contains("(HTTP 200 OK)"), "{error}");
+        assert_eq!(
+            crate::user_error::ErrorCause::from_app_error(&crate::error::AppError::GetCredentialIssuerMetadataError(
+                error
+            )),
+            crate::user_error::ErrorCause::InvalidResponse
+        );
     }
 
     #[tokio::test]
