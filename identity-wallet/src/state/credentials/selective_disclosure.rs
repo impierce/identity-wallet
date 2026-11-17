@@ -1,5 +1,5 @@
 use crate::error::AppError;
-use identity_kit::sd_jwt_vc::{ClaimPath, PathComponent, Processed, SdJwt};
+use identity_kit::sd_jwt_vc::{ClaimPath, PathComponent, Processed, SdJwt, ELLIPSIS_KEY};
 use oid4vc_core::claim_path_pointer::{ClaimPathElement, ClaimPathPointer};
 use oid4vp::dcql::dcql_query::{CredentialQuery, Format};
 use serde_json::Value;
@@ -107,6 +107,48 @@ pub fn concrete_paths(path: &ClaimPathPointer, value: &Value) -> Vec<ClaimPath> 
     selections.into_iter().map(|(path, _)| ClaimPath::new(path)).collect()
 }
 
+/// The concrete paths that `path` points to in the processed payload, in the coordinates of the issued credential that
+/// the disclosures' paths use.
+fn issued_paths(path: &ClaimPathPointer, processed: &Processed) -> Vec<ClaimPath> {
+    let payload = Value::Object(processed.payload.clone());
+    let issued = Value::Object(processed.as_issued().clone());
+    concrete_paths(path, &payload)
+        .iter()
+        .filter_map(|path| issued_path(path, &issued))
+        .collect()
+}
+
+/// The path in `issued` of the claim at `path` in the processed payload. An array element the holder has no
+/// disclosure for, such as a decoy, stays in the issued credential as `{"...": "<digest>"}` but not in the processed
+/// payload, so the indices of the elements after it differ.
+fn issued_path(path: &ClaimPath, issued: &Value) -> Option<ClaimPath> {
+    let mut current = issued;
+    let mut components = Vec::with_capacity(path.components().len());
+    for component in path.components() {
+        match (component, current) {
+            (PathComponent::Key(key), Value::Object(object)) => {
+                current = object.get(key)?;
+                components.push(component.clone());
+            }
+            (PathComponent::Index(index), Value::Array(elements)) => {
+                let (issued_index, element) = elements
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, element)| !is_undisclosed_element(element))
+                    .nth(*index)?;
+                current = element;
+                components.push(PathComponent::Index(issued_index));
+            }
+            _ => return None,
+        }
+    }
+    Some(ClaimPath::new(components))
+}
+
+fn is_undisclosed_element(element: &Value) -> bool {
+    matches!(element, Value::Object(object) if object.len() == 1 && object.contains_key(ELLIPSIS_KEY))
+}
+
 fn parse(sd_jwt: &str) -> Result<(SdJwt, Processed), AppError> {
     let sd_jwt = SdJwt::parse(sd_jwt).map_err(|err| AppError::Error(format!("Failed to parse SD-JWT: {err}")))?;
     let processed = sd_jwt
@@ -137,7 +179,6 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
     let Ok((sd_jwt, processed)) = parse(sd_jwt) else {
         return vec![false; claim_paths.len()];
     };
-    let issued = Value::Object(processed.as_issued().clone());
     let value_counts = |value: &Value| -> Vec<usize> {
         claim_paths
             .iter()
@@ -148,7 +189,7 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
 
     (0..claim_paths.len())
         .map(|index| {
-            let paths = concrete_paths(claim_paths[index], &issued);
+            let paths = issued_paths(claim_paths[index], &processed);
             if paths.is_empty() {
                 return false;
             }
@@ -179,11 +220,10 @@ pub fn conceal_unrequested_claims(
     claim_paths: &[&ClaimPathPointer],
 ) -> Result<String, AppError> {
     let (sd_jwt, processed) = parse(sd_jwt)?;
-    let issued = Value::Object(processed.as_issued().clone());
 
     let mut kept: Vec<ClaimPath> = claim_paths
         .iter()
-        .flat_map(|claim_path| concrete_paths(claim_path, &issued))
+        .flat_map(|claim_path| issued_paths(claim_path, &processed))
         .collect();
     if matches!(format, Format::VcSdJwt) {
         kept.extend(
@@ -414,6 +454,35 @@ mod tests {
             presented.process().unwrap().payload["credentialSubject"],
             json!({ "nationalities": ["NL", "DE"] })
         );
+    }
+
+    /// The verifier's paths index the processed payload. An array element the holder has no disclosure for stays in the
+    /// issued credential as a placeholder, so the element a path selects is found past it.
+    #[test]
+    fn array_indices_count_the_elements_of_the_processed_payload() {
+        let issued = unsigned_sd_jwt(
+            json!({ "nationalities": ["NL", "DE"] }),
+            vec![
+                ClaimPath::new([PathComponent::from("nationalities"), PathComponent::Index(0)]),
+                ClaimPath::new([PathComponent::from("nationalities"), PathComponent::Index(1)]),
+            ],
+        );
+        // Without the disclosure of `NL`, its placeholder precedes `DE`, which the processed payload has at index 0.
+        let issued = SdJwt::parse(&issued).unwrap();
+        let disclosures = issued
+            .disclosures()
+            .iter()
+            .filter(|disclosure| disclosure.value() != &json!("NL"))
+            .cloned()
+            .collect();
+        let held = SdJwt::new(issued.jwt().clone(), disclosures).to_string();
+        let first = path(json!(["nationalities", 0]));
+
+        let presented = SdJwt::parse(&conceal_unrequested_claims(&held, &Format::DcSdJwt, &[&first]).unwrap()).unwrap();
+        assert_eq!(presented.disclosures().len(), 1);
+        assert_eq!(presented.process().unwrap().payload["nationalities"], json!(["DE"]));
+
+        assert_eq!(concealable_claims(&held, &[&first]), vec![true]);
     }
 
     #[test]

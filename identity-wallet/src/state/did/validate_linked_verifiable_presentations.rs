@@ -158,15 +158,20 @@ async fn validate_linked_verifiable_presentation(
         warn!("Skipping linked verifiable credential {index}: {err}");
     }
     let decoded = decode(&jwt).ok()?;
+    // `credentials` and the indices in `failed` count every entry of `verifiableCredential`, while the presentation's
+    // `verifiable_credential` keeps only the entries that are JWTs. The JWTs are therefore taken from the entries
+    // themselves, so that each credential keeps its own.
+    let entries = match decoded.claims.additional.get("vp")?.get("verifiableCredential")? {
+        Value::Array(entries) => entries.clone(),
+        entry => vec![entry.clone()],
+    };
     Some(
-        decoded
-            .presentation
-            .verifiable_credential
+        entries
             .into_iter()
             .zip(decoded.credentials)
             .enumerate()
             .filter(|(index, _)| !failed.contains_key(index))
-            .filter_map(|(_, (jwt, credential))| Some((jwt, credential.ok()?)))
+            .filter_map(|(_, (entry, credential))| Some((Jwt::new(entry.as_str()?).ok()?, credential.ok()?)))
             .collect(),
     )
 }
@@ -1022,6 +1027,52 @@ mod tests {
                 .await
                 .is_none()
         );
+    }
+
+    /// The indices of a linked presentation's failed credentials count every entry of `verifiableCredential`, including
+    /// those that are not JWTs. Each credential that validated is kept with its own JWT.
+    #[tokio::test]
+    async fn a_linked_presentation_keeps_each_credential_with_its_own_jwt_next_to_entries_that_are_no_jwt() {
+        let mut issuer = TestEntity::new().await;
+        issuer.add_well_known_did_json().await;
+        let holder = TestEntity::new().await;
+        let logo: url::Url = format!("{}logo.png", issuer.domain).parse().unwrap();
+
+        let valid = issuer.issue_credential(&holder.did(), "Valid", logo.clone()).await;
+        let signed = issuer.issue_credential(&holder.did(), "Tampered", logo).await;
+        // The same credential under another credential's signature.
+        let (signing_input, _) = signed.as_str().rsplit_once('.').unwrap();
+        let (_, signature) = valid.as_str().rsplit_once('.').unwrap();
+        let tampered = Jwt::new(format!("{signing_input}.{signature}")).unwrap();
+
+        let claims = LinkedPresentationBuilder::new(Did::parse(&holder.did()).unwrap())
+            .with_credential(valid.clone())
+            .with_credential(tampered)
+            .jwt_claims()
+            .unwrap();
+        let mut claims = serde_json::to_value(claims).unwrap();
+        claims["vp"]["verifiableCredential"]
+            .as_array_mut()
+            .unwrap()
+            .insert(0, Value::Null);
+        let presentation = holder.generate_jwt(&claims, Some("JWT")).await;
+        Mock::given(method("GET"))
+            .and(path("/mixed.jwt"))
+            .respond_with(ResponseTemplate::new(200).set_body_string(presentation.as_str()))
+            .mount(&holder.mock_server)
+            .await;
+
+        let resolver = holder.subject.resolver().await;
+        let validated = validate_linked_verifiable_presentation(
+            &resolver,
+            &holder.did_document(),
+            holder.domain.join("mixed.jwt").unwrap(),
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(validated.len(), 1);
+        assert_eq!(validated[0].0, valid);
     }
 
     #[tokio::test]
