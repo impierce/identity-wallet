@@ -1,4 +1,4 @@
-# ADR 0004: Identities Verified by a DID or an X.509 Certificate
+# ADR 0004: Identities Verified with a DID or an X.509 Certificate
 
 ## Status
 
@@ -21,12 +21,12 @@ A growing part of the ecosystem verifies parties with X.509 certificates instead
 
 identity-kit validates `x5c` chains (`resolver::X509Resolver`, impierce/identity-kit#172). It binds an issuer claim
 only as an `https` URL whose host is a DNS name of the leaf certificate, and refuses a DID `iss` under a certificate
-chain: a CA can only be trusted for the DNS names its name constraints cover. A party verified by a certificate
+chain: a CA can only be trusted for the DNS names its name constraints cover. A party verified with a certificate
 therefore has no DID that UniMe could store, and ADR 0001's connection model cannot represent it.
 
 ## Decision
 
-### An identity is verified by a DID or by an X.509 certificate
+### An identity is verified with a DID or with an X.509 certificate
 
 Every connection has an **identity**: who the party is, as the wallet has verified it. There are two ways to verify it.
 

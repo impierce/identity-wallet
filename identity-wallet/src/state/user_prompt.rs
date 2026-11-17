@@ -80,8 +80,8 @@ pub struct ClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub redirect_uri: Option<String>,
-    /// Who the party is, verified by a DID or an X.509 certificate (ADR 0004). Stored as `client_id` before `AppState`
-    /// version 2.
+    /// Who the party is, verified with a DID or an X.509 certificate (ADR 0004). Stored as `client_id` before
+    /// `AppState` version 2.
     #[ts(type = "string")]
     pub identity: Identity,
 }

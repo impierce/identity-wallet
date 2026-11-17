@@ -51,8 +51,8 @@ pub enum ValidationStatus {
     Unknown,
 }
 
-/// The domain validation of a connection whose identity is verified by an X.509 certificate (ADR 0004): the certificate
-/// chain proved `dns_name`, so `url` is on the identity's domain when its host is that name.
+/// The domain validation of a connection whose identity is verified with an X.509 certificate (ADR 0004): the
+/// certificate chain certifies `dns_name`, so `url` is on the identity's domain when its host is that name.
 pub fn certificate_domain_validation(url: &url::Url, dns_name: &str) -> ValidationResult {
     let on_domain = url.host_str().is_some_and(|host| host.eq_ignore_ascii_case(dns_name));
     ValidationResult {

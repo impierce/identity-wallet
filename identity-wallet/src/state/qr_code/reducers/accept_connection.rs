@@ -116,7 +116,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
                         let resolver = subject.resolver().await;
                         Box::new(validate_connection_domain(resolver.as_ref(), url.clone(), did).await)
                     }
-                    // The certificate chain proved the DNS name; the connection's URL is on it or not.
+                    // The certificate chain certifies the DNS name; the connection's URL is on it or not.
                     Identity::X509 { dns_name } => Box::new(
                         crate::state::did::validate_domain_linkage::certificate_domain_validation(&url, dns_name),
                     ),
