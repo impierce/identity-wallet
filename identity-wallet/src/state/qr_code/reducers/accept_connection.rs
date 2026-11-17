@@ -17,7 +17,7 @@ use crate::{
     },
     well_known::{get_credential_issuer_metadata, get_did_document_id},
 };
-use identity_iota::did::CoreDID;
+use identity_kit::did::Did;
 use log::{info, warn};
 use oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
@@ -299,7 +299,7 @@ async fn get_siopv2_client_metadata(
     let connection_url = normalize_connection_url(&redirect_uri);
 
     let client_id = strip_client_id_prefix(&siopv2_authorization_request.body.client_id);
-    let client_id = CoreDID::parse(&client_id)
+    let client_id = Did::parse(&client_id)
         .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?;
 
     Ok(match &siopv2_authorization_request.body.extension.client_metadata {
@@ -336,7 +336,7 @@ pub(crate) async fn get_oid4vp_client_metadata(
 ) -> Result<ClientMetadata, AppError> {
     let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
     let connection_url = normalize_connection_url(&redirect_uri);
-    let client_id = CoreDID::parse(strip_client_id_prefix(&oid4vp_authorization_request.body.client_id))
+    let client_id = Did::parse(&strip_client_id_prefix(&oid4vp_authorization_request.body.client_id))
         .map_err(|error| AppError::UntrustedError(format!("Failed to parse client_id as DID: {error}")))?;
 
     Ok(match &oid4vp_authorization_request.body.extension.client_metadata {
@@ -414,7 +414,7 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
     })?;
     let client_id = match did_document_id {
         Some(client_id) => Some(
-            CoreDID::parse(&client_id)
+            Did::parse(&client_id)
                 .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?,
         ),
         None => {

@@ -243,11 +243,11 @@ mod tests {
 
     use crate::state::core_utils::PendingConnectionData;
     use crate::state::user_prompt::ClientMetadata;
-    use identity_iota::did::{CoreDID, DID};
+    use identity_kit::did::Did;
 
     use super::*;
 
-    fn pending_connection_data(url: &str, name: &str, did: CoreDID) -> PendingConnectionData {
+    fn pending_connection_data(url: &str, name: &str, did: Did) -> PendingConnectionData {
         PendingConnectionData {
             client_metadata: ClientMetadata {
                 client_name: name.to_string(),
@@ -268,7 +268,7 @@ mod tests {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Did::from_str("did:example:123").unwrap();
         let connection = connections
             .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
             .unwrap();
@@ -291,7 +291,7 @@ mod tests {
     #[test]
     fn test_update_or_insert_refreshes_display_data_of_existing_connection() {
         let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Did::from_str("did:example:123").unwrap();
         let connection = connections
             .update_last_interaction_or_insert_new(&pending_connection_data(
                 "https://example.com",
@@ -319,7 +319,7 @@ mod tests {
     #[test]
     fn test_update_or_insert_distinguishes_connections_by_did() {
         let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Did::from_str("did:example:123").unwrap();
         let url = "https://example.com";
         let name = "Example";
         let connection = connections
@@ -332,7 +332,7 @@ mod tests {
         assert!(connections.contains(did.as_str()));
 
         // A different DID is a different connection, even when the display name and url is identical.
-        let other_did = CoreDID::from_str("did:example:456").unwrap();
+        let other_did = Did::from_str("did:example:456").unwrap();
         let connection = connections
             .update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()))
             .unwrap();

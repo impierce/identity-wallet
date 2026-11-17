@@ -20,8 +20,7 @@ use crate::{
     subject::Subject,
     well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
-use identity_iota::did::CoreDID;
-use identity_kit::status_list::Status;
+use identity_kit::{did::Did, status_list::Status};
 use log::{debug, info, warn};
 use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vci::{
@@ -392,7 +391,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         if pending_connection_data.client_metadata.client_id.is_none() {
             info!("Binding the unverified issuer {connection_url} to the DID that signed its credentials");
             pending_connection_data.client_metadata.client_id = Some(
-                CoreDID::parse(&connection_did)
+                Did::parse(&connection_did)
                     .map_err(|err| AppError::UntrustedError(format!("Failed to parse the signing DID: {err}")))?,
             );
         }

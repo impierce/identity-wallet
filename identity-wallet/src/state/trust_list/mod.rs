@@ -127,7 +127,6 @@ impl TrustList {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use identity_iota::core::FromJson;
 
     #[test]
     fn trust_list_successfully_deserializes_from_entries_map() {
@@ -136,7 +135,7 @@ mod tests {
                 id: "b01f4a74-3005-4749-a030-c5444bc4dab5".to_string(),
                 display_name: "Test List".to_string(),
                 custom: false,
-                entries: HashMap::from_json_value(serde_json::json!({
+                entries: serde_json::from_value::<HashMap<_, _>>(serde_json::json!({
                     "https://example.org": true,
                 }))
                 .unwrap()
@@ -159,7 +158,7 @@ mod tests {
                 id: "b01f4a74-3005-4749-a030-c5444bc4dab5".to_string(),
                 display_name: "Test List".to_string(),
                 custom: false,
-                entries: HashMap::from_json_value(serde_json::json!({
+                entries: serde_json::from_value::<HashMap<_, _>>(serde_json::json!({
                     "https://example.org": true,
                 }))
                 .unwrap()
