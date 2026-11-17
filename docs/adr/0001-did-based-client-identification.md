@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by [ADR 0005](0005-unverified-oid4vci-issuers.md): an OID4VCI issuer that publishes no
+`/.well-known/did.json` is accepted as unverified and bound to the DID that signs its credential.
 
 ## Context
 
@@ -30,7 +31,8 @@ We accept reduced OID4VCI interoperability for now in exchange for a clear, veri
 
 ## Consequences
 
-OID4VCI issuers that do not publish `/.well-known/did.json` cannot be accepted as connections.
+OID4VCI issuers that do not publish `/.well-known/did.json` cannot be accepted as connections. (Superseded by
+ADR 0005.)
 
 In practice this will limit OID4VCI issuers to `did:web`, since this endpoint is defined only in the `did:web` specification and probably doesnt combine with other dids suitable for Issuers and Verifiers. However, support for additional DID methods can be added later.
 

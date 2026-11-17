@@ -43,6 +43,10 @@ enum ParsedQrCode {
     Oid4vci(Box<CredentialOfferParameters>),
 }
 
+/// The domain validation message of an OID4VCI issuer that publishes no DID document (ADR 0005).
+pub(crate) const UNVERIFIED_ISSUER_MESSAGE: &str =
+    "The issuer publishes no DID document, so its identity is not verified. It is bound to the DID that signs its credential.";
+
 /// Sets the `AcceptConnection` prompt; the following `ConnectionAccepted` action routes to the next reducer depending on the `ActiveFlow` set here.
 /// 1. Read and parse the QR-code to a URL.
 /// 2. Retrieve the connection data to display on the "Accept connection" screen.
@@ -57,13 +61,15 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         info!("Retrieved client metadata: {client_metadata:?}");
         crate::log_payload!("Initializing active flow: {active_flow:?}");
 
-        let did = client_metadata.client_id.to_string();
+        // `None` for an OID4VCI issuer that publishes no DID document: its identity stays unverified until the
+        // credential it issues is verified (ADR 0005).
+        let did = client_metadata.client_id.as_ref().map(ToString::to_string);
         let connection_data = state
             .connections
             .0
             .iter()
             // TODO: currently we only match against the DID, but if any display info changes with what we stored we plan to notify the user of the diffs.
-            .find(|conn| conn.did == did)
+            .find(|conn| Some(&conn.did) == did.as_ref())
             .map(|connection| {
                 let interactions = state
                     .history
@@ -99,22 +105,38 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             .subject
             .clone();
 
-        info!(
-            "Checking domain linkage for DID: {did} and URL: {}",
-            client_metadata.connection_url
-        );
+        let domain_validation = match &did {
+            // Domain linkage and linked VPs are checked on the DID, so there is nothing to check without one.
+            None => {
+                use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
 
-        let domain_validation = {
+                info!(
+                    "No DID for {}: its identity is not verified",
+                    client_metadata.connection_url
+                );
+                Box::new(ValidationResult {
+                    status: ValidationStatus::Unknown,
+                    url: url.clone(),
+                    name: None,
+                    logo_uri: None,
+                    issuance_date: None,
+                    message: Some(UNVERIFIED_ISSUER_MESSAGE.to_string()),
+                })
+            }
             #[cfg(not(feature = "test_utils"))]
-            {
+            Some(did) => {
                 use crate::state::did::validate_domain_linkage::validate_connection_domain;
 
+                info!(
+                    "Checking domain linkage for DID: {did} and URL: {}",
+                    client_metadata.connection_url
+                );
                 let resolver = subject.resolver().await;
 
-                Box::new(validate_connection_domain(resolver.as_ref(), url.clone(), &did).await)
+                Box::new(validate_connection_domain(resolver.as_ref(), url.clone(), did).await)
             }
             #[cfg(feature = "test_utils")]
-            {
+            Some(_) => {
                 // Skip validation during tests
 
                 use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
@@ -131,14 +153,17 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         info!("Domain validation result: {domain_validation:?}");
 
-        let linked_verifiable_presentations = match validate_linked_verifiable_presentations(&subject, &did)
-            .await
-            .into_iter()
-            .flatten()
-            .collect::<Vec<LinkedVerifiableCredentialData>>()
-        {
-            vec if !vec.is_empty() => Some(vec),
-            _ => None,
+        let linked_verifiable_presentations = match &did {
+            Some(did) => match validate_linked_verifiable_presentations(&subject, did)
+                .await
+                .into_iter()
+                .flatten()
+                .collect::<Vec<LinkedVerifiableCredentialData>>()
+            {
+                vec if !vec.is_empty() => Some(vec),
+                _ => None,
+            },
+            None => None,
         };
 
         info!("Linked verifiable presentations: {linked_verifiable_presentations:?}");
@@ -296,7 +321,7 @@ async fn get_siopv2_client_metadata(
                 client_name,
                 logo_uri,
                 connection_url: connection_url.clone(),
-                client_id: client_id.clone(),
+                client_id: Some(client_id.clone()),
                 redirect_uri: Some(redirect_uri.to_string()),
             }
         }
@@ -333,7 +358,7 @@ pub(crate) async fn get_oid4vp_client_metadata(
                 client_name,
                 logo_uri,
                 connection_url: connection_url.clone(),
-                client_id,
+                client_id: Some(client_id),
                 redirect_uri: Some(redirect_uri.to_string()),
             }
         }
@@ -377,17 +402,26 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
         None => (connection_url.clone(), None),
     };
 
-    // This fetching of the DID document means that our OID4VCI implementation only accepts did:web's as client IDs.
-    // Read more about this design decision in ADR 0001.
-    let client_id = get_did_document_id(&credential_issuer_url).await.map_err(|err| {
-        warn!("No DID document found for {credential_issuer_url}: {err:#}");
+    // An issuer that publishes a DID document at `/.well-known/did.json` is verified with it before the user accepts
+    // (ADR 0001). One that publishes none is accepted as unverified, and bound to the DID that signs its credential
+    // (ADR 0005). A DID document that is unavailable, such as behind a 503, or whose `id` is no DID, is refused.
+    let did_document_id = get_did_document_id(&credential_issuer_url).await.map_err(|err| {
+        warn!("Failed to get the DID document of {credential_issuer_url}: {err:#}");
         match err.downcast::<reqwest::Error>() {
             Ok(reqwest_error) => AppError::DownloadFailed(reqwest_error),
             Err(_) => AppError::DidParseError,
         }
     })?;
-    let client_id = Did::parse(&client_id)
-        .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?;
+    let client_id = match did_document_id {
+        Some(client_id) => Some(
+            Did::parse(&client_id)
+                .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?,
+        ),
+        None => {
+            info!("No DID document for {credential_issuer_url}, its identity is not verified");
+            None
+        }
+    };
 
     Ok(ClientMetadata {
         client_name: issuer_name,
@@ -781,6 +815,7 @@ mod tests {
     use super::*;
     use crate::persistence::{hash, ASSETS_DIR, STRONGHOLD};
     use crate::state::core_utils::{IdentityManager, Managers};
+    use crate::state::did::validate_domain_linkage::ValidationStatus;
     use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
     use crate::stronghold::StrongholdManager;
     use crate::subject::subject;
@@ -951,7 +986,7 @@ mod tests {
         assert_eq!(client_metadata.client_name, ISSUER_NAME);
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(issuer_logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, mock_server.uri());
-        assert_eq!(client_metadata.client_id.to_string(), ISSUER_DID);
+        assert_eq!(client_metadata.client_id.unwrap().to_string(), ISSUER_DID);
 
         // Logos are downloaded into `assets/tmp` under the hash of their URI.
         let downloaded_logo = ASSETS_DIR
@@ -998,6 +1033,92 @@ mod tests {
         assert!(!ASSETS_DIR.lock().unwrap().join("tmp").exists());
     }
 
+    /// An issuer that publishes no DID document, such as one identified by `did:jwk`, is offered as unverified instead
+    /// of refused: no DID, no domain linkage or linked VPs to check, and a domain validation that says why (ADR 0005).
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_offer_from_an_issuer_without_a_did_document_yields_an_unverified_prompt() {
+        *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
+        let state = test_state().await;
+        let mock_server = MockServer::start().await;
+        mount_issuer_metadata(&mock_server, None).await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(404))
+            .mount(&mock_server)
+            .await;
+
+        let credential_offer = serde_json::to_string(&credential_offer(&mock_server.uri())).unwrap();
+        let qr_code: String = url::form_urlencoded::Serializer::new("openid-credential-offer://?".to_string())
+            .append_pair("credential_offer", &credential_offer)
+            .finish();
+        let state = accept_connection(
+            state,
+            Arc::new(QrCodeScanned {
+                form_urlencoded: qr_code,
+            }),
+        )
+        .await
+        .unwrap();
+
+        let Some(CurrentUserPrompt::AcceptConnection {
+            client_metadata,
+            connection_data,
+            domain_validation,
+            linked_verifiable_presentations,
+            ..
+        }) = state.current_user_prompt
+        else {
+            panic!(
+                "expected an AcceptConnection prompt, got {:?}",
+                state.current_user_prompt
+            );
+        };
+        assert_eq!(client_metadata.client_id, None);
+        assert_eq!(client_metadata.client_name, mock_server.uri());
+        assert!(connection_data.is_none());
+        assert_eq!(domain_validation.status, ValidationStatus::Unknown);
+        assert_eq!(domain_validation.message.as_deref(), Some(UNVERIFIED_ISSUER_MESSAGE));
+        assert!(linked_verifiable_presentations.is_none());
+        let pending = state.core_utils.pending_connection_data.unwrap();
+        assert_eq!(pending.client_metadata.client_id, None);
+    }
+
+    /// An issuer that publishes a DID document is still held to it: one whose `id` is no DID is refused.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_issuer_whose_did_document_has_no_did_is_still_refused() {
+        let mock_server = MockServer::start().await;
+        mount_issuer_metadata(&mock_server, None).await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({ "id": "not a DID" })))
+            .mount(&mock_server)
+            .await;
+
+        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri())).await;
+
+        assert!(matches!(result, Err(UntrustedError(_))), "{result:?}");
+    }
+
+    /// A DID document that is unavailable is not taken for a missing one: the offer of an issuer whose `did.json`
+    /// answers 503 is refused, rather than accepted as unverified (ADR 0005).
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_issuer_whose_did_document_is_unavailable_is_refused() {
+        let mock_server = MockServer::start().await;
+        mount_issuer_metadata(&mock_server, None).await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(503))
+            .mount(&mock_server)
+            .await;
+
+        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri())).await;
+
+        assert!(matches!(result, Err(DidParseError)), "{result:?}");
+    }
+
     #[tokio::test]
     #[serial_test::serial]
     async fn siopv2_request_initializes_the_siopv2_flow_and_downloads_the_client_logo() {
@@ -1026,7 +1147,7 @@ mod tests {
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, "https://example.com");
         assert_eq!(client_metadata.redirect_uri.as_deref(), Some("https://example.com/"));
-        assert_eq!(client_metadata.client_id.to_string(), CLIENT_DID);
+        assert_eq!(client_metadata.client_id.unwrap().to_string(), CLIENT_DID);
         assert!(matches!(active_flow, ActiveFlow::Siopv2 { .. }));
 
         let downloaded_logo = ASSETS_DIR
@@ -1084,7 +1205,7 @@ mod tests {
         assert_eq!(client_metadata.client_name, CLIENT_NAME);
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, "https://example.com");
-        assert_eq!(client_metadata.client_id.to_string(), CLIENT_DID);
+        assert_eq!(client_metadata.client_id.unwrap().to_string(), CLIENT_DID);
         // OID4VP flows started from a QR-code are never part of an interactive OID4VCI authorization.
         assert!(matches!(
             active_flow,

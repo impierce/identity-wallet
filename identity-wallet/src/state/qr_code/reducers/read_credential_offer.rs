@@ -243,7 +243,7 @@ mod tests {
                 logo_uri: Some(CLIENT_LOGO_URI.to_string()),
                 connection_url: connection_url.to_string(),
                 redirect_uri: None,
-                client_id: "did:example:123".parse().unwrap(),
+                client_id: Some("did:example:123".parse().unwrap()),
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {

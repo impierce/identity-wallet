@@ -69,7 +69,8 @@ impl Subject {
     // TODO(ssi-agent): Duplicate of ssi-agent `Subject::resolve_public_key`.
     // Replace this local implementation with the original implementation from `ssi-agent`:
     // https://github.com/impierce/ssi-agent/blob/beta/agent_secret_manager/src/subject.rs
-    /// Resolves the public key for a given DID URL.
+    /// Resolves the public key for a given DID URL: a method listed under `verificationMethod` or embedded in a
+    /// verification relationship.
     pub async fn resolve_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
         self.resolver()
             .await

@@ -327,8 +327,11 @@ pub async fn update_history_and_connections(
     history: &mut Vec<HistoryEvent>,
 ) -> Result<(), AppError> {
     let client_metadata = &pending_connection_data.client_metadata;
-    let previously_connected = connections.contains(client_metadata.client_id.as_str());
-    let connection = connections.update_last_interaction_or_insert_new(pending_connection_data);
+    let previously_connected = client_metadata
+        .client_id
+        .as_ref()
+        .is_some_and(|client_id| connections.contains(client_id.as_str()));
+    let connection = connections.update_last_interaction_or_insert_new(pending_connection_data)?;
     connection.last_shared_credentials.extend(last_shared);
 
     if let Some(logo_uri) = client_metadata.logo_uri.clone() {
