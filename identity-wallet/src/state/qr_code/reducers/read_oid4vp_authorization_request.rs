@@ -7,6 +7,7 @@ use crate::{
         credentials::credential_query_matching::{
             ensure_shareable, match_credential_queries, summarize_requested_credentials, with_last_shared,
         },
+        qr_code::oid4vp_refusal::{missing_credentials, oid4vp_error_response_uri, send_error_response},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -61,7 +62,14 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 .iter()
                 .find(|connection| Some(&connection.did) == client_id.as_ref());
             let requested_credentials = with_last_shared(requested_credentials, connection);
-            ensure_shareable(&requested_credentials)?;
+            if let Err(error) = ensure_shareable(&requested_credentials) {
+                // The Verifier learns that nothing will come (`access_denied`) rather than waiting for an answer.
+                if let Some(response_uri) = oid4vp_error_response_uri(&oid4vp_authorization_request) {
+                    let request_state = oid4vp_authorization_request.body.state.as_deref();
+                    send_error_response(&response_uri, request_state, &missing_credentials()).await;
+                }
+                return Err(error);
+            }
             Ok(AppState {
                 core_utils: CoreUtils {
                     active_flow: Some(ActiveFlow::Oid4vp {

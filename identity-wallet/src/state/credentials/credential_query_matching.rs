@@ -133,7 +133,9 @@ fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCred
         .flatten()
         .map(|claim| &claim.path)
         .collect();
-    let selective_disclosure = supports_selective_disclosure(&credential_query.format) && !claim_paths.is_empty();
+    // A query without `claims` gets no selectively disclosable claim (OpenID4VP 1.0, Section 6.4.1), which the share
+    // screen shows as "no fields requested".
+    let selective_disclosure = supports_selective_disclosure(&credential_query.format);
     let concealable = match record.verifiable_credential.as_str() {
         Some(sd_jwt) if selective_disclosure => concealable_claims(sd_jwt, &claim_paths),
         _ => vec![false; claim_paths.len()],
