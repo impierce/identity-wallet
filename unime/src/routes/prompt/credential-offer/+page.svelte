@@ -12,6 +12,7 @@
   import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
   import { state as appState, error, pendingInteraction } from '$lib/stores';
   import { hash } from '$lib/utils';
+  import { fillPinInput } from '$lib/utils/pinInput';
 
   // TypeScript does not know that the `current_user_prompt` is of type `credential-offer`.
   // Extract the type from `CurrentUserPrompt`.
@@ -36,7 +37,7 @@
     type: tx_code?.input_mode ?? 'numeric',
     maxLength: tx_code?.length ?? 6,
     placeholder: '',
-    allowPaste: false,
+    onPaste: (text) => fillPinInput(pinInput, text),
     onValueChange() {
       complete = pinInput.value.length === tx_code?.length;
     },
