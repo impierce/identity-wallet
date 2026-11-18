@@ -9,7 +9,7 @@ use crate::user_error::{host_of_scanned_request, UserError};
 use futures::StreamExt;
 use itertools::Itertools;
 use log::{debug, error, info};
-use tauri::Emitter;
+use tauri::{Emitter, Manager};
 
 // TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
 /// Define the runtime based on whether we are in test mode or not.
@@ -119,27 +119,33 @@ pub async fn handle_action(
     let action_type = action.typetag_name();
     // Prevents deadlocks in the backend from hanging the frontend forever.
     let time_limit = action.time_limit();
-    let state_container = container.inner();
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finished command invoke");
             res
         }
         _ = tokio::time::sleep(time_limit) => {
-            {
-                // The dropped `main_exec` future released the lock, so the state can be updated here.
-                let mut guard = state_container.0.lock().await;
-                let debug_log = guard.core_utils.debug_log.clone();
-                debug_log.drain_into(&mut guard.debug_messages);
-                let message = format!("{action_type} timed out after {time_limit:?}");
-                error!("{message}");
-                push_debug_message(&mut guard.debug_messages, DebugLevel::Error, message);
-                emit_event(&window, &guard).ok();
-            }
+            let message = format!("{action_type} timed out after {time_limit:?}");
+            error!("{message}");
             emit_error(&window, &UserError::timeout(action_type, None)).ok();
+            record_timeout(window, message);
             Err("Operation timed out".to_string())
         }
     }
+}
+
+/// Adds a timeout to the Debug screen in the background, once the state lock is free. Another action may still hold
+/// the lock, so waiting for it here would delay the timeout response that exists to keep the frontend from hanging.
+fn record_timeout(window: tauri::Window<Runtime>, message: String) {
+    tauri::async_runtime::spawn(async move {
+        let container = window.state::<AppStateContainer>();
+        let mut guard = container.0.lock().await;
+        // Includes the entries the timed-out action wrote before it was cancelled.
+        let debug_log = guard.core_utils.debug_log.clone();
+        debug_log.drain_into(&mut guard.debug_messages);
+        push_debug_message(&mut guard.debug_messages, DebugLevel::Error, message);
+        emit_event(&window, &guard).ok();
+    });
 }
 
 /// This function emits an event to the frontend with the updated state.
