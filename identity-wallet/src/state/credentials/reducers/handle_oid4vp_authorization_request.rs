@@ -303,19 +303,16 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
 }
 
 /// The credential as it is presented for the query: for selectively disclosable formats only the requested claims
-/// chosen by the holder are disclosed.
+/// chosen by the holder are disclosed. A query without `claims` requests no selectively disclosable claim, so none is
+/// disclosed: "If claims is absent, the Verifier is requesting no claims that are selectively disclosable; the Wallet
+/// MUST return only the claims that are mandatory to present" (OpenID4VP 1.0, Section 6.4.1).
 fn presented_credential(
     credential_query: &CredentialQuery,
     record: &VerifiableCredentialRecord,
     disclosed_claims: Option<&[usize]>,
 ) -> Result<Value, AppError> {
     let verifiable_credential = &record.verifiable_credential;
-    // Without requested claims the share screen offers the whole credential, so nothing is concealed.
-    let requests_claims = credential_query
-        .claims
-        .as_ref()
-        .is_some_and(|claims| !claims.is_empty());
-    if !supports_selective_disclosure(&credential_query.format) || !requests_claims {
+    if !supports_selective_disclosure(&credential_query.format) {
         return Ok(verifiable_credential.clone());
     }
     let sd_jwt = verifiable_credential
@@ -575,7 +572,36 @@ async fn get_vp_token(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::state::credentials::selective_disclosure::tests::{disclosed_claim_names, DC_SD_JWT};
+    use crate::state::credentials::{CredentialFormats, DisplayCredential};
     use serde_json::json;
+
+    #[test]
+    fn a_query_without_claims_gets_the_sd_jwt_vc_without_its_disclosures() {
+        let record = VerifiableCredentialRecord {
+            verifiable_credential: json!(DC_SD_JWT),
+            display_credential: DisplayCredential {
+                format: CredentialFormats::DcSdJwt(()),
+                ..Default::default()
+            },
+        };
+        let without_claims: CredentialQuery =
+            serde_json::from_value(json!({ "id": "pid", "format": "dc+sd-jwt", "meta": { "vct_values": [] } }))
+                .unwrap();
+        let with_claims: CredentialQuery = serde_json::from_value(json!({
+            "id": "pid",
+            "format": "dc+sd-jwt",
+            "meta": { "vct_values": [] },
+            "claims": [{ "path": ["first_name"] }]
+        }))
+        .unwrap();
+
+        let presented = presented_credential(&without_claims, &record, None).unwrap();
+        assert!(disclosed_claim_names(presented.as_str().unwrap()).is_empty());
+
+        let presented = presented_credential(&with_claims, &record, None).unwrap();
+        assert_eq!(disclosed_claim_names(presented.as_str().unwrap()), vec!["first_name"]);
+    }
 
     #[test]
     fn a_vcdm2_sd_jwt_is_presented_enveloped_with_the_jwt_claims() {
