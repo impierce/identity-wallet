@@ -87,10 +87,7 @@ pub async fn main_exec(
         // If the state update succeeds, we replace the old state with the new one.
         Ok(app_state) => {
             debug!("State reduce succeeded in {:?}", start.elapsed());
-            replace_once_saved(&mut guard, app_state, async |app_state| {
-                save_state(app_state).await.ok();
-            })
-            .await;
+            *guard = app_state;
         }
         // If the state update fails, we log the error and keep the old state.
         Err(error) => {
@@ -117,32 +114,45 @@ pub async fn main_exec(
                 let _ = emit_error(&window, &user_error);
             }
             error!("State update failed after {:?}: {error}", start.elapsed());
-            save_state(&guard).await.ok();
         }
     };
 
-    // The state is saved. Nothing from here on waits, so the action's time limit cannot cut in between the state
-    // being emitted and the request in it being counted as on screen.
-    emit_event(&window, &guard).ok();
-
-    // A request that took the place of another one is on screen from now on, not from the moment its reducer
-    // finished: an answer that arrived in between was still given to the previous screen.
-    if guard.core_utils.flow_started_at != flow_started_before {
-        guard.core_utils.flow_started_at = Some(std::time::Instant::now());
-    }
+    // Emit and save the state.
+    emit_and_save(
+        &mut guard,
+        flow_started_before,
+        |app_state| {
+            emit_event(&window, app_state).ok();
+        },
+        async |app_state| {
+            save_state(app_state).await.ok();
+        },
+    )
+    .await;
 
     Result::Ok(())
 }
 
-/// Makes `next` the current state once `save` has saved it.
+/// Emits the state an action left behind, then saves it.
 ///
-/// Saving waits for the disk, and an action that runs into its time limit while it waits is cut short there (see
-/// [`handle_action`]). The current state is therefore replaced only afterwards: a state that was not saved was not
-/// emitted either, and a request in it would be the active one while the screen still shows the previous request, so
-/// that the user's answer to what they see would answer a request they have not seen.
-async fn replace_once_saved(current: &mut AppState, next: AppState, save: impl AsyncFnOnce(&AppState)) {
-    save(&next).await;
-    *current = next;
+/// Emitting does not wait. Saving waits for the disk, and an action that runs into its time limit there is cut short
+/// (see [`handle_action`]). The order makes that harmless:
+/// - The state is the current one and is emitted before anything can cut in. What the reducers did, such as a
+///   presentation that was sent, is kept and shown. Only the saved copy is missed, and the next action writes it.
+/// - A request that took the place of another one is on screen from the moment it is emitted, not from the moment its
+///   reducer finished: an answer that arrived in between was still given to the previous screen. It is counted from
+///   then, again before anything can cut in, so a new request is never the active one without having been shown.
+async fn emit_and_save(
+    state: &mut AppState,
+    flow_started_before: Option<std::time::Instant>,
+    emit: impl FnOnce(&AppState),
+    save: impl AsyncFnOnce(&AppState),
+) {
+    emit(state);
+    if state.core_utils.flow_started_at != flow_started_before {
+        state.core_utils.flow_started_at = Some(std::time::Instant::now());
+    }
+    save(state).await;
 }
 
 /// Whether `action` is the user's answer to a request that is no longer the one on screen.
@@ -239,30 +249,55 @@ mod tests {
         }
     }
 
-    #[tokio::test]
-    async fn a_state_replaces_the_current_one_once_it_is_saved() {
-        let mut current = state_with_a_request_started_at(None);
-        let started_at = Some(Instant::now());
-
-        replace_once_saved(&mut current, state_with_a_request_started_at(started_at), async |_| {}).await;
-
-        assert_eq!(current.core_utils.flow_started_at, started_at);
+    /// Runs `emit_and_save` on `state` with a save that never finishes, until the action's time limit ends it, as
+    /// `handle_action` does. Returns whether the state was emitted.
+    async fn cut_short_while_saving(state: &mut AppState, flow_started_before: Option<Instant>) -> bool {
+        let mut emitted = false;
+        let cut_short = tokio::time::timeout(
+            Duration::from_millis(10),
+            emit_and_save(
+                state,
+                flow_started_before,
+                |_| emitted = true,
+                async |_| std::future::pending().await,
+            ),
+        )
+        .await;
+        assert!(cut_short.is_err());
+        emitted
     }
 
     #[tokio::test]
-    async fn a_state_that_is_cut_short_while_it_is_saved_does_not_replace_the_current_one() {
-        let mut current = state_with_a_request_started_at(None);
-        let next = state_with_a_request_started_at(Some(Instant::now()));
+    async fn a_state_is_emitted_even_when_saving_it_is_cut_short() {
+        let mut state = state_with_a_request_started_at(None);
 
-        // The action's time limit ends the action while the state is being saved, as `handle_action` does.
-        let cut_short = tokio::time::timeout(
-            Duration::from_millis(10),
-            replace_once_saved(&mut current, next, async |_| std::future::pending().await),
-        )
-        .await;
+        assert!(cut_short_while_saving(&mut state, None).await);
+    }
 
-        assert!(cut_short.is_err());
-        assert_eq!(current.core_utils.flow_started_at, None);
+    #[tokio::test]
+    async fn a_new_request_counts_as_on_screen_from_when_it_is_emitted_even_when_saving_it_is_cut_short() {
+        // The reducer finished reading the new request a while before the state is emitted.
+        let read_at = Instant::now() - Duration::from_secs(5);
+        let mut state = state_with_a_request_started_at(Some(read_at));
+        // An answer to the previous screen arrives in between.
+        let answered_at = Instant::now();
+
+        assert!(cut_short_while_saving(&mut state, None).await);
+
+        assert!(state.core_utils.flow_started_at.unwrap() > answered_at);
+        for answer in answers() {
+            assert!(answers_a_replaced_request(&answer, answered_at, &state));
+        }
+    }
+
+    #[tokio::test]
+    async fn a_request_that_stays_on_screen_keeps_when_it_started() {
+        let started_at = Some(Instant::now() - Duration::from_secs(5));
+        let mut state = state_with_a_request_started_at(started_at);
+
+        emit_and_save(&mut state, started_at, |_| {}, async |_| {}).await;
+
+        assert_eq!(state.core_utils.flow_started_at, started_at);
     }
 
     fn answers() -> Vec<Action> {
