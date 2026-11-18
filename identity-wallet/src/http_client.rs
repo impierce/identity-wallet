@@ -270,32 +270,46 @@ fn private_destinations_allowed() -> bool {
 /// again in its resolver, see [`PublicAddressResolver`]. This check stays so that a refused destination is reported as
 /// one, see [`is_refused_destination`].
 pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
+    assert_destination(url, private_destinations_allowed()).await
+}
+
+/// [`assert_public_destination`], with private addresses allowed or not.
+async fn assert_destination(url: &Url, allow_private: bool) -> Result<(), AppError> {
     if !matches!(url.scheme(), "http" | "https") {
         return Err(AppError::DownloadAborted(NOT_HTTP));
     }
 
-    if private_destinations_allowed() {
+    if allow_private {
         return Ok(());
     }
 
-    let host = url.host_str().ok_or(AppError::DownloadAborted(NO_HOST))?;
-    let port = url.port_or_known_default().unwrap_or(443);
-
-    let addresses = tokio::net::lookup_host((host, port))
-        .await
-        .map_err(|_| AppError::DownloadAborted(HOST_NOT_RESOLVED))?;
-
-    let mut resolved = false;
-    for address in addresses {
-        resolved = true;
-        if !is_public(&address.ip()) {
-            log::warn!("Refusing to request {url}: {} is not a public address", address.ip());
-            return Err(AppError::DownloadAborted(NON_PUBLIC_ADDRESS));
+    // An IP literal is the address itself. Looking it up as a name would fail for an IPv6 literal, which the URL
+    // holds in brackets.
+    let addresses: Vec<IpAddr> = match url.host() {
+        None => return Err(AppError::DownloadAborted(NO_HOST)),
+        Some(url::Host::Ipv4(address)) => vec![IpAddr::V4(address)],
+        Some(url::Host::Ipv6(address)) => vec![IpAddr::V6(address)],
+        Some(url::Host::Domain(domain)) => {
+            let port = url.port_or_known_default().unwrap_or(443);
+            tokio::net::lookup_host((domain, port))
+                .await
+                .map_err(|_| AppError::DownloadAborted(HOST_NOT_RESOLVED))?
+                .map(|address| address.ip())
+                .collect()
         }
+    };
+
+    if addresses.is_empty() {
+        return Err(AppError::DownloadAborted("URL host resolved to no addresses"));
     }
 
-    if !resolved {
-        return Err(AppError::DownloadAborted("URL host resolved to no addresses"));
+    if let Some(address) = addresses.iter().find(|address| !is_public(address)) {
+        // Only the host is logged: the rest of the URL can grant access or carry request parameters.
+        log::warn!(
+            "Refusing to request {}: {address} is not a public address",
+            crate::logging::url_host(url)
+        );
+        return Err(AppError::DownloadAborted(NON_PUBLIC_ADDRESS));
     }
 
     Ok(())
@@ -602,6 +616,35 @@ mod tests {
     async fn public_destination_http_client_rejects_non_http_schemes() {
         let url = Url::parse("file:///etc/passwd").unwrap();
         assert!(PublicDestinationHttpClient.fetch_text(url).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn an_ip_literal_is_checked_as_the_address_it_is() {
+        let destination = |url: &'static str| async move { assert_destination(&Url::parse(url).unwrap(), false).await };
+
+        // No lookup is needed, and an IPv6 literal is not looked up as a name, brackets and all.
+        for public in [
+            "https://1.1.1.1/response",
+            "https://[2606:4700:4700::1111]/response",
+            "https://[2606:4700:4700::1111]:8443/response",
+        ] {
+            assert!(destination(public).await.is_ok(), "{public}");
+        }
+
+        for private in [
+            "https://127.0.0.1/response",
+            "https://10.0.0.1/response",
+            "https://[::1]/response",
+            "https://[fd00::1]/response",
+            "https://[fe80::1]/response",
+        ] {
+            let refusal = destination(private).await.unwrap_err();
+            assert!(
+                matches!(refusal, AppError::DownloadAborted(NON_PUBLIC_ADDRESS)),
+                "{private}: {refusal:?}"
+            );
+            assert!(is_refused_destination(&refusal), "{private}");
+        }
     }
 
     #[tokio::test]
