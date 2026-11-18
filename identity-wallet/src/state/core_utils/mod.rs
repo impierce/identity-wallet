@@ -26,12 +26,114 @@ pub fn tls_config() -> rustls::ClientConfig {
 
     let mut root_store = RootCertStore::empty();
     root_store.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+    // Debug builds only: test CAs for local test servers (`debug_trust_anchors`). A release build has no code
+    // for it, so its roots stay the pinned `webpki-roots` (#746).
+    #[cfg(debug_assertions)]
+    debug_trust_anchors::add(&mut root_store);
 
     rustls::ClientConfig::builder_with_provider(Arc::new(rustls::crypto::ring::default_provider()))
         .with_safe_default_protocol_versions()
         .expect("Failed to set default protocol versions")
         .with_root_certificates(root_store)
         .with_no_client_auth()
+}
+
+/// Extra trust anchors for debug builds: the PEM certificates in the file `UNIME_EXTRA_CA_CERTS` names, so a debug
+/// build reaches local test servers (a conformance suite, a test harness) whose certificates come from a test CA.
+/// Never part of a release build, and nothing changes when the variable is not set.
+#[cfg(debug_assertions)]
+pub mod debug_trust_anchors {
+    use rustls::pki_types::{pem::PemObject, CertificateDer};
+    use rustls::RootCertStore;
+    use std::path::Path;
+
+    /// The environment variable naming a PEM file of test CA certificates.
+    pub const VARIABLE: &str = "UNIME_EXTRA_CA_CERTS";
+
+    /// Adds the certificates of the file `UNIME_EXTRA_CA_CERTS` names, with a warning that says how many; a file that
+    /// cannot be read, or that holds no certificate, is reported and adds nothing.
+    pub fn add(root_store: &mut RootCertStore) {
+        let Ok(path) = std::env::var(VARIABLE) else { return };
+        match add_file(root_store, Path::new(&path)) {
+            Ok((added, ignored)) => log::warn!(
+                "Debug build: trusting {added} extra CA certificate(s) from {VARIABLE}={path}{}",
+                if ignored > 0 {
+                    format!(" ({ignored} could not be used)")
+                } else {
+                    String::new()
+                }
+            ),
+            Err(error) => log::error!("{VARIABLE}={path}: {error}; no extra trust anchor is added"),
+        }
+    }
+
+    /// Adds the certificates of the PEM file at `path`. Returns how many were added and how many could not be used.
+    fn add_file(root_store: &mut RootCertStore, path: &Path) -> Result<(usize, usize), String> {
+        let pem = std::fs::read(path).map_err(|error| format!("the file cannot be read ({error})"))?;
+        let certificates = certificates(&pem)?;
+        if certificates.is_empty() {
+            return Err("no PEM certificate in the file".to_string());
+        }
+        Ok(root_store.add_parsable_certificates(certificates))
+    }
+
+    /// The certificates of a PEM text, in order.
+    pub fn certificates(pem: &[u8]) -> Result<Vec<CertificateDer<'static>>, String> {
+        CertificateDer::pem_slice_iter(pem)
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|error| format!("the PEM cannot be read ({error})"))
+    }
+
+    #[cfg(test)]
+    mod tests {
+        use super::*;
+
+        /// A self-signed test CA (P-256), made with `openssl req -x509` for this test only.
+        const TEST_CA: &str = include_str!("debug_trust_anchors_test_ca.pem");
+
+        #[test]
+        fn reads_the_certificates_of_a_pem_file() {
+            let certificates = certificates(TEST_CA.as_bytes()).unwrap();
+            assert_eq!(certificates.len(), 1);
+            let mut store = RootCertStore::empty();
+            assert_eq!(store.add_parsable_certificates(certificates), (1, 0));
+        }
+
+        #[test]
+        fn a_file_adds_its_certificates_to_the_roots_already_there() {
+            let mut store = RootCertStore::empty();
+            store.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
+            let built_in = store.len();
+            let test_ca =
+                Path::new(env!("CARGO_MANIFEST_DIR")).join("src/state/core_utils/debug_trust_anchors_test_ca.pem");
+
+            assert_eq!(add_file(&mut store, &test_ca), Ok((1, 0)));
+            assert_eq!(store.len(), built_in + 1);
+        }
+
+        #[test]
+        fn a_file_that_is_missing_or_holds_no_certificate_adds_nothing() {
+            let mut store = RootCertStore::empty();
+            let directory = tempfile::tempdir().unwrap();
+
+            let missing = directory.path().join("missing.pem");
+            assert!(add_file(&mut store, &missing).unwrap_err().contains("cannot be read"));
+
+            let no_certificate = directory.path().join("empty.pem");
+            std::fs::write(&no_certificate, "no certificate here").unwrap();
+            assert!(add_file(&mut store, &no_certificate)
+                .unwrap_err()
+                .contains("no PEM certificate"));
+
+            assert!(store.is_empty());
+        }
+
+        #[test]
+        fn a_pem_without_certificates_gives_none_and_a_broken_one_an_error() {
+            assert!(certificates(b"no certificate here").unwrap().is_empty());
+            assert!(certificates(b"-----BEGIN CERTIFICATE-----\n!!!\n-----END CERTIFICATE-----\n").is_err());
+        }
+    }
 }
 
 /// `Oid4vciStage` represents the different stages of the OID4VCI flow that can be active within the application.

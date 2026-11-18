@@ -329,6 +329,10 @@ Logging follows `docs/adr/0003-no-personal-data-in-logs.md`, in this repository 
 - Keep the manual `Debug` implementations that redact secrets in action payloads (`CheckPassword`, `UnlockStorage`,
   `CreateNew`). Do not add file or remote logging without revisiting `docs/adr/0002-logging-sensitive-information.md`.
 
+A debug build trusts the CA certificates in the PEM file `UNIME_EXTRA_CA_CERTS` names on top of the pinned
+`webpki-roots`, for local test servers with a test CA (`docs/debugging.md`). The code is behind
+`#[cfg(debug_assertions)]`: keep it out of release builds.
+
 Release builds log at INFO; DEBUG is only available in debug builds. In debug builds, state updates are written to
 `debug/state.json` by default. Set `LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The
 `debug/`, `.env`, build output, coverage, `out/`, `node_modules/`, and `target/` paths are local artifacts and must not
