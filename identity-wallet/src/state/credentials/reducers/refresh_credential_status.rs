@@ -216,7 +216,7 @@ pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
         .redirect(Policy::limited(5))
         .timeout(Duration::from_secs(10))
         .build()
-        .map_err(AppError::FetchCredentialListError)?;
+        .map_err(fetch_status_list_error)?;
 
     client
         .get(uri)
@@ -224,11 +224,17 @@ pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
         .send()
         .await
         .and_then(reqwest::Response::error_for_status)
-        .map_err(AppError::FetchCredentialListError)?
+        .map_err(fetch_status_list_error)?
         .text()
         .await
         .map(|body| body.trim().to_owned())
-        .map_err(AppError::FetchCredentialListError)
+        .map_err(fetch_status_list_error)
+}
+
+/// Drops the request URI from a status list request error, so it never reaches the logs or the Debug screen
+/// (`reqwest` includes the full URI, query included, in its `Display` output).
+fn fetch_status_list_error(error: reqwest::Error) -> AppError {
+    AppError::FetchCredentialListError(error.without_url())
 }
 
 /// Rejects a status list token with an empty `sub` or list, one issued after `now`, or one that has expired by `now`
