@@ -496,6 +496,12 @@ const es_ES = {
         BIRTH_DATE: 'Fecha de nacimiento',
         BIRTH_PLACE: 'Lugar de nacimiento',
       },
+      STRUCTURED: {
+        ITEM: 'Elemento {position}',
+        ENTRY: 'Entrada {position}',
+        FIELDS: '{count} {{campo|campos}}',
+        ENTRIES: '{count} {{entrada|entradas}}',
+      },
     },
     ACTIONS: {
       EDIT: {

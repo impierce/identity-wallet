@@ -2,9 +2,11 @@
   import { findCountry } from '$lib/utils/country';
   import { parseIso8601 } from '$lib/utils/date';
 
+  import { isStructuredClaim } from '../structuredClaim';
   import CountryRenderer from './CountryRenderer.svelte';
   import DataUrlImageRenderer from './DataUrlImageRenderer.svelte';
   import DateTimeRenderer from './DateTimeRenderer.svelte';
+  import StructuredClaimRenderer from './StructuredClaimRenderer.svelte';
   import TextFieldRenderer from './TextFieldRenderer.svelte';
 
   export let key: string;
@@ -19,10 +21,12 @@
 
 <!--
 @component
-Renders a single claim of a credential by picking the renderer that fits the value best. Claims that no specialized
-renderer applies to are rendered as plain text.
+Renders a single claim of a credential by picking the renderer that fits the value best. Objects and arrays are
+rendered as foldable rows, Lists and Tables. Claims that no specialized renderer applies to are rendered as plain text.
 -->
-{#if isDataUrl(value)}
+{#if isStructuredClaim(value)}
+  <StructuredClaimRenderer {key} {value} />
+{:else if isDataUrl(value)}
   <DataUrlImageRenderer {key} dataUrl={value} />
 {:else if parseIso8601(value)}
   <DateTimeRenderer {key} value={String(value)} />
