@@ -117,6 +117,22 @@ fn redirect_uri_of(body: &str, allow_http: bool) -> Option<Url> {
     }
 }
 
+/// The largest answer of a Response Endpoint that is read: far above an error body or a `redirect_uri`.
+const MAX_ANSWER_SIZE: usize = 1 << 20;
+
+/// The body of `response` as text, read in chunks so that a verifier cannot make the wallet hold more than
+/// [`MAX_ANSWER_SIZE`] bytes. `None` when the body is larger than that or cannot be read.
+async fn bounded_text(mut response: reqwest::Response) -> Option<String> {
+    let mut body = Vec::new();
+    while let Some(chunk) = response.chunk().await.ok()? {
+        if body.len() + chunk.len() > MAX_ANSWER_SIZE {
+            return None;
+        }
+        body.extend_from_slice(&chunk);
+    }
+    Some(String::from_utf8_lossy(&body).into_owned())
+}
+
 /// Sends an authorization response with the `direct_post` response mode and reports how the verifier answered.
 ///
 /// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code and its
@@ -156,7 +172,8 @@ pub async fn send_authorization_response<E: Extension>(
     };
 
     let status = response.status();
-    let body = response.text().await.unwrap_or_default();
+    // An answer that is too large or cannot be read is treated as an empty one: the status still decides the outcome.
+    let body = bounded_text(response).await.unwrap_or_default();
     if status.is_success() {
         return ResponseAnswer {
             outcome: InteractionOutcome::Approved,
@@ -184,6 +201,35 @@ mod tests {
         assert_eq!(redirect_uri_of("{}", false), None);
         assert_eq!(redirect_uri_of(r#"{"redirect_uri":"done"}"#, false), None);
         assert_eq!(redirect_uri_of(r#"{"redirect_uri":42}"#, false), None);
+    }
+
+    #[tokio::test]
+    async fn an_answer_is_read_up_to_a_size_limit() {
+        use wiremock::matchers::path;
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let server = MockServer::start().await;
+        let small = r#"{"redirect_uri":"https://verifier.example/done"}"#;
+        let large = format!(
+            r#"{{"redirect_uri":"https://verifier.example/done","padding":"{}"}}"#,
+            "x".repeat(MAX_ANSWER_SIZE)
+        );
+        Mock::given(path("/small"))
+            .respond_with(ResponseTemplate::new(200).set_body_string(small))
+            .mount(&server)
+            .await;
+        Mock::given(path("/large"))
+            .respond_with(ResponseTemplate::new(200).set_body_string(large))
+            .mount(&server)
+            .await;
+        let answer = |at: &'static str| {
+            let url = format!("{}{at}", server.uri());
+            async move { bounded_text(reqwest::get(url).await.unwrap()).await }
+        };
+
+        assert_eq!(answer("/small").await.as_deref(), Some(small));
+        // Larger than the limit: read as no answer, so no `redirect_uri` comes from it.
+        assert_eq!(answer("/large").await, None);
     }
 
     #[test]
