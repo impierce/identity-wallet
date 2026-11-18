@@ -144,10 +144,15 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         })?;
 
         // Discovery does not depend on the checks of the connection's identity, so it runs alongside them.
+        #[cfg(not(feature = "test_utils"))]
         let discovery = tokio::spawn({
             let url = url.clone();
             async move { discover_ecosystems_within(&url, PROMPT_ECOSYSTEMS_TIMEOUT).await }
         });
+        // Skip discovery during tests: the connections in `unime/src-tauri/tests` belong to no federation, and a live
+        // lookup would make their outcome depend on the network.
+        #[cfg(feature = "test_utils")]
+        let discovery = tokio::spawn(async { Ok::<Vec<EcosystemProfile>, EcosystemsUnavailable>(Vec::new()) });
 
         let state_guard = state.core_utils.managers.lock().await;
         let subject = state_guard
@@ -552,6 +557,7 @@ impl std::fmt::Display for EcosystemsUnavailable {
 
 /// How long the connection prompt waits for the ecosystems. Discovery runs alongside the checks of the connection's
 /// identity, within the time limit of the action, which reading the request has drawn on before.
+#[cfg(not(feature = "test_utils"))]
 const PROMPT_ECOSYSTEMS_TIMEOUT: Duration = Duration::from_secs(5);
 
 /// Discovers the ecosystems of `entity_id` (see `discover_ecosystems`) for at most `limit`. A slow federation then leaves
