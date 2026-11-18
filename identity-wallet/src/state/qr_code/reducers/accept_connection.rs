@@ -100,7 +100,16 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
                     error_chain(error)
                 )
             })?;
-        info!("Retrieved client metadata: {client_metadata:?}");
+        info!(
+            "Retrieved client metadata: client_name: {}, connection_url: {}, client_id: {}",
+            client_metadata.client_name,
+            client_metadata.connection_url,
+            client_metadata
+                .client_id
+                .as_ref()
+                .map_or_else(|| "none".to_string(), ToString::to_string)
+        );
+        crate::log_payload!("Client metadata: {client_metadata:?}");
         crate::log_payload!("Initializing active flow: {active_flow:?}");
         let trust_check_start = std::time::Instant::now();
 

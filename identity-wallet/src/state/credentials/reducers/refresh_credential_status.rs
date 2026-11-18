@@ -3,6 +3,7 @@ use std::time::Duration;
 use crate::{
     error::AppError,
     http_client::get_http_client_builder,
+    logging::url_without_query,
     state::{
         actions::{listen, Action},
         core_utils::DateUtils,
@@ -200,7 +201,8 @@ pub async fn fetch_credential_status(
 
     info!(
         "Successfully fetched status list from `{}` with status: `{:?}`",
-        credential_status_data.uri, credential_status_data.status
+        url_without_query(&credential_status_data.uri),
+        credential_status_data.status
     );
 
     Ok(status)
