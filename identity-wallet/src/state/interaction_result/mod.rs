@@ -1,7 +1,6 @@
 pub mod actions;
 mod reducers;
 
-use anyhow::Context;
 use oid4vc_core::{
     authorization_response::AuthorizationResponse, openid4vc_extension::Extension,
     utils::form_urlencoded::to_form_urlencoded_string,
@@ -136,14 +135,13 @@ pub async fn send_authorization_response<E: Extension>(
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(encoded)
         .send()
-        .await
-        .context("Failed to send the authorization response");
+        .await;
 
     let response = match response {
         Ok(response) => response,
         Err(error) => {
             return InteractionOutcome::NotSent {
-                reason: format!("{error:#}"),
+                reason: send_failure_reason(error),
             }
         }
     };
@@ -157,9 +155,34 @@ pub async fn send_authorization_response<E: Extension>(
     InteractionOutcome::rejected(status.as_u16(), &body)
 }
 
+/// Describes a failed send without the request URI. `reqwest` adds the full URI, query included, to its `Display`
+/// output, and the reason reaches the logs, the Debug screen and the user, while the verifier's `redirect_uri` may
+/// carry request parameters.
+fn send_failure_reason(error: reqwest_middleware::Error) -> String {
+    let error = match crate::http_client::request_error(error).downcast::<reqwest::Error>() {
+        Ok(error) => anyhow::Error::new(error.without_url()),
+        Err(error) => error,
+    };
+    format!("{:#}", error.context("Failed to send the authorization response"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn a_failed_send_does_not_reveal_the_redirect_uri() {
+        // Nothing listens on port 1, so the request fails before reaching a server.
+        let error = reqwest::Client::new()
+            .post("http://127.0.0.1:1/callback?session=secret")
+            .send()
+            .await
+            .unwrap_err();
+
+        let reason = send_failure_reason(reqwest_middleware::Error::Reqwest(error));
+        assert!(reason.starts_with("Failed to send the authorization response: "));
+        assert!(!reason.contains("127.0.0.1") && !reason.contains("secret"), "{reason}");
+    }
 
     #[test]
     fn displays_the_outcome_on_one_line() {
