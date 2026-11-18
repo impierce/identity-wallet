@@ -7,7 +7,7 @@ use crate::state::{AppState, AppStateContainer};
 use crate::user_error::{host_of_scanned_request, UserError};
 use futures::StreamExt;
 use itertools::Itertools;
-use log::{debug, error, info};
+use log::{debug, error, info, warn};
 use tauri::Emitter;
 
 // TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
@@ -121,9 +121,7 @@ pub async fn main_exec(
     emit_and_save(
         &mut guard,
         flow_started_before,
-        |app_state| {
-            emit_event(&window, app_state).ok();
-        },
+        |app_state| emit_event(&window, app_state).is_ok(),
         async |app_state| {
             save_state(app_state).await.ok();
         },
@@ -133,7 +131,7 @@ pub async fn main_exec(
     Result::Ok(())
 }
 
-/// Emits the state an action left behind, then saves it.
+/// Emits the state an action left behind, then saves it. `emit` says whether the state was emitted.
 ///
 /// Emitting does not wait. Saving waits for the disk, and an action that runs into its time limit there is cut short
 /// (see [`handle_action`]). The order makes that harmless:
@@ -142,15 +140,26 @@ pub async fn main_exec(
 /// - A request that took the place of another one is on screen from the moment it is emitted, not from the moment its
 ///   reducer finished: an answer that arrived in between was still given to the previous screen. It is counted from
 ///   then, again before anything can cut in, so a new request is never the active one without having been shown.
+///
+/// A new request whose state could not be emitted is dropped, for the same reason: the screen still shows what was
+/// there before, and an answer given there must not reach a request the user has not seen. Nothing else is undone.
 async fn emit_and_save(
     state: &mut AppState,
     flow_started_before: Option<std::time::Instant>,
-    emit: impl FnOnce(&AppState),
+    emit: impl FnOnce(&AppState) -> bool,
     save: impl AsyncFnOnce(&AppState),
 ) {
-    emit(state);
+    let emitted = emit(state);
     if state.core_utils.flow_started_at != flow_started_before {
-        state.core_utils.flow_started_at = Some(std::time::Instant::now());
+        if emitted {
+            state.core_utils.flow_started_at = Some(std::time::Instant::now());
+        } else {
+            warn!("A new request could not be shown and is dropped");
+            state.core_utils.active_flow = None;
+            state.core_utils.pending_connection_data = None;
+            state.core_utils.flow_started_at = flow_started_before;
+            state.current_user_prompt = None;
+        }
     }
     save(state).await;
 }
@@ -234,8 +243,9 @@ mod tests {
     use super::*;
     use crate::state::common::actions::cancel_user_flow::CancelUserFlow;
     use crate::state::connections::actions::connection_accepted::ConnectionAccepted;
-    use crate::state::core_utils::CoreUtils;
+    use crate::state::core_utils::{CoreUtils, PendingConnectionData};
     use crate::state::credentials::actions::credentials_selected::CredentialsSelected;
+    use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
     use std::sync::Arc;
     use std::time::{Duration, Instant};
 
@@ -258,7 +268,10 @@ mod tests {
             emit_and_save(
                 state,
                 flow_started_before,
-                |_| emitted = true,
+                |_| {
+                    emitted = true;
+                    true
+                },
                 async |_| std::future::pending().await,
             ),
         )
@@ -295,8 +308,60 @@ mod tests {
         let started_at = Some(Instant::now() - Duration::from_secs(5));
         let mut state = state_with_a_request_started_at(started_at);
 
-        emit_and_save(&mut state, started_at, |_| {}, async |_| {}).await;
+        emit_and_save(&mut state, started_at, |_| true, async |_| {}).await;
 
+        assert_eq!(state.core_utils.flow_started_at, started_at);
+    }
+
+    fn pending_connection_data() -> PendingConnectionData {
+        PendingConnectionData {
+            client_metadata: ClientMetadata {
+                client_name: "Verifier".to_string(),
+                logo_uri: None,
+                connection_url: "https://verifier.example".to_string(),
+                redirect_uri: None,
+                client_id: None,
+            },
+            domain_validation: None,
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            ecosystems_check: None,
+        }
+    }
+
+    #[tokio::test]
+    async fn a_new_request_that_could_not_be_emitted_is_dropped() {
+        let previous_started_at = Some(Instant::now() - Duration::from_secs(5));
+        let mut state = AppState {
+            core_utils: CoreUtils {
+                flow_started_at: Some(Instant::now()),
+                pending_connection_data: Some(pending_connection_data()),
+                ..Default::default()
+            },
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            }),
+            ..Default::default()
+        };
+
+        emit_and_save(&mut state, previous_started_at, |_| false, async |_| {}).await;
+
+        assert!(state.core_utils.active_flow.is_none());
+        assert!(state.core_utils.pending_connection_data.is_none());
+        assert_eq!(state.core_utils.flow_started_at, previous_started_at);
+        assert_eq!(state.current_user_prompt, None);
+    }
+
+    #[tokio::test]
+    async fn a_state_without_a_new_request_is_kept_when_it_could_not_be_emitted() {
+        // What an answer left behind: no new request, so nothing is dropped.
+        let started_at = Some(Instant::now() - Duration::from_secs(5));
+        let mut state = state_with_a_request_started_at(started_at);
+        state.core_utils.pending_connection_data = Some(pending_connection_data());
+
+        emit_and_save(&mut state, started_at, |_| false, async |_| {}).await;
+
+        assert!(state.core_utils.pending_connection_data.is_some());
         assert_eq!(state.core_utils.flow_started_at, started_at);
     }
 
