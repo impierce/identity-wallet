@@ -51,19 +51,20 @@ pub mod debug_trust_anchors {
     pub const VARIABLE: &str = "UNIME_EXTRA_CA_CERTS";
 
     /// Adds the certificates of the file `UNIME_EXTRA_CA_CERTS` names, with a warning that says how many; a file that
-    /// cannot be read, or that holds no certificate, is reported and adds nothing.
+    /// cannot be read, or that holds no certificate, is reported and adds nothing. The path is not logged: it can
+    /// hold a user or project name.
     pub fn add(root_store: &mut RootCertStore) {
         let Ok(path) = std::env::var(VARIABLE) else { return };
         match add_file(root_store, Path::new(&path)) {
             Ok((added, ignored)) => log::warn!(
-                "Debug build: trusting {added} extra CA certificate(s) from {VARIABLE}={path}{}",
+                "Debug build: trusting {added} extra CA certificate(s) from the file {VARIABLE} names{}",
                 if ignored > 0 {
                     format!(" ({ignored} could not be used)")
                 } else {
                     String::new()
                 }
             ),
-            Err(error) => log::error!("{VARIABLE}={path}: {error}; no extra trust anchor is added"),
+            Err(error) => log::error!("{VARIABLE}: {error}; no extra trust anchor is added"),
         }
     }
 
@@ -117,15 +118,21 @@ pub mod debug_trust_anchors {
             let directory = tempfile::tempdir().unwrap();
 
             let missing = directory.path().join("missing.pem");
-            assert!(add_file(&mut store, &missing).unwrap_err().contains("cannot be read"));
+            let unreadable = add_file(&mut store, &missing).unwrap_err();
+            assert!(unreadable.contains("cannot be read"), "{unreadable}");
 
             let no_certificate = directory.path().join("empty.pem");
             std::fs::write(&no_certificate, "no certificate here").unwrap();
-            assert!(add_file(&mut store, &no_certificate)
-                .unwrap_err()
-                .contains("no PEM certificate"));
+            let empty = add_file(&mut store, &no_certificate).unwrap_err();
+            assert!(empty.contains("no PEM certificate"), "{empty}");
 
             assert!(store.is_empty());
+            // What is logged of a failure names neither the file nor where it is.
+            let directory = directory.path().to_string_lossy();
+            for reason in [unreadable, empty] {
+                assert!(!reason.contains(directory.as_ref()), "{reason}");
+                assert!(!reason.contains(".pem"), "{reason}");
+            }
         }
 
         #[test]
