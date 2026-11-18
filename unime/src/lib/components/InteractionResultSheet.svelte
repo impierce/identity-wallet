@@ -196,10 +196,11 @@
     }
   });
 
-  // An outcome arrived. Every state update brings a new copy of the same outcome, so handle each outcome once.
+  // An outcome arrived. Every state update brings a new copy of the same outcome, so handle each outcome once. Where
+  // to continue is part of what makes an outcome the same: one that offers it can follow one that does not.
   let handledOutcome: string | undefined;
   $effect(() => {
-    const key = outcome ? JSON.stringify(outcome) : undefined;
+    const key = outcome ? JSON.stringify([outcome, continueTo ?? null]) : undefined;
     if (key === handledOutcome) return;
     handledOutcome = key;
     if (outcome) untrack(() => showOutcome(outcome));
@@ -220,6 +221,11 @@
       reset();
       return;
     }
+    // The sheet shows this outcome from here on: what an earlier one left behind, its countdown to closing and the
+    // "still waiting" toast, would close or crowd it.
+    clearTimers();
+    countdown = undefined;
+    toast = undefined;
     open = true;
     minimized = false;
     if (outcome.status === 'approved') {

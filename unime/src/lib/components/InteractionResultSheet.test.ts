@@ -9,7 +9,7 @@ import type { InteractionResult } from '@bindings/interaction_result/Interaction
 import { fireEvent, render, screen, waitFor } from '@testing-library/svelte';
 
 import { dispatch } from '$lib/dispatcher';
-import { state as appState } from '$lib/stores';
+import { state as appState, pendingInteraction } from '$lib/stores';
 
 import InteractionResultSheet from './InteractionResultSheet.svelte';
 
@@ -80,6 +80,69 @@ describe('InteractionResultSheet', () => {
     await show(null);
     await waitFor(() => expect(screen.queryByTestId('interaction-result')).not.toBeInTheDocument());
     expect(dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  describe('past the time an accepted result closes itself', () => {
+    // Longer than the countdown of five seconds and the delay before it starts.
+    const PAST_AUTO_CLOSE_MS = 6_000;
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    test('a result without a continuation is dismissed', async () => {
+      render(InteractionResultSheet);
+      await show(accepted(null));
+
+      await vi.advanceTimersByTimeAsync(PAST_AUTO_CLOSE_MS);
+
+      expect(dispatch).toHaveBeenCalledExactlyOnceWith({ type: '[Interaction Result] Dismiss' });
+    });
+
+    test('a result with a continuation stays', async () => {
+      render(InteractionResultSheet);
+      await show(accepted('verifier.example'));
+
+      await vi.advanceTimersByTimeAsync(PAST_AUTO_CLOSE_MS);
+
+      expect(screen.getByRole('button', { name: 'Continue to verifier.example' })).toBeInTheDocument();
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    test('a result with a continuation that follows one without stays as well', async () => {
+      render(InteractionResultSheet);
+      await show(accepted(null));
+      // The countdown of the first result is running when the second one takes its place.
+      await vi.advanceTimersByTimeAsync(2_000);
+      await show(accepted('verifier.example'));
+
+      expect(screen.getByRole('button', { name: 'Continue to verifier.example' })).toBeInTheDocument();
+
+      await vi.advanceTimersByTimeAsync(PAST_AUTO_CLOSE_MS);
+
+      expect(screen.getByRole('button', { name: 'Continue to verifier.example' })).toBeInTheDocument();
+      expect(screen.queryByText(/Closing automatically in/)).not.toBeInTheDocument();
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+  });
+
+  test('the sheet that comes back for a continuation takes the place of the waiting toast', async () => {
+    render(InteractionResultSheet);
+    pendingInteraction.set({ kind: 'presentation', counterparty: 'Verifier' });
+    await tick();
+    // The user closes the sheet while the verifier has not answered: a toast says it is still waiting.
+    await fireEvent.click(screen.getAllByRole('button', { name: 'Close' })[0]);
+    expect(screen.getByText('Still waiting for Verifier')).toBeInTheDocument();
+
+    await show(accepted('verifier.example'));
+
+    expect(screen.getByRole('button', { name: 'Continue to verifier.example' })).toBeInTheDocument();
+    expect(screen.queryByText('Still waiting for Verifier')).not.toBeInTheDocument();
+    pendingInteraction.set(undefined);
   });
 
   test('done declines to continue', async () => {
