@@ -294,23 +294,5 @@
       "route": "/me/settings/app/trust-list/[id]",
       "reason": "Developer mode tool that is not part of the documented features."
     }
-  ],
-  "omittedTranslations": [
-    {
-      "key": "ONBOARDING.TERMS.T_AND_C.FULL",
-      "reason": "The full legal text is long and is no label."
-    },
-    {
-      "key": "ONBOARDING.TERMS.T_AND_C.TL_DR",
-      "reason": "The summary of the legal text is long and is no label."
-    },
-    {
-      "key": "ONBOARDING.TERMS.T_AND_C.LAST_UPDATED",
-      "reason": "A date that would make the reference change with every update of the terms."
-    },
-    {
-      "key": "ERROR.CONTEXT.TRUST_LIST",
-      "reason": "Belongs to the omitted trust list screens."
-    }
   ]
 }

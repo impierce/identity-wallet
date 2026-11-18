@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Generates `docs/app-reference.md`: every screen of the UniMe app with its purpose, its controls and texts, the
-// screens it opens and the backend actions it dispatches.
+// Generates `docs/app-reference.md`: every screen of the UniMe app with its purpose, its controls, the screens it opens
+// and the backend actions it dispatches.
 //
 // The reference is derived from three sources, so it follows the code instead of being maintained by hand:
 // - the route tree in `unime/src/routes` (which screens exist),
-// - the Svelte components of each screen (controls, texts, navigation and dispatched actions),
-// - the English base translations in `unime/src/i18n/en/index.ts` (the wording the app shows).
+// - the Svelte components of each screen (controls, navigation and dispatched actions),
+// - the English base translations in `unime/src/i18n/en/index.ts` (the labels of the controls).
 //
 // The only hand-written input is `scripts/app-reference-screens.json`, which gives every screen a name and one or two
 // sentences on its purpose, and sets the reading order. The script fails when a route is missing from that file or
@@ -37,8 +37,6 @@ const ts = requireFromUnime('typescript');
 const DYNAMIC = '\u0000';
 // Serialized action types follow the `[Feature] Action name` convention (see AGENTS.md).
 const ACTION_TYPE = /^\[[^\]]+\] \S/;
-// Component props that carry text the user reads.
-const TEXT_PROPS = ['label', 'title', 'titleText', 'description', 'descriptionText', 'subtitle', 'placeholder'];
 // Keys of AST nodes that hold no source code of their own.
 const SKIPPED_NODE_KEYS = new Set(['metadata', 'loc', 'name_loc', 'leadingComments', 'trailingComments', 'comments']);
 
@@ -342,8 +340,8 @@ function parseComponent(file) {
 
 const analyzed = new Map();
 /**
- * Reads one Svelte component: the title bar, the controls (buttons, links, fields and switches) and the texts of its
- * template, plus every translation key, route and action type that the component refers to anywhere.
+ * Reads one Svelte component: the title bar and the controls (buttons, links, fields and switches) of its template,
+ * plus every route and action type that the component refers to anywhere.
  *
  * How a component is used decides what it shows, so two things about the use are taken into account:
  * - `off` lists the props that the using component sets to `false`. Content inside `{#if prop}` is then left out: the
@@ -356,7 +354,7 @@ function analyzeComponent(file, off = [], passed = []) {
   if (analyzed.has(id)) return analyzed.get(id);
 
   const { ast, componentFiles, modules } = parseComponent(file);
-  const component = { titles: [], controls: [], texts: [], uses: [], modules };
+  const component = { titles: [], controls: [], uses: [], modules };
   // Parts of the template that only show in developer mode, and parts that the use of the component rules out.
   const developerRanges = [];
   const hiddenRanges = [];
@@ -388,10 +386,8 @@ function analyzeComponent(file, off = [], passed = []) {
   const visit = (node) => {
     switch (node.type) {
       case 'Comment':
-        return;
       case 'Text':
       case 'ExpressionTag':
-        component.texts.push(...textParts(node).map((part) => ({ ...part, start: node.start })));
         return;
       case 'IfBlock': {
         const test = node.test;
@@ -441,15 +437,7 @@ function analyzeComponent(file, off = [], passed = []) {
     const isContainer = kind !== undefined && containsControl(node);
     // A clickable area around other controls, such as the backdrop of a sheet, counts as a control only when the code
     // states what a click on it does.
-    if (!kind || (isContainer && references.paths.length + references.actions.length === 0)) {
-      if (isComponent) {
-        for (const prop of TEXT_PROPS) {
-          const parts = textParts(attributeOf(node, prop)?.value);
-          component.texts.push(...parts.map((part) => ({ ...part, start: node.start })));
-        }
-      }
-      return false;
-    }
+    if (!kind || (isContainer && references.paths.length + references.actions.length === 0)) return false;
 
     const content = describeContent(node);
     const labelProps = ['label', 'placeholder', 'title', 'aria-label'].filter((name) => attributeOf(node, name));
@@ -505,8 +493,8 @@ function analyzeComponent(file, off = [], passed = []) {
   const references = collectReferences([ast.module, ast.instance, ast.fragment]);
   const visible = (item) => !within(hiddenRanges, item.start);
   const withScope = (item) => ({ ...item, developerOnly: within(developerRanges, item.start) });
-  for (const name of ['titles', 'controls', 'texts']) component[name] = component[name].map(withScope);
-  for (const name of ['keys', 'paths', 'actions']) component[name] = references[name].filter(visible).map(withScope);
+  for (const name of ['titles', 'controls']) component[name] = component[name].map(withScope);
+  for (const name of ['paths', 'actions']) component[name] = references[name].filter(visible).map(withScope);
 
   analyzed.set(id, component);
   return component;
@@ -528,23 +516,10 @@ function analyzeModule(file, names) {
     }
   }
 
-  const found = { keys: [], paths: [], actions: [] };
+  const found = { paths: [], actions: [] };
   const done = new Set();
   const queue = names.filter((name) => declarations.has(name));
   const visit = (node) => {
-    if (ts.isPropertyAccessExpression(node)) {
-      const parts = [];
-      let current = node;
-      while (ts.isPropertyAccessExpression(current)) {
-        parts.unshift(current.name.text);
-        current = current.expression;
-      }
-      const isTranslations = ts.isIdentifier(current) && (current.text === 'LL' || current.text === '$LL');
-      if (isTranslations && parts.every((part) => /^[A-Z][A-Z0-9_]*$/.test(part))) {
-        found.keys.push({ value: parts.join('.') });
-        return;
-      }
-    }
     if (ts.isStringLiteralLike(node)) {
       if (node.text.startsWith('/')) found.paths.push({ value: node.text });
       else if (ACTION_TYPE.test(node.text)) found.actions.push({ value: node.text });
@@ -608,8 +583,6 @@ function analyzeScreen(entryFile) {
   return {
     titles: merge('titles'),
     controls: merge('controls'),
-    texts: merge('texts'),
-    keys: merge('keys'),
     paths: merge('paths'),
     actions: merge('actions'),
   };
@@ -631,8 +604,6 @@ function buildReference() {
   const { pages, layouts } = findRouteFiles();
 
   const omittedRoutes = new Map(config.omittedRoutes.map((entry) => [entry.route, entry.reason]));
-  const omittedKeys = config.omittedTranslations.map((entry) => entry.key);
-  const isOmittedKey = (key) => omittedKeys.some((omitted) => key === omitted || key.startsWith(`${omitted}.`));
 
   const pageByRoute = new Map(pages.map((file) => [routeOf(file), file]));
   const routes = [...pageByRoute.keys()].sort(compare);
@@ -679,11 +650,6 @@ function buildReference() {
     const clash = otherHeadings.find((heading) => headingAnchor(heading) === headingAnchor(screen.name ?? ''));
     if (clash) problems.push(`The screen name "${screen.name}" clashes with the heading "${clash}". Rename one.`);
   }
-  for (const key of omittedKeys) {
-    if (![...translations.keys()].some((known) => known === key || known.startsWith(`${key}.`))) {
-      problems.push(`"omittedTranslations" names the key ${key}, which does not exist. Remove the entry.`);
-    }
-  }
   for (const layout of layoutNotes.keys()) {
     if (!layouts.some((file) => layoutId(file) === layout)) {
       problems.push(`"layouts" names the layout ${layout}, which does not exist. Remove the entry.`);
@@ -694,10 +660,9 @@ function buildReference() {
   /** The texts of a translation key. A key that names a group, as in `$LL.SETTINGS.THEME[theme]()`, gives all of it. */
   const textsOfKey = (key) =>
     [...translations.keys()]
-      .filter((known) => (known === key || known.startsWith(`${key}.`)) && !isOmittedKey(known))
-      .map((known) => ({ key: known, text: displayText(translations.get(known)) }));
-  const textsOfParts = (parts) =>
-    parts.flatMap((part) => (part.key ? textsOfKey(part.key).map((entry) => entry.text) : [part.text]));
+      .filter((known) => known === key || known.startsWith(`${key}.`))
+      .map((known) => displayText(translations.get(known)));
+  const textsOfParts = (parts) => parts.flatMap((part) => (part.key ? textsOfKey(part.key) : [part.text]));
 
   const anchorOf = (name) => name.toLowerCase().replaceAll(' ', '-');
   const screenLink = (route) => `[${nameByRoute.get(route)}](#${anchorOf(nameByRoute.get(route))})`;
@@ -724,27 +689,12 @@ function buildReference() {
   /** The lines that describe what a screen or a layout shows and does. */
   const describe = (analysis, ownRoute) => {
     const lines = [];
-    // Texts already named as a title or as the label of a control are not repeated under "Texts".
-    const shownKeys = new Set();
-    const shownTexts = new Set();
-    const markShown = (parts) => {
-      for (const part of parts) {
-        if (part.key) textsOfKey(part.key).forEach((entry) => shownKeys.add(entry.key));
-        else shownTexts.add(part.text);
-      }
-    };
 
-    const titles = unique(
-      analysis.titles.flatMap((title) => {
-        markShown(title.parts);
-        return textsOfParts(title.parts);
-      }),
-    );
+    const titles = unique(analysis.titles.flatMap((title) => textsOfParts(title.parts)));
     if (titles.length > 0) lines.push(`- **Title bar:** ${titles.map(quote).join(' or ')}`);
 
     const controls = [];
     for (const control of analysis.controls) {
-      markShown(control.parts);
       if (pointsToOmittedRoute(control.paths)) continue;
       const description = labelOf(control);
       const kind = { button: 'Button', link: 'Link', field: 'Field', switch: 'Switch' }[control.kind];
@@ -760,22 +710,6 @@ function buildReference() {
       );
     }
     if (controls.length > 0) lines.push('- **Controls:**', ...unique(controls));
-
-    const texts = [];
-    const addText = (entry, item) => {
-      const shown = entry.key ? shownKeys : shownTexts;
-      const id = entry.key ?? entry.text;
-      if (shown.has(id)) return;
-      shown.add(id);
-      texts.push(`  - ${quote(entry.text)}${entry.key ? ` (${code(entry.key)})` : ''}${developerNote(item)}`);
-    };
-    // First the texts in the order of the template, then the ones that only the script refers to.
-    for (const item of analysis.texts) {
-      if (item.key) textsOfKey(item.key).forEach((entry) => addText(entry, item));
-      else addText({ text: item.text }, item);
-    }
-    for (const item of analysis.keys) textsOfKey(item.value).forEach((entry) => addText(entry, item));
-    if (texts.length > 0) lines.push('- **Texts:**', ...texts);
 
     const opens = targetsOf(
       analysis.paths.map((item) => item.value),
@@ -809,7 +743,7 @@ function buildReference() {
   out.push(
     '# UniMe app reference',
     '',
-    'Every screen of the UniMe app: what it is for, the controls and texts it shows in English, the screens it opens and the actions it sends to the backend.',
+    'Every screen of the UniMe app: what it is for, its controls with their English labels, the screens it opens and the actions it sends to the backend.',
     '',
     `This file is generated by ${code('scripts/generate-app-reference.mjs')} from the routes in ${code('unime/src/routes')}, the Svelte components of each screen and the English translations in ${code('unime/src/i18n/en/index.ts')}. Do not edit it by hand. Change the code, or the names and purposes in ${code('scripts/app-reference-screens.json')}, and run ${code('pnpm docs:app-reference')}.`,
     '',
@@ -818,11 +752,11 @@ function buildReference() {
     `- The line under the name gives the route of the screen and the file that implements it. A part in square brackets, as in ${code('/credentials/[id]')}, is a parameter.`,
     '- **Title bar** is the title in the bar at the top of the screen.',
     '- **Controls** are the buttons, links, fields and switches, with the screen each one opens and the backend action it dispatches where the code states that directly. A control whose handler is a function shows no effect here. The lines **Opens** and **Backend actions** list everything the screen can open or dispatch.',
-    `- **Texts** are the other texts on the screen, with their translation key. ${code('{name}')} marks a value that the app fills in, and ${code('one/other')} marks a singular and a plural form. A text without a key is written directly in the component.`,
+    `- In a label, ${code('{name}')} marks a value that the app fills in, and ${code('one/other')} marks a singular and a plural form.`,
     '- **Opened from** lists the screens with a control or a redirect that leads here. Screens that the backend opens, such as the prompts, say so in their purpose.',
     `- Backend actions are handled by the reducers in ${code('identity-wallet/src/state')}.`,
-    '- Texts and controls that only show in developer mode are marked.',
-    '- An entry lists everything the components of a screen can show. Which of it shows at a given moment depends on the state of the wallet.',
+    '- Controls that only show in developer mode are marked.',
+    '- An entry lists every control that the components of a screen can show. Which of them show at a given moment depends on the state of the wallet.',
     '',
     '## Screens',
     '',
