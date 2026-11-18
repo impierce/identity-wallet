@@ -26,4 +26,8 @@ impl ActionTrait for ConnectionAccepted {
             reducer!(sort_connections),
         ]
     }
+
+    fn answers_request(&self) -> bool {
+        true
+    }
 }

@@ -49,6 +49,7 @@ pub async fn main_exec(
     container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
+    // Taken before waiting for the state: this is when the user's answer, if the action is one, was given.
     let start = std::time::Instant::now();
     let action_type = action.typetag_name();
     let scanned_host = listen::<QrCodeScanned>(action.clone())
@@ -73,8 +74,16 @@ pub async fn main_exec(
 
     guard.core_utils.app_handle = Some(app_handle);
 
+    let flow_started_before = guard.core_utils.flow_started_at;
+
     // Get a copy of the current state and pass it to the root reducer.
-    match reduce(guard.clone(), action).await {
+    let reduced = match answers_a_replaced_request(&action, start, &guard) {
+        true => Err(AppError::FlowExpiredError(
+            "Another request arrived before this answer could be handled".to_string(),
+        )),
+        false => reduce(guard.clone(), action).await,
+    };
+    match reduced {
         // If the state update succeeds, we replace the old state with the new one.
         Ok(app_state) => {
             debug!("State reduce succeeded in {:?}", start.elapsed());
@@ -112,7 +121,28 @@ pub async fn main_exec(
     save_state(&guard).await.ok();
     emit_event(&window, &guard).ok();
 
+    // A request that took the place of another one is on screen from now on, not from the moment its reducer
+    // finished: an answer that arrived in between was still given to the previous screen.
+    if guard.core_utils.flow_started_at != flow_started_before {
+        guard.core_utils.flow_started_at = Some(std::time::Instant::now());
+    }
+
     Result::Ok(())
+}
+
+/// Whether `action` is the user's answer to a request that is no longer the one on screen.
+///
+/// Actions are handled one at a time. While a new request is read, which takes network requests, the screen still
+/// shows the previous one, and an answer the user gives then waits its turn. By the time it is handled, the new
+/// request is the active one: without this check, accepting the connection, the offer or the share that was on
+/// screen would answer a request the user has not seen. An answer is therefore refused when the active request
+/// started after the answer arrived.
+fn answers_a_replaced_request(action: &Action, arrived_at: std::time::Instant, state: &AppState) -> bool {
+    action.answers_request()
+        && state
+            .core_utils
+            .flow_started_at
+            .is_some_and(|flow_started_at| flow_started_at > arrived_at)
 }
 
 pub async fn handle_action(
@@ -172,4 +202,80 @@ pub fn emit_error(window: &tauri::Window<Runtime>, error: &UserError) -> anyhow:
 
     debug!("emitted error event `{ERROR_EVENT}` with payload:\n{error:?}");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::common::actions::cancel_user_flow::CancelUserFlow;
+    use crate::state::connections::actions::connection_accepted::ConnectionAccepted;
+    use crate::state::core_utils::CoreUtils;
+    use crate::state::credentials::actions::credentials_selected::CredentialsSelected;
+    use std::sync::Arc;
+    use std::time::{Duration, Instant};
+
+    fn state_with_a_request_started_at(flow_started_at: Option<Instant>) -> AppState {
+        AppState {
+            core_utils: CoreUtils {
+                flow_started_at,
+                ..Default::default()
+            },
+            ..Default::default()
+        }
+    }
+
+    fn answers() -> Vec<Action> {
+        vec![
+            Arc::new(ConnectionAccepted),
+            Arc::new(CredentialsSelected {
+                selections: vec![],
+                is_interactive: false,
+            }),
+            Arc::new(CredentialOffersSelected {
+                credential_configuration_ids: vec![],
+                tx_code: None,
+            }),
+        ]
+    }
+
+    #[test]
+    fn an_answer_given_before_the_request_on_screen_was_replaced_is_refused() {
+        let answer_arrived_at = Instant::now();
+        let replaced_later = state_with_a_request_started_at(Some(answer_arrived_at + Duration::from_millis(1)));
+
+        for answer in answers() {
+            assert!(
+                answers_a_replaced_request(&answer, answer_arrived_at, &replaced_later),
+                "{answer:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn an_answer_to_the_request_on_screen_is_handled() {
+        let request_started_at = Instant::now();
+        let answer_arrived_at = request_started_at + Duration::from_millis(1);
+
+        for state in [
+            state_with_a_request_started_at(Some(request_started_at)),
+            // No request has started, as in a state restored from disk.
+            state_with_a_request_started_at(None),
+        ] {
+            for answer in answers() {
+                assert!(
+                    !answers_a_replaced_request(&answer, answer_arrived_at, &state),
+                    "{answer:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn only_an_answer_to_a_request_is_refused() {
+        let arrived_at = Instant::now();
+        let replaced_later = state_with_a_request_started_at(Some(arrived_at + Duration::from_millis(1)));
+        let cancel: Action = Arc::new(CancelUserFlow { redirect: None });
+
+        assert!(!answers_a_replaced_request(&cancel, arrived_at, &replaced_later));
+    }
 }

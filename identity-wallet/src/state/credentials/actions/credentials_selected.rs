@@ -37,4 +37,8 @@ impl ActionTrait for CredentialsSelected {
             reducer!(send_interactive_authorization_request_follow_up),
         ]
     }
+
+    fn answers_request(&self) -> bool {
+        true
+    }
 }

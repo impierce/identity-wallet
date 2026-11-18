@@ -89,6 +89,9 @@ pub struct CoreUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_flow: Option<ActiveFlow>,
     pub pending_connection_data: Option<PendingConnectionData>,
+    /// When the request of `active_flow` took the place of whatever was shown before. An answer of the user that
+    /// reached the backend before that moment was given to another request, see `command::main_exec`.
+    pub flow_started_at: Option<std::time::Instant>,
 }
 
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
