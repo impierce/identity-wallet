@@ -4,7 +4,7 @@
     "selections": [
       {
         "query_id": "CredentialQuery",
-        "credential_uuids": ["62326539-3634-6536-6131-323731373463"]
+        "credential_uuids": ["{{CREDENTIAL_ID}}"]
       }
     ]
   }

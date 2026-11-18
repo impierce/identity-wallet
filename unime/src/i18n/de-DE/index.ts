@@ -683,6 +683,7 @@ const de_DE = {
     REJECTED_BODY:
       '{name} konnte die Anfrage nicht annehmen. Versuche es noch einmal oder wende dich an {name}, wenn das weiterhin passiert.',
     REJECTED_REASON: {
+      NOT_FOR_THIS_WALLET: 'Dieses Angebot ist für eine andere Wallet bestimmt. Bitte {name} um ein eigenes Angebot.',
       OFFER_EXPIRED: 'Dieses Angebot ist abgelaufen oder wurde bereits verwendet. Bitte {name} um ein neues.',
       WRONG_TX_CODE:
         'Der Code ist nicht richtig oder das Angebot ist abgelaufen. Prüfe den Code und versuche es erneut.',
@@ -743,6 +744,8 @@ const de_DE = {
       UNSUPPORTED: 'UniMe unterstützt diese Art von Nachweis oder Anfrage noch nicht.',
       MISSING_CREDENTIALS: 'Du hast nicht die Nachweise, die für {name} nötig sind, daher wurde nichts geteilt.',
       UNTRUSTED: 'UniMe konnte {name} nicht verifizieren und hat zum Schutz deiner Daten abgebrochen.',
+      NOT_HOLDER:
+        'Dieser Nachweis gehört zu einem Schlüssel, den diese Wallet nicht hat. Er ist vielleicht für jemand anderen bestimmt oder wurde vor dem Zurücksetzen deiner Wallet ausgestellt, daher kann UniMe ihn nicht verwenden.',
       FLOW_EXPIRED: 'Diese Anfrage ist nicht mehr aktiv. Scanne den QR-Code erneut, um neu zu beginnen.',
       INVALID_INPUT: 'Einige deiner Angaben sind ungültig. Prüfe sie und versuche es noch einmal.',
       WRONG_PASSWORD: 'Das Passwort ist nicht richtig. Prüfe es und versuche es noch einmal.',

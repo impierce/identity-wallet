@@ -43,6 +43,18 @@ pub fn mock_app(state: AppStateContainer) -> tauri::App<tauri::test::MockRuntime
         .unwrap()
 }
 
+/// Like [`json_example`], with every `{{KEY}}` placeholder in the file replaced by its value in `replacements`.
+pub fn json_example_with<T>(path: &str, replacements: &[(&str, &str)]) -> T
+where
+    T: DeserializeOwned,
+{
+    let json = std::fs::read_to_string(path).expect("file does not exist");
+    let json = replacements.iter().fold(json, |json, (key, value)| {
+        json.replace(&format!("{{{{{key}}}}}"), value)
+    });
+    serde_json::from_str::<T>(&json).expect("could not parse json")
+}
+
 pub fn json_example<T>(path: &str) -> T
 where
     T: DeserializeOwned,

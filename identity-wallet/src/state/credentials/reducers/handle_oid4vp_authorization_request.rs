@@ -17,6 +17,7 @@ use crate::{
         credentials::{
             actions::credentials_selected::{CredentialSelection, CredentialsSelected},
             credential_query_matching::{credential_data, credential_query_types_key, satisfies_credential_query},
+            holder_binding::{ensure_held_binding, BindingCheck},
             selective_disclosure::{claims_to_disclose, conceal_unrequested_claims, supports_selective_disclosure},
             VerifiableCredentialRecord,
         },
@@ -30,6 +31,7 @@ use log::{debug, info};
 use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc_core::{jwt, Sign, Subject as _};
+use oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vp::token::vp_token::Presentations;
 use oid4vp::{
     dcql::dcql_query::{CredentialQuery, Format},
@@ -393,6 +395,24 @@ async fn get_vp_token(
     for (credential_query_from_dcql, vc_values) in selected_verifiable_credentials {
         let mut presentation_format_items = Vec::new();
         for vc_value in vc_values {
+            // A credential bound to a key the wallet no longer holds (e.g. after a reset) cannot be presented: the
+            // verifier would refuse it, or never answer.
+            let credential_format = match &credential_query_from_dcql.format {
+                Format::JwtVcJson => Some(CredentialFormats::JwtVcJson(())),
+                Format::DcSdJwt => Some(CredentialFormats::DcSdJwt(())),
+                Format::VcSdJwt => Some(CredentialFormats::VcSdJwt(())),
+                _ => None,
+            };
+            if let Some(credential_format) = credential_format {
+                ensure_held_binding(
+                    &credential_format,
+                    &vc_value,
+                    subject_manager.as_ref(),
+                    BindingCheck::Present,
+                )
+                .await?;
+            }
+
             let presentation_format_item = match &credential_query_from_dcql.format {
                 Format::JwtVcJson => {
                     let key_id = subject_manager

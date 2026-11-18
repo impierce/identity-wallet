@@ -682,6 +682,7 @@ const sv_FI = {
     REJECTED_BODY:
       '{name} kunde inte godkänna begäran. Försök igen, eller kontakta {name} om det fortsätter att hända.',
     REJECTED_REASON: {
+      NOT_FOR_THIS_WALLET: 'Det här erbjudandet är avsett för en annan plånbok. Be {name} om ett eget erbjudande.',
       OFFER_EXPIRED: 'Erbjudandet har gått ut eller har redan använts. Be {name} om ett nytt.',
       WRONG_TX_CODE: 'Koden är inte rätt eller så har erbjudandet gått ut. Kontrollera koden och försök igen.',
       ACCESS_DENIED: '{name} avböjde begäran.',
@@ -738,6 +739,8 @@ const sv_FI = {
       UNSUPPORTED: 'UniMe stöder ännu inte den här typen av intyg eller begäran.',
       MISSING_CREDENTIALS: 'Du har inte de intyg som {name} bad om, så inget delades.',
       UNTRUSTED: 'UniMe kunde inte verifiera vem {name} är och avbröt för att skydda dina uppgifter.',
+      NOT_HOLDER:
+        'Det här intyget är kopplat till en nyckel som den här plånboken inte har. Det kan vara avsett för någon annan eller utfärdat innan din plånbok återställdes, så UniMe kan inte använda det.',
       FLOW_EXPIRED: 'Den här begäran är inte längre aktiv. Skanna QR-koden igen för att börja om.',
       INVALID_INPUT: 'En del av uppgifterna du angav är ogiltiga. Kontrollera dem och försök igen.',
       WRONG_PASSWORD: 'Lösenordet stämmer inte. Kontrollera det och försök igen.',
