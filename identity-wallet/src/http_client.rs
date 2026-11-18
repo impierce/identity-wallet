@@ -145,6 +145,20 @@ pub async fn post_form_to_public_destination<T: serde::Serialize + ?Sized>(
     Ok(client.post(url.clone()).form(form).send().await?)
 }
 
+/// Sends `body`, an `application/x-www-form-urlencoded` form that is already encoded, as a POST to a remote-supplied
+/// `url`, under the rules of [`post_form_to_public_destination`]: once, to a public destination, and a redirect is
+/// returned as the response rather than followed.
+pub async fn post_encoded_form_to_public_destination(url: &Url, body: String) -> Result<reqwest::Response, AppError> {
+    assert_public_destination(url).await?;
+    let client = get_public_destination_http_client().await?;
+    Ok(client
+        .post(url.clone())
+        .header(reqwest::header::CONTENT_TYPE, "application/x-www-form-urlencoded")
+        .body(body)
+        .send()
+        .await?)
+}
+
 /// An `openid-federation` HTTP client that only requests public destinations, see [`fetch_public_destination`].
 ///
 /// Entity identifiers, authority hints and federation endpoints all come from remote entity configurations, and the
