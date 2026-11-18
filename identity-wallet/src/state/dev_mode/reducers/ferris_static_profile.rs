@@ -81,6 +81,19 @@ lazy_static! {
         record.display_credential.display_name = "Teamwork".to_string();
         record
     };
+    // An Open Badge for a course certificate. It reuses the header and signature of `OPEN_BADGE`, since the wallet does
+    // not verify a stored credential's signature.
+    pub static ref MARINE_BIOLOGY_BADGE_PAYLOAD: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/ferris-marine-biology-badge-payload.json"));
+    pub static ref MARINE_BIOLOGY_BADGE: VerifiableCredentialRecord = {
+        let mut record = VerifiableCredentialRecord::try_new(
+            CredentialFormats::JwtVcJson(()),
+            json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpleGFtcGxlOjEyMyNrZXktMCJ9.{}.uNxCghKfdSVWFDmPME-j_ebmQczxxcHsF2YuqDZ9BOfegGAAJoQpOV-HEJA35afhG_wzdTaiIJ4uVLUGV_u4ig", MARINE_BIOLOGY_BADGE_PAYLOAD.clone())),
+            vec![]
+        ).unwrap();
+        record.display_credential.connection_id = Some("424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string());
+        record.display_credential.display_name = "Marine Biology 101".to_string();
+        record
+    };
     pub static ref EDU_BADGE: VerifiableCredentialRecord = {
         let mut record = VerifiableCredentialRecord::try_new(
             CredentialFormats::JwtVcJson(()),
@@ -162,6 +175,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         DRIVERS_LICENSE_CREDENTIAL.clone(),
         ACADEMIC_TRANSCRIPT.clone(),
         OPEN_BADGE.clone(),
+        MARINE_BIOLOGY_BADGE.clone(),
         EDU_BADGE.clone(),
     ]
     .into_iter()
@@ -613,11 +627,19 @@ async fn load_predefined_images() -> Result<(), AppError> {
         include_bytes!("../../../../resources/images/credential-driver-license.png"),
         &format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.display_credential.id),
     )?;
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/credential-academic-transcript.svg"),
+        &format!("{}.svg", ACADEMIC_TRANSCRIPT.display_credential.id),
+    )?;
 
     // Badges
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/badge-university-green.png"),
         &format!("{}.png", OPEN_BADGE.display_credential.id),
+    )?;
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/badge-marine-biology.jpg"),
+        &format!("{}.jpg", MARINE_BIOLOGY_BADGE.display_credential.id),
     )?;
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/edubadge-1.png"),
