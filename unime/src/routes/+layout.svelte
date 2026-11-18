@@ -15,13 +15,12 @@
   import { fly } from 'svelte/transition';
 
   import type { AppState } from '@bindings/AppState';
-  import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
   import type { UserError } from '@bindings/error/UserError';
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { getCurrent, onOpenUrl } from '@tauri-apps/plugin-deep-link';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { DeprecatedSwitch, InteractionResultSheet, Toast } from '$lib/components';
+  import { InteractionResultSheet, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { describeError } from '$lib/errors';
   import {
@@ -169,8 +168,6 @@
   let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
   let styleSafeAreaInsets = PUBLIC_STYLE_SAFE_AREA_INSETS === 'true';
   let showDebugMessages = false;
-  let showDragonProfileSteps = false;
-  let resetDragonProfile = true;
 
   // Tailwind considers app to be in dark theme if the class `dark` is present.
   // A user can choose between 3 themes: `light`, `dark`, and `system`.
@@ -234,17 +231,12 @@
       onClick: () => loadFerrisProfile(),
     };
 
-    const dragonButton: DevModeButton = {
-      icon: '🐲',
-      onClick: () => (showDragonProfileSteps = !showDragonProfileSteps),
-    };
-
     const debugButton: DevModeButton = {
       icon: BugRegularIcon,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
-    return [backButton, resetButton, ferrisButton, dragonButton, debugButton];
+    return [backButton, resetButton, ferrisButton, debugButton];
   }
 
   const devButtons = createDevButtons();
@@ -313,50 +305,16 @@
     debugMessagesNewestFirst,
   );
 
-  // Order needs to match the rust side: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
-  // 'AddCredentials' is ran after 'CreateProfile' and 'AcceptCredentials' after 'AddCredentials', etc.
-  const profileSteps: ProfileSteps[] = [
-    'Create profile',
-    'Add credentials',
-    'Accept credentials',
-    'Add connection',
-    'Accept connection',
-    'Add presentation',
-    'Share credentials',
-    'Add future engineer',
-    'Complete flow',
-  ];
-
   async function loadFerrisProfile() {
     await dispatch({
       type: '[DEV] Load DEV profile',
-      payload: { profile: 'Ferris', execute_step: null, reset_profile: false },
+      payload: { profile: 'Ferris' },
     });
 
     // Reload page, see why not just location.reload()
     // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
     await goto('/');
     await goto('/me');
-  }
-
-  async function loadDragonProfile(steps: ProfileSteps) {
-    await dispatch({
-      type: '[DEV] Load DEV profile',
-      payload: {
-        profile: 'Dragon',
-        reset_profile: resetDragonProfile,
-        execute_step: steps,
-      },
-    });
-
-    showDragonProfileSteps = false;
-
-    if (steps == 'Complete flow') {
-      // Reload page, see why not just location.reload()
-      // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
-      await goto('/');
-      await goto('/me');
-    }
   }
 
   loadIcons();
@@ -631,41 +589,6 @@ Stacking context: We have to deviate from the DOM-sequence.
               {/each}
             </div>
           {/if}
-        </div>
-      </div>
-    {/if}
-
-    {#if showDragonProfileSteps}
-      <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
-        <div class="mt-10 mr-10 ml-10 flex h-fit w-full flex-col rounded-sm bg-white pr-4 pb-4 pl-4">
-          <!-- Headline, with a close button so the popup can be dismissed without picking a step. -->
-          <div class="grid grid-cols-[auto_1fr_auto] items-center pt-2 pb-2">
-            <div class="size-8"></div>
-            <p class="text-center text-orange-800">Profile steps</p>
-            <button
-              class="rounded-full p-2 text-orange-800"
-              aria-label="Close profile steps"
-              on:click={() => (showDragonProfileSteps = false)}
-            >
-              <XRegularIcon class="size-4" />
-            </button>
-          </div>
-
-          <div class="flex items-center justify-end pb-2">
-            <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
-            <DeprecatedSwitch
-              active={resetDragonProfile}
-              on:change={() => {
-                resetDragonProfile = !resetDragonProfile;
-              }}
-            />
-          </div>
-
-          {#each profileSteps as steps, i}
-            <button class="mx-auto mb-2 w-full rounded-sm bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
-              <div class="font-mono text-xs break-all text-orange-700">{i + 1}: {steps}</div>
-            </button>
-          {/each}
         </div>
       </div>
     {/if}
