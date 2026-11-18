@@ -58,7 +58,7 @@
     "melt": "^0.41.0",
     "postcss": "^8.5.33",
     "qrcode": "^1.5.4",
-    "svelte": "^5.58.0",
+    "svelte": "^5.57.3",
     "svelte-check": "^4.7.8",
     "svelte-sequential-preprocessor": "^2.0.3",
     "sveltekit-superforms": "^2.31.0",
