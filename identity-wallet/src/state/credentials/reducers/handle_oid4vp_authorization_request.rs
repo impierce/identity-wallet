@@ -114,7 +114,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
 
         #[cfg(not(feature = "test_utils"))]
-        match send_authorization_response(&response).await {
+        let answer = send_authorization_response(&response).await;
+        #[cfg(not(feature = "test_utils"))]
+        match answer.outcome {
             InteractionOutcome::Approved => {}
             // Nothing was shared: keep the flow so the user can try again.
             outcome @ InteractionOutcome::NotSent { .. } => {
@@ -144,6 +146,11 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             }
         }
         info!("OID4VP presentation response accepted by verifier");
+
+        #[cfg(not(feature = "test_utils"))]
+        if let Some(redirect_uri) = &answer.redirect_uri {
+            open_redirect_uri(state.core_utils.app_handle.as_ref(), redirect_uri);
+        }
 
         let interaction_result = interaction_result(InteractionOutcome::Approved);
         let mut connections = state.connections;
@@ -176,6 +183,24 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     }
 
     Ok(state)
+}
+
+/// Sends the user's browser to the `redirect_uri` the verifier answered an accepted response with (OpenID4VP 1.0,
+/// Section 8.2). A failure is logged, not returned: the credentials are shared either way. Only the host is logged,
+/// since the URI can carry a response code.
+#[cfg(not(feature = "test_utils"))]
+fn open_redirect_uri(app_handle: Option<&tauri::AppHandle<crate::command::Runtime>>, redirect_uri: &url::Url) {
+    use tauri_plugin_opener::OpenerExt;
+
+    let host = crate::logging::url_host(redirect_uri);
+    let Some(app_handle) = app_handle else {
+        log::warn!("Cannot open the verifier's redirect_uri at {host}: the Tauri app handle is not available");
+        return;
+    };
+    info!("Opening the verifier's redirect_uri at {host} in the browser");
+    if let Err(err) = app_handle.opener().open_url(redirect_uri.as_str(), None::<&str>) {
+        log::warn!("Failed to open the verifier's redirect_uri at {host} in the browser: {err}");
+    }
 }
 
 #[tracing::instrument(skip_all, err)]

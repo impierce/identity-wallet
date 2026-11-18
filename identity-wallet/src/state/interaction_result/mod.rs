@@ -8,6 +8,7 @@ use oid4vc_core::{
 };
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use url::Url;
 
 /// The outcome of the last interaction with an issuer or verifier, shown to the user in the result pop-up.
 #[derive(Debug, TS, Clone, Serialize, Deserialize, PartialEq)]
@@ -86,18 +87,50 @@ impl InteractionOutcome {
     }
 }
 
+/// How a verifier's Response Endpoint answered an authorization response.
+#[derive(Debug, PartialEq)]
+pub struct ResponseAnswer {
+    pub outcome: InteractionOutcome,
+    /// Where the verifier wants the user's browser sent after an accepted response: "When this parameter is present
+    /// the Wallet MUST redirect the user agent to this URI" (OpenID4VP 1.0, Section 8.2).
+    pub redirect_uri: Option<Url>,
+}
+
+impl From<InteractionOutcome> for ResponseAnswer {
+    fn from(outcome: InteractionOutcome) -> Self {
+        ResponseAnswer {
+            outcome,
+            redirect_uri: None,
+        }
+    }
+}
+
+/// The `redirect_uri` in the JSON a Response Endpoint answers with, when it is one a browser is sent to: an `https`
+/// URL, or an `http` one when `allow_http` (a local verifier, in debug builds). Any other scheme is not opened.
+fn redirect_uri_of(body: &str, allow_http: bool) -> Option<Url> {
+    let json: serde_json::Value = serde_json::from_str(body).ok()?;
+    let redirect_uri = Url::parse(json.get("redirect_uri")?.as_str()?).ok()?;
+    match redirect_uri.scheme() {
+        "https" => Some(redirect_uri),
+        "http" if allow_http => Some(redirect_uri),
+        _ => None,
+    }
+}
+
 /// Sends an authorization response with the `direct_post` response mode and reports how the verifier answered.
 ///
-/// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code reaches the user.
+/// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code and its
+/// `redirect_uri` reach the caller.
 pub async fn send_authorization_response<E: Extension>(
     authorization_response: &AuthorizationResponse<E>,
-) -> InteractionOutcome {
+) -> ResponseAnswer {
     let encoded = match to_form_urlencoded_string(authorization_response) {
         Ok(encoded) => encoded,
         Err(error) => {
             return InteractionOutcome::NotSent {
                 reason: error.to_string(),
             }
+            .into()
         }
     };
 
@@ -118,21 +151,57 @@ pub async fn send_authorization_response<E: Extension>(
             return InteractionOutcome::NotSent {
                 reason: format!("{error:#}"),
             }
+            .into()
         }
     };
 
     let status = response.status();
+    let body = response.text().await.unwrap_or_default();
     if status.is_success() {
-        return InteractionOutcome::Approved;
+        return ResponseAnswer {
+            outcome: InteractionOutcome::Approved,
+            redirect_uri: redirect_uri_of(&body, cfg!(debug_assertions)),
+        };
     }
 
-    let body = response.text().await.unwrap_or_default();
-    InteractionOutcome::rejected(status.as_u16(), &body)
+    InteractionOutcome::rejected(status.as_u16(), &body).into()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn reads_the_redirect_uri_of_a_response_endpoint() {
+        let body = r#"{"redirect_uri":"https://verifier.example/done#response_code=091535f6"}"#;
+        assert_eq!(
+            redirect_uri_of(body, false).unwrap().as_str(),
+            "https://verifier.example/done#response_code=091535f6"
+        );
+
+        // No body, another JSON, or a value that is no URL: nothing to open.
+        assert_eq!(redirect_uri_of("", false), None);
+        assert_eq!(redirect_uri_of("{}", false), None);
+        assert_eq!(redirect_uri_of(r#"{"redirect_uri":"done"}"#, false), None);
+        assert_eq!(redirect_uri_of(r#"{"redirect_uri":42}"#, false), None);
+    }
+
+    #[test]
+    fn only_web_addresses_are_opened() {
+        for other in [
+            "javascript:alert(1)",
+            "file:///etc/passwd",
+            "unime://x",
+            "data:text/html,x",
+        ] {
+            let body = serde_json::json!({ "redirect_uri": other }).to_string();
+            assert_eq!(redirect_uri_of(&body, true), None, "{other}");
+        }
+
+        let local = r#"{"redirect_uri":"http://localhost:8080/done"}"#;
+        assert_eq!(redirect_uri_of(local, false), None);
+        assert!(redirect_uri_of(local, true).is_some());
+    }
 
     #[test]
     fn reads_oauth_error_bodies() {
