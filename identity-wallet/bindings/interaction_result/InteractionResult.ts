@@ -2,4 +2,4 @@
 import type { InteractionKind } from "./InteractionKind";
 import type { InteractionOutcome } from "./InteractionOutcome";
 
-export interface InteractionResult { kind: InteractionKind, counterparty: string, outcome: InteractionOutcome, }
+export interface InteractionResult { kind: InteractionKind, counterparty: string, outcome: InteractionOutcome, continue_to: string | null, }

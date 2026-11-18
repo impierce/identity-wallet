@@ -695,6 +695,8 @@ const en = {
     NO_RESPONSE: 'No response',
     UNKNOWN_ERROR: 'unknown_error',
     AUTO_CLOSE: 'Closing automatically in {seconds:number} s',
+    CONTINUE_TO: 'Continue to {host:string}',
+    CONTINUE_BODY: '{name:string} asks you to continue at {host:string}. This opens your browser.',
     DONE: 'Done',
     TRY_AGAIN: 'Try again',
     COPY_DETAILS: 'Copy error details',

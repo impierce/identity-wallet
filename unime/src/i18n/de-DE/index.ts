@@ -698,6 +698,8 @@ const de_DE = {
     NO_RESPONSE: 'Keine Antwort',
     UNKNOWN_ERROR: 'unknown_error',
     AUTO_CLOSE: 'Schließt automatisch in {seconds} s',
+    CONTINUE_TO: 'Weiter zu {host}',
+    CONTINUE_BODY: '{name} bittet dich, bei {host} fortzufahren. Dafür wird dein Browser geöffnet.',
     DONE: 'Fertig',
     TRY_AGAIN: 'Erneut versuchen',
     COPY_DETAILS: 'Fehlerdetails kopieren',

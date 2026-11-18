@@ -156,6 +156,8 @@ mod bindings {
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Interaction Result] Dismiss")]
         DismissInteractionResult,
+        #[serde(rename = "[Interaction Result] Continue")]
+        ContinueToVerifier,
         #[serde(rename = "[Credential Offer] Selected")]
         CredentialOffersSelected { payload: CredentialOffersSelected },
         #[serde(rename = "[Credential Offer] Code received")]
