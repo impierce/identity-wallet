@@ -3,21 +3,19 @@ use crate::state::{
     connections::Connection,
     credentials::{
         selective_disclosure::{claim_sets, concealable_claims, supports_selective_disclosure},
-        VerifiableCredentialRecord,
+        CredentialStatusType, VerifiableCredentialRecord,
     },
 };
 use chrono::{DateTime, Utc};
-use identity_credential::sd_jwt_vc::SdJwtVc;
+use identity_kit::sd_jwt_vc::{SdJwt, SdJwtVc};
 use log::debug;
-use oauth_tsl::status_list::StatusType;
-use oid4vc::oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims};
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-use oid4vc::oid4vp::{
+use oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims};
+use oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vp::{
     dcql::dcql_query::{CredentialQuery, DcqlQuery, Format, MetaTypes},
     dcql_evaluation::evaluate_credential_query,
     token::vp_token_validator::DecodedPresentations,
 };
-use sd_jwt::{SdJwt, Sha256Hasher};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use ts_rs::TS;
@@ -135,7 +133,9 @@ fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCred
         .flatten()
         .map(|claim| &claim.path)
         .collect();
-    let selective_disclosure = supports_selective_disclosure(&credential_query.format) && !claim_paths.is_empty();
+    // A query without `claims` gets no selectively disclosable claim (OpenID4VP 1.0, Section 6.4.1), which the share
+    // screen shows as "no fields requested".
+    let selective_disclosure = supports_selective_disclosure(&credential_query.format);
     let concealable = match record.verifiable_credential.as_str() {
         Some(sd_jwt) if selective_disclosure => concealable_claims(sd_jwt, &claim_paths),
         _ => vec![false; claim_paths.len()],
@@ -166,10 +166,12 @@ fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCred
 fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
     let display_credential = &record.display_credential;
     let now = Utc::now();
-    let revoked_or_suspended = display_credential
-        .credential_status
-        .as_ref()
-        .is_some_and(|status| matches!(status.status, StatusType::INVALID | StatusType::SUSPENDED));
+    let revoked_or_suspended = display_credential.credential_status.as_ref().is_some_and(|status| {
+        matches!(
+            status.status,
+            CredentialStatusType::Invalid | CredentialStatusType::Suspended
+        )
+    });
     let not_yet_valid = display_credential
         .metadata
         .valid_from
@@ -250,12 +252,6 @@ pub fn satisfies_credential_query(
     let Some(credential_object) = credential_data.as_object() else {
         return false;
     };
-    // `evaluate_credential_query` skips the `meta` check when the query requests no claims.
-    if credential_query.claims.as_deref().unwrap_or_default().is_empty()
-        && !matches_meta(credential_query, &credential_data)
-    {
-        return false;
-    }
     match DecodedPresentations::try_new(vec![credential_object.clone()]) {
         Ok(decoded_presentations) => evaluate_credential_query(credential_query, &decoded_presentations),
         Err(e) => {
@@ -278,18 +274,21 @@ pub fn credential_data(
     let verifiable_credential = &verifiable_credential_record.verifiable_credential;
 
     match (&credential_query.format, format) {
-        (Format::DcSdJwt, CredentialFormats::DcSdJwt(())) => Some(serde_json::json!(verifiable_credential
-            .as_str()?
-            .parse::<SdJwtVc>()
-            .ok()?
-            .into_disclosed_object(&Sha256Hasher::new())
-            .ok()?)),
-        (Format::VcSdJwt, CredentialFormats::VcSdJwt(())) => Some(serde_json::json!(verifiable_credential
-            .as_str()?
-            .parse::<SdJwt>()
-            .ok()?
-            .into_disclosed_object(&Sha256Hasher::new())
-            .ok()?)),
+        (Format::DcSdJwt, CredentialFormats::DcSdJwt(())) => Some(Value::Object(
+            SdJwtVc::parse(verifiable_credential.as_str()?)
+                .ok()?
+                .sd_jwt()
+                .process()
+                .ok()?
+                .payload,
+        )),
+        (Format::VcSdJwt, CredentialFormats::VcSdJwt(())) => Some(Value::Object(
+            SdJwt::parse(verifiable_credential.as_str()?)
+                .ok()?
+                .process()
+                .ok()?
+                .payload,
+        )),
         // JWT_VC_JSON must be accessed from the vc values.
         (Format::JwtVcJson, CredentialFormats::JwtVcJson(())) => {
             let full_jwt_payload = get_unverified_jwt_claims(verifiable_credential).unwrap_or_default();
@@ -301,26 +300,6 @@ pub fn credential_data(
         }
         // Other formats cannot be presented (yet), so they never match.
         _ => None,
-    }
-}
-
-fn matches_meta(credential_query: &CredentialQuery, credential_data: &Value) -> bool {
-    match &credential_query.meta {
-        MetaTypes::SdJwtMeta { vct_values } => credential_data
-            .get("vct")
-            .and_then(Value::as_str)
-            .is_some_and(|vct| vct_values.iter().any(|value| value == vct)),
-        MetaTypes::W3CFormatMeta { type_values } => {
-            let types: Vec<&str> = credential_data
-                .get("type")
-                .and_then(Value::as_array)
-                .map(|types| types.iter().filter_map(Value::as_str).collect())
-                .unwrap_or_default();
-            type_values
-                .iter()
-                .any(|option| option.iter().all(|required| types.contains(&required.as_str())))
-        }
-        MetaTypes::MsoMdocMeta { .. } => true,
     }
 }
 
@@ -387,23 +366,33 @@ mod tests {
         serde_json::from_value(json!({ "id": "badge", "format": "vc+sd-jwt", "meta": meta })).unwrap()
     }
 
+    /// Whether a stored credential with `credential` as its data satisfies `credential_query`, as
+    /// [`satisfies_credential_query`] decides it.
+    fn matches(credential_query: &CredentialQuery, credential: Value) -> bool {
+        let presentations = DecodedPresentations::try_new(vec![credential.as_object().unwrap().clone()]).unwrap();
+        evaluate_credential_query(credential_query, &presentations)
+    }
+
+    // A query without `claims` still asks for a type (`meta`), which `evaluate_credential_query` checks since
+    // oid4vp 0.7.
+
     #[test]
-    fn matches_meta_requires_all_types_of_one_option() {
+    fn a_query_without_claims_requires_all_types_of_one_option() {
         let badge = query(json!({ "type_values": [["VerifiableCredential", "OpenBadgeCredential"]] }));
 
-        assert!(matches_meta(
+        assert!(matches(
             &badge,
-            &json!({ "type": ["VerifiableCredential", "OpenBadgeCredential"] })
+            json!({ "type": ["VerifiableCredential", "OpenBadgeCredential"] })
         ));
-        assert!(!matches_meta(&badge, &json!({ "type": ["VerifiableCredential"] })));
-        assert!(!matches_meta(&badge, &json!({})));
+        assert!(!matches(&badge, json!({ "type": ["VerifiableCredential"] })));
+        assert!(!matches(&badge, json!({})));
     }
 
     #[test]
-    fn matches_meta_compares_vct() {
+    fn a_query_without_claims_compares_vct() {
         let pid = query(json!({ "vct_values": ["urn:eudi:pid:1"] }));
 
-        assert!(matches_meta(&pid, &json!({ "vct": "urn:eudi:pid:1" })));
-        assert!(!matches_meta(&pid, &json!({ "vct": "urn:example:email" })));
+        assert!(matches(&pid, json!({ "vct": "urn:eudi:pid:1" })));
+        assert!(!matches(&pid, json!({ "vct": "urn:example:email" })));
     }
 }

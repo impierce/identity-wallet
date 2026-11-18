@@ -14,9 +14,9 @@ use crate::{
 
 use jsonwebtoken::Algorithm;
 use log::{debug, info};
-use oid4vc::oid4vc_core::Subject as _;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use oid4vc_core::Subject as _;
+use oid4vc_manager::ProviderManager;
+use oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
@@ -26,8 +26,8 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         name,
         picture,
         theme,
-        password,
         biometrics_enabled,
+        ..
     }) = listen::<CreateNew>(action)
     {
         info!("Creating new identity profile");
@@ -38,7 +38,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),

@@ -1,6 +1,6 @@
 use crate::state::actions::Action;
 
-use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use std::error::Error;
 use uuid::Uuid;
 
@@ -64,8 +64,6 @@ pub enum AppError {
     InvalidCredentialFormatError,
     #[error("Missing, invalid or unable to parse credential status format")]
     InvalidCredentialStatusFormatError,
-    #[error("Failed to build verifiable presentation")]
-    PresentationBuilderError(#[source] identity_credential::error::Error),
     #[error("Failed to retrieve credential offer from the credential issuer")]
     GetCredentialOfferError(#[source] anyhow::Error),
     #[error("Failed to retrieve the credential issuer's authorization server metadata")]

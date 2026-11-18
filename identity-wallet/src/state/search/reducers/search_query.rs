@@ -71,7 +71,7 @@ mod tests {
     use super::*;
     use crate::state::credentials::CredentialMetadata;
     use crate::state::credentials::DisplayCredential;
-    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+    use oid4vci::credential_format_profiles::CredentialFormats;
 
     use std::{sync::Arc, vec};
 

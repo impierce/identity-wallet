@@ -12,7 +12,7 @@ use base64::Engine;
 use chrono::{DateTime, Datelike, Duration, Utc};
 use jsonwebtoken::Header;
 use log::info;
-use oid4vc::oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
+use oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
 use openid_federation::{EntityId, FederationClient};
 use serde::Serialize;
 use serde_json::json;
@@ -352,8 +352,9 @@ mod tests {
     use crate::subject::subject;
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use jsonwebtoken::Algorithm;
-    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-    use oid4vc::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
+    use oid4vc_manager::ProviderManager;
+    use oid4vci::credential_format_profiles::CredentialFormats;
+    use oid4vci::Wallet;
     use serial_test::serial;
     use std::sync::Arc;
     use tempfile::NamedTempFile;
@@ -377,7 +378,9 @@ mod tests {
 
         let password = "sup3rSecr3t".to_string();
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),

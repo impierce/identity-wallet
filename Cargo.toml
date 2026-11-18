@@ -6,24 +6,24 @@ members = ["identity-wallet", "unime/src-tauri"]
 tauri = { version = "2.12.5", features = ["protocol-asset", "rustls-tls"] }
 tauri-build = "2.7.4"
 
-did_manager = { git = "https://github.com/impierce/did-manager", rev = "cbf2993" }
-jsonwebtoken = "9.3"
+identity-kit = { version = "0.5.0", default-features = false }
+# openid4vc leaves the crypto backend to the application; `aws-lc-rs` is already in the tree through `rustls`.
+jsonwebtoken = { version = "11.1", features = ["aws_lc_rs"] }
 log = "^0.4"
-oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "df371b9" }
-oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "74e2f00" }
+oid4vc-core = "0.6.0"
+oid4vc-manager = "0.6.2"
+oid4vci = "0.6.1"
+oid4vp = "0.7.0"
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
 webpki-roots = "0.26"
 serde_json = "1.0"
 serial_test = "2.0"
+siopv2 = "0.6.1"
 tempfile = "3.5.0"
 tokio = { version = "1.46", features = ["macros"] }
 wiremock = "0.5"
-
-[patch.crates-io]
-# We need this patch because it makes the `Hasher` trait `Send` and `Sync`. See: https://github.com/iotaledger/sd-jwt-payload/compare/main...impierce:sd-jwt-payload:fix/hasher-send-sync
-sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }
 
 [workspace.package]
 version = "0.19.4"

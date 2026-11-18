@@ -15,13 +15,11 @@ use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
 pub use helpers::DateUtils;
 
-use oid4vc::{
-    oid4vc_core::authorization_request::{AuthorizationRequest, Object},
-    oid4vc_manager::ProviderManager,
-    oid4vci::{credential_offer::CredentialOfferParameters, Wallet},
-    oid4vp::oid4vp::OID4VP,
-    siopv2::siopv2::SIOPv2,
-};
+use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vc_manager::ProviderManager;
+use oid4vci::{credential_offer::CredentialOfferParameters, Wallet};
+use oid4vp::oid4vp::OID4VP;
+use siopv2::siopv2::SIOPv2;
 
 pub fn tls_config() -> rustls::ClientConfig {
     let _ = rustls::crypto::ring::default_provider().install_default();

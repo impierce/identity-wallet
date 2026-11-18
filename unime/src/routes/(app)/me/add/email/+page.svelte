@@ -15,6 +15,7 @@
   import CircularProgressBar from '$lib/components/CircularProgressBar.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { state as appState } from '$lib/stores';
+  import { fillPinInput } from '$lib/utils/pinInput';
 
   // When the current verification case has expired, the user should be informed about it.
   // However, we do not want to leave the expired case open forever, but reset the forms after a given period.
@@ -24,7 +25,7 @@
     type: 'numeric',
     maxLength: 4,
     placeholder: '',
-    allowPaste: false,
+    onPaste: (text) => fillPinInput(pinInput, text),
     onValueChange() {
       showError = false;
     },
@@ -81,30 +82,33 @@
     }
   }
 
-  let secsRemaining = 0;
+  let interval: ReturnType<typeof setInterval> | undefined;
 
-  let interval: ReturnType<typeof setInterval>;
+  // The whole seconds until the current case expires, never below zero.
+  const secondsLeft = () => {
+    const expiresAt = $appState.verified_data.email_verification?.expires_at;
+    return expiresAt ? Math.max(0, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 1_000)) : 0;
+  };
 
-  const startTimer = (seconds: number) => {
-    interval = setInterval(() => {
-      // debug(`seconds: ${seconds}`);
-      if (seconds < 1) {
-        clearInterval(interval);
-        expired = true;
-        pending = false;
-        progressValue.set(0);
-      }
-      //   if (seconds === 1) {
-      //     expired = true;
-      //     awaitingConfirmation = false;
-      //   }
-      seconds--;
-      if (seconds >= 0) {
-        secsRemaining = seconds;
-        // progress = Math.floor((seconds / MAX_SECONDS) * 100);
-        progressValue.set(secsRemaining);
-      }
-    }, 1000);
+  const stopTimer = () => {
+    clearInterval(interval);
+    interval = undefined;
+  };
+
+  // Every tick reads the time left from the clock instead of counting ticks: timers are paused while the app is in the
+  // background, so a counted-down value falls behind by as long as the app was away.
+  const updateTimer = () => {
+    const seconds = secondsLeft();
+    progressValue.set(seconds);
+    pending = seconds > 0;
+    expired = seconds === 0;
+    if (expired) stopTimer();
+  };
+
+  const startTimer = () => {
+    stopTimer();
+    updateTimer();
+    if (pending) interval = setInterval(updateTimer, 1_000);
   };
 
   const startVerificationSession = async () => {
@@ -112,26 +116,16 @@
 
     await dispatch({ type: '[Verified Data] Send verification email', payload: { email, label } });
 
-    const expires_at = $appState.verified_data.email_verification?.expires_at;
-    if (!expires_at) {
+    loading = false;
+
+    if (!$appState.verified_data.email_verification?.expires_at) {
       debug('No `expires_at` found in app state');
-      loading = false;
       return;
     }
 
-    const expires_in_seconds = Math.floor((new Date(expires_at).getTime() - Date.now()) / 1_000);
-
     pinInput.value = '';
-
-    loading = false;
-
     hideForm = true;
-
-    progressValue.set(expires_in_seconds);
-    pending = true;
-    expired = false;
-    // emailSentTimestamp = new Date();
-    startTimer(expires_in_seconds);
+    startTimer();
   };
 
   async function redeemCode(code: string) {
@@ -143,6 +137,10 @@
   }
 
   const reset = () => {
+    stopTimer();
+    progressValue.set(0, { duration: 0 });
+    pinInput.value = '';
+    showError = false;
     expired = false;
     pending = false;
     hideForm = false;
@@ -150,14 +148,13 @@
     dispatch({ type: '[Verified Data] Reset email verification' });
   };
 
-  const checkAutoDiscard = (expires_at: Date) => {
-    const expired_mins_ago = Math.floor((new Date().getTime() - expires_at.getTime()) / 1_000 / 60);
-    info(`expired_mins_ago: ${expired_mins_ago}`);
-    if (expired_mins_ago >= AUTO_DISCARD_AFTER_MINUTES) {
-      debug(`Auto-discarding expired verification case (${expired_mins_ago} minutes ago) ...`);
-      reset();
-      // TODO: bug: still shows the expired timer
-    }
+  // Discards a case that expired more than `AUTO_DISCARD_AFTER_MINUTES` ago. Returns whether it did.
+  const discardIfLongExpired = (expiresAt: Date) => {
+    const expiredMinutesAgo = Math.floor((Date.now() - expiresAt.getTime()) / 60_000);
+    if (expiredMinutesAgo < AUTO_DISCARD_AFTER_MINUTES) return false;
+    debug(`Auto-discarding expired verification case (${expiredMinutesAgo} minutes ago)`);
+    reset();
+    return true;
   };
 
   onMount(async () => {
@@ -169,39 +166,17 @@
     const current = $appState.verified_data.email_verification;
 
     if (current) {
-      hideForm = true;
       email = current.email;
       label = current.label;
 
+      if (current.expires_at && discardIfLongExpired(new Date(current.expires_at))) return;
+
+      hideForm = true;
+
       // Resume verification timer across app restarts by reading from app state
       if (current.expires_at) {
-        checkAutoDiscard(new Date(current.expires_at));
-
         info('Resuming existing email verification timer');
-        //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
-        const expires_in_secs = Math.floor((new Date(current.expires_at).getTime() - Date.now()) / 1_000);
-        //   info(`emailSentTimestamp: ${emailSentTimestamp}`);
-        //   const diff = emailSentTimestamp.getTime() - Date.now();
-        // const diff = expires_in_secs / 1_000;
-        // info(`diff: ${diff}`);
-        // max = diff;
-        if (expires_in_secs <= 0) {
-          progressValue.set(0);
-          pending = false;
-          expired = true;
-        } else {
-          // if (diff > MAX_SECONDS * 1_000) {
-          //   progressValue.set(0);
-          //   awaitingConfirmation = false;
-          //   expired = true;
-          // } else {
-          // progressValue.set(MAX_SECONDS - diff / 1_000);
-          // startTimer(MAX_SECONDS - diff / 1_000);
-          progressValue.set(expires_in_secs);
-          startTimer(expires_in_secs);
-          pending = true;
-          // }
-        }
+        startTimer();
       } else {
         debug('No current email verification timer found in app state');
       }
@@ -217,10 +192,16 @@
 
   onDestroy(() => {
     // Clearing the interval to avoid duplicate counters when the page is loaded next time
-    info('clearingInterval');
-    clearInterval(interval);
+    stopTimer();
   });
 </script>
+
+<!-- Back from the background, correct the counter right away instead of on the next tick. -->
+<svelte:document
+  onvisibilitychange={() => {
+    if (document.visibilityState === 'visible' && interval) updateTimer();
+  }}
+/>
 
 <TopNavBar
   on:back={() => goto('/me/add')}
@@ -296,7 +277,7 @@
           min={0}
           value={progressValue.current}
           displayValue={displayTime}
-          gaugePrimaryColor={`${progressValue.target > 0 ? 'rgb(var(--color-brand))' : 'oklch(0.586 0.253 17.585)'} `}
+          gaugePrimaryColor={`${progressValue.target > 0 ? 'var(--color-brand)' : 'oklch(0.586 0.253 17.585)'} `}
         />
       {/key}
 

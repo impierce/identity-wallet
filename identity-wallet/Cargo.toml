@@ -15,34 +15,26 @@ base64 = "0.22"
 bs58 = "0.5.1"
 chrono = "0.4"
 derivative = "2.2"
-did_manager.workspace = true
 downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 hickory-resolver = { version = "0.26", default-features = false, features = ["tokio"] }
 icu = "1.4.0"
-identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1", default-features = false, features = [
-    "credential",
-    "domain-linkage",
-    "presentation",
-    "validator",
-    "sd-jwt-vc",
-] }
-identity_core = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_iota = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
-identity_jose = { git = "https://github.com/iotaledger/identity", tag = "v1.9.6-beta.1" }
+identity-kit = { workspace = true, features = ["did-jwk", "did-key", "did-web", "domain-linkage", "linked-vp", "sd-jwt", "status-list"] }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10"
 jsonschema = "0.29"
 jsonwebtoken.workspace = true
 lazy_static = "1.4"
 log.workspace = true
-oauth_tsl.workspace = true
-oid4vc.workspace = true
+oid4vc-core.workspace = true
+oid4vc-manager.workspace = true
+oid4vci.workspace = true
+oid4vp.workspace = true
 openid-federation = "0.3.0"
 p256 = { version = "0.13", features = ["jwk"] }
 reqwest = { version = "0.13", default-features = false, features = [
+    "gzip",
     "json",
     "rustls",
 ] }
@@ -50,13 +42,11 @@ reqwest-middleware = { version = "0.5", features = ["json"] }
 reqwest-retry = "0.9"
 rustls.workspace = true
 webpki-roots.workspace = true
-sd-jwt = { package = "sd-jwt-payload", version = "0.5.1", default-features = false, features = [
-    "sha",
-] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json.workspace = true
 serde_with = "3.8"
 sha256 = "1.4"
+siopv2.workspace = true
 stronghold_engine = { version = "2.0.1" }
 stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = [
     "crypto",
@@ -77,6 +67,7 @@ uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 hickory-resolver = { version = "0.26", features = ["system-config"] }
 
 [dev-dependencies]
+identity-kit = { workspace = true, features = ["in-memory", "test-vectors"] }
 serial_test.workspace = true
 tempfile.workspace = true
 wiremock.workspace = true

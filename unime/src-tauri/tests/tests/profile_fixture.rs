@@ -1,11 +1,11 @@
-use identity_wallet::oid4vc_core::Subject as _;
+use identity_wallet::oid4vc_core::{Sign as _, Subject as _};
 use identity_wallet::persistence::{STATE_FILE, STRONGHOLD};
+use identity_wallet::state::credentials::CredentialStatusType;
 use identity_wallet::state::credentials::DisplayCredential;
 use identity_wallet::state::profile_settings::Locale;
 use identity_wallet::state::user_prompt::CurrentUserPrompt;
 use identity_wallet::state::{actions::Action, AppState, AppStateContainer};
 use jsonwebtoken::Algorithm;
-use oauth_tsl::status_list::StatusType;
 use serde_json::json;
 use std::path::Path;
 use tauri::Manager;
@@ -110,11 +110,11 @@ async fn test_profile_v0_18_0_unlocks() {
     assert_eq!(credentials.len(), 5);
 
     let expected_credentials = [
-        ("Dutch Driver's Licence", "Mira", StatusType::VALID),
-        ("My first badge", "Mira", StatusType::VALID),
-        ("Complete VC", "Mira", StatusType::INVALID),
-        ("Full Badge", "Capella", StatusType::VALID),
-        ("Testing Credential", "Capella", StatusType::VALID),
+        ("Dutch Driver's Licence", "Mira", CredentialStatusType::Valid),
+        ("My first badge", "Mira", CredentialStatusType::Valid),
+        ("Complete VC", "Mira", CredentialStatusType::Invalid),
+        ("Full Badge", "Capella", CredentialStatusType::Valid),
+        ("Testing Credential", "Capella", CredentialStatusType::Valid),
     ];
     for (display_name, issuer_name, status) in expected_credentials {
         let credential = credential(credentials, display_name);
@@ -171,6 +171,42 @@ async fn test_profile_v0_18_0_unlocks() {
             &subject.identifier(method, Algorithm::EdDSA).await.unwrap(),
             state.dids.get(method).unwrap(),
         );
+    }
+
+    // The profile only stores the EdDSA DIDs. These ES256 DIDs are the ones `did_manager` produced for its P-256 key.
+    let es256_did_jwk = "did:jwk:eyJhbGciOiJFUzI1NiIsImNydiI6IlAtMjU2Iiwia2lkIjoiVTVzdFV2OXpvaEFyRllNLUM0LVdWUTN5MmtkVkZUTTc0Z2pXeWFNYmVDcyIsImt0eSI6IkVDIiwieCI6IkpOZ3pHQzFKMmM1cU5RMDBNeTlYNmlyV3paeXo3N2J3R09hUXNhTlp1bFkiLCJ5IjoiSDdtZVhYOEVuQzI4MlIwTGJUblZHRE9uUkRSSlR2bk9lcENIZVpTb0dkdyJ9";
+    let es256_did_key = "did:key:zDnaeSunvyBxEFEmzX5MguC2S9sX9Lfqs4GoFkBERERYRmANH";
+    assert_eq!(
+        subject.identifier("did:jwk", Algorithm::ES256).await.unwrap(),
+        es256_did_jwk
+    );
+    assert_eq!(
+        subject.identifier("did:key", Algorithm::ES256).await.unwrap(),
+        es256_did_key
+    );
+
+    // The key ids in JWS headers: `#0` for `did:jwk`, the multibase key for `did:key`.
+    let ed25519_did_key = state.dids.get("did:key").unwrap();
+    let expected_key_ids = [
+        (
+            "did:jwk",
+            Algorithm::EdDSA,
+            format!("{}#0", state.dids.get("did:jwk").unwrap()),
+        ),
+        (
+            "did:key",
+            Algorithm::EdDSA,
+            format!("{ed25519_did_key}#{}", &ed25519_did_key["did:key:".len()..]),
+        ),
+        ("did:jwk", Algorithm::ES256, format!("{es256_did_jwk}#0")),
+        (
+            "did:key",
+            Algorithm::ES256,
+            format!("{es256_did_key}#{}", &es256_did_key["did:key:".len()..]),
+        ),
+    ];
+    for (method, algorithm, key_id) in expected_key_ids {
+        assert_eq!(subject.key_id(method, algorithm).await.unwrap(), key_id);
     }
 }
 

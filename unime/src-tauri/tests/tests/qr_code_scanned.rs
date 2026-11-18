@@ -12,7 +12,7 @@ use identity_wallet::state::{
     AppState, AppStateContainer,
 };
 
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vci::credential_format_profiles::CredentialFormats;
 use serde_json::json;
 use tokio::sync::Mutex;
 

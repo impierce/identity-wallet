@@ -9,8 +9,8 @@ use crate::stronghold::StrongholdManager;
 use crate::subject::subject;
 
 use log::{debug, info};
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use oid4vc_manager::ProviderManager;
+use oid4vci::Wallet;
 use std::sync::Arc;
 
 #[tracing::instrument(skip_all, err)]
@@ -20,7 +20,9 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),

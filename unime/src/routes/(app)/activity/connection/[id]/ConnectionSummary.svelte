@@ -53,7 +53,7 @@
     class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
   >
     <span class="mr-4 size-6 shrink-0">
-      <ShieldCheckRegularIcon class="size-6 text-green-500" />
+      <ShieldCheckRegularIcon class="size-6 text-primary" />
     </span>
     <div class="flex min-w-0 grow flex-col">
       <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">

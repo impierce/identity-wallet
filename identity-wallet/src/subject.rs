@@ -1,31 +1,55 @@
-use crate::state::core_utils::tls_config;
-use crate::stronghold::StrongholdManager;
+use crate::did_resolver::Resolver;
+use crate::state::SUPPORTED_DID_METHODS;
+use crate::stronghold::{StrongholdManager, ED25519_KEY_ID, ES256_KEY_ID};
 use anyhow::anyhow;
 use async_trait::async_trait;
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use did_manager::{DidMethod, Resolver, SecretManager};
-use identity_iota::verification::jwk::Jwk;
-use identity_iota::{
-    did::DID,
-    document::DIDUrlQuery,
-    verification::{jwk::JwkParams, jws::JwsAlgorithm},
+use identity_kit::{
+    did::DidMethod,
+    identity::{Identity, IdentityKind, KeyStoreIdentity},
+    jose::{Jwk, JwsAlgorithm},
+    keys::KeyId,
+    methods::{DidJwk, DidKey},
 };
 use jsonwebtoken::Algorithm;
 use log::debug;
-use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
+use oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
-use tokio::sync::{Mutex, OnceCell};
+use tokio::sync::OnceCell;
 
 /// A `Subject` implements functions required for signatures and verification.
-/// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the secret management (DID Manager).
+/// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the wallet's keys, which
+/// identity-kit reads from the Stronghold (see [`crate::stronghold::ED25519_KEY_ID`]).
 #[derive(Debug)]
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
-    pub secret_manager: Arc<Mutex<SecretManager>>,
+    identity: KeyStoreIdentity,
     pub resolver: OnceCell<Arc<Resolver>>,
 }
 
 impl Subject {
+    /// A subject for the keys in `stronghold_manager`, with a `did:jwk` and a `did:key` for each of them.
+    pub async fn new(stronghold_manager: Arc<StrongholdManager>) -> anyhow::Result<Self> {
+        let identity = KeyStoreIdentity::new(stronghold_manager.clone())
+            .with_producer(DidJwk)
+            .with_producer(DidKey::default());
+
+        for method in SUPPORTED_DID_METHODS {
+            let kind = identity_kind(method)?;
+            for (alg, key) in [
+                (JwsAlgorithm::EdDSA, ED25519_KEY_ID),
+                (JwsAlgorithm::ES256, ES256_KEY_ID),
+            ] {
+                identity.bind(kind.clone(), alg, KeyId::new(key)).await?;
+            }
+        }
+
+        Ok(Self {
+            stronghold_manager,
+            identity,
+            resolver: OnceCell::new(),
+        })
+    }
+
     /// Asynchronously gets a reference to the initialized resolver.
     ///
     /// The first time this is called, it will perform the async initialization.
@@ -37,7 +61,7 @@ impl Subject {
     /// The private async function that contains the actual initialization logic.
     async fn initialize_resolver() -> Arc<Resolver> {
         debug!("Initializing resolver for Subject");
-        let resolver = Resolver::new_with_options(Some(tls_config()), None, None);
+        let resolver = Resolver::new();
         debug!("Resolver initialized");
         Arc::new(resolver)
     }
@@ -45,53 +69,50 @@ impl Subject {
     // TODO(ssi-agent): Duplicate of ssi-agent `Subject::resolve_public_key`.
     // Replace this local implementation with the original implementation from `ssi-agent`:
     // https://github.com/impierce/ssi-agent/blob/beta/agent_secret_manager/src/subject.rs
-    /// Resolves the public key for a given DID URL.
+    /// Resolves the public key for a given DID URL: a method listed under `verificationMethod` or embedded in a
+    /// verification relationship.
     pub async fn resolve_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
-        let did_url =
-            identity_iota::did::DIDUrl::parse(did_url).map_err(|err| anyhow!("Failed to parse DID URL: {err}"))?;
-
-        let document = self
-            .resolver()
+        self.resolver()
             .await
-            .resolve(did_url.did().as_str())
+            .public_key(did_url)
             .await
-            .map_err(|err| anyhow!("Failed to resolve DID Document for DID: `{did_url}`, error: {err}"))?;
+            .map_err(|err| anyhow!("Failed to resolve the public key of `{did_url}`: {err:#}"))
+    }
 
-        let verification_method = document
-            .resolve_method(DIDUrlQuery::from(&did_url), None)
-            .ok_or(anyhow!(
-                "Failed to resolve verification method for DID URL: `{did_url}`"
-            ))?;
-
-        verification_method
-            .data()
-            .public_key_jwk()
-            .ok_or_else(|| anyhow!("Failed to resolve public key for DID URL: `{did_url}`"))
-            .cloned()
+    /// The algorithm the key of `did_url` signs with: the `alg` of its JWK, or else the one its key type implies.
+    pub async fn signing_algorithm(&self, did_url: &str) -> anyhow::Result<Algorithm> {
+        let jwk = self.resolve_public_key(did_url).await?;
+        match (jwk.alg(), jwk.kty(), jwk.crv()) {
+            (Some(alg), _, _) => alg
+                .parse()
+                .map_err(|_| anyhow!("Unsupported algorithm `{alg}` for `{did_url}`")),
+            (None, "OKP", Some("Ed25519")) => Ok(Algorithm::EdDSA),
+            (None, "EC", Some("P-256")) => Ok(Algorithm::ES256),
+            (None, kty, crv) => Err(anyhow!("Unsupported key type `{kty}` ({crv:?}) for `{did_url}`")),
+        }
     }
 }
 
 #[async_trait]
 impl Sign for Subject {
     async fn key_id(&self, subject_syntax_type: &str, algorithm: Algorithm) -> Option<String> {
-        let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
-
-        let mut secret_manager = self.secret_manager.lock().await;
-
-        secret_manager
-            .produce_document(method, None, algorithm.into_jws_algorithm())
+        let signer = self
+            .identity
+            .signer(
+                &identity_kind(subject_syntax_type).ok()?,
+                jws_algorithm(algorithm).ok()?,
+            )
             .await
-            .ok()
-            .and_then(|document| document.verification_method().first().cloned())
-            .map(|first| first.id().to_string())
+            .ok()?;
+        signer.kid().map(str::to_owned)
     }
 
-    async fn sign(&self, message: &str, _subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<Vec<u8>> {
-        let secret_manager = self.secret_manager.lock().await;
-
-        Ok(secret_manager
-            .sign(message.as_bytes(), algorithm.into_jws_algorithm())
-            .await?)
+    async fn sign(&self, message: &str, subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<Vec<u8>> {
+        let signer = self
+            .identity
+            .signer(&identity_kind(subject_syntax_type)?, jws_algorithm(algorithm)?)
+            .await?;
+        Ok(signer.sign(message.as_bytes()).await?)
     }
 
     fn external_signer(&self) -> Option<Arc<dyn ExternalSign>> {
@@ -100,107 +121,53 @@ impl Sign for Subject {
 }
 
 #[async_trait]
-impl oid4vc::oid4vc_core::Subject for Subject {
+impl oid4vc_core::Subject for Subject {
     async fn identifier(&self, subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<String> {
-        let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}"))?;
-        let mut secret_manager = self.secret_manager.lock().await;
-
-        Ok(secret_manager
-            .produce_document(method, None, algorithm.into_jws_algorithm())
-            .await
-            .map(|document| document.id().to_string())?)
+        Ok(self
+            .identity
+            .identifier(&identity_kind(subject_syntax_type)?, jws_algorithm(algorithm)?)
+            .await?
+            .to_string())
     }
 }
 
 #[async_trait]
 impl Verify for Subject {
+    /// The public key of `did_url` in the form `jsonwebtoken` verifies with: an Ed25519 key as its 32 bytes, a P-256
+    /// key as its uncompressed SEC1 point.
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
-        let did_url = identity_iota::did::DIDUrl::parse(did_url)?;
-
-        let document = self.resolver().await.resolve(did_url.did().as_str()).await?;
-
-        let verification_method = document
-            .resolve_method(
-                DIDUrlQuery::from(&did_url),
-                Some(identity_iota::verification::MethodScope::VerificationMethod),
-            )
-            .ok_or(anyhow::anyhow!(
-                "Failed to resolve verification method for DID URL: {did_url}"
-            ))?;
-
-        // Try decode from `MethodData` directly, else use public JWK params.
-        verification_method.data().try_decode().or_else(|_| {
-            verification_method
-                .data()
-                .public_key_jwk()
-                .and_then(|public_key_jwk| match public_key_jwk.params() {
-                    JwkParams::Okp(okp_params) => URL_SAFE_NO_PAD.decode(&okp_params.x).ok(),
-                    JwkParams::Ec(ec_params) => {
-                        let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).ok()?;
-                        let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).ok()?;
-
-                        let encoded_point = p256::EncodedPoint::from_affine_coordinates(
-                            p256::FieldBytes::from_slice(&x_bytes),
-                            p256::FieldBytes::from_slice(&y_bytes),
-                            false, // false for uncompressed point
-                        );
-
-                        let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)
-                            .expect("Failed to create verifying key from encoded point");
-
-                        Some(verifying_key.to_encoded_point(false).as_bytes().to_vec())
-                    }
-                    _ => None,
-                })
-                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {did_url}"))
-        })
+        // Only a method listed under `verificationMethod`, as with IOTA's `MethodScope::VerificationMethod` before.
+        let jwk = self
+            .resolver()
+            .await
+            .listed_public_key(did_url)
+            .await
+            .map_err(|err| anyhow!("Failed to resolve the public key of `{did_url}`: {err:#}"))?;
+        match (jwk.kty(), jwk.crv()) {
+            ("OKP", Some("Ed25519")) => Ok(jwk.ed25519_public_bytes()?.to_vec()),
+            ("EC", Some("P-256")) => Ok(jwk.p256_public_bytes()?.to_vec()),
+            (kty, crv) => Err(anyhow!("Unsupported key type `{kty}` ({crv:?}) for `{did_url}`")),
+        }
     }
 }
 
-// Helper function: load a `Subject`
-pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: String) -> Arc<Subject> {
-    let client_path = crate::persistence::STRONGHOLD
-        .lock()
-        .unwrap()
-        .to_str()
-        .expect("failed to get stronghold path")
-        .to_owned();
-
-    Arc::new(Subject {
-        stronghold_manager: stronghold_manager.clone(),
-        secret_manager: Arc::new(Mutex::new(
-            SecretManager::builder()
-                .snapshot_path(&client_path)
-                .with_ed25519_key("ed25519-0")
-                .with_es256_key("es256-0")
-                .password(&password)
-                .build()
-                .await
-                .unwrap(),
-        )),
-        resolver: OnceCell::new(),
-    })
+/// Loads the `Subject` for the keys in `stronghold_manager`.
+pub async fn subject(stronghold_manager: Arc<StrongholdManager>) -> anyhow::Result<Arc<Subject>> {
+    Ok(Arc::new(Subject::new(stronghold_manager).await?))
 }
 
-trait IntoJwsAlgorithm {
-    fn into_jws_algorithm(self) -> JwsAlgorithm;
+/// The kind of identifier for an OID4VC subject syntax type such as `did:jwk`.
+fn identity_kind(subject_syntax_type: &str) -> anyhow::Result<IdentityKind> {
+    Ok(IdentityKind::Did(DidMethod::parse(subject_syntax_type).map_err(
+        |err| anyhow!("Unsupported subject syntax type `{subject_syntax_type}`: {err}"),
+    )?))
 }
 
-impl IntoJwsAlgorithm for Algorithm {
-    fn into_jws_algorithm(self) -> JwsAlgorithm {
-        match self {
-            Algorithm::HS256 => JwsAlgorithm::HS256,
-            Algorithm::HS384 => JwsAlgorithm::HS384,
-            Algorithm::HS512 => JwsAlgorithm::HS512,
-            Algorithm::RS256 => JwsAlgorithm::RS256,
-            Algorithm::RS384 => JwsAlgorithm::RS384,
-            Algorithm::RS512 => JwsAlgorithm::RS512,
-            Algorithm::ES256 => JwsAlgorithm::ES256,
-            Algorithm::ES384 => JwsAlgorithm::ES384,
-            Algorithm::PS256 => JwsAlgorithm::PS256,
-            Algorithm::PS384 => JwsAlgorithm::PS384,
-            Algorithm::PS512 => JwsAlgorithm::PS512,
-            Algorithm::EdDSA => JwsAlgorithm::EdDSA,
-        }
+/// The identity-kit algorithm for one of the wallet's [`SUPPORTED_SIGNING_ALGORITHMS`](crate::state::SUPPORTED_SIGNING_ALGORITHMS).
+fn jws_algorithm(algorithm: Algorithm) -> anyhow::Result<JwsAlgorithm> {
+    match algorithm {
+        Algorithm::EdDSA => Ok(JwsAlgorithm::EdDSA),
+        Algorithm::ES256 => Ok(JwsAlgorithm::ES256),
+        unsupported => Err(anyhow!("Unsupported signing algorithm: {unsupported:?}")),
     }
 }
