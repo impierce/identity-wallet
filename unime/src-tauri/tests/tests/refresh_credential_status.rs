@@ -1,6 +1,6 @@
 use crate::common::{
     assert_state_update::{setup_state_file, setup_stronghold},
-    json_example, test_managers,
+    json_example, test_managers, TEST_PASSWORD,
 };
 use identity_kit::status_list::{StatusList, StatusListToken, StatusType};
 use identity_wallet::oid4vc_core::jwt;
@@ -11,6 +11,7 @@ use identity_wallet::state::credentials::reducers::{
 use identity_wallet::state::credentials::CredentialStatusType;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::state::{actions::Action, AppState};
+use identity_wallet::stronghold::StrongholdManager;
 use identity_wallet::subject::Subject;
 use jsonwebtoken::{Algorithm, Header};
 use serde_json::json;
@@ -393,7 +394,6 @@ async fn state_with_credentials_on_own_status_lists(mock_server: &MockServer, co
     setup_state_file();
     let mut state = json_example::<AppState>("tests/fixtures/states/credential_with_status.json");
     state.core_utils.managers = test_managers(vec![]).await;
-    setup_stronghold();
 
     let template = state.credentials.first().unwrap().clone();
     state.credentials = (0..count)
@@ -525,4 +525,60 @@ async fn test_refresh_all_credential_statuses_keeps_the_status_of_a_status_list_
     // Within the action's time limit of 10 seconds.
     assert!(start.elapsed() < Duration::from_secs(9), "took {:?}", start.elapsed());
     assert_eq!(state.credentials[0].credential_status.as_ref().unwrap(), &before);
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_all_credential_statuses_saves_the_refreshed_statuses_when_another_status_list_fails() {
+    let mock_server = MockServer::start().await;
+    let state = state_with_credentials_on_own_status_lists(&mock_server, 2).await;
+    let subject = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .identity_manager
+        .as_ref()
+        .unwrap()
+        .subject
+        .clone();
+    let before = state.credentials[1].credential_status.clone().unwrap();
+
+    // The first credential's status list marks it INVALID; the second one's is unavailable.
+    Mock::given(method("GET"))
+        .and(path("/status/0"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(
+            signed_status_list_jwt(subject, &mock_server.uri(), before.idx, None).await,
+            StatusListToken::MEDIA_TYPE,
+        ))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+    Mock::given(method("GET"))
+        .and(path("/status/1"))
+        .respond_with(ResponseTemplate::new(503))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let action = json_example::<Action>("tests/fixtures/actions/refresh_all_credential_statuses.json");
+    let state = refresh_all_credential_statuses(state, action).await.unwrap();
+
+    let refreshed = state.credentials[0].credential_status.clone().unwrap();
+    assert_eq!(refreshed.status, CredentialStatusType::Invalid);
+    assert_ne!(refreshed.last_checked, before.last_checked);
+    assert_eq!(state.credentials[1].credential_status.as_ref().unwrap(), &before);
+
+    // The snapshot on disk holds the same statuses.
+    let stronghold_manager = StrongholdManager::load(TEST_PASSWORD).unwrap();
+    let stored_status = |id: &str| {
+        let data = stronghold_manager.get(id.parse().unwrap()).unwrap().unwrap();
+        serde_json::from_slice::<VerifiableCredentialRecord>(&data)
+            .unwrap()
+            .display_credential
+            .credential_status
+            .unwrap()
+    };
+    assert_eq!(stored_status(&state.credentials[0].id), refreshed);
+    assert_eq!(stored_status(&state.credentials[1].id), before);
 }
