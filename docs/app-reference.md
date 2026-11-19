@@ -691,7 +691,7 @@ Adds the bottom bar with the Me, Scan and Activity tabs.
 
 `unime/src/routes/+layout.svelte`
 
-Wraps every screen. On top of the current screen it shows the progress and the result of an exchange, error messages and, in developer mode, the developer menu with the debug messages and the test profiles. It also receives deep links and follows the redirects and prompts of the backend.
+Wraps every screen. On top of the current screen it shows the progress and the result of an exchange, error messages and, in developer mode, the developer menu with the debug messages and the test profile. It also receives deep links and follows the redirects and prompts of the backend.
 
 - **Controls:**
   - Button: "Clear debug messages", dispatches `[DEV] Clear debug log` (developer mode only)
@@ -699,8 +699,6 @@ Wraps every screen. On top of the current screen it shows the progress and the r
   - Field: "Search" (developer mode only)
   - Button: "Clear search" (developer mode only)
   - Button: "Newest first" / "Oldest first" (developer mode only)
-  - Button: "Close profile steps" (developer mode only)
-  - Button: "Toggle switch" (developer mode only)
   - Button: "Close"
   - Button: "Done"
   - Button: "Copied" / "Copy error details"

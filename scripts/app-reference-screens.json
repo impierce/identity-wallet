@@ -262,14 +262,14 @@
   "layouts": [
     {
       "layout": "/",
-      "note": "Wraps every screen. On top of the current screen it shows the progress and the result of an exchange, error messages and, in developer mode, the developer menu with the debug messages and the test profiles. It also receives deep links and follows the redirects and prompts of the backend."
+      "note": "Wraps every screen. On top of the current screen it shows the progress and the result of an exchange, error messages and, in developer mode, the developer menu with the debug messages and the test profile. It also receives deep links and follows the redirects and prompts of the backend."
     },
     {
       "layout": "/(app)",
       "note": "Adds the bottom bar with the Me, Scan and Activity tabs."
     }
   ],
-  "developerModeConditions": ["showDebugMessages", "showDragonProfileSteps"],
+  "developerModeConditions": ["showDebugMessages"],
   "omittedRoutes": [
     {
       "route": "/goals",
