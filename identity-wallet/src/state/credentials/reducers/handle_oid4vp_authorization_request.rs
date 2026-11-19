@@ -114,9 +114,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
 
         #[cfg(not(feature = "test_utils"))]
-        match send_authorization_response(&response).await {
-            InteractionOutcome::Approved => {}
-            // Nothing was shared: keep the flow so the user can try again.
+        let outcome = match send_authorization_response(&response).await {
+            // No answer came back: keep the flow so the user can try again.
             outcome @ InteractionOutcome::NotSent { .. } => {
                 log::warn!("Failed to send OID4VP authorization response to verifier: {outcome:?}");
                 drop(state_guard);
@@ -125,27 +124,21 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     ..state
                 });
             }
-            // The verifier refused the presentation: end the flow without recording a share.
             outcome @ InteractionOutcome::Rejected { .. } => {
                 log::warn!("Verifier rejected the OID4VP authorization response: {outcome:?}");
-                drop(state_guard);
-                return Ok(AppState {
-                    core_utils: CoreUtils {
-                        active_flow: None,
-                        pending_connection_data: None,
-                        ..state.core_utils
-                    },
-                    current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                        target: "me".to_string(),
-                    }),
-                    interaction_result: interaction_result(outcome),
-                    ..state
-                });
+                outcome
             }
-        }
-        info!("OID4VP presentation response accepted by verifier");
+            outcome @ InteractionOutcome::Approved => {
+                info!("OID4VP presentation response accepted by verifier");
+                outcome
+            }
+        };
+        #[cfg(feature = "test_utils")]
+        let outcome = InteractionOutcome::Approved;
 
-        let interaction_result = interaction_result(InteractionOutcome::Approved);
+        // The verifier answered, so it has the credentials whether it accepted them or not: the share is recorded
+        // either way, and the flow ends.
+        let interaction_result = interaction_result(outcome);
         let mut connections = state.connections;
         let mut history = state.history;
 
@@ -457,14 +450,25 @@ async fn get_vp_token(
                                 .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))
                         })?;
 
-                    let Some(cnf_kid) = sd_jwt_vc.claims().cnf.as_ref().and_then(|cnf| cnf.kid.as_deref()) else {
-                        return Err(AppError::Error("Unsupported `cnf` claim in SD-JWT VC".to_string()));
+                    // The holder's key is named by reference (`cnf.kid`, a DID URL) or by value (`cnf.jwk`, as
+                    // SD-JWT VC issuers outside the DID ecosystems do, e.g. for an EU PID).
+                    let cnf = sd_jwt_vc.claims().cnf.as_ref();
+                    let algorithm = match (
+                        cnf.and_then(|cnf| cnf.kid.as_deref()),
+                        cnf.and_then(|cnf| cnf.jwk.as_ref()),
+                    ) {
+                        (Some(cnf_kid), _) => subject_manager
+                            .signing_algorithm(cnf_kid)
+                            .await
+                            .map_err(|e| AppError::Error(format!("Failed to resolve `cnf` key from DID URL: {e}")))?,
+                        (None, Some(cnf_jwk)) => subject_manager
+                            .signing_algorithm_of_key(cnf_jwk)
+                            .await
+                            .map_err(|e| AppError::Error(format!("Failed to find the `cnf` key: {e}")))?,
+                        (None, None) => {
+                            return Err(AppError::Error("Unsupported `cnf` claim in SD-JWT VC".to_string()));
+                        }
                     };
-
-                    let algorithm = subject_manager
-                        .signing_algorithm(cnf_kid)
-                        .await
-                        .map_err(|e| AppError::Error(format!("Failed to resolve `cnf` key from DID URL: {e}")))?;
                     let signer = SubjectSigner::new(subject_manager.clone(), did_method, algorithm)?;
 
                     let key_binding =

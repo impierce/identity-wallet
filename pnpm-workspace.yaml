@@ -1,5 +1,8 @@
 packages:
   - 'unime'
+# Matches the default of pnpm 11 and later, which CI installs: versions published less than a day ago are not
+# resolved. Without it, a local pnpm 10 can lock versions that CI then rejects.
+minimumReleaseAge: 1440
 allowBuilds:
   esbuild: true
 # Transitive packages whose direct dependant still resolves a vulnerable version. Each override stays

@@ -155,6 +155,18 @@ impl StrongholdManager {
         self.commit()
     }
 
+    /// Inserts all `entries`, then commits once: a commit encrypts and writes the whole snapshot, so committing per
+    /// entry costs a write of the snapshot each.
+    pub fn insert_all(&self, entries: impl IntoIterator<Item = (Uuid, Vec<u8>)>) -> anyhow::Result<()> {
+        for (key, value) in entries {
+            self.client
+                .store()
+                .insert(key.to_string().as_bytes().to_vec(), value, None)?;
+        }
+
+        self.commit()
+    }
+
     // TODO: fix this function's return type.
     pub fn values(&self) -> anyhow::Result<Option<Vec<VerifiableCredentialRecord>>> {
         let client = self.client.clone();
