@@ -78,11 +78,12 @@ pub mod debug_trust_anchors {
         Ok(root_store.add_parsable_certificates(certificates))
     }
 
-    /// The certificates of a PEM text, in order.
+    /// The certificates of a PEM text, in order. A broken PEM is reported with a fixed reason: the parser's own
+    /// error can repeat what is in the file.
     pub fn certificates(pem: &[u8]) -> Result<Vec<CertificateDer<'static>>, String> {
         CertificateDer::pem_slice_iter(pem)
             .collect::<Result<Vec<_>, _>>()
-            .map_err(|error| format!("the PEM cannot be read ({error})"))
+            .map_err(|_| "the file is not valid PEM".to_string())
     }
 
     #[cfg(test)]
@@ -138,7 +139,12 @@ pub mod debug_trust_anchors {
         #[test]
         fn a_pem_without_certificates_gives_none_and_a_broken_one_an_error() {
             assert!(certificates(b"no certificate here").unwrap().is_empty());
-            assert!(certificates(b"-----BEGIN CERTIFICATE-----\n!!!\n-----END CERTIFICATE-----\n").is_err());
+
+            // What is logged of a broken PEM repeats nothing of the file.
+            let broken = certificates(b"-----BEGIN CERTIFICATE-----\n!!!\n-----END CERTIFICATE X-----\n").unwrap_err();
+            assert_eq!(broken, "the file is not valid PEM");
+            let broken = certificates(b"-----BEGIN CERTIFICATE-----\n!!!\n-----END CERTIFICATE-----\n").unwrap_err();
+            assert_eq!(broken, "the file is not valid PEM");
         }
     }
 }
