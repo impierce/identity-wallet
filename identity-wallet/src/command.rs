@@ -123,6 +123,7 @@ pub async fn main_exec(
         flow_started_before,
         |app_state| emit_event(&window, app_state).is_ok(),
         async |app_state| {
+            write_state_for_debugging(app_state);
             save_state(app_state).await.ok();
         },
     )
@@ -131,7 +132,9 @@ pub async fn main_exec(
     Result::Ok(())
 }
 
-/// Emits the state an action left behind, then saves it. `emit` says whether the state was emitted.
+/// Emits the state an action left behind, then saves it. `emit` says whether the state was emitted. `save` runs once
+/// a new request's start is recorded, so nothing it does, such as writing the state for debugging, falls between the
+/// request being shown and being counted as shown.
 ///
 /// Emitting does not wait. Saving waits for the disk, and an action that runs into its time limit there is cut short
 /// (see [`handle_action`]). The order makes that harmless:
@@ -203,10 +206,16 @@ pub async fn handle_action(
 
 /// This function emits an event to the frontend with the updated state.
 pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyhow::Result<()> {
-    const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
+    debug!("emitted event `{STATE_CHANGED_EVENT}`");
+    Ok(())
+}
 
-    // Print to console or write to file (default)
+const STATE_CHANGED_EVENT: &str = "state-changed";
+
+/// Prints `app_state` to the console when `LOG_STATE_UPDATES_TO_CONSOLE` is set, and otherwise writes it to
+/// `debug/state.json` in debug builds.
+fn write_state_for_debugging(app_state: &AppState) {
     if crate::logging::debug_flag("LOG_STATE_UPDATES_TO_CONSOLE") {
         debug!(
             "emitted event `{}` with payload:\n{}",
@@ -224,9 +233,6 @@ pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyh
             .unwrap_or_else(|_| debug!("Failed to write debug state file"));
         }
     };
-
-    debug!("emitted event `{STATE_CHANGED_EVENT}`");
-    Ok(())
 }
 
 /// This function emits an error to the frontend.
@@ -304,6 +310,25 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn a_new_request_counts_as_on_screen_before_the_state_is_saved() {
+        let read_at = Instant::now() - Duration::from_secs(5);
+        let mut state = state_with_a_request_started_at(Some(read_at));
+        let emitted_at = std::cell::Cell::new(None);
+
+        // Saving, which also writes the state for debugging, starts only once the request counts as on screen.
+        emit_and_save(
+            &mut state,
+            None,
+            |_| {
+                emitted_at.set(Some(Instant::now()));
+                true
+            },
+            async |saved: &AppState| assert!(saved.core_utils.flow_started_at >= emitted_at.get()),
+        )
+        .await;
+    }
+
+    #[tokio::test]
     async fn a_request_that_stays_on_screen_keeps_when_it_started() {
         let started_at = Some(Instant::now() - Duration::from_secs(5));
         let mut state = state_with_a_request_started_at(started_at);
@@ -311,6 +336,20 @@ mod tests {
         emit_and_save(&mut state, started_at, |_| true, async |_| {}).await;
 
         assert_eq!(state.core_utils.flow_started_at, started_at);
+    }
+
+    fn active_flow() -> crate::state::core_utils::ActiveFlow {
+        crate::state::core_utils::ActiveFlow::Oid4vciOffer {
+            stage: crate::state::core_utils::Oid4vciStage::OfferReceived,
+            credential_offer: Box::new(
+                serde_json::from_value(serde_json::json!({
+                    "credential_issuer": "https://issuer.example",
+                    "credential_configuration_ids": ["pid"]
+                }))
+                .unwrap(),
+            ),
+            logo_uri: None,
+        }
     }
 
     fn pending_connection_data() -> PendingConnectionData {
@@ -335,6 +374,7 @@ mod tests {
         let mut state = AppState {
             core_utils: CoreUtils {
                 flow_started_at: Some(Instant::now()),
+                active_flow: Some(active_flow()),
                 pending_connection_data: Some(pending_connection_data()),
                 ..Default::default()
             },
