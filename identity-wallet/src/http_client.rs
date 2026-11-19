@@ -16,10 +16,48 @@ static HTTP_CLIENT: OnceCell<ClientWithMiddleware> = OnceCell::const_new();
 static OPENID4VC_HTTP_CLIENT: OnceLock<Client> = OnceLock::new();
 static PUBLIC_DESTINATION_HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
 
-pub fn get_http_client_builder() -> reqwest::ClientBuilder {
+/// The environment variable that lets a debug build send requests over plain `http`.
+#[cfg(debug_assertions)]
+pub const PLAIN_HTTP_VARIABLE: &str = "UNIME_ALLOW_PLAIN_HTTP";
+
+/// Whether the wallet may send a request over plain `http`.
+///
+/// A release build never does: "Communication with the Credential Endpoint MUST utilize TLS" (OpenID4VCI 1.0,
+/// Section 8), as with the Credential Issuer Metadata (Section 12.2.2), and a presentation sent in the clear can be
+/// read on the way. A debug build does when `UNIME_ALLOW_PLAIN_HTTP=true` is set, for a local issuer or verifier
+/// without a certificate; a release build has no code that reads the variable. Tests always may, for `wiremock`.
+pub fn plain_http_allowed() -> bool {
+    if cfg!(any(test, feature = "test_utils")) {
+        return true;
+    }
+    #[cfg(debug_assertions)]
+    {
+        static ALLOWED: OnceLock<bool> = OnceLock::new();
+        *ALLOWED.get_or_init(|| {
+            let allowed = std::env::var(PLAIN_HTTP_VARIABLE).is_ok_and(|value| value == "true");
+            if allowed {
+                log::warn!("Debug build: requests over plain http are allowed ({PLAIN_HTTP_VARIABLE}=true)");
+            }
+            allowed
+        })
+    }
+    #[cfg(not(debug_assertions))]
+    {
+        false
+    }
+}
+
+/// The builder of every HTTP client of the wallet: the pinned trust anchors of [`tls_config`], and `https` only
+/// unless `plain_http` (see [`plain_http_allowed`]). A client refuses a plain `http` URL, and a redirect to one,
+/// before it connects.
+fn http_client_builder(plain_http: bool) -> reqwest::ClientBuilder {
     reqwest::Client::builder()
         .use_preconfigured_tls(tls_config())
-        .timeout(std::time::Duration::from_secs(5))
+        .https_only(!plain_http)
+}
+
+pub fn get_http_client_builder() -> reqwest::ClientBuilder {
+    http_client_builder(plain_http_allowed()).timeout(std::time::Duration::from_secs(5))
 }
 
 /// Returns the globally shared client the oid4vc `Wallet` and `ProviderManager` send their requests with, so these
@@ -32,8 +70,7 @@ pub fn get_openid4vc_http_client() -> Client {
     OPENID4VC_HTTP_CLIENT
         .get_or_init(|| {
             // No `Client::new()` fallback: it drops the pinned `webpki-roots` anchors (#746).
-            reqwest::Client::builder()
-                .use_preconfigured_tls(tls_config())
+            http_client_builder(plain_http_allowed())
                 .build()
                 .expect("HTTP client with pinned roots could not be built")
         })
@@ -245,18 +282,18 @@ impl identity_kit::methods::web::HttpClient for IdentityKitHttpClient {
     }
 
     /// identity-kit fetches DID configurations and linked presentations only over `https`, unless the client allows
-    /// plain `http`. Debug builds allow it, as they allow private destinations, so local issuers and the `wiremock`
-    /// tests work.
+    /// plain `http`: see [`plain_http_allowed`].
     fn allows_plain_http(&self, _url: &Url) -> bool {
-        private_destinations_allowed()
+        plain_http_allowed()
     }
 }
 
-/// identity-kit fetches every `did:web` document over `https`. Debug builds fetch the documents of `localhost` over
-/// plain `http` instead, so the app and its tests can resolve the `did:web` of a local issuer or `wiremock`.
+/// identity-kit fetches every `did:web` document over `https`. Where plain `http` is allowed (see
+/// [`plain_http_allowed`]), the documents of `localhost` are fetched over it instead, so the app and its tests can
+/// resolve the `did:web` of a local issuer or `wiremock`.
 fn local_development_url(url: &Url) -> Url {
     let mut url = url.clone();
-    if private_destinations_allowed() && url.scheme() == "https" && url.host_str() == Some("localhost") {
+    if plain_http_allowed() && url.scheme() == "https" && url.host_str() == Some("localhost") {
         // Switching between the special schemes `https` and `http` cannot fail.
         let _ = url.set_scheme("http");
     }
@@ -602,6 +639,40 @@ mod tests {
         let url = Url::parse(&format!("{}/loop", server.uri())).unwrap();
 
         assert!(PublicDestinationHttpClient.fetch_text(url).await.is_err());
+    }
+
+    #[tokio::test]
+    async fn a_client_without_plain_http_refuses_an_http_url_before_it_connects() {
+        let mock_server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&mock_server)
+            .await;
+        // `wiremock` speaks plain http.
+        let url = format!("{}/credential", mock_server.uri());
+        assert!(url.starts_with("http://"));
+
+        let error = http_client_builder(false)
+            .build()
+            .unwrap()
+            .get(&url)
+            .send()
+            .await
+            .unwrap_err();
+
+        assert!(error.is_builder(), "{error:?}");
+        assert!(mock_server.received_requests().await.unwrap().is_empty());
+
+        // With plain http allowed, as in a debug build that opted in, the same request is sent.
+        let response = http_client_builder(true)
+            .build()
+            .unwrap()
+            .get(&url)
+            .send()
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        assert_eq!(mock_server.received_requests().await.unwrap().len(), 1);
     }
 
     #[tokio::test]
