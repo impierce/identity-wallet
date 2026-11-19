@@ -51,10 +51,11 @@
     let enable = action === 'enable';
     // Check if the password is correct
     await dispatch({ type: '[Storage] Check password', payload: { password: passwordValue } });
-    const lastDebugMessage = $appState.debug_messages.at(-1);
-    if (lastDebugMessage === 'Wrong Stronghold password') {
+    // The backend prefixes the message with a timestamp and a level, so only its end is compared.
+    const lastDebugMessage = $appState.debug_messages.at(-1) ?? '';
+    if (lastDebugMessage.endsWith('Wrong Stronghold password')) {
       error = 'Incorrect password';
-    } else if (lastDebugMessage === 'Stronghold password OK') {
+    } else if (lastDebugMessage.endsWith('Stronghold password OK')) {
       // (dev): In local development, biometrics plugin is not activated.
       if ($appState.dev_mode !== 'Off') {
         await dispatch({ type: '[Biometrics] Enable', payload: { enable } });

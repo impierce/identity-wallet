@@ -3,6 +3,7 @@ use std::time::Duration;
 use crate::{
     error::AppError,
     http_client::get_http_client_builder,
+    logging::url_without_query,
     state::{
         actions::{listen, Action},
         core_utils::DateUtils,
@@ -109,16 +110,13 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 let debug_timestamp_after = chrono::Local::now();
                 let debug_duration = debug_timestamp_after - debug_timestamp_before;
 
+                crate::debug_log_error!(
+                    state.core_utils.debug_log,
+                    "Refreshing credential status for `{}` took {:?}ms (failed): {e}",
+                    display_name,
+                    debug_duration.num_milliseconds()
+                );
                 return Ok(AppState {
-                    debug_messages: {
-                        let mut debug_messages = state.debug_messages.clone();
-                        debug_messages.push_back(format!(
-                            "Refreshing credential status for `{}` took {:?}ms (failed)",
-                            display_name,
-                            debug_duration.num_milliseconds()
-                        ));
-                        debug_messages
-                    },
                     current_user_prompt: None,
                     ..state.clone()
                 });
@@ -130,16 +128,13 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
         drop(state_guard);
 
+        crate::debug_log_ok!(
+            state.core_utils.debug_log,
+            "Refreshing credential status for `{}` took {:?}ms (success)",
+            display_name,
+            debug_duration.num_milliseconds()
+        );
         return Ok(AppState {
-            debug_messages: {
-                let mut debug_messages = state.debug_messages.clone();
-                debug_messages.push_back(format!(
-                    "Refreshing credential status for `{}` took {:?}ms (success)",
-                    display_name,
-                    debug_duration.num_milliseconds()
-                ));
-                debug_messages
-            },
             current_user_prompt: None,
             credentials,
             ..state.to_owned()
@@ -206,7 +201,8 @@ pub async fn fetch_credential_status(
 
     info!(
         "Successfully fetched status list from `{}` with status: `{:?}`",
-        credential_status_data.uri, credential_status_data.status
+        url_without_query(&credential_status_data.uri),
+        credential_status_data.status
     );
 
     Ok(status)
@@ -222,7 +218,7 @@ pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
         .redirect(Policy::limited(5))
         .timeout(Duration::from_secs(10))
         .build()
-        .map_err(AppError::FetchCredentialListError)?;
+        .map_err(fetch_status_list_error)?;
 
     client
         .get(uri)
@@ -230,11 +226,17 @@ pub async fn fetch_status_list(uri: &str) -> Result<String, AppError> {
         .send()
         .await
         .and_then(reqwest::Response::error_for_status)
-        .map_err(AppError::FetchCredentialListError)?
+        .map_err(fetch_status_list_error)?
         .text()
         .await
         .map(|body| body.trim().to_owned())
-        .map_err(AppError::FetchCredentialListError)
+        .map_err(fetch_status_list_error)
+}
+
+/// Drops the request URI from a status list request error, so it never reaches the logs or the Debug screen
+/// (`reqwest` includes the full URI, query included, in its `Display` output).
+fn fetch_status_list_error(error: reqwest::Error) -> AppError {
+    AppError::FetchCredentialListError(error.without_url())
 }
 
 /// Rejects a status list token with an empty `sub` or list, one issued after `now`, or one that has expired by `now`

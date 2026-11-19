@@ -1,7 +1,6 @@
 pub mod actions;
 mod reducers;
 
-use anyhow::Context;
 use oid4vc_core::{
     authorization_response::AuthorizationResponse, openid4vc_extension::Extension,
     utils::form_urlencoded::to_form_urlencoded_string,
@@ -86,6 +85,33 @@ impl InteractionOutcome {
     }
 }
 
+/// A one-line description for the logs and the Debug screen, e.g. `rejected (HTTP 400, invalid_request: Missing nonce)`.
+impl std::fmt::Display for InteractionOutcome {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            InteractionOutcome::Approved => write!(f, "approved"),
+            InteractionOutcome::Rejected {
+                error_code,
+                error_description,
+                http_status,
+            } => {
+                let status = http_status.map(|status| format!("HTTP {status}"));
+                let error = match (error_code, error_description) {
+                    (Some(code), Some(description)) => Some(format!("{code}: {description}")),
+                    (code, description) => code.clone().or(description.clone()),
+                };
+                let details: Vec<String> = status.into_iter().chain(error).collect();
+                if details.is_empty() {
+                    write!(f, "rejected")
+                } else {
+                    write!(f, "rejected ({})", details.join(", "))
+                }
+            }
+            InteractionOutcome::NotSent { reason } => write!(f, "not sent ({reason})"),
+        }
+    }
+}
+
 /// Sends an authorization response with the `direct_post` response mode and reports how the verifier answered.
 ///
 /// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code reaches the user.
@@ -109,14 +135,13 @@ pub async fn send_authorization_response<E: Extension>(
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(encoded)
         .send()
-        .await
-        .context("Failed to send the authorization response");
+        .await;
 
     let response = match response {
         Ok(response) => response,
         Err(error) => {
             return InteractionOutcome::NotSent {
-                reason: format!("{error:#}"),
+                reason: send_failure_reason(error),
             }
         }
     };
@@ -130,9 +155,55 @@ pub async fn send_authorization_response<E: Extension>(
     InteractionOutcome::rejected(status.as_u16(), &body)
 }
 
+/// Describes a failed send without the request URI. `reqwest` adds the full URI, query included, to its `Display`
+/// output, and the reason reaches the logs, the Debug screen and the user, while the verifier's `redirect_uri` may
+/// carry request parameters.
+fn send_failure_reason(error: reqwest_middleware::Error) -> String {
+    let error = match crate::http_client::request_error(error).downcast::<reqwest::Error>() {
+        Ok(error) => anyhow::Error::new(error.without_url()),
+        Err(error) => error,
+    };
+    format!("{:#}", error.context("Failed to send the authorization response"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn a_failed_send_does_not_reveal_the_redirect_uri() {
+        // Nothing listens on port 1, so the request fails before reaching a server.
+        let error = reqwest::Client::new()
+            .post("http://127.0.0.1:1/callback?session=secret")
+            .send()
+            .await
+            .unwrap_err();
+
+        let reason = send_failure_reason(reqwest_middleware::Error::Reqwest(error));
+        assert!(reason.starts_with("Failed to send the authorization response: "));
+        assert!(!reason.contains("127.0.0.1") && !reason.contains("secret"), "{reason}");
+    }
+
+    #[test]
+    fn displays_the_outcome_on_one_line() {
+        assert_eq!(InteractionOutcome::Approved.to_string(), "approved");
+        assert_eq!(
+            InteractionOutcome::rejected(
+                400,
+                r#"{"error":"invalid_request","error_description":"Missing nonce"}"#
+            )
+            .to_string(),
+            "rejected (HTTP 400, invalid_request: Missing nonce)"
+        );
+        assert_eq!(InteractionOutcome::rejected(500, "").to_string(), "rejected (HTTP 500)");
+        assert_eq!(
+            InteractionOutcome::NotSent {
+                reason: "connection refused".to_string()
+            }
+            .to_string(),
+            "not sent (connection refused)"
+        );
+    }
 
     #[test]
     fn reads_oauth_error_bodies() {

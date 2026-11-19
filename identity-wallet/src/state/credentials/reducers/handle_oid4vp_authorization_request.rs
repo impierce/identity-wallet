@@ -60,13 +60,19 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     if let Some(selections) = listen::<CredentialsSelected>(action)
         .and_then(|payload| (!payload.is_interactive).then_some(payload.selections))
     {
-        info!(
-            "Responding to OID4VP authorization request with {} credential(s)",
-            selections
-                .iter()
-                .map(|selection| selection.credential_uuids.len())
-                .sum::<usize>()
-        );
+        let shared_count = selections
+            .iter()
+            .map(|selection| selection.credential_uuids.len())
+            .sum::<usize>();
+        let debug_log = state.core_utils.debug_log.clone();
+        let verifier = state
+            .core_utils
+            .pending_connection_data
+            .as_ref()
+            .map(|data| data.client_metadata.client_name.clone())
+            .unwrap_or_else(|| "unknown Verifier".to_string());
+        info!("Responding to OID4VP authorization request with {shared_count} credential(s)");
+        crate::debug_log_info!(debug_log, "Sharing {shared_count} credential(s) with {verifier}");
 
         let state_guard = state.core_utils.managers.lock().await;
 
@@ -119,6 +125,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             // Nothing was shared: keep the flow so the user can try again.
             outcome @ InteractionOutcome::NotSent { .. } => {
                 log::warn!("Failed to send OID4VP authorization response to verifier: {outcome:?}");
+                crate::debug_log_error!(debug_log, "Presentation to {verifier} failed: {outcome}");
                 drop(state_guard);
                 return Ok(AppState {
                     interaction_result: interaction_result(outcome),
@@ -128,6 +135,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             // The verifier refused the presentation: end the flow without recording a share.
             outcome @ InteractionOutcome::Rejected { .. } => {
                 log::warn!("Verifier rejected the OID4VP authorization response: {outcome:?}");
+                crate::debug_log_error!(debug_log, "Presentation to {verifier} failed: {outcome}");
                 drop(state_guard);
                 return Ok(AppState {
                     core_utils: CoreUtils {
@@ -144,6 +152,10 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             }
         }
         info!("OID4VP presentation response accepted by verifier");
+        crate::debug_log_ok!(
+            debug_log,
+            "Presentation of {shared_count} credential(s) to {verifier}: approved"
+        );
 
         let interaction_result = interaction_result(InteractionOutcome::Approved);
         let mut connections = state.connections;

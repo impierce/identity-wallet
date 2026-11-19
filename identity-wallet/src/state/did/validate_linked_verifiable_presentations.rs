@@ -43,14 +43,17 @@ pub struct LinkedVerifiableCredentialData {
     pub issuer_domain_validations: Vec<ValidationResult>,
 }
 
-/// Validate the linked verifiable presentations for the given holder DID. Returns a list of linked verifiable
-/// credential data. It starts by resolving the holder DID and then iterates over the linked verifiable presentation
-/// URLs. For each linked verifiable presentation, it validates the presentation and then validates the linked
-/// verifiable credentials. It only considers linked verifiable credentials with successful domain linkage validation.
+/// Validate the linked verifiable presentations for the given holder DID. It starts by resolving the holder DID and
+/// then iterates over the linked verifiable presentation URLs. For each linked verifiable presentation, it validates the
+/// presentation and then validates the linked verifiable credentials. It only considers linked verifiable credentials
+/// with successful domain linkage validation.
+///
+/// Returns the number of linked verifiable presentations the holder DID document lists, and the linked verifiable
+/// credential data of each presentation that validated. The difference tells how many presentations failed.
 pub async fn validate_linked_verifiable_presentations(
     subject: &Subject,
     holder_did: &str,
-) -> Vec<Vec<LinkedVerifiableCredentialData>> {
+) -> (usize, Vec<Vec<LinkedVerifiableCredentialData>>) {
     info!("Validating linked verifiable presentations for holder DID: {holder_did}");
 
     let resolver = subject.resolver().await;
@@ -59,24 +62,27 @@ pub async fn validate_linked_verifiable_presentations(
         Ok(holder_document) => holder_document,
         _ => {
             warn!("Failed to resolve holder DID: {holder_did}");
-            return vec![];
+            return (0, vec![]);
         }
     };
 
     debug!("Holder document: {holder_document:#?}");
 
-    iter(get_linked_verifiable_presentation_urls(&holder_document))
+    let linked_verifiable_presentation_urls = get_linked_verifiable_presentation_urls(&holder_document);
+    let found = linked_verifiable_presentation_urls.len();
+
+    let validated = iter(linked_verifiable_presentation_urls)
         .filter_map(|linked_verifiable_presentation_url| {
             debug!("Processing linked verifiable presentation URL: {linked_verifiable_presentation_url}");
             // Validate the linked verifiable presentation and get the linked verifiable credential data
             get_validated_linked_presentation_data(subject, &holder_document, linked_verifiable_presentation_url)
         })
         .collect::<Vec<_>>()
-        .await
+        .await;
+
+    (found, validated)
 }
 
-/// The URLs of the `LinkedVerifiablePresentation` services of `document`. An entry that is not a URL is skipped, and
-/// does not hide the other URLs of its service.
 /// https://identity.foundation/linked-vp/#linked-verifiable-presentation
 fn get_linked_verifiable_presentation_urls(document: &DidDocument) -> Vec<Url> {
     identity_kit::linked_vp::services(document)
@@ -708,8 +714,9 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        let validated = validate_linked_verifiable_presentations(&holder.subject, holder.did().as_ref()).await;
+        let (found, validated) = validate_linked_verifiable_presentations(&holder.subject, holder.did().as_ref()).await;
 
+        assert_eq!(found, 2);
         assert_eq!(validated.len(), 2);
         assert_eq!(validated[0].len(), 1);
         assert_eq!(validated[1].len(), 1);
@@ -765,7 +772,7 @@ mod tests {
         assert_eq!(
             validate_linked_verifiable_presentations(&holder.subject, holder.did().as_ref(),).await,
             // The domain linkage validation of the issuer failed, so the linked verifiable credential is not considered.
-            vec![vec![]]
+            (1, vec![vec![]])
         );
     }
 

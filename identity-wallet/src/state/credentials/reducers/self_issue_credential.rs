@@ -264,6 +264,11 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             "Self-issued credential `{}` ({key}) successfully saved to Stronghold",
             vcr.display_credential.display_name
         );
+        crate::debug_log_ok!(
+            state.core_utils.debug_log,
+            "Self-issued credential `{}` saved",
+            vcr.display_credential.display_name
+        );
 
         let mut credentials = state.credentials.clone();
         if credentials
