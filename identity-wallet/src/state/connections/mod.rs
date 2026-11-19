@@ -16,7 +16,7 @@ use super::{
     FeatTrait,
 };
 
-use crate::identity::{ConnectionKey, Proof};
+use crate::identity::{ConnectionKey, Proof, ProofMethod};
 use crate::state::user_prompt::ClientMetadata;
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -35,15 +35,30 @@ impl Connections {
     /// The index of the connection to the party with `key` and `proofs`: the one with the same key, or else one with an
     /// identity of the same proofs, such as a connection still keyed by the DID it was stored under before `AppState`
     /// version 2.
+    ///
+    /// The DID that signs the credentials of an unverified issuer (`credential_signature`) is bound to the issuer's DNS
+    /// name, so it finds no connection under another key: two unverified issuers that sign with the same DID stay two
+    /// connections. It only finds a connection stored before `AppState` version 2, which recorded that DID.
     pub fn position(&self, key: &ConnectionKey, proofs: &[Proof]) -> Option<usize> {
         self.0.iter().position(|connection| &connection.key == key).or_else(|| {
             self.0.iter().position(|connection| {
-                connection
-                    .proofs
-                    .iter()
-                    .any(|stored| proofs.iter().any(|proof| proof.identity == stored.identity))
+                connection.proofs.iter().any(|stored| {
+                    proofs
+                        .iter()
+                        .any(|proof| proof.identity == stored.identity && Self::may_match(stored, proof))
+                })
             })
         })
+    }
+
+    /// Whether `proof` may find a connection with `stored` under another key, see [`Connections::position`].
+    fn may_match(stored: &Proof, proof: &Proof) -> bool {
+        match (&stored.method, &proof.method) {
+            (ProofMethod::CredentialSignature, _) => false,
+            (ProofMethod::Migrated, _) => true,
+            (_, ProofMethod::CredentialSignature) => false,
+            _ => true,
+        }
     }
 
     /// The connection to the party of `client_metadata`, see [`Connections::position`].
@@ -476,6 +491,61 @@ mod tests {
 
         assert_eq!(updated.id, id);
         assert_eq!(updated.key, ConnectionKey::Domain("issuer.example".to_string()));
+        assert_eq!(connections.0.len(), 1);
+    }
+
+    #[test]
+    fn unverified_issuers_signing_with_the_same_did_stay_two_connections() {
+        let did = Identity::did("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK").unwrap();
+        let signed_by_did = || vec![Proof::new(did.clone(), ProofMethod::CredentialSignature)];
+        let mut connections = Connections::new();
+
+        let first = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data_with(
+                "https://a.example",
+                "A",
+                signed_by_did(),
+            ))
+            .unwrap()
+            .clone();
+        let second = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data_with(
+                "https://b.example",
+                "B",
+                signed_by_did(),
+            ))
+            .unwrap()
+            .clone();
+
+        assert_ne!(second.id, first.id);
+        assert_eq!(connections.0.len(), 2);
+        assert_eq!(connections.0[0].key, ConnectionKey::Domain("a.example".to_string()));
+        assert_eq!(connections.0[0].url, "https://a.example");
+    }
+
+    #[test]
+    fn an_unverified_issuer_finds_its_connection_stored_under_its_did() {
+        let did = Identity::did("did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK").unwrap();
+        let mut connections = Connections(vec![Connection::new(
+            "Issuer".to_string(),
+            "https://issuer.example".to_string(),
+            ConnectionKey::Did(did.to_string()),
+            vec![Proof::new(did.clone(), ProofMethod::Migrated)],
+            None,
+            None,
+            None,
+        )]);
+        let id = connections.0[0].id.clone();
+
+        let updated = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data_with(
+                "https://issuer.example",
+                "Issuer",
+                vec![Proof::new(did, ProofMethod::CredentialSignature)],
+            ))
+            .unwrap();
+
+        assert_eq!(updated.id, id);
         assert_eq!(connections.0.len(), 1);
     }
 

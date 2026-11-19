@@ -92,6 +92,16 @@ pub async fn get_verified_credential_issuer_metadata(
     credential_issuer_url: &Url,
     trust_anchors: &[String],
 ) -> anyhow::Result<CredentialIssuerMetadata> {
+    load_verified_credential_issuer_metadata(credential_issuer_url, trust_anchors)
+        .await
+        .map(|applied| applied.metadata)
+}
+
+/// [`get_verified_credential_issuer_metadata`], with whether the values of a verified `signed_metadata` were applied.
+pub async fn load_verified_credential_issuer_metadata(
+    credential_issuer_url: &Url,
+    trust_anchors: &[String],
+) -> anyhow::Result<crate::x509::AppliedMetadata> {
     let resource = "credential issuer metadata";
     let (metadata, url, status) = fetch_well_known_with(
         credential_issuer_url,
@@ -106,12 +116,12 @@ pub async fn get_verified_credential_issuer_metadata(
         },
     )
     .await?;
-    let metadata = crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors)
+    let applied = crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors)
         .await
         .with_context(|| format!("Failed to parse {resource} from {url} (HTTP {status})"))?;
-    ensure_credential_issuer(Some(metadata.credential_issuer.as_str()), credential_issuer_url)
+    ensure_credential_issuer(Some(applied.metadata.credential_issuer.as_str()), credential_issuer_url)
         .with_context(|| format!("The {resource} at {url} is not used"))?;
-    Ok(metadata)
+    Ok(applied)
 }
 
 /// The JSON of credential issuer metadata, which must be complete unless it carries `signed_metadata`: an issuer that

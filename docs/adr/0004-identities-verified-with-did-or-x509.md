@@ -64,7 +64,8 @@ ones just verified; the connection keeps its id.
 ### Trust anchors
 
 X.509 identities are verified only against trust anchors the wallet holds, in `AppState::trust_anchors` (CA
-certificates, PEM). UniMe ships none yet, so until anchors are added the wallet behaves as under ADR 0001. Where the
+certificates, PEM). UniMe ships none yet, so until anchors are added the wallet behaves as under ADR 0001 and ADR 0005:
+an issuer verified with neither a DID document nor a certificate is accepted as unverified. Where the
 anchors of a release come from is open: an ecosystem's trusted list (for the EUDI wallet ecosystem, the trusted lists
 of ETSI TS 119 612), a list Impierce curates, or anchors the user adds. Revocation (CRL, OCSP) is not checked;
 identity-kit leaves it out of `X509Resolver`, and keeping the anchors current is the mitigation.
@@ -74,7 +75,8 @@ of a domain, which fetching the issuer's metadata over HTTPS already shows, and 
 
 ### OID4VCI credential issuers
 
-The issuer is verified before the user accepts the connection, as ADR 0001 requires:
+The issuer is verified, where it can be, before the user accepts the connection, as ADR 0001 requires; ADR 0005 covers
+the one that cannot be:
 
 1. A DID document at `/.well-known/did.json`, found as ADR 0001 describes, gives a `well_known_did_document` proof.
    This comes first, so the proof of an existing connection does not change.
@@ -83,6 +85,9 @@ The issuer is verified before the user accepts the connection, as ADR 0001 requi
    `credential_issuer` URL, and the leaf certificate has that URL's host as a DNS name.
    When the signed metadata verifies, its values take precedence over the unsigned metadata, as OID4VCI 1.0
    §11.2.3 requires: UniMe uses its endpoints and credential configurations, whatever proof it ends up with.
+   Signed metadata that verifies but gives no valid metadata is an error, not replaced by the unsigned values. An
+   issuer with a `signed_metadata` proof gets no presentation in an Interactive Authorization unless the metadata
+   loaded for the offer is signed, since its authorization server is taken from that metadata.
 3. Otherwise an issuer that publishes no DID document is accepted as unverified, and bound to the DID that signs its
    credential with a `credential_signature` proof ([ADR 0005](0005-unverified-oid4vci-issuers.md)). One whose DID
    document is unavailable is rejected.

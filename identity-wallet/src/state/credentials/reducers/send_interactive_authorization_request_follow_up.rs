@@ -194,6 +194,29 @@ pub(crate) fn refuse_presentation_to_unverified_issuer(
     }
 }
 
+/// An issuer verified by its `signed_metadata` (ADR 0004) is trusted with the endpoints that metadata names. When the
+/// metadata loaded for the credential offer carries no signed values, because its signed metadata no longer verifies,
+/// its authorization servers are not vouched for by the certificate, so UniMe shares no credentials with them.
+pub(crate) fn refuse_presentation_without_signed_metadata(
+    pending_connection_data: Option<&PendingConnectionData>,
+    metadata_signed: bool,
+) -> Result<(), AppError> {
+    let verified_by_signed_metadata = pending_connection_data.is_some_and(|pending| {
+        pending
+            .client_metadata
+            .proofs
+            .iter()
+            .any(|proof| proof.method == crate::identity::ProofMethod::SignedMetadata)
+    });
+    if verified_by_signed_metadata && !metadata_signed {
+        return Err(UntrustedError(
+            "The issuer asks for credentials in an interactive authorization, but its signed metadata no longer verifies"
+                .to_string(),
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -230,5 +253,28 @@ mod tests {
             Err(UntrustedError(_))
         ));
         assert!(refuse_presentation_to_unverified_issuer(Some(&pending(Some("did:web:issuer.example")))).is_ok());
+    }
+
+    #[test]
+    fn a_presentation_to_an_issuer_verified_by_signed_metadata_needs_signed_metadata() {
+        let mut pending = pending(None);
+        pending.client_metadata.proofs = vec![crate::identity::Proof::new(
+            crate::identity::Identity::X509 {
+                dns_name: "issuer.example".to_string(),
+            },
+            crate::identity::ProofMethod::SignedMetadata,
+        )];
+
+        assert!(matches!(
+            refuse_presentation_without_signed_metadata(Some(&pending), false),
+            Err(UntrustedError(_))
+        ));
+        assert!(refuse_presentation_without_signed_metadata(Some(&pending), true).is_ok());
+        // An issuer verified by its DID document is not held to signed metadata.
+        assert!(refuse_presentation_without_signed_metadata(
+            Some(&self::pending(Some("did:web:issuer.example"))),
+            false
+        )
+        .is_ok());
     }
 }

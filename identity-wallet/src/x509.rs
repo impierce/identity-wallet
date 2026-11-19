@@ -54,27 +54,39 @@ pub async fn credential_issuer_identity(
 /// parameters out of the unsigned metadata.
 ///
 /// Without signed metadata or trust anchors, or when the signed metadata does not verify, `metadata` is parsed as it
-/// is: its values are then not vouched for by a certificate, and the issuer is verified otherwise, if at all.
+/// is: its values are then not vouched for by a certificate, and the issuer is verified otherwise, if at all. Signed
+/// metadata that verifies but gives no valid metadata is an error: the issuer's certificate vouches for those values,
+/// so the unsigned ones are not used in their place.
 pub async fn apply_signed_metadata(
     metadata: Map<String, Value>,
     credential_issuer: &Url,
     trust_anchors: &[String],
-) -> anyhow::Result<CredentialIssuerMetadata> {
+) -> anyhow::Result<AppliedMetadata> {
     if let Some(signed) = verified_signed_metadata(&metadata, credential_issuer, trust_anchors).await {
-        let mut merged = metadata.clone();
+        let mut merged = metadata;
         merged.extend(signed);
-        match serde_json::from_value(Value::Object(merged)) {
-            Ok(merged) => return Ok(merged),
-            Err(err) => {
-                warn!(
-                    "The signed metadata of {} is no valid credential issuer metadata: {err}",
-                    url_host(credential_issuer)
-                )
-            }
-        }
+        let metadata = serde_json::from_value(Value::Object(merged)).with_context(|| {
+            format!(
+                "The signed metadata of {} verifies, but gives no valid credential issuer metadata",
+                url_host(credential_issuer)
+            )
+        })?;
+        return Ok(AppliedMetadata { metadata, signed: true });
     }
-    serde_json::from_value(Value::Object(metadata))
-        .with_context(|| format!("Failed to parse credential issuer metadata of {credential_issuer}"))
+    let metadata = serde_json::from_value(Value::Object(metadata))
+        .with_context(|| format!("Failed to parse credential issuer metadata of {credential_issuer}"))?;
+    Ok(AppliedMetadata {
+        metadata,
+        signed: false,
+    })
+}
+
+/// Credential issuer metadata, see [`apply_signed_metadata`].
+#[derive(Debug)]
+pub struct AppliedMetadata {
+    pub metadata: CredentialIssuerMetadata,
+    /// Whether the values of a verified `signed_metadata` were applied: its certificate vouches for them.
+    pub signed: bool,
 }
 
 /// The metadata parameters of the `signed_metadata` of `metadata`, if it verifies `credential_issuer` under
@@ -251,9 +263,11 @@ mod tests {
         }));
         let anchors = std::slice::from_ref(&signer.trust_anchor);
 
-        let metadata = apply_signed_metadata(unsigned_metadata(Some(signed_metadata)), &credential_issuer, anchors)
+        let applied = apply_signed_metadata(unsigned_metadata(Some(signed_metadata)), &credential_issuer, anchors)
             .await
             .unwrap();
+        assert!(applied.signed);
+        let metadata = applied.metadata;
 
         assert_eq!(metadata.credential_endpoint.as_str(), "https://example.com/credential");
         // What the signed metadata does not name stays as the unsigned metadata has it.
@@ -279,7 +293,10 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(applied.credential_endpoint.as_str(), "https://example.com/credential");
+        assert_eq!(
+            applied.metadata.credential_endpoint.as_str(),
+            "https://example.com/credential"
+        );
 
         // Without the signed values, the metadata is incomplete.
         assert!(apply_signed_metadata(metadata, &credential_issuer, &[]).await.is_err());
@@ -303,8 +320,39 @@ mod tests {
             )
             .await
             .unwrap();
-            assert_eq!(metadata.credential_endpoint.as_str(), "https://example.com/retired");
+            assert!(!metadata.signed);
+            assert_eq!(
+                metadata.metadata.credential_endpoint.as_str(),
+                "https://example.com/retired"
+            );
         }
+    }
+
+    #[tokio::test]
+    async fn signed_metadata_that_verifies_but_gives_no_valid_metadata_is_an_error() {
+        let signer = signer();
+        let credential_issuer: Url = "https://example.com".parse().unwrap();
+        let signed_metadata = signer.sign(json!({
+            "sub": "https://example.com",
+            "iat": now(),
+            "credential_endpoint": "not a URL"
+        }));
+        let metadata = unsigned_metadata(Some(signed_metadata));
+
+        // Not the unsigned `credential_endpoint` in its place.
+        assert!(apply_signed_metadata(
+            metadata.clone(),
+            &credential_issuer,
+            std::slice::from_ref(&signer.trust_anchor)
+        )
+        .await
+        .is_err());
+        // Without a trust anchor, the signed metadata does not verify and the unsigned metadata is used.
+        let unsigned = apply_signed_metadata(metadata, &credential_issuer, &[]).await.unwrap();
+        assert_eq!(
+            unsigned.metadata.credential_endpoint.as_str(),
+            "https://example.com/retired"
+        );
     }
 
     #[tokio::test]

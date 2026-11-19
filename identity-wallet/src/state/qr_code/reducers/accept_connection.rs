@@ -61,7 +61,11 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         let (client_metadata, active_flow) =
             get_client_metadata_init_active_flow(parsed_qr_code.clone(), &state.trust_anchors).await?;
-        info!("Retrieved client metadata: {client_metadata:?}");
+        info!(
+            "Retrieved client metadata with {} proof(s)",
+            client_metadata.proofs.len()
+        );
+        crate::log_payload!("Client metadata: {client_metadata:?}");
         crate::log_payload!("Initializing active flow: {active_flow:?}");
 
         // `None` for an OID4VCI issuer that is verified with neither a DID document nor a certificate: its identity
