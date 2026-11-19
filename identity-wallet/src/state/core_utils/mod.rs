@@ -46,36 +46,52 @@ pub mod debug_trust_anchors {
     use rustls::pki_types::{pem::PemObject, CertificateDer};
     use rustls::RootCertStore;
     use std::path::Path;
+    use std::sync::OnceLock;
 
     /// The environment variable naming a PEM file of test CA certificates.
     pub const VARIABLE: &str = "UNIME_EXTRA_CA_CERTS";
 
-    /// Adds the certificates of the file `UNIME_EXTRA_CA_CERTS` names, with a warning that says how many; a file that
-    /// cannot be read, or that holds no certificate, is reported and adds nothing. The path is not logged: it can
-    /// hold a user or project name.
+    /// Adds the certificates of the file `UNIME_EXTRA_CA_CERTS` names. The file is read once, with a warning that says
+    /// how many certificates it gives; a file that cannot be read, or that holds no certificate, is reported and adds
+    /// nothing. Every HTTP client of the app builds its TLS configuration from here, so later calls add the same
+    /// certificates without reading or logging again. The path is not logged: it can hold a user or project name.
     pub fn add(root_store: &mut RootCertStore) {
-        let Ok(path) = std::env::var(VARIABLE) else { return };
-        match add_file(root_store, Path::new(&path)) {
-            Ok((added, ignored)) => log::warn!(
-                "Debug build: trusting {added} extra CA certificate(s) from the file {VARIABLE} names{}",
-                if ignored > 0 {
-                    format!(" ({ignored} could not be used)")
-                } else {
-                    String::new()
+        static EXTRA: OnceLock<Vec<CertificateDer<'static>>> = OnceLock::new();
+        let extra = EXTRA.get_or_init(|| {
+            let Ok(path) = std::env::var(VARIABLE) else {
+                return Vec::new();
+            };
+            match read_file(Path::new(&path)) {
+                Ok(certificates) => {
+                    let (added, ignored) =
+                        RootCertStore::empty().add_parsable_certificates(certificates.iter().cloned());
+                    log::warn!(
+                        "Debug build: trusting {added} extra CA certificate(s) from the file {VARIABLE} names{}",
+                        if ignored > 0 {
+                            format!(" ({ignored} could not be used)")
+                        } else {
+                            String::new()
+                        }
+                    );
+                    certificates
                 }
-            ),
-            Err(error) => log::error!("{VARIABLE}: {error}; no extra trust anchor is added"),
-        }
+                Err(error) => {
+                    log::error!("{VARIABLE}: {error}; no extra trust anchor is added");
+                    Vec::new()
+                }
+            }
+        });
+        root_store.add_parsable_certificates(extra.iter().cloned());
     }
 
-    /// Adds the certificates of the PEM file at `path`. Returns how many were added and how many could not be used.
-    fn add_file(root_store: &mut RootCertStore, path: &Path) -> Result<(usize, usize), String> {
+    /// The certificates of the PEM file at `path`, which holds at least one.
+    fn read_file(path: &Path) -> Result<Vec<CertificateDer<'static>>, String> {
         let pem = std::fs::read(path).map_err(|error| format!("the file cannot be read ({error})"))?;
         let certificates = certificates(&pem)?;
         if certificates.is_empty() {
             return Err("no PEM certificate in the file".to_string());
         }
-        Ok(root_store.add_parsable_certificates(certificates))
+        Ok(certificates)
     }
 
     /// The certificates of a PEM text, in order. A broken PEM is reported with a fixed reason: the parser's own
@@ -109,25 +125,24 @@ pub mod debug_trust_anchors {
             let test_ca =
                 Path::new(env!("CARGO_MANIFEST_DIR")).join("src/state/core_utils/debug_trust_anchors_test_ca.pem");
 
-            assert_eq!(add_file(&mut store, &test_ca), Ok((1, 0)));
+            let certificates = read_file(&test_ca).unwrap();
+            assert_eq!(store.add_parsable_certificates(certificates), (1, 0));
             assert_eq!(store.len(), built_in + 1);
         }
 
         #[test]
-        fn a_file_that_is_missing_or_holds_no_certificate_adds_nothing() {
-            let mut store = RootCertStore::empty();
+        fn a_file_that_is_missing_or_holds_no_certificate_gives_none() {
             let directory = tempfile::tempdir().unwrap();
 
             let missing = directory.path().join("missing.pem");
-            let unreadable = add_file(&mut store, &missing).unwrap_err();
+            let unreadable = read_file(&missing).unwrap_err();
             assert!(unreadable.contains("cannot be read"), "{unreadable}");
 
             let no_certificate = directory.path().join("empty.pem");
             std::fs::write(&no_certificate, "no certificate here").unwrap();
-            let empty = add_file(&mut store, &no_certificate).unwrap_err();
+            let empty = read_file(&no_certificate).unwrap_err();
             assert!(empty.contains("no PEM certificate"), "{empty}");
 
-            assert!(store.is_empty());
             // What is logged of a failure names neither the file nor where it is.
             let directory = directory.path().to_string_lossy();
             for reason in [unreadable, empty] {
