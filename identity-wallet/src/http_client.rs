@@ -136,15 +136,22 @@ pub async fn fetch_public_destination(mut url: Url) -> Result<reqwest::Response,
     Err(AppError::DownloadAborted(TOO_MANY_REDIRECTS))
 }
 
-/// How long a POST to a remote-supplied endpoint may take, answer included. A verifier may check the presentation
-/// (signatures, status lists, trust chains) before it answers, so this is longer than the client's limit for a GET.
-const POST_TIMEOUT: Duration = Duration::from_secs(30);
+/// How long one attempt of a POST to a remote-supplied endpoint may take, answer included. A verifier may check the
+/// presentation (signatures, status lists, trust chains) before it answers, so this is longer than the client's limit
+/// for a GET.
+const POST_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// How long opening a connection to a remote-supplied destination may take.
-const CONNECT_TIMEOUT: Duration = Duration::from_secs(5);
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(3);
 
 /// Pause before a POST whose connection could not be opened is sent again.
 const CONNECT_RETRY_DELAY: Duration = Duration::from_millis(500);
+
+/// How long [`post_to_public_destination`] may take at most: a first attempt whose connection could not be opened,
+/// the pause, and a second attempt. An action that sends such a POST must allow for it in its time limit.
+pub const MAX_POST_DURATION: Duration = CONNECT_TIMEOUT
+    .saturating_add(CONNECT_RETRY_DELAY)
+    .saturating_add(POST_TIMEOUT);
 
 /// Sends `form` as a form POST to a remote-supplied `url`, see [`post_to_public_destination`].
 pub async fn post_form_to_public_destination<T: serde::Serialize + ?Sized>(
