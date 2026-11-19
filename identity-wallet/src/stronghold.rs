@@ -14,6 +14,10 @@ use stronghold_ext::{
 };
 use uuid::Uuid;
 
+mod key_store;
+
+pub use key_store::{ED25519_KEY_ID, ES256_KEY_ID};
+
 // This file is where we implement the stronghold library for our app, which is used to store sensitive data.
 // We have to follow the hard-coded values used in `identity.rs` to make our Stronghold compatible.
 static STRONGHOLD_VAULT_PATH: &str = "iota_identity_vault";
@@ -50,7 +54,7 @@ impl StrongholdManager {
         {
             let ed25519_output_location = Location::generic(
                 STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
-                "ed25519-0".to_string().as_bytes().to_vec(),
+                ED25519_KEY_ID.as_bytes().to_vec(),
             );
 
             debug!("ed25519_output_location: {ed25519_output_location:?}");
@@ -69,7 +73,7 @@ impl StrongholdManager {
         {
             let es256_output_location = Location::generic(
                 STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
-                "es256-0".to_string().as_bytes().to_vec(),
+                ES256_KEY_ID.as_bytes().to_vec(),
             );
 
             debug!("es256_output_location: {es256_output_location:?}");
@@ -151,7 +155,8 @@ impl StrongholdManager {
         self.commit()
     }
 
-    /// Inserts or replaces every entry, committing the snapshot once for all of them.
+    /// Inserts all `entries`, then commits once: a commit encrypts and writes the whole snapshot, so committing per
+    /// entry costs a write of the snapshot each.
     pub fn insert_all(&self, entries: impl IntoIterator<Item = (Uuid, Vec<u8>)>) -> anyhow::Result<()> {
         for (key, value) in entries {
             self.client

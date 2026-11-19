@@ -1,18 +1,15 @@
 pub mod assert_state_update;
 pub mod extensions;
 
-use did_manager::SecretManager;
 use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
-use identity_wallet::persistence::STRONGHOLD;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::state::{AppStateContainer, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
-use identity_wallet::subject::Subject;
+use identity_wallet::subject::subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
 };
-use tokio::sync::{Mutex, OnceCell};
 
 use self::assert_state_update::setup_stronghold;
 use serde::de::DeserializeOwned;
@@ -21,8 +18,18 @@ use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
 
-const KEY_ID: &str = "ed25519-0";
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
+
+/// The origin of the app's own pages, which mock IPC requests must come from: Tauri 2.12 rejects app commands from any
+/// other origin. Windows and Android serve the app from `http://tauri.localhost` instead of the `tauri://` scheme.
+pub fn app_origin() -> url::Url {
+    let origin = if cfg!(any(windows, target_os = "android")) {
+        "http://tauri.localhost"
+    } else {
+        "tauri://localhost"
+    };
+    origin.parse().unwrap()
+}
 
 /// Builds a mock app that manages `state` and handles `handle_action`.
 ///
@@ -63,21 +70,7 @@ pub async fn test_managers(
                 .unwrap();
         });
 
-    let stronghold_snapshot_path = STRONGHOLD.lock().unwrap().to_string_lossy().to_string();
-
-    let subject: Arc<Subject> = Arc::new(Subject {
-        stronghold_manager: stronghold_manager.clone(),
-        secret_manager: Arc::new(Mutex::new(
-            SecretManager::builder()
-                .snapshot_path(&stronghold_snapshot_path)
-                .with_ed25519_key(KEY_ID)
-                .password(TEST_PASSWORD)
-                .build()
-                .await
-                .unwrap(),
-        )),
-        resolver: OnceCell::new(),
-    });
+    let subject = subject(stronghold_manager.clone()).await.unwrap();
 
     let provider_manager = ProviderManager::new(
         subject.clone(),

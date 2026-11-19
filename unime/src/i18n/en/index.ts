@@ -332,6 +332,9 @@ const en = {
       NAVBAR_TITLE: 'Connection Request',
       TITLE: 'New connection',
       DESCRIPTION: 'Only accept new connections that you recognize and trust',
+      UNVERIFIED_IDENTITY_TITLE: 'Identity not verified',
+      UNVERIFIED_IDENTITY_DESCRIPTION:
+        'UniMe can’t find this issuer’s DID document. Its credential is checked, and the connection is linked to the DID that signed it.',
       KNOWN_CONNECTION: 'Known connection',
       FIRST_INTERACTION: 'First interaction: {duration:string}',
       LAST_INTERACTION: 'Last interaction: {duration:string}',
@@ -348,6 +351,7 @@ const en = {
       ECOSYSTEM_MEMBERS_HEADING: 'Members',
       ECOSYSTEM_ABOUT: 'About this Ecosystem',
       ECOSYSTEM_OWNER: 'Ecosystem Owner',
+      ECOSYSTEM_LED_BY: 'Led by {name:string}',
       ECOSYSTEM_COUNT: '{count:number} {{ecosystem|ecosystems}}',
     },
     SHARE_CREDENTIALS: {
@@ -469,6 +473,7 @@ const en = {
       BY_THE_ISSUER: 'By the issuer',
       VALID_FROM: 'From {date:string}',
       ISSUED_BY: 'Issued by',
+      ENDORSED_BY: 'Endorsed by',
       SELF_SIGNED: 'yourself',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {

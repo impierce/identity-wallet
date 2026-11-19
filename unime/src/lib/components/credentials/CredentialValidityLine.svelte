@@ -23,8 +23,8 @@ One line with the validity of a credential: the icon of the credential list plus
 -->
 <div class="flex items-center gap-1 text-[12px]/[20px] font-medium">
   {#if validity.state === 'valid'}
-    <SealCheckFillIcon class="size-3 shrink-0 text-green-600 dark:text-green-500" />
-    <span class="text-green-700 dark:text-green-500">
+    <SealCheckFillIcon class="size-3 shrink-0 text-primary" />
+    <span class="text-primary">
       {validity.validUntil
         ? $LL.SCAN.SHARE_CREDENTIALS.VALIDITY.VALID_UNTIL({ date: formatDate(validity.validUntil) })
         : $LL.CREDENTIAL.DETAILS.NEVER_EXPIRES()}

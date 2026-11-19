@@ -60,28 +60,41 @@ struct VerificationResponse {
     validation_expiration_in_secs: i32,
 }
 
+/// Opens a verification case for `email` at the email verification service at `host`.
+async fn open_verification_case(host: &str, email: &str) -> Result<VerificationResponse, AppError> {
+    let url = format!("{host}/api/verify");
+    debug!("Verification request POST to {url}");
+    let response = get_http_client()
+        .await
+        .post(url)
+        .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
+        .json(&json!({ "email": email }))
+        .send()
+        .await
+        .inspect_err(|err| {
+            warn!("Failed to send verification request: {err}");
+        })
+        .map_err(|err| AppError::EmailVerificationServiceError(request_error(err)))?;
+    // An error status carries an error instead of a case.
+    if !response.status().is_success() {
+        warn!(
+            "Email verification service refused the request: HTTP {}",
+            response.status()
+        );
+        return Err(AppError::EmailVerificationServiceStatus(response.status().as_u16()));
+    }
+    response
+        .json()
+        .await
+        .map_err(|err| AppError::EmailVerificationServiceError(err.into()))
+}
+
 #[tracing::instrument(skip_all, err)]
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
-        let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
-        let body = json!({ "email": action.email });
-        info!("Sending email verification request for `{}`", action.email);
-        debug!("Verification request POST to {url}");
-        let response = crate::http_client::get_http_client()
-            .await
-            .post(url)
-            .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
-            .json(&body)
-            .send()
-            .await
-            .inspect_err(|err| {
-                warn!("Failed to send verification request: {err}");
-            })
-            .map_err(|err| AppError::EmailVerificationServiceError(request_error(err)))?;
-        let response: VerificationResponse = response
-            .json()
-            .await
-            .map_err(|err| AppError::EmailVerificationServiceError(err.into()))?;
+        info!("Sending email verification request");
+        crate::log_payload!("Email verification request for: {}", action.email);
+        let response = open_verification_case(EMAIL_VERIFICATION_SERVICE_HOST, &action.email).await?;
         info!("Successfully initiated email verification: id={}", response.id);
         return Ok(AppState {
             verified_data: VerifiedData {
@@ -179,4 +192,54 @@ pub async fn reset_email_verification(state: AppState, action: Action) -> Result
         });
     }
     Ok(state)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use wiremock::{
+        matchers::{method, path},
+        Mock, MockServer, ResponseTemplate,
+    };
+
+    #[tokio::test]
+    async fn opens_a_verification_case() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/verify"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "id": "a1b2",
+                "expires_at": "2026-11-17T13:15:03.541Z",
+                "validation_expiration_in_secs": 60
+            })))
+            .mount(&server)
+            .await;
+
+        let case = open_verification_case(&server.uri(), "ferris@example.test")
+            .await
+            .unwrap();
+
+        assert_eq!(case.id, "a1b2");
+        assert_eq!(case.validation_expiration_in_secs, 60);
+    }
+
+    /// A refusal is reported by its status, not as a response that could not be read.
+    #[tokio::test]
+    async fn reports_a_refused_request_by_its_status() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/api/verify"))
+            .respond_with(ResponseTemplate::new(400).set_body_json(json!({ "error": "Refused" })))
+            .mount(&server)
+            .await;
+
+        let error = open_verification_case(&server.uri(), "ferris@example.test")
+            .await
+            .unwrap_err();
+
+        assert!(
+            matches!(error, AppError::EmailVerificationServiceStatus(400)),
+            "{error:?}"
+        );
+    }
 }

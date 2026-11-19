@@ -8,7 +8,6 @@ use crate::user_error::{host_of_scanned_request, UserError};
 use futures::StreamExt;
 use itertools::Itertools;
 use log::{debug, error, info};
-use std::time::Duration;
 use tauri::Emitter;
 
 // TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
@@ -42,14 +41,6 @@ pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, 
         .await
 }
 
-// This value is based on an estimated guess. Can be adjusted in case lower/higher timeouts are desired.
-const TIMEOUT_SECS: u64 = 10;
-
-/// This function is used to prevent deadlocks in the backend. It will sleep for a certain amount of time and then return.
-async fn await_timeout() {
-    tokio::time::sleep(Duration::from_secs(TIMEOUT_SECS)).await;
-}
-
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
 pub async fn main_exec(
@@ -64,9 +55,21 @@ pub async fn main_exec(
         .and_then(|qr_code_scanned| host_of_scanned_request(&qr_code_scanned.form_urlencoded));
     let tx_code_entered = listen::<CredentialOffersSelected>(action.clone())
         .is_some_and(|credential_offers_selected| credential_offers_selected.tx_code.is_some());
-    info!("Dispatching action: `{action:?}`");
+    info!("Dispatching action: `{action_type}`");
+    crate::log_payload!("Action payload: {action:?}");
 
     let mut guard = container.0.lock().await;
+
+    // Slow work runs without the lock, so it does not hold up other actions.
+    let action = match action.prepare(&guard) {
+        Some(preparation) => {
+            drop(guard);
+            let action = preparation.await;
+            guard = container.0.lock().await;
+            action
+        }
+        None => action,
+    };
 
     guard.core_utils.app_handle = Some(app_handle);
 
@@ -119,13 +122,15 @@ pub async fn handle_action(
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
     let action_type = action.typetag_name();
+    // Prevents deadlocks in the backend from hanging the frontend forever.
+    let time_limit = action.time_limit();
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finished command invoke");
             res
         }
-        _ = await_timeout() => {
-            error!("Operation timed out after {TIMEOUT_SECS} seconds");
+        _ = tokio::time::sleep(time_limit) => {
+            error!("Operation timed out after {time_limit:?}");
             emit_error(&window, &UserError::timeout(action_type, None)).ok();
             Err("Operation timed out".to_string())
         }
@@ -138,11 +143,7 @@ pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyh
     window.emit(STATE_CHANGED_EVENT, app_state)?;
 
     // Print to console or write to file (default)
-    if std::env::var("LOG_STATE_UPDATES_TO_CONSOLE")
-        .unwrap_or("false".to_string())
-        .parse()
-        .unwrap_or(false)
-    {
+    if crate::logging::debug_flag("LOG_STATE_UPDATES_TO_CONSOLE") {
         debug!(
             "emitted event `{}` with payload:\n{}",
             STATE_CHANGED_EVENT,

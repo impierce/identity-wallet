@@ -1,5 +1,6 @@
 use crate::error::AppError::{self, *};
 use crate::http_client::{get_http_client, PublicDestinationHttpClient};
+use crate::logging::url_host;
 use crate::state::{
     actions::{listen, Action},
     credentials::actions::share_to_linkedin::ShareToLinkedIn,
@@ -11,7 +12,7 @@ use base64::Engine;
 use chrono::{DateTime, Datelike, Duration, Utc};
 use jsonwebtoken::Header;
 use log::info;
-use oid4vc::oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
+use oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
 use openid_federation::{EntityId, FederationClient};
 use serde::Serialize;
 use serde_json::json;
@@ -49,24 +50,21 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
 
         // Get or create public link to the credential
         let public_link = if let Some(existing_link) = credential.public_link.clone() {
-            info!(
-                "Using existing public link for credential `{}`: `{}`",
-                credential.id, existing_link
-            );
+            info!("Using existing public link for credential `{}`", credential.id);
+            crate::log_payload!("Existing public link: {existing_link}");
             existing_link.clone()
         } else {
             let new_link = create_public_link(&state, &credential.id).await?.to_string();
-            info!(
-                "Created new public link for credential `{}`: `{}`",
-                credential.id, new_link
-            );
+            info!("Created new public link for credential `{}`", credential.id);
+            crate::log_payload!("New public link: {new_link}");
             new_link
         };
 
         linkedin_url.push_str(format!("&certUrl={}", urlencoding::encode(&public_link)).as_str());
         linkedin_url.push_str(format!("&certId={}", urlencoding::encode(&credential.id)).as_str());
 
-        info!("Opening LinkedIn AddToProfile URL in browser: `{linkedin_url}`");
+        info!("Opening LinkedIn AddToProfile URL in browser");
+        crate::log_payload!("LinkedIn AddToProfile URL: {linkedin_url}");
 
         // When testing, Tauri is often not initialized and the link doesn't actually need to be opened anyway.
         #[cfg(not(feature = "test_utils"))]
@@ -191,7 +189,8 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
         .await
         .map_err(|e| AppError::Error(e.to_string()))?;
 
-    info!("Generated Data Access Consent Token JWT: {data_access_consent_token_jwt}");
+    info!("Generated Data Access Consent Token `{token_jti}`");
+    crate::log_payload!("Data Access Consent Token JWT: {data_access_consent_token_jwt}");
 
     // Extract the Issuer DID from the `aud` claim of the token
     let public_verifier_endpoint_url = get_trusted_verifier_public_verification_endpoint(credential_issuer_did).await?;
@@ -235,7 +234,8 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
     let public_link_url = Url::parse(&public_link)
         .map_err(|e| AppError::Error(format!("Failed to create valid Public Link URL: {}", e)))?;
 
-    info!("Successfully generated public link URL: {}", public_link_url);
+    info!("Successfully generated public link at `{}`", url_host(&public_link_url));
+    crate::log_payload!("Public link URL: {public_link_url}");
 
     Ok(public_link_url)
 }
@@ -278,7 +278,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
         .find(|trust_chain| {
             trust_chain
                 .trust_anchor_entity_id_and_configuration()
-                .is_ok_and(|(_, configuration)| configuration.authority_hints.map_or(true, |hints| hints.is_empty()))
+                .is_ok_and(|(_, configuration)| configuration.authority_hints.is_none_or(|hints| hints.is_empty()))
         })
         .ok_or(AppError::UntrustedError(format!(
             "No trust_anchor/trust_chain found for Issuer of credential to be shared: {issuer_did}"
@@ -352,8 +352,9 @@ mod tests {
     use crate::subject::subject;
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use jsonwebtoken::Algorithm;
-    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-    use oid4vc::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
+    use oid4vc_manager::ProviderManager;
+    use oid4vci::credential_format_profiles::CredentialFormats;
+    use oid4vci::Wallet;
     use serial_test::serial;
     use std::sync::Arc;
     use tempfile::NamedTempFile;
@@ -377,7 +378,9 @@ mod tests {
 
         let password = "sup3rSecr3t".to_string();
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),

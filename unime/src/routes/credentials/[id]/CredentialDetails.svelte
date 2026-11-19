@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
+
+  import { dispatch } from '$lib/dispatcher';
 
   import CredentialClaimsRenderer from './CredentialClaimsRenderer.svelte';
   import CredentialHeader from './CredentialHeader.svelte';
@@ -8,11 +12,18 @@
   export let credential: DisplayCredential;
   // Hides the favorite button and the menu, e.g. when the credential is inspected while sharing.
   export let actions = true;
+
+  // Status and ecosystems are fetched from the issuer's side each time a credential is opened.
+  onMount(() => {
+    dispatch({ type: '[Credential] Refresh status', payload: { credential_id: credential.id } });
+    dispatch({ type: '[Credential] Refresh ecosystems', payload: { credential_id: credential.id } });
+  });
 </script>
 
 <!--
 @component
-The details of a credential: its header with the title in the default slot, its validity and issuer, and its claims.
+The details of a credential: its header with the title in the default slot, its validity, issuer and the ecosystems
+endorsing the issuer, and its claims. Opening it refreshes its status and ecosystems.
 Used by the credential page and when inspecting a credential while sharing.
 
 ### Props

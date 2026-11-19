@@ -41,7 +41,8 @@ pub async fn handle_siopv2_authorization_request(state: AppState, action: Action
             .generate_response(&*siopv2_authorization_request, Default::default())
             .await
             .map_err(GenerateAuthorizationResponseError)?;
-        debug!("Generated SIOPv2 authorization response: {response:?}");
+        debug!("Generated SIOPv2 authorization response");
+        crate::log_payload!("SIOPv2 authorization response: {response:?}");
 
         #[cfg(not(feature = "test_utils"))]
         if provider_manager.send_response(&response).await.is_err() {
@@ -54,7 +55,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, action: Action
             Error("Unexpected state: No pending connection data found for SIOPv2 authorization request".to_string())
         })?;
         let mut connections = state.connections;
-        let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data);
+        let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data)?;
 
         if let Some(logo_uri) = pending_connection_data.client_metadata.logo_uri {
             persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();

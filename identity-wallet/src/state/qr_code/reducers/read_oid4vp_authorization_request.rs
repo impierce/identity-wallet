@@ -4,7 +4,10 @@ use crate::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,
         core_utils::{ActiveFlow, CoreUtils},
-        credentials::credential_query_matching::{ensure_shareable, match_credential_queries, with_last_shared},
+        credentials::credential_query_matching::{
+            ensure_shareable, match_credential_queries, summarize_requested_credentials, with_last_shared,
+        },
+        qr_code::oid4vp_refusal::{missing_credentials, oid4vp_error_response_uri, send_error_response},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -33,25 +36,40 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
             .ok_or(MissingManagerError("stronghold"))?;
 
         let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
-        info!("verifiable credentials: {verifiable_credentials:?}");
+        info!(
+            "Loaded {} verifiable credential(s) from Stronghold",
+            verifiable_credentials.len()
+        );
+        crate::log_payload!("Verifiable credentials: {verifiable_credentials:?}");
 
         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
         let requested_credentials = match_credential_queries(dcql_query, &verifiable_credentials);
-        info!("credentials that can fulfill the request: {requested_credentials:?}");
+        info!(
+            "Credentials that can fulfill the request: {}",
+            summarize_requested_credentials(&requested_credentials)
+        );
+        crate::log_payload!("Requested credentials: {requested_credentials:?}");
 
         drop(state_guard);
         let pending_connection_data = state.core_utils.pending_connection_data.clone();
 
         if let Some(pending_connection_data) = &pending_connection_data {
             let client_metadata = pending_connection_data.client_metadata.clone();
-            let client_id = client_metadata.client_id.to_string();
+            let client_id = client_metadata.client_id.as_ref().map(ToString::to_string);
             let connection = state
                 .connections
                 .0
                 .iter()
-                .find(|connection| connection.did == client_id);
+                .find(|connection| Some(&connection.did) == client_id.as_ref());
             let requested_credentials = with_last_shared(requested_credentials, connection);
-            ensure_shareable(&requested_credentials)?;
+            if let Err(error) = ensure_shareable(&requested_credentials) {
+                // The Verifier learns that nothing will come (`access_denied`) rather than waiting for an answer.
+                if let Some(response_uri) = oid4vp_error_response_uri(&oid4vp_authorization_request) {
+                    let request_state = oid4vp_authorization_request.body.state.as_deref();
+                    send_error_response(&response_uri, request_state, &missing_credentials()).await;
+                }
+                return Err(error);
+            }
             Ok(AppState {
                 core_utils: CoreUtils {
                     active_flow: Some(ActiveFlow::Oid4vp {

@@ -1,28 +1,25 @@
 pub mod actions;
 pub mod credential_query_matching;
+pub mod issuer_signature;
 pub mod reducers;
 pub mod selective_disclosure;
 pub mod self_issued_migration;
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
-use identity_credential::sd_jwt_vc::SdJwtVc;
-use identity_iota::{
-    core::{FromJson as _, Object},
-    credential::CredentialV2,
+use identity_kit::{
+    sd_jwt_vc::{SdJwt, SdJwtVc},
+    status_list::StatusType,
+    vc::{CredentialV2, JwtClaims},
 };
-use oauth_tsl::status_list::StatusType;
-use oid4vc::{
-    oid4vc_core::{
-        claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
-        utils::jwt::get_unverified_jwt_claims,
-    },
-    oid4vci::{
-        credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::ClaimDescription,
-    },
+use oid4vc_core::{
+    claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
+    utils::jwt::get_unverified_jwt_claims,
 };
-use sd_jwt::{SdJwt, Sha256Hasher};
+use oid4vci::{
+    credential_format_profiles::CredentialFormats,
+    credential_issuer::credential_configurations_supported::ClaimDescription,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
@@ -74,13 +71,42 @@ pub struct DisplayCredential {
 #[ts(export, export_to = "bindings/credentials/CredentialStatus.ts")]
 pub struct CredentialStatus {
     #[ts(type = "'VALID' | 'INVALID' | 'SUSPENDED' | 'UNDEFINED'")]
-    pub status: StatusType,
+    pub status: CredentialStatusType,
     #[ts(skip)]
     pub idx: u64,
     #[ts(skip)]
     pub uri: Url,
     #[derivative(PartialEq = "ignore")]
     pub last_checked: String,
+}
+
+/// The status of a credential as the wallet stores and shows it, read from the credential's Token Status List.
+///
+/// It serializes as its name, as persisted state and the frontend expect.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum CredentialStatusType {
+    Valid,
+    Invalid,
+    Suspended,
+    /// An application-specific status, or a status that has not been fetched yet.
+    Undefined,
+}
+
+impl TryFrom<StatusType> for CredentialStatusType {
+    type Error = AppError;
+
+    fn try_from(status: StatusType) -> Result<Self, AppError> {
+        match status.value() {
+            0 => Ok(Self::Valid),
+            1 => Ok(Self::Invalid),
+            2 => Ok(Self::Suspended),
+            // Application-specific values.
+            3 | 11..=15 => Ok(Self::Undefined),
+            // Every other value is reserved for future registration.
+            _ => Err(AppError::GetCredentialStatusError),
+        }
+    }
 }
 
 #[typetag::serde(name = "display_credential")]
@@ -126,29 +152,26 @@ impl VerifiableCredentialRecord {
         let display_credential = {
             let (id, data, issuance_date, expiration_date, display_claims) = match format {
                 CredentialFormats::DcSdJwt(()) => {
-                    let sd_jwt_vc = verifiable_credential
-                        .as_str()
-                        .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
-                        .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT VC"
-                                .to_string(),
-                        ))?;
+                    let sd_jwt = parse_sd_jwt(&verifiable_credential, "dc+sd-jwt")?;
+                    let sd_jwt_vc = SdJwtVc::from_sd_jwt(sd_jwt).map_err(|err| {
+                        AppError::Error(format!(
+                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT VC: {err}"
+                        ))
+                    })?;
 
                     let id = Uuid::new_v4().to_string();
-                    let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
-                    let expiration_date = sd_jwt_vc.claims().exp.map(|exp| exp.to_rfc3339());
+                    let issuance_date = sd_jwt_vc.claims().iat.and_then(rfc3339).unwrap_or_default();
+                    let expiration_date = sd_jwt_vc.claims().exp.and_then(rfc3339);
 
-                    if sd_jwt_vc.headers().get("typ").and_then(|typ| typ.as_str()) != Some("dc+sd-jwt") {
-                        return Err(AppError::UnsupportedError(
-                            "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'dc+sd-jwt'"
-                                .to_string(),
-                        ));
-                    }
-
-                    let credential_subject = serde_json::json!(sd_jwt_vc
-                        .clone()
-                        .into_disclosed_object(&Sha256Hasher::new())
-                        .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?);
+                    let credential_subject = json!(
+                        sd_jwt_vc
+                            .sd_jwt()
+                            .process()
+                            .map_err(|_| AppError::Error(
+                                "Failed to convert SD JWT VC to Disclosed Object".to_string()
+                            ))?
+                            .payload
+                    );
 
                     let display_claims: Vec<DisplayClaim> =
                         get_display_claims(claim_descriptions, &json!(credential_subject));
@@ -166,42 +189,31 @@ impl VerifiableCredentialRecord {
                     (id, data, issuance_date, expiration_date, display_claims)
                 }
                 CredentialFormats::VcSdJwt(()) => {
-                    let vcdm2_sd_jwt = verifiable_credential
-                        .as_str()
-                        .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
-                        .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT".to_string(),
-                        ))?;
+                    let vcdm2_sd_jwt = parse_sd_jwt(&verifiable_credential, "vc+sd-jwt")?;
+                    let claims = vcdm2_sd_jwt.payload().map_err(|err| {
+                        AppError::Error(format!(
+                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT: {err}"
+                        ))
+                    })?;
 
                     let id = Uuid::new_v4().to_string();
-                    let issuance_date = vcdm2_sd_jwt
-                        .claims()
+                    let issuance_date = claims
                         .get("validFrom")
                         .and_then(|valid_from| valid_from.as_str())
                         .unwrap_or_default()
                         .to_string();
-                    let expiration_date = vcdm2_sd_jwt
-                        .claims()
+                    let expiration_date = claims
                         .get("validUntil")
                         .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this as fn to_unescaped_string from UniCore, once we implement UniCore in UniMe.
 
-                    if vcdm2_sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
-                        return Err(AppError::UnsupportedError(
-                            "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'vc+sd-jwt'"
-                                .to_string(),
-                        ));
-                    }
-
-                    let disclosed_claims = vcdm2_sd_jwt
-                        .clone()
-                        .into_disclosed_object(&Sha256Hasher::new())
-                        .map_err(|err| {
-                            AppError::Error(format!("Failed to convert SD JWT VC to Disclosed Object: {err}"))
-                        })?;
+                    let disclosed_claims = vcdm2_sd_jwt.process().map_err(|err| {
+                        AppError::Error(format!("Failed to convert SD JWT VC to Disclosed Object: {err}"))
+                    })?;
                     let credential =
-                        CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).map_err(
-                            |err| AppError::Error(format!("Failed to convert Disclosed Object to Credential: {err}")),
-                        )?;
+                        serde_json::from_value::<CredentialV2>(serde_json::Value::Object(disclosed_claims.payload))
+                            .map_err(|err| {
+                                AppError::Error(format!("Failed to convert Disclosed Object to Credential: {err}"))
+                            })?;
 
                     let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
 
@@ -317,14 +329,14 @@ pub fn valid_from(format: &CredentialFormats, verifiable_credential: &serde_json
 
     let candidates: Vec<String> = match format {
         CredentialFormats::DcSdJwt(()) => {
-            let sd_jwt_vc = verifiable_credential.as_str()?.parse::<SdJwtVc>().ok()?;
-            sd_jwt_vc.claims().nbf.map(|nbf| nbf.to_rfc3339()).into_iter().collect()
+            let sd_jwt_vc = SdJwtVc::parse(verifiable_credential.as_str()?).ok()?;
+            sd_jwt_vc.claims().nbf.and_then(rfc3339).into_iter().collect()
         }
         CredentialFormats::VcSdJwt(()) => {
-            let sd_jwt = verifiable_credential.as_str()?.parse::<SdJwt>().ok()?;
+            let claims = SdJwt::parse(verifiable_credential.as_str()?).ok()?.payload().ok()?;
             ["validFrom", "nbf"]
                 .iter()
-                .filter_map(|key| sd_jwt.claims().get(*key).and_then(timestamp))
+                .filter_map(|key| claims.get(*key).and_then(timestamp))
                 .collect()
         }
         CredentialFormats::JwtVcJson(()) => {
@@ -352,6 +364,29 @@ pub fn valid_from(format: &CredentialFormats, verifiable_credential: &serde_json
         })
         .max_by_key(|(parsed, _)| *parsed)
         .map(|(_, date)| date)
+}
+
+/// The JWT NumericDate `numeric_date` in RFC 3339, in UTC with a `Z`.
+fn rfc3339(numeric_date: i64) -> Option<String> {
+    JwtClaims::timestamp(numeric_date).map(|date| date.to_rfc3339_opts(chrono::SecondsFormat::Secs, true))
+}
+
+/// The SD-JWT `verifiable_credential`, which must carry the `typ` header `typ`.
+fn parse_sd_jwt(verifiable_credential: &serde_json::Value, typ: &str) -> Result<SdJwt, AppError> {
+    let sd_jwt = verifiable_credential
+        .as_str()
+        .and_then(|verifiable_credential| SdJwt::parse(verifiable_credential).ok())
+        .ok_or(AppError::Error(
+            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT"
+                .to_string(),
+        ))?;
+    let header_typ = sd_jwt.jwt().decode().ok().and_then(|jws| jws.header().typ.clone());
+    if header_typ.as_deref() != Some(typ) {
+        return Err(AppError::UnsupportedError(format!(
+            "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not '{typ}'"
+        )));
+    }
+    Ok(sd_jwt)
 }
 
 fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_json::Value) -> Vec<DisplayClaim> {
@@ -396,7 +431,7 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::ClaimDescriptionDisplay;
+    use oid4vci::credential_issuer::credential_configurations_supported::ClaimDescriptionDisplay;
 
     #[test]
     fn test_get_display_claims_uses_claim_path_as_key_when_display_name_is_missing() {

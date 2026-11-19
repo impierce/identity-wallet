@@ -1,11 +1,13 @@
 pub mod actions;
 pub mod reducers;
 
+use crate::error::AppError;
 use crate::state::{
     did::{
         validate_domain_linkage::ValidationStatus,
         validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
     },
+    qr_code::reducers::accept_connection::EcosystemsUnavailable,
     user_prompt::EcosystemProfile,
 };
 
@@ -35,14 +37,21 @@ impl Connections {
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
     /// its display data with what was just fetched, updates the last interaction time and returns a reference to the
     /// connection.
+    ///
+    /// Connections are keyed by DID, so a counterparty whose DID is not known yet (an unverified OID4VCI issuer before
+    /// its credential was verified, see ADR 0005) cannot become a connection.
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
-    ) -> &mut Connection {
+    ) -> Result<&mut Connection, AppError> {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
-        let did = client_metadata.client_id.clone();
+        let did = client_metadata.client_id.clone().ok_or_else(|| {
+            AppError::UntrustedError(format!(
+                "The identity of {url} is not verified, so it cannot be a connection"
+            ))
+        })?;
         let did_string = did.to_string();
 
         // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
@@ -55,7 +64,10 @@ impl Connections {
             connection.domain_validation = pending_connection_data.domain_validation.clone();
             connection.linked_verifiable_presentations =
                 pending_connection_data.linked_verifiable_presentations.clone();
-            connection.ecosystems = pending_connection_data.ecosystems.clone();
+            connection.update_ecosystems(
+                pending_connection_data.ecosystems.clone(),
+                pending_connection_data.ecosystems_check.clone(),
+            );
             connection.update_last_interaction_time();
             index
         } else {
@@ -68,10 +80,12 @@ impl Connections {
                 pending_connection_data.linked_verifiable_presentations.clone(),
                 pending_connection_data.ecosystems.clone(),
             ));
-            self.0.len() - 1
+            let index = self.0.len() - 1;
+            self.0[index].ecosystems_check = pending_connection_data.ecosystems_check.clone();
+            index
         };
 
-        &mut self.0[connection_index]
+        Ok(&mut self.0[connection_index])
     }
 }
 
@@ -102,6 +116,10 @@ pub struct Connection {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub ecosystems: Option<Vec<EcosystemProfile>>,
+    /// The outcome of the last attempt to resolve `ecosystems`. Absent for connections stored before it was recorded.
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ecosystems_check: Option<EcosystemsCheck>,
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
@@ -121,7 +139,10 @@ impl Connection {
         ecosystems: Option<Vec<EcosystemProfile>>,
     ) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
-        let id = sha256::digest([name.as_bytes(), url.as_bytes()].concat()).to_string();
+        // The DID is part of the hash: connections are keyed by DID, so two with the same name and URL but different DIDs
+        // (an issuer that signs with a new `did:jwk`, see ADR 0005) must not share an id. The fields are hashed as a JSON
+        // array, so that no two triples give the same bytes. Stored connections keep their ids.
+        let id = sha256::digest(serde_json::json!([name, url, did]).to_string()).to_string();
         let current_datetime = DateUtils::new_date_string();
         Self {
             id,
@@ -133,6 +154,7 @@ impl Connection {
             last_interacted: current_datetime,
             linked_verifiable_presentations,
             ecosystems,
+            ecosystems_check: None,
             domain_validation,
             last_shared_credentials: HashMap::new(),
         }
@@ -140,6 +162,70 @@ impl Connection {
 
     pub fn update_last_interaction_time(&mut self) {
         self.last_interacted = DateUtils::new_date_string();
+    }
+
+    /// Records a new attempt to resolve the connection's ecosystems. A failed attempt keeps the ecosystems found
+    /// before, so they stay on display, marked as unconfirmed by `ecosystems_check`.
+    pub fn update_ecosystems(&mut self, ecosystems: Option<Vec<EcosystemProfile>>, check: Option<EcosystemsCheck>) {
+        let Some(check) = check else {
+            self.ecosystems = ecosystems;
+            return;
+        };
+
+        if check.resolved {
+            self.ecosystems = ecosystems;
+        }
+
+        let last_resolved = check
+            .last_resolved
+            .clone()
+            .or_else(|| self.ecosystems_check.as_ref()?.last_resolved.clone());
+        self.ecosystems_check = Some(EcosystemsCheck { last_resolved, ..check });
+    }
+}
+
+/// The outcome of the last attempt to resolve a connection's ecosystems.
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/connections/EcosystemsCheck.ts")]
+pub struct EcosystemsCheck {
+    /// Whether the attempt determined the ecosystems, including that there are none. When it did not, the connection
+    /// keeps the ecosystems of the last attempt that did.
+    pub resolved: bool,
+    /// When the last attempt ran (RFC 3339).
+    pub last_checked: String,
+    /// When an attempt last determined the ecosystems (RFC 3339).
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_resolved: Option<String>,
+}
+
+impl EcosystemsCheck {
+    /// Splits a discovery result into the ecosystems to show, `None` for none, and the check that produced them.
+    pub fn outcome(
+        result: Result<Vec<EcosystemProfile>, EcosystemsUnavailable>,
+    ) -> (Option<Vec<EcosystemProfile>>, EcosystemsCheck) {
+        let now = DateUtils::new_date_string();
+        match result {
+            Ok(ecosystems) => (
+                Some(ecosystems).filter(|ecosystems| !ecosystems.is_empty()),
+                EcosystemsCheck {
+                    resolved: true,
+                    last_checked: now.clone(),
+                    last_resolved: Some(now),
+                },
+            ),
+            Err(e) => {
+                log::warn!("Failed to resolve ecosystems: {e}");
+                (
+                    None,
+                    EcosystemsCheck {
+                        resolved: false,
+                        last_checked: now,
+                        last_resolved: None,
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -157,22 +243,23 @@ mod tests {
 
     use crate::state::core_utils::PendingConnectionData;
     use crate::state::user_prompt::ClientMetadata;
-    use identity_iota::did::{CoreDID, DID};
+    use identity_kit::did::Did;
 
     use super::*;
 
-    fn pending_connection_data(url: &str, name: &str, did: CoreDID) -> PendingConnectionData {
+    fn pending_connection_data(url: &str, name: &str, did: Did) -> PendingConnectionData {
         PendingConnectionData {
             client_metadata: ClientMetadata {
                 client_name: name.to_string(),
                 logo_uri: None,
                 connection_url: url.to_string(),
                 redirect_uri: None,
-                client_id: did,
+                client_id: Some(did),
             },
             domain_validation: None,
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
         }
     }
 
@@ -181,17 +268,19 @@ mod tests {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let did = CoreDID::from_str("did:example:123").unwrap();
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let did = Did::from_str("did:example:123").unwrap();
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(did.as_str()));
 
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
@@ -202,18 +291,19 @@ mod tests {
     #[test]
     fn test_update_or_insert_refreshes_display_data_of_existing_connection() {
         let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Did::from_str("did:example:123").unwrap();
         let connection = connections
             .update_last_interaction_or_insert_new(&pending_connection_data(
                 "https://example.com",
                 "Old name",
                 did.clone(),
             ))
+            .unwrap()
             .clone();
 
         let mut refreshed = pending_connection_data("https://new.example.com", "New name", did.clone());
         refreshed.domain_validation = Some((ValidationStatus::Success, DateUtils::new_date_string()));
-        let updated = connections.update_last_interaction_or_insert_new(&refreshed);
+        let updated = connections.update_last_interaction_or_insert_new(&refreshed).unwrap();
 
         assert_eq!(updated.id, connection.id);
         assert_eq!(updated.first_interacted, connection.first_interacted);
@@ -229,11 +319,12 @@ mod tests {
     #[test]
     fn test_update_or_insert_distinguishes_connections_by_did() {
         let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
+        let did = Did::from_str("did:example:123").unwrap();
         let url = "https://example.com";
         let name = "Example";
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -241,14 +332,115 @@ mod tests {
         assert!(connections.contains(did.as_str()));
 
         // A different DID is a different connection, even when the display name and url is identical.
-        let other_did = CoreDID::from_str("did:example:456").unwrap();
-        let connection =
-            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()));
+        let other_did = Did::from_str("did:example:456").unwrap();
+        let connection = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()))
+            .unwrap();
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 2);
         assert!(connections.contains(did.as_str()));
         assert!(connections.contains(other_did.as_str()));
+        // Each has its own id, so the credentials and history events of one are not attributed to the other.
+        assert_ne!(connections.0[0].id, connections.0[1].id);
+    }
+
+    #[test]
+    fn connection_ids_keep_the_fields_apart() {
+        // Joined, both give `Example` + `https://issuer.test/did:web:a:` + `did:web:b`.
+        let connection = |url: &str, did: &str| {
+            Connection::new(
+                "Example".to_string(),
+                url.to_string(),
+                did.to_string(),
+                None,
+                None,
+                None,
+            )
+        };
+
+        assert_ne!(
+            connection("https://issuer.test/", "did:web:a:did:web:b").id,
+            connection("https://issuer.test/did:web:a:", "did:web:b").id
+        );
+    }
+
+    #[test]
+    fn a_counterparty_without_a_did_does_not_become_a_connection() {
+        let mut connections = Connections::new();
+        let mut unverified =
+            pending_connection_data("https://example.com", "Example", "did:example:123".parse().unwrap());
+        unverified.client_metadata.client_id = None;
+
+        assert!(connections.update_last_interaction_or_insert_new(&unverified).is_err());
+        assert!(connections.0.is_empty());
+    }
+
+    fn ecosystem(name: &str) -> EcosystemProfile {
+        EcosystemProfile {
+            logo_uri: None,
+            name: name.to_string(),
+            description: None,
+            ecosystem_leader: crate::state::user_prompt::Member {
+                logo_uri: None,
+                name: name.to_string(),
+                description: None,
+                identifier: None,
+            },
+            member_count: 0,
+            members: vec![],
+        }
+    }
+
+    #[test]
+    fn a_failed_ecosystems_check_keeps_the_ecosystems_found_before() {
+        let mut connection = Connection::default();
+
+        let (ecosystems, check) = EcosystemsCheck::outcome(Ok(vec![ecosystem("Ecosystem One")]));
+        connection.update_ecosystems(ecosystems, Some(check.clone()));
+        assert_eq!(connection.ecosystems, Some(vec![ecosystem("Ecosystem One")]));
+
+        let (ecosystems, failed_check) =
+            EcosystemsCheck::outcome(Err(EcosystemsUnavailable("unreachable".to_string())));
+        connection.update_ecosystems(ecosystems, Some(failed_check.clone()));
+
+        assert_eq!(connection.ecosystems, Some(vec![ecosystem("Ecosystem One")]));
+        let recorded = connection.ecosystems_check.unwrap();
+        assert!(!recorded.resolved);
+        assert_eq!(recorded.last_checked, failed_check.last_checked);
+        assert_eq!(recorded.last_resolved, check.last_resolved);
+    }
+
+    /// Versions 0.19.3 and 0.19.4 stored the trust chain into each ecosystem.
+    #[test]
+    fn ecosystems_stored_with_a_trust_chain_still_load() {
+        let stored = serde_json::json!({
+            "logo_uri": null,
+            "name": "Ecosystem One",
+            "description": null,
+            "ecosystem_leader": { "logo_uri": null, "name": "Ecosystem One", "description": null },
+            "member_count": 0,
+            "members": [],
+            "trust_chain": [{ "logo_uri": null, "name": "Leaf", "description": null }],
+        });
+
+        let loaded: EcosystemProfile = serde_json::from_value(stored).unwrap();
+
+        assert_eq!(loaded, ecosystem("Ecosystem One"));
+    }
+
+    #[test]
+    fn a_resolved_ecosystems_check_without_ecosystems_clears_them() {
+        let mut connection = Connection {
+            ecosystems: Some(vec![ecosystem("Ecosystem One")]),
+            ..Default::default()
+        };
+
+        let (ecosystems, check) = EcosystemsCheck::outcome(Ok(vec![]));
+        connection.update_ecosystems(ecosystems, Some(check));
+
+        assert_eq!(connection.ecosystems, None);
+        assert!(connection.ecosystems_check.unwrap().resolved);
     }
 }

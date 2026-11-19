@@ -1,9 +1,9 @@
 use std::{collections::HashMap, sync::Arc};
 
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use identity_iota::core::Timestamp;
+use chrono::{DateTime, Utc};
 use log::{info, warn};
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vci::credential_format_profiles::CredentialFormats;
 use serde_json::{json, Map, Value};
 use uuid::Uuid;
 
@@ -25,7 +25,7 @@ pub struct LegacySelfIssuedCredential {
     pub key_type: String,
     pub credential_type: String,
     pub credential_subject: Map<String, Value>,
-    pub valid_from: Timestamp,
+    pub valid_from: DateTime<Utc>,
 }
 
 /// Recognizes a legacy self-issued credential by its format, placeholder `vct`, type and an issuer that is one of the
@@ -66,8 +66,8 @@ pub fn legacy_self_issued_credential(
     let valid_from = payload
         .get("iat")
         .and_then(Value::as_i64)
-        .and_then(|iat| Timestamp::from_unix(iat).ok())
-        .unwrap_or_else(Timestamp::now_utc);
+        .and_then(|iat| DateTime::from_timestamp(iat, 0))
+        .unwrap_or_else(Utc::now);
 
     Some(LegacySelfIssuedCredential {
         did_method,
@@ -88,7 +88,7 @@ fn decode_segment(segment: &str) -> Option<Map<String, Value>> {
 /// A credential that cannot be migrated is left as it is, so that unlocking never fails because of it.
 pub async fn migrate_self_issued_credentials(
     stronghold_manager: &StrongholdManager,
-    subject: Arc<dyn oid4vc::oid4vc_core::Subject>,
+    subject: Arc<dyn oid4vc_core::Subject>,
     dids: &HashMap<String, String>,
 ) {
     let records = match stronghold_manager.values() {
@@ -115,7 +115,7 @@ pub async fn migrate_self_issued_credentials(
 async fn migrate_record(
     mut record: VerifiableCredentialRecord,
     legacy: LegacySelfIssuedCredential,
-    subject: Arc<dyn oid4vc::oid4vc_core::Subject>,
+    subject: Arc<dyn oid4vc_core::Subject>,
     stronghold_manager: &StrongholdManager,
 ) -> Result<(), AppError> {
     let key: Uuid = record

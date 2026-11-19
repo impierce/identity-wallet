@@ -6,6 +6,7 @@
 
   import { Image } from '$lib/components';
   import { ShieldCheckRegularIcon } from '$lib/icons';
+  import { linkWithReturn } from '$lib/navigation';
   import { state } from '$lib/stores';
   import { formatRelativeDateTime } from '$lib/utils';
   import { countInteractions } from '$lib/utils/history';
@@ -52,7 +53,7 @@
     class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
   >
     <span class="mr-4 size-6 shrink-0">
-      <ShieldCheckRegularIcon class="size-6 text-green-500" />
+      <ShieldCheckRegularIcon class="size-6 text-primary" />
     </span>
     <div class="flex min-w-0 grow flex-col">
       <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
@@ -97,7 +98,7 @@
     <section class="w-full">
       <EcosystemsSummary
         {ecosystems}
-        href={`/activity/connection/${connection.id}/ecosystems${page.url.search}`}
+        href={linkWithReturn(`/activity/connection/${connection.id}/ecosystems`)}
         isTempAsset={false}
       />
     </section>

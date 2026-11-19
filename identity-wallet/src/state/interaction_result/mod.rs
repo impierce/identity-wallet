@@ -2,7 +2,7 @@ pub mod actions;
 mod reducers;
 
 use anyhow::Context;
-use oid4vc::oid4vc_core::{
+use oid4vc_core::{
     authorization_response::AuthorizationResponse, openid4vc_extension::Extension,
     utils::form_urlencoded::to_form_urlencoded_string,
 };

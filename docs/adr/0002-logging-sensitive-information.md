@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+Accepted. The decision that credential contents and protocol payloads may be logged is superseded by
+[ADR 0003](0003-no-personal-data-in-logs.md).
 
 ## Context
 

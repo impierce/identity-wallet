@@ -1,8 +1,9 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::ASSETS_DIR,
+    http_client::get_openid4vc_http_client,
+    persistence::{hash, ASSETS_DIR},
     state::{
-        connections::{Connection, Connections},
+        connections::{Connection, Connections, EcosystemsCheck},
         core_utils::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
             IdentityManager,
@@ -26,11 +27,9 @@ use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::{
-    oid4vc_core::Subject,
-    oid4vc_manager::ProviderManager,
-    oid4vci::{credential_format_profiles::CredentialFormats, Wallet},
-};
+use oid4vc_core::Subject;
+use oid4vc_manager::ProviderManager;
+use oid4vci::{credential_format_profiles::CredentialFormats, Wallet};
 use serde_json::json;
 use std::{collections::HashMap, fs::File, io::Write, sync::Arc};
 
@@ -53,6 +52,7 @@ lazy_static! {
             json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.{}.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg", DRIVERS_LICENSE_CREDENTIAL_PAYLOAD.clone())),
             vec![]
         ).unwrap();
+        record.display_credential.connection_id = Some(ROAD_AUTHORITY_CONNECTION_ID.to_string());
         record.display_credential.display_name = "DriverLicenseCredential".to_string();
         record
     };
@@ -87,7 +87,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
 
-    let subject = subject(stronghold_manager.clone(), password).await;
+    let subject = subject(stronghold_manager.clone())
+        .await
+        .map_err(StrongholdLoadingError)?;
 
     let profile = Profile {
         name: "Ferris".to_string(),
@@ -103,13 +105,15 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
-    .map_err(OID4VCProviderManagerError)?;
+    .map_err(OID4VCProviderManagerError)?
+    .with_http_client(get_openid4vc_http_client());
     let wallet: Wallet = Wallet::new(
         subject.clone(),
         Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
-    .map_err(OID4VCWalletError)?;
+    .map_err(OID4VCWalletError)?
+    .with_http_client(get_openid4vc_http_client());
     let identity_manager = IdentityManager {
         subject: subject.clone(),
         provider_manager,
@@ -333,7 +337,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     let impierce_ecosystems = vec![
         EcosystemProfile {
-            logo_uri: None,
+            logo_uri: Some(EUROPEAN_DIGITAL_IDENTITY_NETWORK_LOGO.to_string()),
             name: "European Digital Identity Network".to_string(),
             description: Some(
                 "A network of organisations building interoperable and trustworthy digital identity services."
@@ -362,7 +366,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ],
         },
         EcosystemProfile {
-            logo_uri: None,
+            logo_uri: Some(OPEN_SKILLS_ALLIANCE_LOGO.to_string()),
             name: "Open Skills Alliance".to_string(),
             description: Some("Partners making skills and achievements portable across Europe.".to_string()),
             ecosystem_leader: Member {
@@ -381,6 +385,30 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
     ];
 
+    // A single ecosystem, to show how a credential from an issuer with just one looks.
+    let road_authority = Member {
+        logo_uri: None,
+        name: "Rustacean Road Authority".to_string(),
+        description: Some("Driving licence issuer".to_string()),
+        identifier: Some("https://roads.example".to_string()),
+    };
+    let road_authority_ecosystems = vec![EcosystemProfile {
+        logo_uri: Some(EUROPEAN_DIGITAL_IDENTITY_NETWORK_LOGO.to_string()),
+        name: "European Digital Identity Network".to_string(),
+        description: Some(
+            "A network of organisations building interoperable and trustworthy digital identity services.".to_string(),
+        ),
+        ecosystem_leader: Member {
+            logo_uri: None,
+            name: "European Digital Trust Foundation".to_string(),
+            description: Some("Ecosystem coordinator".to_string()),
+            identifier: Some("https://digital-trust.example".to_string()),
+        },
+        member_count: 1,
+        members: vec![road_authority],
+    }];
+    let road_authority_interaction = "2024-03-04T09:12:00Z".to_string();
+
     state.connections = Connections(vec![
         Connection {
             id: "352eaaf022a32cc315b4ac46bfa14bcad91e901bdf3aff3925d3a5a4c13bd611".to_string(),
@@ -392,6 +420,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
             domain_validation: None,
             last_shared_credentials: HashMap::new(),
         },
@@ -402,9 +431,14 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             did: "did:iota:rms:0x42ad588322e58b3c07aa39e4948d021ee17ecb5747915e9e1f35f028d7ecaf90".to_string(),
             verified: true,
             first_interacted: impierce_first_interaction,
-            last_interacted: impierce_last_interaction,
+            last_interacted: impierce_last_interaction.clone(),
             linked_verifiable_presentations: Some(impierce_certifications),
             ecosystems: Some(impierce_ecosystems),
+            ecosystems_check: Some(EcosystemsCheck {
+                resolved: true,
+                last_checked: impierce_last_interaction.clone(),
+                last_resolved: Some(impierce_last_interaction.clone()),
+            }),
             domain_validation: Some(impierce_domain_validation),
             last_shared_credentials: HashMap::new(),
         },
@@ -418,6 +452,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
             domain_validation: None,
             last_shared_credentials: HashMap::new(),
         },
@@ -431,6 +466,25 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
             linked_verifiable_presentations: None,
             ecosystems: None,
+            ecosystems_check: None,
+            domain_validation: None,
+            last_shared_credentials: HashMap::new(),
+        },
+        Connection {
+            id: ROAD_AUTHORITY_CONNECTION_ID.to_string(),
+            name: "Rustacean Road Authority".to_string(),
+            url: "https://roads.example".to_string(),
+            did: "did:web:roads.example".to_string(),
+            verified: true,
+            first_interacted: road_authority_interaction.clone(),
+            last_interacted: road_authority_interaction.clone(),
+            linked_verifiable_presentations: None,
+            ecosystems: Some(road_authority_ecosystems),
+            ecosystems_check: Some(EcosystemsCheck {
+                resolved: true,
+                last_checked: road_authority_interaction.clone(),
+                last_resolved: Some(road_authority_interaction),
+            }),
             domain_validation: None,
             last_shared_credentials: HashMap::new(),
         },
@@ -496,6 +550,11 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     Ok(state)
 }
 
+/// `sha256(name + url)` of the connection, as for connections the wallet makes.
+const ROAD_AUTHORITY_CONNECTION_ID: &str = "a49c7e64d671a8b681cf7202545a9f5e141b6bc86255852a04fa403b52fe861b";
+const EUROPEAN_DIGITAL_IDENTITY_NETWORK_LOGO: &str = "https://digital-identity-network.example/logo.png";
+const OPEN_SKILLS_ALLIANCE_LOGO: &str = "https://open-skills.example/logo.png";
+
 async fn load_predefined_images() -> Result<(), AppError> {
     // Issuers
     write_bytes_to_file(
@@ -519,6 +578,16 @@ async fn load_predefined_images() -> Result<(), AppError> {
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/ngdil.svg"),
         "352eaaf022a32cc315b4ac46bfa14bcad91e901bdf3aff3925d3a5a4c13bd611.svg",
+    )?;
+
+    // Ecosystems, named after their logo's URL like the logos the wallet downloads.
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/ecosystem-european-digital-identity-network.png"),
+        &format!("{}.png", hash(EUROPEAN_DIGITAL_IDENTITY_NETWORK_LOGO)),
+    )?;
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/ecosystem-open-skills-alliance.png"),
+        &format!("{}.png", hash(OPEN_SKILLS_ALLIANCE_LOGO)),
     )?;
 
     // Credentials

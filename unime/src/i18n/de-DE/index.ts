@@ -333,6 +333,9 @@ const de_DE = {
       NAVBAR_TITLE: 'Verbindungsanfrage',
       TITLE: 'Neue Verbindung',
       DESCRIPTION: 'Akzeptiere nur Verbindungen, die du erwartest und denen du vertraust.',
+      UNVERIFIED_IDENTITY_TITLE: 'Identität nicht verifiziert',
+      UNVERIFIED_IDENTITY_DESCRIPTION:
+        'UniMe findet kein DID-Dokument dieses Ausstellers. Sein Credential wird geprüft und die Verbindung mit der DID verknüpft, die es signiert hat.',
       KNOWN_CONNECTION: 'Bekannte Verbindung',
       FIRST_INTERACTION: 'Erste Interaktion: {duration}',
       LAST_INTERACTION: 'Letzte Interaktion: {duration}',
@@ -349,6 +352,7 @@ const de_DE = {
       ECOSYSTEM_MEMBERS_HEADING: 'Mitglieder',
       ECOSYSTEM_ABOUT: 'Über das Ökosystem',
       ECOSYSTEM_OWNER: 'Ökosystem-Inhaber',
+      ECOSYSTEM_LED_BY: 'Geleitet von {name}',
       ECOSYSTEM_COUNT: '{count} {{Ökosystem|Ökosysteme}}',
     },
     SHARE_CREDENTIALS: {
@@ -469,6 +473,7 @@ const de_DE = {
       BY_THE_ISSUER: 'Vom Aussteller',
       VALID_FROM: 'Ab {date}',
       ISSUED_BY: 'Ausgestellt durch',
+      ENDORSED_BY: 'Anerkannt durch',
       SELF_SIGNED: 'dich selbst',
       DESCRIPTION: 'Beschreibung',
       OPEN_BADGES: {

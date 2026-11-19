@@ -333,6 +333,9 @@ const nl_NL = {
       NAVBAR_TITLE: 'Credential Aanvraag',
       TITLE: 'Nieuwe connectie',
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
+      UNVERIFIED_IDENTITY_TITLE: 'Identiteit niet geverifieerd',
+      UNVERIFIED_IDENTITY_DESCRIPTION:
+        'UniMe vindt geen DID-document van deze uitgever. Het credential wordt gecontroleerd en de connectie wordt gekoppeld aan de DID die het heeft ondertekend.',
       KNOWN_CONNECTION: 'Bekende connectie',
       FIRST_INTERACTION: 'Eerste interactie: {duration}',
       LAST_INTERACTION: 'Laatste interactie: {duration}',
@@ -349,6 +352,7 @@ const nl_NL = {
       ECOSYSTEM_MEMBERS_HEADING: 'Leden',
       ECOSYSTEM_ABOUT: 'Over',
       ECOSYSTEM_OWNER: 'Eigenaar van ecosysteem',
+      ECOSYSTEM_LED_BY: 'Geleid door {name}',
       ECOSYSTEM_COUNT: '{count} {{ecosysteem|ecosystemen}}',
     },
     SHARE_CREDENTIALS: {
@@ -470,6 +474,7 @@ const nl_NL = {
       BY_THE_ISSUER: 'Door de uitgever',
       VALID_FROM: 'Vanaf {date}',
       ISSUED_BY: 'Uitgegeven door',
+      ENDORSED_BY: 'Erkend door',
       SELF_SIGNED: 'jezelf',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {

@@ -334,6 +334,9 @@ const fi_FI = {
       NAVBAR_TITLE: 'Yhteyspyyntö',
       TITLE: 'Uusi yhteys',
       DESCRIPTION: 'Hyväksy vain yhteydet jotka tunnistat ja joihin luotat',
+      UNVERIFIED_IDENTITY_TITLE: 'Identiteettiä ei ole vahvistettu',
+      UNVERIFIED_IDENTITY_DESCRIPTION:
+        'UniMe ei löydä tämän myöntäjän DID-dokumenttia. Sen todiste tarkistetaan, ja yhteys liitetään DID-tunnisteeseen, joka allekirjoitti sen.',
       KNOWN_CONNECTION: 'Tunnettu yhteys',
       FIRST_INTERACTION: 'Ensimmäinen vuorovaikutus: {duration}',
       LAST_INTERACTION: 'Viimeisin vuorovaikutus: {duration}',
@@ -350,6 +353,7 @@ const fi_FI = {
       ECOSYSTEM_MEMBERS_HEADING: 'Jäsenet',
       ECOSYSTEM_ABOUT: 'Tietoja',
       ECOSYSTEM_OWNER: 'Ekosysteemin omistaja',
+      ECOSYSTEM_LED_BY: 'Johtaja: {name}',
       ECOSYSTEM_COUNT: '{count} {{ekosysteemi|ekosysteemiä}}',
     },
     SHARE_CREDENTIALS: {
@@ -469,6 +473,7 @@ const fi_FI = {
       BY_THE_ISSUER: 'Myöntäjän toimesta',
       VALID_FROM: '{date} alkaen',
       ISSUED_BY: 'Myöntäjä',
+      ENDORSED_BY: 'Hyväksyjät',
       SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {

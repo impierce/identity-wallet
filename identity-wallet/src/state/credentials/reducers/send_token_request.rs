@@ -4,14 +4,14 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{normalize_connection_url, validate_credential_types, validate_jwt_vc_json},
+            helpers::{normalize_connection_url, validate_credential_types},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived,
-            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, DisplayCredential,
-            VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived, issuer_signature::verify_issuer_signature,
+            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, CredentialStatusType,
+            DisplayCredential, VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
@@ -20,16 +20,12 @@ use crate::{
     subject::Subject,
     well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
 };
-use identity_iota::did::DID;
+use identity_kit::{did::Did, status_list::Status};
 use log::{debug, info, warn};
-use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
-use oid4vc::{
-    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
-    oid4vci::{
-        credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-        credential_response::CredentialResponseType, token_request::TokenRequest,
-    },
+use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
+use oid4vci::{
+    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
+    credential_response::CredentialResponseType, token_request::TokenRequest,
 };
 use serde_json::json;
 use std::collections::HashMap;
@@ -230,7 +226,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             }
         };
 
-        debug!("Token request: {token_request:?}");
+        crate::log_payload!("Token request: {token_request:?}");
 
         // Get an access token.
         let token_response = wallet
@@ -246,7 +242,18 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetAccessTokenError)?;
 
-        debug!("Token response: {token_response:?}");
+        // `TokenResponse` derives `Debug`, so the access and refresh tokens are only logged as a payload.
+        debug!(
+            "Received token response (token_type: {}, expires_in: {:?}, refresh_token: {}, authorization_details: {})",
+            token_response.token_type,
+            token_response.expires_in,
+            token_response.refresh_token.is_some(),
+            token_response
+                .authorization_details
+                .as_ref()
+                .map_or(0, |authorization_details| authorization_details.len())
+        );
+        crate::log_payload!("Token response: {token_response:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -280,16 +287,13 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
         // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
         // Create or update the connection.
-        let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
+        let mut pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::FlowExpiredError("Expected pending connection data for OID4VCI token request".to_string())
         })?;
-        let previously_connected = state
-            .connections
-            .contains(pending_connection_data.client_metadata.client_id.as_str());
-        let mut connections = state.connections;
-        let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data);
 
-        let mut history_credentials = vec![];
+        // Every credential is fetched and its issuer signature verified before anything is stored, so that a credential
+        // that fails leaves neither a credential nor a connection behind (ADR 0005).
+        let mut received_credentials = vec![];
 
         for credential_configuration_id in credential_configuration_ids {
             let credential_configuration = credential_configurations_supported
@@ -309,7 +313,8 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 None
             };
 
-            debug!("Using proof nonce: {nonce:?}");
+            debug!("Proof nonce present: {}", nonce.is_some());
+            crate::log_payload!("Proof nonce: {nonce:?}");
 
             // Determine if the token request was pre-authorized and if anonymous access is supported.
             // See: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#section-8.2.1.1-2.2.2.2
@@ -355,16 +360,53 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 }
             };
 
-            // TODO: add validation for other credential formats.
-            if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
-                // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = credential
-                    .as_str()
-                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+            let signing_did = verify_issuer_signature(
+                &credential_configuration.credential_format.format(),
+                &credential,
+                identity_manager,
+            )
+            .await?;
+            debug!("Verified the issuer signature of credential configuration {credential_configuration_id}");
 
-                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
-            }
+            received_credentials.push((
+                credential_configuration_id,
+                credential_configuration,
+                credential,
+                signing_did,
+            ));
+        }
 
+        // An issuer verified with its DID document must have signed every credential with that DID. An unverified
+        // issuer is bound to the DID that signed them.
+        let connection_did = connection_did(
+            pending_connection_data
+                .client_metadata
+                .client_id
+                .as_ref()
+                .map(ToString::to_string),
+            received_credentials
+                .iter()
+                .map(|(.., signing_did)| signing_did.as_str()),
+        )?;
+        if pending_connection_data.client_metadata.client_id.is_none() {
+            info!("Binding the unverified issuer {connection_url} to the DID that signed its credentials");
+            pending_connection_data.client_metadata.client_id = Some(
+                Did::parse(&connection_did)
+                    .map_err(|err| AppError::UntrustedError(format!("Failed to parse the signing DID: {err}")))?,
+            );
+        }
+
+        // Create or update the connection. It is part of the returned state only, so it is dropped with it on an error.
+        let previously_connected = state.connections.contains(&connection_did);
+        let mut connections = state.connections;
+        let mut history = state.history;
+        let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data)?;
+
+        // Every record is built and validated before the first one is stored, so that a credential that fails leaves
+        // none of the others behind (ADR 0005).
+        let mut records = vec![];
+
+        for (credential_configuration_id, credential_configuration, credential, _) in received_credentials {
             let display = credential_configuration
                 .credential_metadata
                 .as_ref()
@@ -412,11 +454,18 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 .parse()
                 .map_err(|err| AppError::Error(format!("Failed to parse credential id as UUID: {err}")))?;
 
-            display
+            let logo_uri = display
                 .first()
                 .and_then(|display| display.logo.clone())
-                .map(|logo| logo.uri.clone())
-                .and_then(|uri| persist_asset(&hash(uri.as_str()), key.to_string().as_str()).ok());
+                .map(|logo| logo.uri.clone());
+
+            records.push((key, verifiable_credential_record, logo_uri));
+        }
+
+        let mut history_credentials = vec![];
+
+        for (key, verifiable_credential_record, logo_uri) in records {
+            logo_uri.and_then(|uri| persist_asset(&hash(uri.as_str()), key.to_string().as_str()).ok());
 
             // Remove the old credential from the stronghold if it exists.
             stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
@@ -428,7 +477,14 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             // Add history event
             history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
 
-            debug!("Successfully sent token request and received credential: {credential:?}");
+            debug!(
+                "Received and stored credential `{}`",
+                verifiable_credential_record.display_credential.id
+            );
+            crate::log_payload!(
+                "Received credential: {:?}",
+                verifiable_credential_record.verifiable_credential
+            );
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
@@ -444,7 +500,6 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         }
 
         // History
-        let mut history = state.history;
         if !history_credentials.is_empty() {
             // Only add a `ConnectionAdded` event if the connection was not previously connected.
             if !previously_connected {
@@ -486,6 +541,28 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 }
 
 // Helpers
+
+/// The DID of the connection to an issuer whose credentials `signing_dids` signed: `verified`, the DID the issuer was
+/// verified with, by its DID document, before the user accepted, which must have signed every credential; or for an
+/// unverified issuer (`None`), the single DID that signed them all (ADR 0005).
+fn connection_did<'a>(
+    verified: Option<String>,
+    mut signing_dids: impl Iterator<Item = &'a str>,
+) -> Result<String, AppError> {
+    let did = match verified {
+        Some(did) => did,
+        None => signing_dids
+            .next()
+            .ok_or_else(|| AppError::UntrustedError("No credential was received to verify the issuer".to_string()))?
+            .to_string(),
+    };
+    match signing_dids.find(|signing_did| *signing_did != did) {
+        Some(signing_did) => Err(AppError::UntrustedError(format!(
+            "A credential is signed by {signing_did}, not by the issuer's DID {did}"
+        ))),
+        None => Ok(did),
+    }
+}
 
 /// Helper function to get the display name of a credential.
 fn get_credential_display_name(
@@ -569,19 +646,20 @@ pub async fn get_credential_status(
         }
     };
 
-    let credential_status_claim = match serde_json::from_value::<StatusClaim>(status_value.clone()) {
-        Ok(claim) => claim,
-        Err(_) => {
-            warn!("The credential status claim/property is not in the OAuth Token Status List format: {status_value}");
-            return None;
-        }
+    let Some((idx, uri)) = serde_json::from_value::<Status>(status_value)
+        .ok()
+        .and_then(|status| status.status_list)
+        .and_then(|reference| Some((reference.idx, reference.uri.parse().ok()?)))
+    else {
+        warn!("The credential status claim/property is not in the OAuth Token Status List format");
+        return None;
     };
 
     // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
     let mut credential_status_data = CredentialStatus {
-        status: StatusType::UNDEFINED,
-        idx: credential_status_claim.referenced_status_list.idx,
-        uri: credential_status_claim.referenced_status_list.uri,
+        status: CredentialStatusType::Undefined,
+        idx,
+        uri,
         last_checked: String::new(),
     };
 
@@ -606,7 +684,7 @@ pub async fn get_credential_status(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+    use oid4vci::credential_issuer::credential_configurations_supported::{
         CredentialConfigurationsSupportedDisplay, CredentialMetadata,
     };
 
@@ -720,5 +798,471 @@ mod tests {
 
         // Assert that the display name is equal to the last element of the `type` property of the credential.
         assert_eq!(display_name, "Credential Type 2");
+    }
+}
+
+/// Issuance from a mock issuer whose credentials a did:jwk signs, with and without a DID document (ADR 0005).
+#[cfg(test)]
+mod issuance_tests {
+    use super::*;
+    use crate::persistence::STRONGHOLD;
+    use crate::state::core_utils::{IdentityManager, Managers, PendingConnectionData};
+    use crate::state::did::validate_domain_linkage::ValidationStatus;
+    use crate::state::user_prompt::ClientMetadata;
+    use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
+    use crate::stronghold::StrongholdManager;
+    use crate::subject::subject;
+
+    use identity_kit::did::DidMethod;
+    use identity_kit::identity::{Identity, IdentityKind, KeyStoreIdentity};
+    use identity_kit::jose::{encode_compact, JwsAlgorithm, JwsHeader, KeyType};
+    use identity_kit::keys::{InMemoryKeyStore, KeySpec, KeyStore};
+    use identity_kit::methods::DidJwk;
+    use identity_kit::sd_jwt_vc::{ClaimPath, SdJwt, SdJwtBuilder};
+    use oid4vc_manager::ProviderManager;
+    use oid4vci::credential_offer::CredentialOfferParameters;
+    use oid4vci::Wallet;
+    use std::sync::Arc;
+    use tempfile::NamedTempFile;
+    use wiremock::matchers::{method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    const CONFIGURATION_ID: &str = "pid";
+
+    /// An issuer that signs with a did:jwk held in memory.
+    struct TestIssuer {
+        store: Arc<InMemoryKeyStore>,
+        key: identity_kit::keys::KeyId,
+        identity: KeyStoreIdentity,
+        did: String,
+        kid: String,
+    }
+
+    impl TestIssuer {
+        async fn new() -> Self {
+            let store = Arc::new(InMemoryKeyStore::new());
+            let key = store
+                .generate(KeySpec::new(KeyType::P256, JwsAlgorithm::ES256))
+                .await
+                .unwrap();
+            let identity = KeyStoreIdentity::new(store.clone()).with_producer(DidJwk);
+            identity
+                .bind(did_jwk(), JwsAlgorithm::ES256, key.clone())
+                .await
+                .unwrap();
+            let did = identity
+                .identifier(&did_jwk(), JwsAlgorithm::ES256)
+                .await
+                .unwrap()
+                .to_string();
+            let kid = format!("{did}#0");
+            TestIssuer {
+                store,
+                key,
+                identity,
+                did,
+                kid,
+            }
+        }
+
+        /// The issuer's public key as a JWK.
+        async fn public_jwk(&self) -> serde_json::Value {
+            serde_json::to_value(self.store.public_jwk(&self.key).await.unwrap()).unwrap()
+        }
+
+        /// A `dc+sd-jwt` naming `iss` and `kid`, with `given_name` selectively disclosable, signed by this issuer.
+        async fn sd_jwt(&self, iss: &str, kid: &str) -> String {
+            self.sd_jwt_with_typ(iss, kid, "dc+sd-jwt").await
+        }
+
+        /// As [`Self::sd_jwt`], with the `typ` header `typ`.
+        async fn sd_jwt_with_typ(&self, iss: &str, kid: &str, typ: &str) -> String {
+            let claims = json!({
+                "vct": "https://example.com/pid",
+                "iss": iss,
+                "iat": chrono::Utc::now().timestamp(),
+                "given_name": "Ferris",
+            });
+            let encoded = SdJwtBuilder::new(claims.as_object().unwrap().clone())
+                .conceal(ClaimPath::new(["given_name"]))
+                .encode()
+                .unwrap();
+            let header = JwsHeader::new(JwsAlgorithm::ES256).with_typ(typ).with_kid(kid);
+            let signer = self.identity.signer(&did_jwk(), JwsAlgorithm::ES256).await.unwrap();
+            let jwt = encode_compact(&header, &serde_json::to_vec(&encoded.payload).unwrap(), signer.as_ref())
+                .await
+                .unwrap();
+            SdJwt::new(identity_kit::vc::Jwt::new(jwt).unwrap(), encoded.disclosures).to_string()
+        }
+    }
+
+    fn did_jwk() -> IdentityKind {
+        IdentityKind::Did(DidMethod::parse("did:jwk").unwrap())
+    }
+
+    /// Serves the metadata, token and credential endpoints of an issuer handing out `credential`, and no DID document.
+    async fn mount_issuer(credential: &str) -> MockServer {
+        let server = MockServer::start().await;
+        mount_issuer_on(&server, credential).await;
+        server
+    }
+
+    async fn mount_issuer_on(server: &MockServer, credential: &str) {
+        let uri = server.uri();
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-credential-issuer"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "credential_issuer": uri,
+                "credential_endpoint": format!("{uri}/credential"),
+                "credential_configurations_supported": {
+                    CONFIGURATION_ID: { "format": "dc+sd-jwt", "vct": "https://example.com/pid" }
+                }
+            })))
+            .mount(server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/oauth-authorization-server"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "issuer": uri,
+                "token_endpoint": format!("{uri}/token"),
+                "pre-authorized_grant_anonymous_access_supported": true
+            })))
+            .mount(server)
+            .await;
+        Mock::given(method("POST"))
+            .and(path("/token"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(json!({ "access_token": "access", "token_type": "bearer" })),
+            )
+            .mount(server)
+            .await;
+        Mock::given(method("POST"))
+            .and(path("/credential"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(json!({ "credentials": [{ "credential": credential }] })),
+            )
+            .mount(server)
+            .await;
+    }
+
+    async fn test_managers() -> Arc<tauri::async_runtime::Mutex<Managers>> {
+        let stronghold_path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = stronghold_path.as_os_str().into();
+        let stronghold_manager = Arc::new(StrongholdManager::create("sup3rSecr3t").unwrap());
+        let subject = subject(stronghold_manager.clone()).await.unwrap();
+        let provider_manager = ProviderManager::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .unwrap();
+        let wallet = Wallet::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .unwrap();
+        Arc::new(tauri::async_runtime::Mutex::new(Managers {
+            stronghold_manager: Some(stronghold_manager),
+            identity_manager: Some(IdentityManager {
+                subject,
+                provider_manager,
+                wallet,
+            }),
+        }))
+    }
+
+    /// The state after the user accepted an offer from `server`, verified with the DID `client_id` of its DID document
+    /// (`None`: it publishes none).
+    fn accepted_offer(
+        state: AppState,
+        managers: Arc<tauri::async_runtime::Mutex<Managers>>,
+        server: &MockServer,
+        client_id: Option<&str>,
+    ) -> AppState {
+        accepted_offer_of(state, managers, server, client_id, &[CONFIGURATION_ID])
+    }
+
+    /// As [`accepted_offer`], for an offer of the credential configurations `configuration_ids`.
+    fn accepted_offer_of(
+        state: AppState,
+        managers: Arc<tauri::async_runtime::Mutex<Managers>>,
+        server: &MockServer,
+        client_id: Option<&str>,
+        configuration_ids: &[&str],
+    ) -> AppState {
+        let credential_offer: CredentialOfferParameters = serde_json::from_value(json!({
+            "credential_issuer": server.uri(),
+            "credential_configuration_ids": configuration_ids,
+            "grants": { "urn:ietf:params:oauth:grant-type:pre-authorized_code": { "pre-authorized_code": "code" } }
+        }))
+        .unwrap();
+        AppState {
+            core_utils: CoreUtils {
+                managers,
+                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                    stage: Oid4vciStage::PreAuthorized,
+                    credential_offer: Box::new(credential_offer),
+                    logo_uri: None,
+                }),
+                pending_connection_data: Some(PendingConnectionData {
+                    client_metadata: ClientMetadata {
+                        client_name: "Issuer".to_string(),
+                        logo_uri: None,
+                        connection_url: server.uri(),
+                        redirect_uri: Some(server.uri()),
+                        client_id: client_id.map(|did| did.parse().unwrap()),
+                    },
+                    domain_validation: Some((ValidationStatus::Unknown, DateUtils::new_date_string())),
+                    linked_verifiable_presentations: None,
+                    ecosystems: None,
+                    ecosystems_check: None,
+                }),
+                ..CoreUtils::default()
+            },
+            ..state
+        }
+    }
+
+    fn code_received() -> Action {
+        Arc::new(CodeReceived {
+            code: "code".to_string(),
+            is_pre_authorized: true,
+            is_interactive: false,
+            state: None,
+            tx_code: None,
+        })
+    }
+
+    async fn stored_credentials(managers: &Arc<tauri::async_runtime::Mutex<Managers>>) -> usize {
+        let managers = managers.lock().await;
+        let stronghold_manager = managers.stronghold_manager.as_ref().unwrap();
+        stronghold_manager.values().unwrap().unwrap_or_default().len()
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_unverified_issuer_is_bound_to_the_did_that_signed_its_credential() {
+        let issuer = TestIssuer::new().await;
+        let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
+        let managers = test_managers().await;
+
+        let state = accepted_offer(AppState::default(), managers.clone(), &server, None);
+        let state = send_token_request(state, code_received()).await.unwrap();
+
+        assert_eq!(state.connections.0.len(), 1);
+        let connection = state.connections.0[0].clone();
+        assert_eq!(connection.did, issuer.did);
+        assert_eq!(state.credentials.len(), 1);
+        assert_eq!(state.credentials[0].connection_id.as_ref(), Some(&connection.id));
+        assert_eq!(stored_credentials(&managers).await, 1);
+
+        // A second issuance from the same issuer finds the connection by the DID that signs.
+        let state = accepted_offer(state, managers.clone(), &server, None);
+        let state = send_token_request(state, code_received()).await.unwrap();
+        assert_eq!(state.connections.0.len(), 1);
+        assert_eq!(state.connections.0[0].id, connection.id);
+        assert_eq!(state.credentials.len(), 2);
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_credential_whose_signature_does_not_verify_is_refused_and_leaves_nothing_behind() {
+        let issuer = TestIssuer::new().await;
+        let impostor = TestIssuer::new().await;
+        // Names the issuer's DID and key, but is signed with another key.
+        let server = mount_issuer(&impostor.sd_jwt(&issuer.did, &issuer.kid).await).await;
+        let managers = test_managers().await;
+
+        let state = accepted_offer(AppState::default(), managers.clone(), &server, None);
+        let result = send_token_request(state, code_received()).await;
+
+        assert!(
+            matches!(&result, Err(AppError::UntrustedError(reason)) if reason.contains("The credential's signature is invalid")),
+            "{result:?}"
+        );
+        assert_eq!(stored_credentials(&managers).await, 0);
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_credential_that_names_another_issuer_than_its_signer_is_refused() {
+        let issuer = TestIssuer::new().await;
+        let server = mount_issuer(&issuer.sd_jwt("did:web:other.example", &issuer.kid).await).await;
+        let managers = test_managers().await;
+
+        let state = accepted_offer(AppState::default(), managers.clone(), &server, None);
+        let result = send_token_request(state, code_received()).await;
+
+        assert!(
+            matches!(&result, Err(AppError::UntrustedError(reason)) if reason.contains("its `iss` is not did:jwk")),
+            "{result:?}"
+        );
+        assert_eq!(stored_credentials(&managers).await, 0);
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_issuer_verified_with_its_did_document_must_sign_with_that_did() {
+        let issuer = TestIssuer::new().await;
+        let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
+        let managers = test_managers().await;
+
+        let state = accepted_offer(
+            AppState::default(),
+            managers.clone(),
+            &server,
+            Some("did:web:issuer.example"),
+        );
+        let result = send_token_request(state, code_received()).await;
+
+        assert!(
+            matches!(&result, Err(AppError::UntrustedError(reason)) if reason.contains("not by the issuer's DID did:web:issuer.example")),
+            "{result:?}"
+        );
+        assert_eq!(stored_credentials(&managers).await, 0);
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_credential_signed_by_the_did_of_the_issuers_did_document_is_stored() {
+        let issuer = TestIssuer::new().await;
+        let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
+        let managers = test_managers().await;
+
+        let state = accepted_offer(AppState::default(), managers.clone(), &server, Some(&issuer.did));
+        let state = send_token_request(state, code_received()).await.unwrap();
+
+        assert_eq!(state.connections.0.len(), 1);
+        assert_eq!(state.connections.0[0].did, issuer.did);
+        assert_eq!(stored_credentials(&managers).await, 1);
+    }
+
+    /// A credential's signature is verified only with a key listed under `verificationMethod`, as every other signature
+    /// the wallet verifies. A did:web whose key is embedded only in `authentication` is refused; with the same key listed,
+    /// the credential is stored.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_credential_signed_with_a_key_embedded_only_in_authentication_is_refused() {
+        let issuer = TestIssuer::new().await;
+        let public_jwk = issuer.public_jwk().await;
+
+        for listed in [false, true] {
+            let server = MockServer::start().await;
+            let did = format!("did:web:localhost%3A{}", server.address().port());
+            let kid = format!("{did}#key-0");
+            let method_json = json!({
+                "id": kid,
+                "type": "JsonWebKey2020",
+                "controller": did,
+                "publicKeyJwk": public_jwk,
+            });
+            let document = if listed {
+                json!({ "id": did, "verificationMethod": [method_json], "assertionMethod": [kid] })
+            } else {
+                json!({ "id": did, "authentication": [method_json] })
+            };
+            Mock::given(method("GET"))
+                .and(path("/.well-known/did.json"))
+                .respond_with(ResponseTemplate::new(200).set_body_json(document))
+                .mount(&server)
+                .await;
+            mount_issuer_on(&server, &issuer.sd_jwt(&did, &kid).await).await;
+            let managers = test_managers().await;
+
+            let state = accepted_offer(AppState::default(), managers.clone(), &server, None);
+            let result = send_token_request(state, code_received()).await;
+
+            if listed {
+                let state = result.unwrap();
+                assert_eq!(state.connections.0[0].did, did);
+                assert_eq!(stored_credentials(&managers).await, 1);
+            } else {
+                // The key is in the document, embedded, so only the scope of the lookup refuses it.
+                let subject = managers.lock().await.identity_manager.as_ref().unwrap().subject.clone();
+                assert!(subject.resolve_public_key(&kid).await.is_ok());
+                assert!(
+                    matches!(&result, Err(AppError::UntrustedError(reason)) if reason.contains("The credential's signature is invalid")),
+                    "{result:?}"
+                );
+                assert_eq!(stored_credentials(&managers).await, 0);
+            }
+        }
+    }
+
+    /// Every credential record is built and validated before the first is stored: when the second of two credentials
+    /// is refused, the first, valid and already verified, is not stored either.
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn a_refused_credential_leaves_the_other_credentials_of_the_offer_unstored() {
+        let issuer = TestIssuer::new().await;
+        let server = MockServer::start().await;
+        let uri = server.uri();
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-credential-issuer"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "credential_issuer": uri,
+                "credential_endpoint": format!("{uri}/credential"),
+                "credential_configurations_supported": {
+                    "a_valid": { "format": "dc+sd-jwt", "vct": "https://example.com/pid" },
+                    "b_wrong_typ": { "format": "dc+sd-jwt", "vct": "https://example.com/pid" }
+                }
+            })))
+            .mount(&server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/oauth-authorization-server"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "issuer": uri,
+                "token_endpoint": format!("{uri}/token"),
+                "pre-authorized_grant_anonymous_access_supported": true
+            })))
+            .mount(&server)
+            .await;
+        Mock::given(method("POST"))
+            .and(path("/token"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_json(json!({ "access_token": "access", "token_type": "bearer" })),
+            )
+            .mount(&server)
+            .await;
+        // Both are signed by the issuer; the second carries a `typ` the record refuses.
+        for (configuration_id, typ) in [("a_valid", "dc+sd-jwt"), ("b_wrong_typ", "vc+sd-jwt")] {
+            let credential = issuer.sd_jwt_with_typ(&issuer.did, &issuer.kid, typ).await;
+            Mock::given(method("POST"))
+                .and(path("/credential"))
+                .and(wiremock::matchers::body_partial_json(
+                    json!({ "credential_configuration_id": configuration_id }),
+                ))
+                .respond_with(
+                    ResponseTemplate::new(200).set_body_json(json!({ "credentials": [{ "credential": credential }] })),
+                )
+                .mount(&server)
+                .await;
+        }
+        let managers = test_managers().await;
+
+        let state = accepted_offer_of(
+            AppState::default(),
+            managers.clone(),
+            &server,
+            None,
+            &["a_valid", "b_wrong_typ"],
+        );
+        let result = send_token_request(state, code_received()).await;
+
+        assert!(result.is_err(), "{result:?}");
+        assert_eq!(stored_credentials(&managers).await, 0);
+    }
+
+    #[test]
+    fn the_connection_did_is_the_verified_did_or_else_the_one_signing_did() {
+        let a = "did:jwk:a";
+        let b = "did:jwk:b";
+        assert_eq!(connection_did(Some(a.to_string()), [a, a].into_iter()).unwrap(), a);
+        assert!(connection_did(Some(a.to_string()), [a, b].into_iter()).is_err());
+        assert_eq!(connection_did(None, [b, b].into_iter()).unwrap(), b);
+        assert!(connection_did(None, [a, b].into_iter()).is_err());
+        assert!(connection_did(None, std::iter::empty()).is_err());
     }
 }

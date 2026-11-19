@@ -2,16 +2,22 @@ use crate::common::{
     assert_state_update::{setup_state_file, setup_stronghold},
     json_example, test_managers,
 };
+use identity_kit::status_list::{StatusList, StatusListToken, StatusType};
+use identity_wallet::oid4vc_core::jwt;
 use identity_wallet::state::credentials::reducers::{
     refresh_all_credential_statuses::refresh_all_credential_statuses,
     refresh_credential_status::refresh_credential_status,
 };
+use identity_wallet::state::credentials::CredentialStatusType;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::state::{actions::Action, AppState};
-use oauth_tsl::status_list::StatusType;
+use identity_wallet::subject::Subject;
+use jsonwebtoken::{Algorithm, Header};
 use serde_json::json;
-use wiremock::matchers::{method, path};
-use wiremock::{Mock, MockServer, ResponseTemplate};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+use wiremock::matchers::{method, path, path_regex};
+use wiremock::{Mock, MockServer, Request, Respond, ResponseTemplate};
 
 #[tokio::test]
 #[serial_test::serial]
@@ -90,7 +96,7 @@ async fn test_refresh_credential_status() {
         .unwrap()
         .status;
 
-    assert_eq!(result, StatusType::INVALID);
+    assert_eq!(result, CredentialStatusType::Invalid);
     assert_ne!(
         last_checked,
         state
@@ -118,7 +124,7 @@ async fn test_refresh_all_credential_statuses() {
                 .insert_header("Content-Encoding", "gzip")
                 .set_body_raw(response_bytes, "application/statuslist+jwt"),
         )
-        // The three credentials share one status list, which is fetched once for all of them.
+        // The three credentials share a status list, which is requested once.
         .expect(1)
         .mount(&mock_server)
         .await;
@@ -179,7 +185,7 @@ async fn test_refresh_all_credential_statuses() {
     let state = refresh_all_credential_statuses(state, action).await.unwrap();
 
     // Collect the updated `status` and `last_checked` fields
-    let results: Vec<StatusType> = state
+    let results: Vec<CredentialStatusType> = state
         .credentials
         .iter()
         .map(|cred| cred.credential_status.as_ref().unwrap().status)
@@ -190,19 +196,8 @@ async fn test_refresh_all_credential_statuses() {
         .map(|cred| cred.credential_status.as_ref().unwrap().last_checked.clone())
         .collect();
 
-    assert_eq!(results, vec![StatusType::INVALID; 3]);
+    assert_eq!(results, vec![CredentialStatusType::Invalid; 3]);
     assert_ne!(last_checked, updated_last_checked);
-
-    // The changed statuses are written back to Stronghold.
-    for credential in state.credentials.iter().take(3) {
-        let key: uuid::Uuid = credential.id.parse().unwrap();
-        let record: VerifiableCredentialRecord =
-            serde_json::from_slice(&stronghold_manager.get(key).unwrap().unwrap()).unwrap();
-        assert_eq!(
-            record.display_credential.credential_status.unwrap().status,
-            StatusType::INVALID
-        );
-    }
 }
 
 #[tokio::test]
@@ -275,7 +270,7 @@ async fn test_unreachable_credential_status() {
         .unwrap()
         .status;
 
-    assert_eq!(result, StatusType::VALID);
+    assert_eq!(result, CredentialStatusType::Valid);
     assert_eq!(
         last_checked,
         state
@@ -289,42 +284,245 @@ async fn test_unreachable_credential_status() {
     );
 }
 
-#[tokio::test]
-#[serial_test::serial]
-async fn test_refresh_all_credential_statuses_keeps_statuses_of_an_unreachable_status_list() {
+/// Refreshes the status of the first credential in `credential_with_status.json` against a status list token that the
+/// test wallet's own did:key signs, which marks the credential INVALID and, with `expired`, expired an hour ago.
+/// Returns the credential's status and `last_checked` before and after the refresh.
+async fn refresh_against_signed_status_list(
+    expired: bool,
+) -> ((CredentialStatusType, String), (CredentialStatusType, String)) {
+    setup_state_file();
+    let mut state = json_example::<AppState>("tests/fixtures/states/credential_with_status.json");
+    let managers = test_managers(vec![]).await;
+    let subject = managers.lock().await.identity_manager.as_ref().unwrap().subject.clone();
+    state.core_utils.managers = managers;
+
     let mock_server = MockServer::start().await;
+    let uri = mock_server.uri() + "/ietf-oauth-token-status-list/0";
+    let status = state
+        .credentials
+        .get_mut(0)
+        .unwrap()
+        .credential_status
+        .as_mut()
+        .unwrap();
+    status.uri = uri.parse().unwrap();
+    let before = (status.status, status.last_checked.clone());
+
+    let expires_at = expired.then(|| chrono::Utc::now() - chrono::Duration::hours(1));
+    let status_list_jwt = signed_status_list_jwt(subject, &uri, status.idx, expires_at).await;
+
     Mock::given(method("GET"))
         .and(path("/ietf-oauth-token-status-list/0"))
-        .respond_with(ResponseTemplate::new(503))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(status_list_jwt, StatusListToken::MEDIA_TYPE))
         .expect(1)
         .mount(&mock_server)
         .await;
 
-    setup_state_file();
-    let mut state = json_example::<AppState>("tests/fixtures/states/three_credentials_with_status.json");
-    state.core_utils.managers = test_managers(vec![]).await;
+    // A successful refresh rewrites the credential in Stronghold, so it has to be there.
+    let stronghold_manager = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .as_ref()
+        .unwrap()
+        .clone();
+    let credential = state.credentials.first().unwrap().clone();
+    let verifiable_credential_record = VerifiableCredentialRecord {
+        verifiable_credential: serde_json::to_value(&credential).unwrap(),
+        display_credential: credential,
+    };
+    stronghold_manager
+        .insert(
+            verifiable_credential_record.display_credential.id.parse().unwrap(),
+            json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
+        )
+        .unwrap();
 
-    let mut previous = Vec::new();
-    for status in state
-        .credentials
-        .iter_mut()
-        .filter_map(|credential| credential.credential_status.as_mut())
-    {
-        status.uri =
-            serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
-        previous.push((status.status, status.last_checked.clone()));
+    let action = json_example::<Action>("tests/fixtures/actions/refresh_credential_status.json");
+    let state = refresh_credential_status(state, action).await.unwrap();
+
+    let status = state.credentials.first().unwrap().credential_status.as_ref().unwrap();
+    (before, (status.status, status.last_checked.clone()))
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_credential_status_from_signed_status_list() {
+    let (before, after) = refresh_against_signed_status_list(false).await;
+
+    assert_eq!(before.0, CredentialStatusType::Valid);
+    assert_eq!(after.0, CredentialStatusType::Invalid);
+    assert_ne!(before.1, after.1);
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_credential_status_ignores_an_expired_status_list() {
+    let (before, after) = refresh_against_signed_status_list(true).await;
+
+    assert_eq!(before, after);
+}
+
+/// A status list token for `uri`, signed by the test wallet's own did:key, that marks index `idx` INVALID and expires
+/// at `expires_at`, if given.
+async fn signed_status_list_jwt(
+    subject: Arc<Subject>,
+    uri: &str,
+    idx: u64,
+    expires_at: Option<chrono::DateTime<chrono::Utc>>,
+) -> String {
+    let mut status_list = StatusList::new(1, 1024).unwrap();
+    status_list.set(idx, StatusType::INVALID).unwrap();
+    let mut token = StatusListToken::new(uri, chrono::Utc::now() - chrono::Duration::hours(2), status_list);
+    if let Some(expires_at) = expires_at {
+        token = token.with_expires_at(expires_at);
+    }
+    let header = Header {
+        alg: Algorithm::EdDSA,
+        typ: Some(StatusListToken::TYP.to_string()),
+        ..Default::default()
+    };
+    jwt::encode(subject, header, &token, "did:key").await.unwrap()
+}
+
+/// A state with `count` copies of the credential in `credential_with_status.json`, each with its own ID and its own
+/// status list on `mock_server` (`/status/<n>`), all of them saved to Stronghold.
+async fn state_with_credentials_on_own_status_lists(mock_server: &MockServer, count: usize) -> AppState {
+    setup_state_file();
+    let mut state = json_example::<AppState>("tests/fixtures/states/credential_with_status.json");
+    state.core_utils.managers = test_managers(vec![]).await;
+    setup_stronghold();
+
+    let template = state.credentials.first().unwrap().clone();
+    state.credentials = (0..count)
+        .map(|n| {
+            let mut credential = template.clone();
+            credential.id = uuid::Uuid::new_v4().to_string();
+            credential.credential_status.as_mut().unwrap().uri =
+                format!("{}/status/{n}", mock_server.uri()).parse().unwrap();
+            credential
+        })
+        .collect();
+
+    let stronghold_manager = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .as_ref()
+        .unwrap()
+        .clone();
+    for credential in &state.credentials {
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: serde_json::to_value(credential).unwrap(),
+            display_credential: credential.clone(),
+        };
+        stronghold_manager
+            .insert(
+                credential.id.parse().unwrap(),
+                json!(verifiable_credential_record).to_string().into_bytes(),
+            )
+            .unwrap();
     }
 
-    setup_stronghold();
+    state
+}
+
+/// Answers with `body` after `delay`, and records when each request arrived.
+struct RecordingResponder {
+    body: String,
+    delay: Duration,
+    arrivals: Arc<Mutex<Vec<Instant>>>,
+}
+
+impl Respond for RecordingResponder {
+    fn respond(&self, _request: &Request) -> ResponseTemplate {
+        self.arrivals.lock().unwrap().push(Instant::now());
+        ResponseTemplate::new(200)
+            .set_body_raw(self.body.clone(), StatusListToken::MEDIA_TYPE)
+            .set_delay(self.delay)
+    }
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_all_credential_statuses_requests_at_most_eight_status_lists_at_once() {
+    const STATUS_LISTS: usize = 20;
+    const DELAY: Duration = Duration::from_millis(300);
+
+    let mock_server = MockServer::start().await;
+    let state = state_with_credentials_on_own_status_lists(&mock_server, STATUS_LISTS).await;
+    let subject = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .identity_manager
+        .as_ref()
+        .unwrap()
+        .subject
+        .clone();
+    let idx = state.credentials[0].credential_status.as_ref().unwrap().idx;
+
+    // The status list tokens do not have to name the URI they are fetched from, so all lists can share one.
+    let arrivals = Arc::new(Mutex::new(Vec::new()));
+    Mock::given(method("GET"))
+        .and(path_regex(r"^/status/\d+$"))
+        .respond_with(RecordingResponder {
+            body: signed_status_list_jwt(subject, &mock_server.uri(), idx, None).await,
+            delay: DELAY,
+            arrivals: arrivals.clone(),
+        })
+        .expect(STATUS_LISTS as u64)
+        .mount(&mock_server)
+        .await;
 
     let action = json_example::<Action>("tests/fixtures/actions/refresh_all_credential_statuses.json");
     let state = refresh_all_credential_statuses(state, action).await.unwrap();
 
-    let current: Vec<(StatusType, String)> = state
+    assert!(state
         .credentials
         .iter()
-        .filter_map(|credential| credential.credential_status.as_ref())
-        .map(|status| (status.status, status.last_checked.clone()))
-        .collect();
-    assert_eq!(current, previous);
+        .all(|credential| credential.credential_status.as_ref().unwrap().status == CredentialStatusType::Invalid));
+
+    // A request only starts when another one has been answered, so no more than eight arrive within one delay. Half
+    // a delay leaves room for a slow scheduler.
+    let arrivals = arrivals.lock().unwrap().clone();
+    let most_at_once = arrivals
+        .iter()
+        .map(|start| {
+            arrivals
+                .iter()
+                .filter(|arrival| **arrival >= *start && arrival.duration_since(*start) < DELAY / 2)
+                .count()
+        })
+        .max()
+        .unwrap();
+    assert_eq!(most_at_once, 8);
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_refresh_all_credential_statuses_keeps_the_status_of_a_status_list_that_does_not_answer() {
+    let mock_server = MockServer::start().await;
+    let state = state_with_credentials_on_own_status_lists(&mock_server, 1).await;
+    let before = state.credentials[0].credential_status.clone().unwrap();
+
+    // Longer than the refresh waits, and than the action may take.
+    Mock::given(method("GET"))
+        .and(path("/status/0"))
+        .respond_with(ResponseTemplate::new(200).set_delay(Duration::from_secs(12)))
+        .mount(&mock_server)
+        .await;
+
+    let start = Instant::now();
+    let action = json_example::<Action>("tests/fixtures/actions/refresh_all_credential_statuses.json");
+    let state = refresh_all_credential_statuses(state, action).await.unwrap();
+
+    // Within the action's time limit of 10 seconds.
+    assert!(start.elapsed() < Duration::from_secs(9), "took {:?}", start.elapsed());
+    assert_eq!(state.credentials[0].credential_status.as_ref().unwrap(), &before);
 }

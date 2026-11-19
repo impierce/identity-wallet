@@ -1,5 +1,6 @@
 use crate::{
     error::AppError::{self, *},
+    http_client::get_openid4vc_http_client,
     state::{
         actions::{listen, Action},
         core_utils::IdentityManager,
@@ -14,9 +15,9 @@ use crate::{
 
 use jsonwebtoken::Algorithm;
 use log::{debug, info};
-use oid4vc::oid4vc_core::Subject as _;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use oid4vc_core::Subject as _;
+use oid4vc_manager::ProviderManager;
+use oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
@@ -26,31 +27,36 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         name,
         picture,
         theme,
-        password,
         biometrics_enabled,
+        ..
     }) = listen::<CreateNew>(action)
     {
-        info!("Creating new identity profile `{name}`");
+        info!("Creating new identity profile");
+        crate::log_payload!("Profile name: {name}");
         let mut state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone())
+            .await
+            .map_err(StrongholdLoadingError)?;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .map_err(OID4VCProviderManagerError)?;
+        .map_err(OID4VCProviderManagerError)?
+        .with_http_client(get_openid4vc_http_client());
         let wallet: Wallet = Wallet::new(
             subject.clone(),
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .map_err(OID4VCWalletError)?;
+        .map_err(OID4VCWalletError)?
+        .with_http_client(get_openid4vc_http_client());
 
         let mut dids = state.dids;
 

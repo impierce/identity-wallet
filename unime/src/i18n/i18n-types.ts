@@ -873,6 +873,14 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 			/**
+			 * I​d​e​n​t​i​t​y​ ​n​o​t​ ​v​e​r​i​f​i​e​d
+			 */
+			UNVERIFIED_IDENTITY_TITLE: string
+			/**
+			 * U​n​i​M​e​ ​c​a​n​’​t​ ​f​i​n​d​ ​t​h​i​s​ ​i​s​s​u​e​r​’​s​ ​D​I​D​ ​d​o​c​u​m​e​n​t​.​ ​I​t​s​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​c​h​e​c​k​e​d​,​ ​a​n​d​ ​t​h​e​ ​c​o​n​n​e​c​t​i​o​n​ ​i​s​ ​l​i​n​k​e​d​ ​t​o​ ​t​h​e​ ​D​I​D​ ​t​h​a​t​ ​s​i​g​n​e​d​ ​i​t​.
+			 */
+			UNVERIFIED_IDENTITY_DESCRIPTION: string
+			/**
 			 * K​n​o​w​n​ ​c​o​n​n​e​c​t​i​o​n
 			 */
 			KNOWN_CONNECTION: string
@@ -941,6 +949,11 @@ type RootTranslation = {
 			 * E​c​o​s​y​s​t​e​m​ ​O​w​n​e​r
 			 */
 			ECOSYSTEM_OWNER: string
+			/**
+			 * L​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			ECOSYSTEM_LED_BY: RequiredParams<'name'>
 			/**
 			 * {​c​o​u​n​t​}​ ​{​{​e​c​o​s​y​s​t​e​m​|​e​c​o​s​y​s​t​e​m​s​}​}
 			 * @param {number} count
@@ -1343,6 +1356,10 @@ type RootTranslation = {
 			 * I​s​s​u​e​d​ ​b​y
 			 */
 			ISSUED_BY: string
+			/**
+			 * E​n​d​o​r​s​e​d​ ​b​y
+			 */
+			ENDORSED_BY: string
 			/**
 			 * y​o​u​r​s​e​l​f
 			 */
@@ -3103,6 +3120,14 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			/**
+			 * Identity not verified
+			 */
+			UNVERIFIED_IDENTITY_TITLE: () => LocalizedString
+			/**
+			 * UniMe can’t find this issuer’s DID document. Its credential is checked, and the connection is linked to the DID that signed it.
+			 */
+			UNVERIFIED_IDENTITY_DESCRIPTION: () => LocalizedString
+			/**
 			 * Known connection
 			 */
 			KNOWN_CONNECTION: () => LocalizedString
@@ -3166,6 +3191,10 @@ export type TranslationFunctions = {
 			 * Ecosystem Owner
 			 */
 			ECOSYSTEM_OWNER: () => LocalizedString
+			/**
+			 * Led by {name}
+			 */
+			ECOSYSTEM_LED_BY: (arg: { name: string }) => LocalizedString
 			/**
 			 * {count} {{ecosystem|ecosystems}}
 			 */
@@ -3540,6 +3569,10 @@ export type TranslationFunctions = {
 			 * Issued by
 			 */
 			ISSUED_BY: () => LocalizedString
+			/**
+			 * Endorsed by
+			 */
+			ENDORSED_BY: () => LocalizedString
 			/**
 			 * yourself
 			 */

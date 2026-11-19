@@ -8,11 +8,10 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
+  import EcosystemHeader from '$lib/components/ecosystems/EcosystemHeader.svelte';
   import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
-  import { tintFor } from '../../../../../../prompt/accept-connection/ecosystem';
-  import EcosystemAvatar from '../../../../../../prompt/accept-connection/EcosystemAvatar.svelte';
   import MemberRow from '../../../../../../prompt/accept-connection/MemberRow.svelte';
 
   const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/ecosystems${page.url.search}`);
@@ -35,19 +34,7 @@
 
   {#if ecosystem}
     <div class="flex min-h-full flex-col px-4 pb-7">
-      <div class="flex flex-col items-center gap-3 rounded-2xl {tintFor(ecosystem.name)} px-4 py-6">
-        <EcosystemAvatar
-          name={ecosystem.name}
-          logoUri={ecosystem.logo_uri}
-          class="size-[75px] rounded-2xl bg-white/50"
-          textClass="text-[22px]/[30px]"
-          isTempAsset={false}
-        />
-        <p class="text-center text-[20px]/[28px] font-semibold">{ecosystem.name}</p>
-        <span class="rounded-md bg-white/50 px-2 py-1 text-[12px]/[18px] font-medium">
-          {$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEM_MEMBERS({ count: ecosystem.member_count })}
-        </span>
-      </div>
+      <EcosystemHeader {ecosystem} isTempAsset={false} />
 
       {#if ecosystem.description}
         <section class="pt-6">
