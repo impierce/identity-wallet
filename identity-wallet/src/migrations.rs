@@ -1,7 +1,7 @@
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use log::debug;
-use serde_json::{Map, Value};
+use serde_json::{json, Map, Value};
 
 /// This function is used to migrate the app state from one version to the next.
 pub fn apply_state_migrations(
@@ -45,12 +45,16 @@ fn migrate_v0_to_v1(app_state_object: &mut Map<String, Value>) -> anyhow::Result
     Ok(())
 }
 
-/// Identities (ADR 0004): a connection's `did` becomes its `identity`, as does the `client_id` of the client metadata of
-/// a pending `accept_connection` prompt. A DID is a valid identity, so the values stay as they are.
+/// Connections verified by proofs (ADR 0004): a connection's `did` becomes its `key` and a proof of that DID, as does
+/// the `client_id` of the client metadata of a pending `accept_connection` prompt. Version 1 did not record how a DID
+/// was verified, so the proof's method is `migrated`, and the connection is keyed by the DID until it is verified again
+/// and found by that DID.
 fn migrate_v1_to_v2(app_state_object: &mut Map<String, Value>) -> anyhow::Result<(), AppError> {
     if let Some(connections) = app_state_object.get_mut("connections").and_then(Value::as_array_mut) {
         for connection in connections.iter_mut().filter_map(Value::as_object_mut) {
-            rename(connection, "did", "identity");
+            let did = take_did(connection, "did");
+            connection.insert("key".to_string(), json!({ "did": did.clone().unwrap_or_default() }));
+            connection.insert("proofs".to_string(), migrated_proofs(did));
         }
     }
 
@@ -59,24 +63,35 @@ fn migrate_v1_to_v2(app_state_object: &mut Map<String, Value>) -> anyhow::Result
         .and_then(|prompt| prompt.get_mut("client_metadata"))
         .and_then(Value::as_object_mut)
     {
-        rename(client_metadata, "client_id", "identity");
+        let did = take_did(client_metadata, "client_id");
+        client_metadata.insert("proofs".to_string(), migrated_proofs(did));
     }
 
     app_state_object.insert("version".to_string(), Value::from(2));
     Ok(())
 }
 
-/// Renames the field `from` of `object` to `to`, if it has one.
-fn rename(object: &mut Map<String, Value>, from: &str, to: &str) {
-    if let Some(value) = object.remove(from) {
-        object.insert(to.to_string(), value);
+/// Removes the field `field` of `object`, and returns it if it is a non-empty string.
+fn take_did(object: &mut Map<String, Value>, field: &str) -> Option<String> {
+    match object.remove(field) {
+        Some(Value::String(did)) if !did.is_empty() => Some(did),
+        _ => None,
     }
+}
+
+/// The proofs of a DID verified by version 1, none without a DID.
+fn migrated_proofs(did: Option<String>) -> Value {
+    Value::Array(
+        did.into_iter()
+            .map(|did| json!({ "identity": did, "method": "migrated" }))
+            .collect(),
+    )
 }
 
 #[cfg(test)]
 mod tests {
     use crate::{migrations::apply_state_migrations, state::AppState};
-    use serde_json::{Map, Value};
+    use serde_json::{json, Map, Value};
 
     #[tokio::test]
     async fn test_migrate_v0_to_v1() {
@@ -106,7 +121,7 @@ mod tests {
 
     #[test]
     fn test_migrate_v1_to_v2() {
-        let app_state_object: Map<String, Value> = serde_json::from_value(serde_json::json!({
+        let app_state_object: Map<String, Value> = serde_json::from_value(json!({
             "version": 1,
             "connections": [{
                 "id": "connection",
@@ -144,14 +159,46 @@ mod tests {
         let app_state_value = serde_json::to_value(&app_state).unwrap();
 
         assert_eq!(app_state_value["version"], 2);
-        assert_eq!(app_state_value["connections"][0]["identity"], "did:web:issuer.example");
-        assert!(app_state_value["connections"][0].get("did").is_none());
+        let connection = &app_state_value["connections"][0];
+        assert_eq!(connection["key"], json!({ "did": "did:web:issuer.example" }));
         assert_eq!(
-            app_state_value["current_user_prompt"]["client_metadata"]["identity"],
-            "did:web:verifier.example"
+            connection["proofs"],
+            json!([{ "identity": "did:web:issuer.example", "method": "migrated" }])
         );
-        assert!(app_state_value["current_user_prompt"]["client_metadata"]
-            .get("client_id")
-            .is_none());
+        assert!(connection.get("did").is_none());
+        let client_metadata = &app_state_value["current_user_prompt"]["client_metadata"];
+        assert_eq!(
+            client_metadata["proofs"],
+            json!([{ "identity": "did:web:verifier.example", "method": "migrated" }])
+        );
+        assert!(client_metadata.get("client_id").is_none());
+    }
+
+    #[test]
+    fn a_pending_party_without_a_did_has_no_proofs_after_migrating_to_v2() {
+        let app_state_object: Map<String, Value> = serde_json::from_value(json!({
+            "version": 1,
+            "current_user_prompt": {
+                "type": "accept-connection",
+                "client_metadata": {
+                    "client_name": "Issuer",
+                    "logo_uri": null,
+                    "connection_url": "https://issuer.example",
+                    "redirect_uri": null,
+                    "client_id": null
+                },
+                "connection_data": null,
+                "domain_validation": { "status": "Unknown", "url": "https://issuer.example/" }
+            }
+        }))
+        .unwrap();
+
+        let app_state = apply_state_migrations(app_state_object, 1).unwrap();
+        let app_state_value = serde_json::to_value(&app_state).unwrap();
+
+        assert_eq!(
+            app_state_value["current_user_prompt"]["client_metadata"]["proofs"],
+            json!([])
+        );
     }
 }

@@ -1,4 +1,4 @@
-use crate::identity::Identity;
+use crate::identity::{ConnectionKey, Identity, Proof};
 use oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
@@ -80,11 +80,26 @@ pub struct ClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub redirect_uri: Option<String>,
-    /// Who the party is, verified with a DID or an X.509 certificate (ADR 0004), or `None` while it is unverified: an
-    /// OID4VCI issuer that is verified with neither gets its DID only from the credential it signs (ADR 0005). Stored
-    /// as `client_id` before `AppState` version 2.
-    #[ts(type = "string | null")]
-    pub identity: Option<Identity>,
+    /// The identities of the party the wallet has verified, and how (ADR 0004). Empty while the party is not verified:
+    /// an OID4VCI issuer verified with neither a DID document nor a certificate gets a
+    /// [`crate::identity::ProofMethod::CredentialSignature`] proof only from the credential it signs (ADR 0005). Stored as `client_id`
+    /// before `AppState` version 2.
+    pub proofs: Vec<Proof>,
+}
+
+impl ClientMetadata {
+    /// The first identity a proof verifies, `None` while the party is not verified.
+    pub fn verified_identity(&self) -> Option<&Identity> {
+        self.proofs
+            .iter()
+            .find(|proof| proof.method.verifies())
+            .map(|proof| &proof.identity)
+    }
+
+    /// The key of the connection to the party, see [`ConnectionKey::of`].
+    pub fn connection_key(&self) -> Option<ConnectionKey> {
+        ConnectionKey::of(&self.connection_url, &self.proofs)
+    }
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -153,7 +168,10 @@ mod tests {
                 logo_uri: None,
                 connection_url: "https://example.com".to_string(),
                 redirect_uri: Some("https://example.com".to_string()),
-                identity: Some(Identity::did("did:example:123").unwrap()),
+                proofs: vec![Proof::new(
+                    Identity::did("did:example:123").unwrap(),
+                    crate::identity::ProofMethod::SignedRequest,
+                )],
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {
@@ -169,7 +187,7 @@ mod tests {
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_metadata":{"client_name":"Test Client","logo_uri":null,"connection_url":"https://example.com","redirect_uri":"https://example.com","identity":"did:example:123"},"domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
+            r#"{"type":"accept-connection","client_metadata":{"client_name":"Test Client","logo_uri":null,"connection_url":"https://example.com","redirect_uri":"https://example.com","proofs":[{"identity":"did:example:123","method":"signed_request"}]},"domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
         );
     }
 

@@ -1,8 +1,9 @@
-# ADR 0004: Identities Verified with a DID or an X.509 Certificate
+# ADR 0004: Connections Verified with DIDs and X.509 Certificates
 
 ## Status
 
-Proposed. Supersedes [ADR 0001](0001-did-based-client-identification.md).
+Proposed. Supersedes [ADR 0001](0001-did-based-client-identification.md). Amends
+[ADR 0005](0005-unverified-oid4vci-issuers.md) where noted.
 
 ## Context
 
@@ -24,32 +25,41 @@ only as an `https` URL whose host is a DNS name of the leaf certificate, and ref
 chain: a CA can only be trusted for the DNS names its name constraints cover. A party verified with a certificate
 therefore has no DID that UniMe could store, and ADR 0001's connection model cannot represent it.
 
+A party can also show several pieces of evidence: a DID document at its domain, signed metadata under a certificate,
+domain linkage, credentials signed by a DID. Making one of them "the identity" of a connection forces the wallet to pick
+one, and loses the connection when the party moves from one to another. The user thinks of the party, not of its
+identifiers.
+
 ## Decision
 
-### An identity is verified with a DID or with an X.509 certificate
+### A connection is a party, found by a key and verified by proofs
 
-Every connection has an **identity**: who the party is, as the wallet has verified it. There are two ways to verify it.
+A **connection** is the party the user interacts with. It has:
 
-- **DID.** The identity is the DID. It is verified as before: by the DID document the DID resolves to, the signatures of
-  its verification methods, and domain linkage and linked verifiable presentations where the party publishes them.
-- **X.509 certificate.** The identity is the DNS name that a certificate chain certifies: the chain validates against
-  one of the wallet's trust anchors, and the leaf certificate has the DNS name as a `dNSName` Subject Alternative
-  Name. For an OID4VCI issuer, that DNS name is the host of its `credential_issuer` URL.
+- a **key**, what the connection is found by: the DNS name of the party when a proof binds it to one, otherwise its
+  DID;
+- **proofs**: each an identity of the party, and how the wallet verified it.
 
-The DNS name, not the certificate, is the identity: certificates are renewed and re-keyed while the name stays, and
-the name is what a trust anchor's name constraints cover. A connection has one identity, verified one way; the wallet
-does not link a DID and a DNS name of the same party.
+An **identity** is a DID, or the DNS name a certificate chain certifies, written `x509_san_dns:<DNS name>` (the client
+identifier syntax of OpenID4VP 1.0 §5.9.3). For a certificate, the DNS name and not the certificate is the identity:
+certificates are renewed and re-keyed while the name stays, and the name is what a trust anchor's name constraints
+cover.
 
-### Representation
+| Method                    | Identity | Verified by                                                                     | Key      |
+| ------------------------- | -------- | ------------------------------------------------------------------------------- | -------- |
+| `well_known_did_document` | DID      | its DID document, served at `/.well-known/did.json` of the party's DNS name     | DNS name |
+| `signed_metadata`         | DNS name | `signed_metadata` under an `x5c` chain that validates against a trust anchor    | DNS name |
+| `signed_request`          | DID      | a SIOPv2 or OpenID4VP request signed with a key of the DID                      | DID      |
+| `credential_signature`    | DID      | nothing: the DID that signs the credentials of an issuer not verified otherwise | DNS name |
+| `migrated`                | DID      | a version of UniMe that did not record how (`AppState` version 1)               | DID      |
 
-An identity is stored as a string, so existing data stays valid:
+A proof joins a connection only when it binds its identity to the connection's key, or is found under the key. The
+wallet never links two identities because they merely occur together. A `credential_signature` verifies nobody: it
+records which DID an unverified issuer signs with, so that its later credentials are held to it (ADR 0005).
 
-- a DID is stored as the DID, unchanged;
-- an X.509 identity is stored as `x509_san_dns:<DNS name>`, the client identifier syntax of OpenID4VP 1.0 §5.9.3.
-
-`Connection.did` becomes `Connection.identity`, and the pending connection's `ClientMetadata.client_id` becomes
-`ClientMetadata.identity`. `AppState` version 2 renames both fields; a DID stored by version 1 is a valid identity.
-Connections are found by their identity.
+A connection is found by its key, or else by an identity it shares with the party, so that a connection stored under
+its DID is found by a party now keyed by its DNS name. Each interaction replaces the connection's key and proofs with the
+ones just verified; the connection keeps its id.
 
 ### Trust anchors
 
@@ -59,43 +69,75 @@ anchors of a release come from is open: an ecosystem's trusted list (for the EUD
 of ETSI TS 119 612), a list Impierce curates, or anchors the user adds. Revocation (CRL, OCSP) is not checked;
 identity-kit leaves it out of `X509Resolver`, and keeping the anchors current is the mitigation.
 
+The trust anchors of the public Web PKI are not trust anchors for identities: a TLS certificate only certifies control
+of a domain, which fetching the issuer's metadata over HTTPS already shows, and its CAs are not chosen by the wallet.
+
 ### OID4VCI credential issuers
 
-The identity is verified before the user accepts the connection, as ADR 0001 requires:
+The issuer is verified before the user accepts the connection, as ADR 0001 requires:
 
-1. A DID document at `/.well-known/did.json`, found as ADR 0001 describes, gives a DID identity. This comes first,
-   so the identity of an existing connection does not change.
-2. Otherwise, the credential issuer metadata's `signed_metadata` gives an X.509 identity when its `x5c` chain
+1. A DID document at `/.well-known/did.json`, found as ADR 0001 describes, gives a `well_known_did_document` proof.
+   This comes first, so the proof of an existing connection does not change.
+2. Otherwise, the credential issuer metadata's `signed_metadata` gives a `signed_metadata` proof when its `x5c` chain
    validates against a trust anchor, its signature verifies with the leaf's key, its `sub` is the
    `credential_issuer` URL, and the leaf certificate has that URL's host as a DNS name.
    When the signed metadata verifies, its values take precedence over the unsigned metadata, as OID4VCI 1.0
-   §11.2.3 requires: UniMe uses its endpoints and credential configurations, whatever the identity it ends up with.
+   §11.2.3 requires: UniMe uses its endpoints and credential configurations, whatever proof it ends up with.
 3. Otherwise an issuer that publishes no DID document is accepted as unverified, and bound to the DID that signs its
-   credential ([ADR 0005](0005-unverified-oid4vci-issuers.md)). One whose DID document is unavailable is rejected.
+   credential with a `credential_signature` proof ([ADR 0005](0005-unverified-oid4vci-issuers.md)). One whose DID
+   document is unavailable is rejected.
 
-The connection's identity decides how its credentials are checked. Every credential of an issuer with an X.509
-identity, whatever its format, must be signed under an `x5c` chain that validates against a trust anchor and whose
-leaf has the identity's DNS name. The credentials of an issuer with a DID identity, or of an unverified one, are
-verified with the DID that signs them, as ADR 0005 describes.
+The issuer's connection is keyed by its DNS name in each case.
+
+The connection's proof decides how its credentials are checked. Every credential of an issuer verified with
+`signed_metadata`, whatever its format, must be signed under an `x5c` chain that validates against a trust anchor and
+whose leaf has the identity's DNS name. The credentials of an issuer verified with its DID document, or of an
+unverified one, are verified with the DID that signs them, as ADR 0005 describes.
+
+An unverified issuer is held to the DIDs of the connection found under its DNS name: a credential signed with another
+DID is refused (amends ADR 0005). The party at that name signs with another key than the one the user connected to
+before.
 
 ### Verifiers
 
 A verifier identified as `x509_san_dns:` or `x509_hash:` needs its signed request verified with the key of its `x5c`
 leaf, and the leaf matched against the client identifier. openid4vc verifies requests only with keys it resolves from
-a DID (`oid4vc_core::Verify`, impierce/openid4vc#210). Until it can, verifiers keep DID identities, and a client
-identifier that is not a DID is rejected as before.
+a DID (`oid4vc_core::Verify`, impierce/openid4vc#210). Until it can, a verifier is verified by a `signed_request` proof
+of its DID, keyed by that DID, and a client identifier that is not a DID is rejected as before.
 
 ### Domain linkage and linked verifiable presentations
 
-Both stay DID-only. An X.509 identity's domain is already bound: it is the DNS name the certificate chain certifies.
+Both stay DID-only, and are kept on the connection beside its proofs. A DNS name certified by a certificate is already
+bound to its domain.
+
+### Showing a connection
+
+The name and logo of a party come from its own metadata, unless signed metadata vouches for them, so they are claims.
+The UI keeps what a party claims apart from what the wallet verified:
+
+- The title is the party's name. Without one, it is the connection's DNS name, or else its DID shortened.
+- Without a logo, the avatar is a monogram of the title.
+- The connection's key is always shown next to the name, also when the name is the party's own claim.
+- The verification shown applies to the key, never to the name.
+- The connection's details list its proofs.
 
 ## Consequences
 
 - Issuers that follow HAIP can be accepted without publishing a DID document, and their identity is still verified
   before the user accepts the connection.
+- An issuer keeps its connection when it moves from a DID document to a certificate for the same DNS name, or the other
+  way around.
 - The wallet decides which certificate authorities may vouch for an identity. Shipping and updating trust anchors
   becomes part of a release, and an anchor that is compromised or too broad vouches for identities it should not.
-- `AppState` version 2 renames `did` to `identity`. Older versions of UniMe cannot read a state written by version 2.
-- The frontend shows an identity instead of a DID, and recognizes the `x509_san_dns:` form.
+- `AppState` version 2 replaces a connection's `did` with `key` and `proofs`, and the pending connection's
+  `ClientMetadata.client_id` with `proofs`. A version 1 DID becomes a `migrated` proof, keyed by the DID until the
+  connection is verified again. Older versions of UniMe cannot read a state written by version 2.
+- An unverified issuer that signs with a new DID under the same DNS name is refused, where ADR 0005 gave it a
+  connection of its own. A version 1 state with two such connections keeps both; the second is refused at its next
+  issuance.
 - X.509 verifiers wait for openid4vc to verify requests under `x5c`.
 - UniMe depends on identity-kit 0.5.1, the first release with `x5c` support (impierce/identity-kit#172).
+- Follow-ups: collect every proof an issuer offers rather than the first, and accept its credentials under any of them;
+  record the trust anchor that vouched for a `signed_metadata` proof; show in the prompt when a known connection's
+  proofs changed; derive a verification level (ecosystem, domain, not verified) for the UI; verify Status List Tokens
+  signed under `x5c`.

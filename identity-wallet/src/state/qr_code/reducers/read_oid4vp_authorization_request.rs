@@ -55,11 +55,7 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
 
         if let Some(pending_connection_data) = &pending_connection_data {
             let client_metadata = pending_connection_data.client_metadata.clone();
-            let connection = state
-                .connections
-                .0
-                .iter()
-                .find(|connection| Some(&connection.identity) == client_metadata.identity.as_ref());
+            let connection = state.connections.find(&client_metadata);
             let requested_credentials = with_last_shared(requested_credentials, connection);
             if let Err(error) = ensure_shareable(&requested_credentials) {
                 // The Verifier learns that nothing will come (`access_denied`) rather than waiting for an answer.

@@ -4,7 +4,10 @@
       "id": "68aeac8e93deaf8e1547da6ab4327d7ab13e1ece04483a760c1c9900faa9cf50",
       "name": "example123",
       "url": "https://example.com",
-      "identity": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
+      "key": { "did": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb" },
+      "proofs": [
+        { "identity": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb", "method": "signed_request" }
+      ],
       "verified": false,
       "first_interacted": "2024-03-15T01:16:28.712260354+00:00",
       "last_interacted": "2024-03-15T01:16:28.712260354+00:00"

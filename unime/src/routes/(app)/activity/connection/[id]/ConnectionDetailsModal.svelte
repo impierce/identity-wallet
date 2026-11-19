@@ -18,9 +18,10 @@
     elements: { overlay, content, title, close, portalled },
   } = createDialog({ open, portal: '#portal' });
 
-  $: explorerLink = connection.identity.startsWith('did:iota')
-    ? buildIotaExplorerSearchLink(connection.identity)
-    : undefined;
+  // The identities the wallet verified for the connection: DIDs, or `x509_san_dns:<DNS name>` (ADR 0004).
+  $: identities = connection.proofs.map((proof) => proof.identity);
+  $: iotaDid = identities.find((identity) => identity.startsWith('did:iota'));
+  $: explorerLink = iotaDid ? buildIotaExplorerSearchLink(iotaDid) : undefined;
 </script>
 
 <div use:melt={$portalled}>
@@ -39,9 +40,15 @@
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
           {$LL.CONNECTION.DETAILS.IDENTITY()}
         </p>
-        <p class="pt-1 font-mono text-[12px]/[19px] font-medium break-all text-slate-800 select-text dark:text-grey">
-          {connection.identity || '-'}
-        </p>
+        {#each identities as identity}
+          <p class="pt-1 font-mono text-[12px]/[19px] font-medium break-all text-slate-800 select-text dark:text-grey">
+            {identity}
+          </p>
+        {:else}
+          <p class="pt-1 font-mono text-[12px]/[19px] font-medium break-all text-slate-800 select-text dark:text-grey">
+            -
+          </p>
+        {/each}
       </div>
 
       {#if explorerLink}

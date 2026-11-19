@@ -108,8 +108,8 @@
     </div>
 
     <div class="w-full space-y-3">
-      <!-- An OID4VCI issuer without a DID document: no DID yet, bound to the DID that signs its credential (ADR 0005) -->
-      {#if client_metadata.identity === null}
+      <!-- An OID4VCI issuer verified with neither a DID document nor a certificate: no proof yet, bound to the DID that signs its credential (ADR 0005) -->
+      {#if client_metadata.proofs.length === 0}
         <div
           class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
         >

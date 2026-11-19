@@ -16,7 +16,8 @@ use super::{
     FeatTrait,
 };
 
-use crate::identity::Identity;
+use crate::identity::{ConnectionKey, Proof};
+use crate::state::user_prompt::ClientMetadata;
 use log::info;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -31,16 +32,33 @@ impl Connections {
         Self(Vec::new())
     }
 
-    pub fn contains(&self, identity: &Identity) -> bool {
-        self.0.iter().any(|connection| &connection.identity == identity)
+    /// The index of the connection to the party with `key` and `proofs`: the one with the same key, or else one with an
+    /// identity of the same proofs, such as a connection still keyed by the DID it was stored under before `AppState`
+    /// version 2.
+    pub fn position(&self, key: &ConnectionKey, proofs: &[Proof]) -> Option<usize> {
+        self.0.iter().position(|connection| &connection.key == key).or_else(|| {
+            self.0.iter().position(|connection| {
+                connection
+                    .proofs
+                    .iter()
+                    .any(|stored| proofs.iter().any(|proof| proof.identity == stored.identity))
+            })
+        })
+    }
+
+    /// The connection to the party of `client_metadata`, see [`Connections::position`].
+    pub fn find(&self, client_metadata: &ClientMetadata) -> Option<&Connection> {
+        let key = client_metadata.connection_key()?;
+        self.position(&key, &client_metadata.proofs).map(|index| &self.0[index])
     }
 
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, refreshes
     /// its display data with what was just fetched, updates the last interaction time and returns a reference to the
     /// connection.
     ///
-    /// Connections are keyed by identity, so a counterparty whose identity is not known yet (an unverified OID4VCI issuer
-    /// before its credential was verified, see ADR 0005) cannot become a connection.
+    /// A connection has at least one proof, so a counterparty without one (an unverified OID4VCI issuer before its
+    /// credential was verified, see ADR 0005) cannot become a connection. The connection's key and proofs are replaced by
+    /// the ones just verified.
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
@@ -48,43 +66,49 @@ impl Connections {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
-        let identity = client_metadata.identity.as_ref().ok_or_else(|| {
-            AppError::UntrustedError(format!(
-                "The identity of {url} is not verified, so it cannot be a connection"
-            ))
-        })?;
+        let proofs = &client_metadata.proofs;
+        let key = match (client_metadata.connection_key(), proofs.is_empty()) {
+            (Some(key), false) => key,
+            _ => {
+                return Err(AppError::UntrustedError(format!(
+                    "The identity of {url} is not verified, so it cannot be a connection"
+                )))
+            }
+        };
 
         // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
-        let connection_index =
-            if let Some(index) = self.0.iter().position(|connection| &connection.identity == identity) {
-                info!("Updating existing connection: {name}, {url}, {identity}");
-                let connection = &mut self.0[index];
-                // The `id` is kept even if the name or url changed, since history events and credentials refer to it.
-                connection.name = name.to_string();
-                connection.url = url.to_string();
-                connection.domain_validation = pending_connection_data.domain_validation.clone();
-                connection.linked_verifiable_presentations =
-                    pending_connection_data.linked_verifiable_presentations.clone();
-                connection.update_ecosystems(
-                    pending_connection_data.ecosystems.clone(),
-                    pending_connection_data.ecosystems_check.clone(),
-                );
-                connection.update_last_interaction_time();
-                index
-            } else {
-                info!("Inserting new connection: {name}, {url}, {identity}");
-                self.0.push(Connection::new(
-                    name.to_string(),
-                    url.to_string(),
-                    identity.clone(),
-                    pending_connection_data.domain_validation.clone(),
-                    pending_connection_data.linked_verifiable_presentations.clone(),
-                    pending_connection_data.ecosystems.clone(),
-                ));
-                let index = self.0.len() - 1;
-                self.0[index].ecosystems_check = pending_connection_data.ecosystems_check.clone();
-                index
-            };
+        let connection_index = if let Some(index) = self.position(&key, proofs) {
+            info!("Updating existing connection: {name}, {url}, {key}");
+            let connection = &mut self.0[index];
+            // The `id` is kept even if the name or url changed, since history events and credentials refer to it.
+            connection.name = name.to_string();
+            connection.url = url.to_string();
+            connection.key = key;
+            connection.proofs = proofs.clone();
+            connection.domain_validation = pending_connection_data.domain_validation.clone();
+            connection.linked_verifiable_presentations =
+                pending_connection_data.linked_verifiable_presentations.clone();
+            connection.update_ecosystems(
+                pending_connection_data.ecosystems.clone(),
+                pending_connection_data.ecosystems_check.clone(),
+            );
+            connection.update_last_interaction_time();
+            index
+        } else {
+            info!("Inserting new connection: {name}, {url}, {key}");
+            self.0.push(Connection::new(
+                name.to_string(),
+                url.to_string(),
+                key,
+                proofs.clone(),
+                pending_connection_data.domain_validation.clone(),
+                pending_connection_data.linked_verifiable_presentations.clone(),
+                pending_connection_data.ecosystems.clone(),
+            ));
+            let index = self.0.len() - 1;
+            self.0[index].ecosystems_check = pending_connection_data.ecosystems_check.clone();
+            index
+        };
 
         Ok(&mut self.0[connection_index])
     }
@@ -106,10 +130,11 @@ pub struct Connection {
     pub id: String,
     pub name: String,
     pub url: String,
-    /// Who the connection is, verified with a DID or an X.509 certificate (ADR 0004). Stored as `did` before `AppState`
+    /// What the connection is found by: the party's DNS name, or its DID when only that is verified (ADR 0004).
+    pub key: ConnectionKey,
+    /// The identities of the party the wallet has verified, and how (ADR 0004). Stored as `did` before `AppState`
     /// version 2.
-    #[ts(type = "string")]
-    pub identity: Identity,
+    pub proofs: Vec<Proof>,
     // TODO: is this needed?
     pub verified: bool,
     pub first_interacted: String,
@@ -137,23 +162,24 @@ impl Connection {
     pub fn new(
         name: String,
         url: String,
-        identity: Identity,
+        key: ConnectionKey,
+        proofs: Vec<Proof>,
         domain_validation: Option<(ValidationStatus, String)>,
         linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
         ecosystems: Option<Vec<EcosystemProfile>>,
     ) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
-        // The identity is part of the hash: connections are keyed by identity, so two with the same name and URL but
-        // different identities (an issuer that signs with a new `did:jwk`, see ADR 0005) must not share an id. The
-        // fields are hashed as a JSON array, so that no two triples give the same bytes. A DID identity hashes as the DID.
-        // Stored connections keep their ids.
-        let id = sha256::digest(serde_json::json!([name, url, identity.to_string()]).to_string()).to_string();
+        // The key is part of the hash: two connections with the same name and URL but different keys (verifiers with
+        // different DIDs) must not share an id. The fields are hashed as a JSON array, so that no two triples give the
+        // same bytes. Stored connections keep their ids.
+        let id = sha256::digest(serde_json::json!([name, url, key.to_string()]).to_string()).to_string();
         let current_datetime = DateUtils::new_date_string();
         Self {
             id,
             name,
             url,
-            identity,
+            key,
+            proofs,
             verified: false,
             first_interacted: current_datetime.clone(),
             last_interacted: current_datetime,
@@ -248,21 +274,34 @@ mod tests {
     use crate::state::user_prompt::ClientMetadata;
 
     use super::*;
+    use crate::identity::{Identity, ProofMethod};
 
+    /// A verifier whose signed request verified `identity`.
     fn pending_connection_data(url: &str, name: &str, identity: Identity) -> PendingConnectionData {
+        pending_connection_data_with(url, name, vec![Proof::new(identity, ProofMethod::SignedRequest)])
+    }
+
+    fn pending_connection_data_with(url: &str, name: &str, proofs: Vec<Proof>) -> PendingConnectionData {
         PendingConnectionData {
             client_metadata: ClientMetadata {
                 client_name: name.to_string(),
                 logo_uri: None,
                 connection_url: url.to_string(),
                 redirect_uri: None,
-                identity: Some(identity),
+                proofs,
             },
             domain_validation: None,
             linked_verifiable_presentations: None,
             ecosystems: None,
             ecosystems_check: None,
         }
+    }
+
+    fn contains(connections: &Connections, identity: &Identity) -> bool {
+        connections
+            .0
+            .iter()
+            .any(|connection| connection.proofs.iter().any(|proof| &proof.identity == identity))
     }
 
     #[test]
@@ -278,7 +317,7 @@ mod tests {
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
-        assert!(connections.contains(&did));
+        assert!(contains(&connections, &did));
 
         let connection = connections
             .update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()))
@@ -331,7 +370,7 @@ mod tests {
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
-        assert!(connections.contains(&did));
+        assert!(contains(&connections, &did));
 
         // A different DID is a different connection, even when the display name and url is identical.
         let other_did = Identity::did("did:example:456").unwrap();
@@ -342,8 +381,8 @@ mod tests {
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 2);
-        assert!(connections.contains(&did));
-        assert!(connections.contains(&other_did));
+        assert!(contains(&connections, &did));
+        assert!(contains(&connections, &other_did));
         // Each has its own id, so the credentials and history events of one are not attributed to the other.
         assert_ne!(connections.0[0].id, connections.0[1].id);
     }
@@ -355,7 +394,8 @@ mod tests {
             Connection::new(
                 "Example".to_string(),
                 url.to_string(),
-                Identity::did(did).unwrap(),
+                ConnectionKey::Did(did.to_string()),
+                vec![],
                 None,
                 None,
                 None,
@@ -376,10 +416,67 @@ mod tests {
             "Example",
             Identity::did("did:example:123").unwrap(),
         );
-        unverified.client_metadata.identity = None;
+        unverified.client_metadata.proofs = vec![];
 
         assert!(connections.update_last_interaction_or_insert_new(&unverified).is_err());
         assert!(connections.0.is_empty());
+    }
+
+    #[test]
+    fn an_issuer_is_one_connection_whatever_proves_its_identity() {
+        let mut connections = Connections::new();
+        let url = "https://issuer.example";
+        let did_web = Identity::did("did:web:issuer.example").unwrap();
+        let x509 = Identity::X509 {
+            dns_name: "issuer.example".to_string(),
+        };
+
+        let first = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data_with(
+                url,
+                "Issuer",
+                vec![Proof::new(did_web, ProofMethod::WellKnownDidDocument)],
+            ))
+            .unwrap()
+            .clone();
+        assert_eq!(first.key, ConnectionKey::Domain("issuer.example".to_string()));
+
+        // The issuer moves from its DID document to a certificate for the same DNS name.
+        let proofs = vec![Proof::new(x509, ProofMethod::SignedMetadata)];
+        let updated = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data_with(url, "Issuer", proofs.clone()))
+            .unwrap();
+
+        assert_eq!(updated.id, first.id);
+        assert_eq!(updated.proofs, proofs);
+        assert_eq!(connections.0.len(), 1);
+    }
+
+    #[test]
+    fn a_connection_stored_under_its_did_is_found_and_rekeyed_by_its_dns_name() {
+        let did_web = Identity::did("did:web:issuer.example").unwrap();
+        let mut connections = Connections(vec![Connection::new(
+            "Issuer".to_string(),
+            "https://issuer.example".to_string(),
+            ConnectionKey::Did("did:web:issuer.example".to_string()),
+            vec![Proof::new(did_web.clone(), ProofMethod::Migrated)],
+            None,
+            None,
+            None,
+        )]);
+        let id = connections.0[0].id.clone();
+
+        let updated = connections
+            .update_last_interaction_or_insert_new(&pending_connection_data_with(
+                "https://issuer.example",
+                "Issuer",
+                vec![Proof::new(did_web, ProofMethod::WellKnownDidDocument)],
+            ))
+            .unwrap();
+
+        assert_eq!(updated.id, id);
+        assert_eq!(updated.key, ConnectionKey::Domain("issuer.example".to_string()));
+        assert_eq!(connections.0.len(), 1);
     }
 
     fn ecosystem(name: &str) -> EcosystemProfile {

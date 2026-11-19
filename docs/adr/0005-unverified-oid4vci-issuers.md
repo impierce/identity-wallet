@@ -45,8 +45,9 @@ it issues.
    payload. The DID of the key is the **signing DID**.
 3. **Binding.** An issuer verified with its DID document must have signed every credential with that DID; otherwise the
    credentials are refused. An unverified issuer is bound to the signing DID, which all its credentials must share. The
-   connection is created, or found, under that DID only after the credentials verified. A credential that fails leaves
-   neither a credential nor a connection behind.
+   connection is created, or found, with that DID as its proof only after the credentials verified. A credential that
+   fails leaves neither a credential nor a connection behind. Under ADR 0004, the connection is keyed by the issuer's
+   DNS name, and a signing DID that is not one of that connection's identities is refused.
 4. **No presentation before binding.** UniMe presents no credentials to an unverified issuer. An issuer that asks for
    a presentation in an Interactive Authorization is refused: the user would share credentials with a party whose
    identity is unknown, and the share could be recorded on no connection if the issuance then failed.
@@ -60,12 +61,13 @@ verified with an X.509 certificate counts as verified too: its credentials are c
 `did:jwk` issuers, and other issuers without a DID document, can issue to UniMe, as DIIP v5 requires.
 
 For these issuers the user accepts before the issuer's identity is known. The prompt says so. The DID becomes known when
-the credential's signature verifies, and the connection is stored under it, so a later offer from the same issuer finds
-the same connection.
+the credential's signature verifies, and the connection records it as a `credential_signature` proof (ADR 0004), so a
+later offer from the same issuer finds the same connection.
 
-A stored connection always has an identity (a DID, or an X.509 identity under ADR 0004). Only the prompt and the
-pending connection data can be without one. A new connection's id is the hash of its name, URL and identity, as a JSON
-array, so an issuer that signs with a new DID gets a connection of its own; stored connections keep their ids.
+A stored connection always has a proof (ADR 0004). Only the prompt and the pending connection data can be without one.
+A new connection's id is the hash of its name, URL and key, as a JSON array; stored connections keep their ids. Under
+ADR 0004, an issuer that signs with a new DID under the same DNS name is refused instead of getting a connection of its
+own.
 
 An unverified issuer cannot ask for a presentation in an Interactive Authorization. Interactive Authorization is not
 part of DIIP v5.

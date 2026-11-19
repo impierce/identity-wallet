@@ -186,7 +186,7 @@ pub(crate) fn refuse_presentation_to_unverified_issuer(
     pending_connection_data: Option<&PendingConnectionData>,
 ) -> Result<(), AppError> {
     match pending_connection_data {
-        Some(pending) if pending.client_metadata.identity.is_none() => Err(UntrustedError(
+        Some(pending) if pending.client_metadata.verified_identity().is_none() => Err(UntrustedError(
             "The issuer asks for credentials in an interactive authorization, but its identity is not verified"
                 .to_string(),
         )),
@@ -206,7 +206,15 @@ mod tests {
                 redirect_uri: None,
                 connection_url: "issuer.example".to_string(),
                 logo_uri: None,
-                identity: client_id.map(|did| crate::identity::Identity::did(did).unwrap()),
+                proofs: client_id
+                    .map(|did| {
+                        crate::identity::Proof::new(
+                            crate::identity::Identity::did(did).unwrap(),
+                            crate::identity::ProofMethod::WellKnownDidDocument,
+                        )
+                    })
+                    .into_iter()
+                    .collect(),
             },
             domain_validation: None,
             linked_verifiable_presentations: None,
