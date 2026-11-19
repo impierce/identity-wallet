@@ -1,5 +1,5 @@
 {
-  "$comment": "Input for scripts/generate-app-reference.mjs. Every route in unime/src/routes needs an entry: either a screen in a group, with a name (letters, digits and spaces) and a purpose of one to three sentences, or an entry in omittedRoutes with a reason. The order of the groups and screens is the order of the reference. Run `pnpm docs:app-reference` after a change.",
+  "$comment": "Input for scripts/generate-app-reference.mjs. Every route in unime/src/routes needs an entry: either a screen in a group, with a name (letters, digits and spaces) and a purpose of one to three sentences, or an entry in omittedRoutes with a reason. The order of the groups and screens is the order of the reference. developerModeConditions names the variables, next to dev_mode, whose {#if} only shows its content in developer mode, such as a panel that the developer menu opens. Run `pnpm docs:app-reference` after a change.",
   "groups": [
     {
       "title": "Start and unlock",
@@ -269,6 +269,7 @@
       "note": "Adds the bottom bar with the Me, Scan and Activity tabs."
     }
   ],
+  "developerModeConditions": ["showDebugMessages", "showDragonProfileSteps"],
   "omittedRoutes": [
     {
       "route": "/goals",

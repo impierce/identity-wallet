@@ -28,6 +28,14 @@ jobs:
             echo "::notice::The secret DOCS_DEPLOY_HOOK_URLS is not set, so no build was triggered."
             exit 0
           fi
+          # Every hook gets its request, also after another one failed or timed out. The step fails afterwards.
+          failed=0
           for url in $DOCS_DEPLOY_HOOK_URLS; do
-            curl --fail --silent --show-error --output /dev/null --request POST "$url"
+            # A deploy hook URL is a secret by itself: keep it out of the log, whatever curl reports.
+            echo "::add-mask::$url"
+            if ! curl --fail --silent --show-error --max-time 30 --output /dev/null --request POST "$url"; then
+              echo "::error::A deploy hook did not accept the request."
+              failed=1
+            fi
           done
+          exit "$failed"

@@ -35,6 +35,7 @@ const ts = requireFromUnime('typescript');
 
 // Stands in for a `${...}` expression in a template literal such as `/credentials/${credential.id}`.
 const DYNAMIC = '\u0000';
+const ONLY_DYNAMIC = /^\u0000+$/;
 // Serialized action types follow the `[Feature] Action name` convention (see AGENTS.md).
 const ACTION_TYPE = /^\[[^\]]+\] \S/;
 // Keys of AST nodes that hold no source code of their own.
@@ -50,6 +51,13 @@ const within = (ranges, position) => ranges.some(([start, end]) => position >= s
 
 /** Problems with the input, reported together at the end. */
 const problems = [];
+
+/**
+ * Names of variables that show content only in developer mode when an `{#if}` tests them, next to `dev_mode` itself.
+ * They come from the screens file, because the code does not tell that a panel is opened from the developer menu.
+ */
+let developerModeConditions = [];
+const usedDeveloperModeConditions = new Set();
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Translations
@@ -117,17 +125,20 @@ function findRouteFiles() {
 
 /**
  * Finds the route that a string from the code points to, such as `/me/settings` or `/credentials/${DYNAMIC}`. Returns
- * `undefined` for anything that is not a route of the app.
+ * `undefined` for anything that is not a route of the app. `isNavigation` tells that the string is the target of an
+ * `href` or of `goto()`.
  */
-function matchRoute(candidate, routes) {
-  // A lone `/` is far more often a separator, as in `split('/')`, than a link to the start screen.
-  if (!candidate.startsWith('/') || candidate === '/') return undefined;
+function matchRoute({ value: candidate, isNavigation }, routes) {
+  if (!candidate.startsWith('/')) return undefined;
+  // A lone `/` links to the start screen in an `href` or in `goto('/')`. Elsewhere it is a separator, as in `split('/')`.
+  if (candidate === '/') return isNavigation && routes.includes('/') ? '/' : undefined;
   const pathname = candidate.split(/[?#]/)[0];
   const segments = pathname
     .split('/')
     .slice(1)
-    // A dynamic part glued to a fixed one, as in `certifications${page.url.search}`, is a query string.
-    .map((segment) => (segment === DYNAMIC ? DYNAMIC : segment.split(DYNAMIC).join('')));
+    // A segment without a fixed part, as in `${id}` or `${id}${page.url.search}`, is a parameter. A dynamic part glued
+    // to a fixed one, as in `certifications${page.url.search}`, is a query string.
+    .map((segment) => (ONLY_DYNAMIC.test(segment) ? DYNAMIC : segment.split(DYNAMIC).join('')));
   const matches = routes.filter((route) => {
     const expected = route.split('/').slice(1);
     if (expected.length !== segments.length) return false;
@@ -176,6 +187,8 @@ function walk(root, visitor) {
  */
 function collectReferences(root) {
   const found = { keys: [], paths: [], actions: [] };
+  // The first argument of each `goto()`: a string there is the target of a navigation.
+  const gotoTargets = new Set();
   walk(root, (node) => {
     if (node.type === 'Comment') return false;
     if (node.type === 'MemberExpression') {
@@ -185,21 +198,69 @@ function collectReferences(root) {
         return false;
       }
     }
+    if (node.type === 'CallExpression' && node.callee.type === 'Identifier' && node.callee.name === 'goto') {
+      gotoTargets.add(node.arguments[0]);
+    }
+    const isNavigation = gotoTargets.has(node);
     if (node.type === 'Literal' && typeof node.value === 'string') {
-      if (node.value.startsWith('/')) found.paths.push({ value: node.value, start: node.start });
+      if (node.value.startsWith('/')) found.paths.push({ value: node.value, isNavigation, start: node.start });
       else if (ACTION_TYPE.test(node.value)) found.actions.push({ value: node.value, start: node.start });
     }
     if (node.type === 'TemplateLiteral') {
       const value = node.quasis.map((quasi) => quasi.value.cooked).join(DYNAMIC);
-      if (value.startsWith('/')) found.paths.push({ value, start: node.start });
+      if (value.startsWith('/')) found.paths.push({ value, isNavigation, start: node.start });
     }
     if (node.type === 'Attribute' && node.name === 'href' && Array.isArray(node.value)) {
       const value = node.value.map((part) => (part.type === 'Text' ? part.data : DYNAMIC)).join('');
-      if (value.startsWith('/')) found.paths.push({ value, start: node.start });
+      if (value.startsWith('/')) found.paths.push({ value, isNavigation: true, start: node.start });
     }
     return true;
   });
   return found;
+}
+
+/**
+ * The expression of an attribute whose value is a single expression: `x={value}`, or `x="{value}"`, which Svelte
+ * treats the same. Returns `undefined` for a text value and for an attribute without a value.
+ */
+function expressionOf(attribute) {
+  const value = attribute.value;
+  if (value === true) return undefined;
+  if (!Array.isArray(value)) return value.expression;
+  return value.length === 1 && value[0].type === 'ExpressionTag' ? value[0].expression : undefined;
+}
+
+/**
+ * Whether an expression can be `null` or `undefined`, as far as its syntax tells. A variable or a property can. A call
+ * is taken to return a value.
+ */
+function mayBeNullish(expression) {
+  switch (expression.type) {
+    case 'Literal':
+      return expression.value === null;
+    case 'TemplateLiteral':
+    case 'CallExpression':
+    case 'NewExpression':
+    case 'ArrowFunctionExpression':
+    case 'FunctionExpression':
+    case 'ObjectExpression':
+    case 'ArrayExpression':
+    case 'BinaryExpression':
+    case 'TSNonNullExpression':
+      return false;
+    case 'UnaryExpression':
+      return expression.operator === 'void';
+    case 'TSAsExpression':
+    case 'TSSatisfiesExpression':
+      return mayBeNullish(expression.expression);
+    case 'ConditionalExpression':
+      return mayBeNullish(expression.consequent) || mayBeNullish(expression.alternate);
+    case 'LogicalExpression':
+      // `a && b` gives `a` when it is falsy, which includes `null` and `undefined`.
+      return expression.operator === '&&' || mayBeNullish(expression.right);
+    default:
+      return true;
+  }
 }
 
 /** The imports of a script block: `[{ specifier, bindings: [{ imported, local }] }]`, without type imports. */
@@ -322,10 +383,14 @@ function parseComponent(file) {
       if (!target) continue;
       if (target.endsWith('.svelte')) bindings.forEach((binding) => componentFiles.set(binding.local, target));
       else if (barrelExports(target).size > 0) {
+        // A barrel can define helper functions next to the components it re-exports.
+        const helpers = [];
         for (const binding of bindings) {
           const exported = barrelExports(target).get(binding.imported);
           if (exported) componentFiles.set(binding.local, exported);
+          else helpers.push(binding.imported);
         }
+        if (helpers.length > 0) modules.push({ file: target, names: helpers });
       } else {
         modules.push({
           file: target,
@@ -346,31 +411,36 @@ const analyzed = new Map();
  * How a component is used decides what it shows, so two things about the use are taken into account:
  * - `off` lists the props that the using component sets to `false`. Content inside `{#if prop}` is then left out: the
  *   credential details, for example, hide their menu with `actions={false}` while a credential is being shared.
- * - `passed` lists all props that the using component sets. The default value of such a prop is left out: a summary
- *   card that links to `/prompt/...` by default links elsewhere when it gets an `href`.
+ * - `defined` lists the props that the using component sets to a value that cannot be `null` or `undefined`. The
+ *   default value of such a prop is left out: a summary card that links to `/prompt/...` by default links elsewhere
+ *   when it gets an `href`. A prop that may be `undefined`, as in `href={maybeHref}`, keeps its default.
  */
-function analyzeComponent(file, off = [], passed = []) {
-  const id = [file, off.join(','), passed.join(',')].join('\n');
+function analyzeComponent(file, off = [], defined = []) {
+  const id = [file, off.join(','), defined.join(',')].join('\n');
   if (analyzed.has(id)) return analyzed.get(id);
 
   const { ast, componentFiles, modules } = parseComponent(file);
   const component = { titles: [], controls: [], uses: [], modules };
-  // Parts of the template that only show in developer mode, and parts that the use of the component rules out.
+  // Parts of the template that only show in developer mode, parts that show once the developer mode setting is
+  // unlocked, and parts that the use of the component rules out.
   const developerRanges = [];
+  const unlockedRanges = [];
   const hiddenRanges = [];
+  const scopeAt = (position) =>
+    within(developerRanges, position) ? 'developer' : within(unlockedRanges, position) ? 'unlocked' : undefined;
 
-  // Default values of props that the using component sets: `export let x = ...` and `let { x = ... } = $props()`.
+  // Default values of props that the using component defines: `export let x = ...` and `let { x = ... } = $props()`.
   for (const statement of ast.instance?.content?.body ?? []) {
     const declaration = statement.type === 'ExportNamedDeclaration' ? statement.declaration : statement;
     if (declaration?.type !== 'VariableDeclaration') continue;
     for (const { id: target, init } of declaration.declarations) {
       if (statement.type === 'ExportNamedDeclaration' && target.type === 'Identifier' && init) {
-        if (passed.includes(target.name)) hiddenRanges.push([init.start, init.end]);
+        if (defined.includes(target.name)) hiddenRanges.push([init.start, init.end]);
       }
       if (target.type === 'ObjectPattern' && init?.type === 'CallExpression' && init.callee.name === '$props') {
         for (const property of target.properties) {
           if (property.type !== 'Property' || property.value.type !== 'AssignmentPattern') continue;
-          if (passed.includes(property.key.name))
+          if (defined.includes(property.key.name))
             hiddenRanges.push([property.value.right.start, property.value.right.end]);
         }
       }
@@ -379,7 +449,7 @@ function analyzeComponent(file, off = [], passed = []) {
   // The same for a fallback further on: `href ?? '/prompt/...'`.
   walk([ast.instance, ast.fragment], (node) => {
     const isFallback = node.type === 'LogicalExpression' && node.operator === '??' && node.left.type === 'Identifier';
-    if (isFallback && passed.includes(node.left.name)) hiddenRanges.push([node.right.start, node.right.end]);
+    if (isFallback && defined.includes(node.left.name)) hiddenRanges.push([node.right.start, node.right.end]);
   });
 
   const visitAll = (nodes) => nodes.forEach(visit);
@@ -408,11 +478,23 @@ function analyzeComponent(file, off = [], passed = []) {
         walk(test, (current) => {
           if (current.type === 'Identifier') names.push(current.name);
         });
-        if (names.includes('dev_mode') || names.includes('show_dev_mode_setting')) {
-          // `dev_mode === 'Off'` shows its content outside developer mode, and its `else` branch inside it.
-          const negated = test.type === 'BinaryExpression' && test.operator.startsWith('==');
+        const developerConditions = names.filter((name) => developerModeConditions.includes(name));
+        developerConditions.forEach((name) => usedDeveloperModeConditions.add(name));
+        // Unlocking the developer mode setting shows its switch. That is not yet developer mode itself.
+        const ranges =
+          names.includes('dev_mode') || developerConditions.length > 0
+            ? developerRanges
+            : names.includes('show_dev_mode_setting')
+              ? unlockedRanges
+              : undefined;
+        if (ranges) {
+          // `dev_mode === 'Off'` and `!showDebugMessages` show their content outside developer mode, and their `else`
+          // branch inside it.
+          const negated =
+            (test.type === 'BinaryExpression' && test.operator.startsWith('==')) ||
+            (test.type === 'UnaryExpression' && test.operator === '!');
           const range = rangeOf(negated ? node.alternate : node.consequent);
-          if (range) developerRanges.push(range);
+          if (range) ranges.push(range);
         }
         break;
       }
@@ -450,7 +532,7 @@ function analyzeComponent(file, off = [], passed = []) {
       icons: content.icons,
       // Part of the label comes from a variable, such as the name of a credential.
       dynamic: ownLabel ? false : content.dynamic || labelProps.length > 0,
-      paths: references.paths.map((reference) => reference.value),
+      paths: references.paths,
       actions: references.actions.map((reference) => reference.value),
       start: node.start,
     });
@@ -459,7 +541,8 @@ function analyzeComponent(file, off = [], passed = []) {
 
   visitAll(ast.fragment.nodes);
 
-  // The components this one uses, each with the props it sets and the props it sets to `false`.
+  // The components this one uses, each with the props it sets to `false`, the props it defines, and whether the use
+  // itself only shows in developer mode.
   const writtenAsTag = new Set();
   walk(ast.fragment, (node) => {
     if (node.type === 'Comment') return false;
@@ -468,31 +551,35 @@ function analyzeComponent(file, off = [], passed = []) {
     if (within(hiddenRanges, node.start)) return false;
     const props = (node.attributes ?? []).filter((attribute) => attribute.type === 'Attribute');
     const isFalse = (attribute) => {
-      if (attribute.value === true || Array.isArray(attribute.value)) return false;
-      const expression = attribute.value.expression;
+      const expression = expressionOf(attribute);
       return (
-        (expression.type === 'Literal' && expression.value === false) ||
-        (expression.type === 'Identifier' && off.includes(expression.name))
+        expression !== undefined &&
+        ((expression.type === 'Literal' && expression.value === false) ||
+          (expression.type === 'Identifier' && off.includes(expression.name)))
       );
     };
+    // A text value and an attribute without a value are always defined.
+    const isDefined = (attribute) => {
+      const expression = expressionOf(attribute);
+      return expression === undefined || !mayBeNullish(expression);
+    };
+    const namesOf = (attributes) => attributes.map((attribute) => attribute.name).sort(compare);
     component.uses.push({
       file: componentFiles.get(node.name),
-      off: props
-        .filter(isFalse)
-        .map((attribute) => attribute.name)
-        .sort(compare),
-      passed: props.map((attribute) => attribute.name).sort(compare),
+      off: namesOf(props.filter(isFalse)),
+      defined: namesOf(props.filter(isDefined)),
+      scope: scopeAt(node.start),
     });
     return true;
   });
   // A component that is imported but not written as a tag is rendered dynamically, for example by `<svelte:component>`.
   for (const [name, target] of componentFiles) {
-    if (!writtenAsTag.has(name)) component.uses.push({ file: target, off: [], passed: [] });
+    if (!writtenAsTag.has(name)) component.uses.push({ file: target, off: [], defined: [], scope: undefined });
   }
 
   const references = collectReferences([ast.module, ast.instance, ast.fragment]);
   const visible = (item) => !within(hiddenRanges, item.start);
-  const withScope = (item) => ({ ...item, developerOnly: within(developerRanges, item.start) });
+  const withScope = (item) => ({ ...item, scope: scopeAt(item.start) });
   for (const name of ['titles', 'controls']) component[name] = component[name].map(withScope);
   for (const name of ['paths', 'actions']) component[name] = references[name].filter(visible).map(withScope);
 
@@ -519,14 +606,20 @@ function analyzeModule(file, names) {
   const found = { paths: [], actions: [] };
   const done = new Set();
   const queue = names.filter((name) => declarations.has(name));
+  // The first argument of each `goto()`: a string there is the target of a navigation.
+  const gotoTargets = new Set();
   const visit = (node) => {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === 'goto') {
+      gotoTargets.add(node.arguments[0]);
+    }
+    const isNavigation = gotoTargets.has(node);
     if (ts.isStringLiteralLike(node)) {
-      if (node.text.startsWith('/')) found.paths.push({ value: node.text });
+      if (node.text.startsWith('/')) found.paths.push({ value: node.text, isNavigation });
       else if (ACTION_TYPE.test(node.text)) found.actions.push({ value: node.text });
     }
     if (ts.isTemplateExpression(node)) {
       const value = [node.head.text, ...node.templateSpans.map((span) => span.literal.text)].join(DYNAMIC);
-      if (value.startsWith('/')) found.paths.push({ value });
+      if (value.startsWith('/')) found.paths.push({ value, isNavigation });
     }
     if (ts.isIdentifier(node) && declarations.has(node.text) && !done.has(node.text)) queue.push(node.text);
     ts.forEachChild(node, visit);
@@ -568,25 +661,28 @@ function barrelExports(file) {
  * through other components, and the functions it imports from TypeScript modules.
  */
 function analyzeScreen(entryFile) {
-  const parts = [];
+  const result = { titles: [], controls: [], paths: [], actions: [] };
   const seen = new Set();
-  const visit = (file, off, passed) => {
-    const id = [file, off.join(','), passed.join(',')].join('\n');
+  // `scope` is the scope of the place where the component is used: what a component shows inside a developer mode
+  // branch only shows in developer mode, whatever its own template says.
+  const visit = (file, off, defined, scope) => {
+    const id = [file, off.join(','), defined.join(','), scope].join('\n');
     if (seen.has(id)) return;
     seen.add(id);
-    const component = analyzeComponent(file, off, passed);
-    parts.push(component, ...component.modules.map((module) => analyzeModule(module.file, module.names)));
-    for (const use of component.uses) visit(use.file, use.off, use.passed);
+    const component = analyzeComponent(file, off, defined);
+    const inherit = (item) => ({ ...item, scope: narrowestScope(scope, item.scope) });
+    for (const part of [component, ...component.modules.map((module) => analyzeModule(module.file, module.names))]) {
+      for (const name of Object.keys(result)) result[name].push(...(part[name] ?? []).map(inherit));
+    }
+    for (const use of component.uses) visit(use.file, use.off, use.defined, narrowestScope(scope, use.scope));
   };
-  visit(entryFile, [], []);
-  const merge = (name) => parts.flatMap((part) => part[name] ?? []);
-  return {
-    titles: merge('titles'),
-    controls: merge('controls'),
-    paths: merge('paths'),
-    actions: merge('actions'),
-  };
+  visit(entryFile, [], [], undefined);
+  return result;
 }
+
+/** Of two scopes, the one that shows in fewer situations: developer mode, then the unlocked setting, then always. */
+const SCOPES = [undefined, 'unlocked', 'developer'];
+const narrowestScope = (a, b) => SCOPES[Math.max(SCOPES.indexOf(a), SCOPES.indexOf(b))];
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Writing the reference
@@ -596,7 +692,10 @@ function analyzeScreen(entryFile) {
 const escapeMarkdown = (text) => text.replace(/[\\`*_{}[\]<>|~]/g, '\\$&');
 const quote = (text) => `"${escapeMarkdown(text)}"`;
 const code = (text) => `\`${text}\``;
-const developerNote = (item) => (item.developerOnly ? ' (developer mode only)' : '');
+const SCOPE_NOTES = {
+  developer: ' (developer mode only)',
+  unlocked: ' (once the developer mode setting is unlocked)',
+};
 
 function buildReference() {
   const translations = loadTranslations();
@@ -604,6 +703,7 @@ function buildReference() {
   const { pages, layouts } = findRouteFiles();
 
   const omittedRoutes = new Map(config.omittedRoutes.map((entry) => [entry.route, entry.reason]));
+  developerModeConditions = config.developerModeConditions ?? [];
 
   const pageByRoute = new Map(pages.map((file) => [routeOf(file), file]));
   const routes = [...pageByRoute.keys()].sort(compare);
@@ -625,6 +725,14 @@ function buildReference() {
   for (const route of [...nameByRoute.keys(), ...omittedRoutes.keys()]) {
     if (!pageByRoute.has(route)) {
       problems.push(`${repoPath(SCREENS_FILE)} describes the route ${route}, which does not exist. Remove the entry.`);
+    }
+  }
+  for (const entry of config.omittedRoutes) {
+    if (!entry.reason?.trim()) problems.push(`The omitted route ${entry.route} has no reason.`);
+  }
+  for (const route of unique(described.map((screen) => screen.route))) {
+    if (described.filter((screen) => screen.route === route).length > 1) {
+      problems.push(`The route ${route} is described more than once. Keep one entry.`);
     }
   }
   for (const screen of described) {
@@ -673,6 +781,17 @@ function buildReference() {
     );
   /** Whether a string from the code points to a route that is left out of the reference. */
   const pointsToOmittedRoute = (paths) => paths.some((candidate) => omittedRoutes.has(matchRoute(candidate, routes)));
+  /** The entries of a list without the ones that repeat an entry that shows in more situations. */
+  const withoutNarrowerRepeats = (entries) =>
+    entries.filter(
+      (entry, index) =>
+        !entries.some(
+          (other, otherIndex) =>
+            other.text === entry.text &&
+            (SCOPES.indexOf(other.scope) < SCOPES.indexOf(entry.scope) ||
+              (other.scope === entry.scope && otherIndex < index)),
+        ),
+    );
 
   /** The label of a control, and whether it is a fixed text (`named`) or a description of the control. */
   const labelOf = (control) => {
@@ -705,16 +824,16 @@ function buildReference() {
       // A control without a fixed label says something only when the code states what it does. This also leaves out
       // the inner elements of shared components such as `Button`, whose label is a prop.
       if (!description || (!description.named && effects.length === 0)) continue;
-      controls.push(
-        `  - ${kind}: ${description.label}${effects.length > 0 ? `, ${effects.join(', ')}` : ''}${developerNote(control)}`,
-      );
+      controls.push({
+        text: `  - ${kind}: ${description.label}${effects.length > 0 ? `, ${effects.join(', ')}` : ''}`,
+        scope: control.scope,
+      });
     }
-    if (controls.length > 0) lines.push('- **Controls:**', ...unique(controls));
+    // A control that shows both inside and outside developer mode is listed once, without the restriction.
+    const controlLines = withoutNarrowerRepeats(controls).map((entry) => entry.text + (SCOPE_NOTES[entry.scope] ?? ''));
+    if (controlLines.length > 0) lines.push('- **Controls:**', ...controlLines);
 
-    const opens = targetsOf(
-      analysis.paths.map((item) => item.value),
-      ownRoute,
-    );
+    const opens = targetsOf(analysis.paths, ownRoute);
     if (opens.length > 0) lines.push(`- **Opens:** ${opens.map(screenLink).join(', ')}`);
 
     const actions = unique(analysis.actions.map((item) => item.value));
@@ -730,6 +849,12 @@ function buildReference() {
     id: layoutId(file),
     ...describe(analyzeScreen(file), undefined),
   }));
+  for (const name of developerModeConditions) {
+    if (!usedDeveloperModeConditions.has(name)) {
+      problems.push(`"developerModeConditions" names ${name}, which no {#if} tests. Remove the entry.`);
+    }
+  }
+  if (problems.length > 0) return undefined;
 
   /** The screens and layouts that open a route. */
   const openedFrom = (route) => [
@@ -755,7 +880,7 @@ function buildReference() {
     `- In a label, ${code('{name}')} marks a value that the app fills in, and ${code('one/other')} marks a singular and a plural form.`,
     '- **Opened from** lists the screens with a control or a redirect that leads here. Screens that the backend opens, such as the prompts, say so in their purpose.',
     `- Backend actions are handled by the reducers in ${code('identity-wallet/src/state')}.`,
-    '- Controls that only show in developer mode are marked.',
+    '- Controls that only show in developer mode, or once the developer mode setting is unlocked, are marked.',
     '- An entry lists every control that the components of a screen can show. Which of them show at a given moment depends on the state of the wallet.',
     '',
     '## Screens',
@@ -789,7 +914,7 @@ function buildReference() {
     out.push(
       '## Layouts',
       '',
-      `A layout wraps every screen in its folder below ${code('unime/src/routes')}. What a layout shows and does applies to all of those screens, so it is listed here once. The layout ${code('/')} wraps every screen of the app.`,
+      `A layout wraps the screens in its folder below ${code('unime/src/routes')}, and the layout ${code('/')} wraps every screen of the app. What a layout shows and does applies to all of its screens, so it is listed here once. A screen whose file name has an ${code('@')} skips layouts: ${code('+page@.svelte')} keeps only the layout ${code('/')}, and ${code('+page@name.svelte')} keeps the layouts down to the folder ${code('name')}.`,
       '',
     );
     for (const layout of layoutsWithContent) {
