@@ -6,7 +6,7 @@ members = ["identity-wallet", "unime/src-tauri"]
 tauri = { version = "2.12.7", features = ["protocol-asset", "rustls-tls"] }
 tauri-build = "2.7.6"
 
-identity-kit = { version = "0.5.0", default-features = false }
+identity-kit = { version = "0.5.1", default-features = false }
 # openid4vc leaves the crypto backend to the application; `aws-lc-rs` is already in the tree through `rustls`.
 jsonwebtoken = { version = "11.1", features = ["aws_lc_rs"] }
 log = "^0.4"

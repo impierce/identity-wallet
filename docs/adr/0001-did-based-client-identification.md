@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted. Amended by [ADR 0005](0005-unverified-oid4vci-issuers.md): an OID4VCI issuer that publishes no
+Superseded by [ADR 0004](0004-identities-verified-with-did-or-x509.md), which also accepts identities verified with an
+X.509 certificate. Amended by [ADR 0005](0005-unverified-oid4vci-issuers.md): an OID4VCI issuer that publishes no
 `/.well-known/did.json` is accepted as unverified and bound to the DID that signs its credential.
 
 ## Context

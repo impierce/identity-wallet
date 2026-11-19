@@ -436,7 +436,7 @@ const en = {
     },
     DETAILS: {
       TITLE: 'Connection details',
-      DID: 'DID',
+      IDENTITY: 'Identity',
       VIEW_ON_EXPLORER: 'View on explorer',
     },
   },

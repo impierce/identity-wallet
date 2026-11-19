@@ -13,7 +13,7 @@
       "logo_uri": null,
       "connection_url": "https://example.com",
       "redirect_uri": "https://example.com/",
-      "client_id": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb"
+      "proofs": [{ "identity": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb", "method": "signed_request" }]
     },
     "connection_data": null,
     "domain_validation": {

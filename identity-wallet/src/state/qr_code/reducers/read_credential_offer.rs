@@ -9,7 +9,7 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState,
     },
-    well_known::get_credential_issuer_metadata,
+    well_known::get_verified_credential_issuer_metadata,
 };
 
 use log::{debug, info, warn};
@@ -35,7 +35,10 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         info!("credential issuer url: {credential_issuer_url:?}");
 
-        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+        let credential_issuer_metadata =
+            get_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors)
+                .await
+                .ok();
 
         info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
@@ -243,7 +246,10 @@ mod tests {
                 logo_uri: Some(CLIENT_LOGO_URI.to_string()),
                 connection_url: connection_url.to_string(),
                 redirect_uri: None,
-                client_id: Some("did:example:123".parse().unwrap()),
+                proofs: vec![crate::identity::Proof::new(
+                    crate::identity::Identity::did("did:example:123").unwrap(),
+                    crate::identity::ProofMethod::WellKnownDidDocument,
+                )],
             },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {

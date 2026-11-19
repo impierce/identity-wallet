@@ -4,12 +4,14 @@ use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
 use crate::state::credentials::credential_query_matching::{
     ensure_shareable, match_credential_queries, summarize_requested_credentials, with_last_shared,
 };
-use crate::state::credentials::reducers::send_interactive_authorization_request_follow_up::refuse_presentation_to_unverified_issuer;
+use crate::state::credentials::reducers::send_interactive_authorization_request_follow_up::{
+    refuse_presentation_to_unverified_issuer, refuse_presentation_without_signed_metadata,
+};
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
 use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
 use crate::state::{UNIME_CLIENT_ID, UNIME_REDIRECT_URI};
-use crate::well_known::{get_authorization_server_metadata, get_credential_issuer_metadata};
+use crate::well_known::{get_authorization_server_metadata, load_verified_credential_issuer_metadata};
 use crate::{
     error::AppError::{self, *},
     state::{
@@ -83,9 +85,11 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
         debug!("Credential issuer URL: {credential_issuer_url}");
 
         // Get the credential issuer metadata.
-        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
+        let applied = load_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors)
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
+        let metadata_signed = applied.signed;
+        let credential_issuer_metadata = applied.metadata;
 
         debug!("Credential issuer metadata: {credential_issuer_metadata:?}");
 
@@ -232,6 +236,11 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         &authorization_server_metadata.interactive_authorization_endpoint
                     {
                         refuse_presentation_to_unverified_issuer(state.core_utils.pending_connection_data.as_ref())?;
+                        // The authorization server was taken from this metadata.
+                        refuse_presentation_without_signed_metadata(
+                            state.core_utils.pending_connection_data.as_ref(),
+                            metadata_signed,
+                        )?;
 
                         let iae_response = wallet
                             .send_interactive_authorization_request(
@@ -284,13 +293,9 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 
                         let connection = state.core_utils.pending_connection_data.as_ref().and_then(|pending| {
-                            // An unverified issuer has no DID yet, and so no connection (ADR 0005).
-                            let client_id = pending.client_metadata.client_id.as_ref()?.to_string();
-                            state
-                                .connections
-                                .0
-                                .iter()
-                                .find(|connection| connection.did == client_id)
+                            // An unverified issuer is refused a presentation, so its connection is not looked up (ADR 0005).
+                            pending.client_metadata.verified_identity()?;
+                            state.connections.find(&pending.client_metadata)
                         });
                         let requested_credentials = with_last_shared(
                             match_credential_queries(dcql_query, &verifiable_credentials),

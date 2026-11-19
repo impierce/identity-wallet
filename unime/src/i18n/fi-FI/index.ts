@@ -436,7 +436,7 @@ const fi_FI = {
     },
     DETAILS: {
       TITLE: 'Yhteyden tiedot',
-      DID: 'DID',
+      IDENTITY: 'Identiteetti',
       VIEW_ON_EXPLORER: 'Näytä lohkoketjuselaimessa',
     },
   },

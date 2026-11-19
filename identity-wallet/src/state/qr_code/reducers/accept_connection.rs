@@ -1,6 +1,8 @@
+use crate::identity::{Identity, Proof, ProofMethod};
 use crate::{
     error::AppError::{self, *},
     http_client::{fetch_public_destination, is_refused_destination, PublicDestinationHttpClient},
+    logging::url_host,
     state::{
         actions::{listen, Action},
         connections::EcosystemsCheck,
@@ -15,14 +17,14 @@ use crate::{
         user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile, Member},
         AppState,
     },
-    well_known::{get_credential_issuer_metadata, get_did_document_id},
+    well_known::{get_did_document_id, get_verified_credential_issuer_metadata},
 };
-use identity_kit::did::Did;
 use log::{info, warn};
 use oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
     client_metadata::ClientMetadataResource,
 };
+use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use oid4vci::credential_offer::CredentialOffer;
 use oid4vci::credential_offer::CredentialOfferParameters;
 use oid4vp::oid4vp::OID4VP;
@@ -57,19 +59,22 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         info!("QR code parsed");
         crate::log_payload!("Parsed QR code: {parsed_qr_code:?}");
 
-        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed_qr_code.clone()).await?;
-        info!("Retrieved client metadata: {client_metadata:?}");
+        let (client_metadata, active_flow) =
+            get_client_metadata_init_active_flow(parsed_qr_code.clone(), &state.trust_anchors).await?;
+        info!(
+            "Retrieved client metadata with {} proof(s)",
+            client_metadata.proofs.len()
+        );
+        crate::log_payload!("Client metadata: {client_metadata:?}");
         crate::log_payload!("Initializing active flow: {active_flow:?}");
 
-        // `None` for an OID4VCI issuer that publishes no DID document: its identity stays unverified until the
-        // credential it issues is verified (ADR 0005).
-        let did = client_metadata.client_id.as_ref().map(ToString::to_string);
+        // `None` for an OID4VCI issuer that is verified with neither a DID document nor a certificate: its identity
+        // stays unverified until the credential it issues is verified (ADR 0005).
+        let identity = client_metadata.verified_identity().cloned();
         let connection_data = state
             .connections
-            .0
-            .iter()
-            // TODO: currently we only match against the DID, but if any display info changes with what we stored we plan to notify the user of the diffs.
-            .find(|conn| Some(&conn.did) == did.as_ref())
+            // TODO: currently we only match against the key and proofs, but if any display info changes with what we stored we plan to notify the user of the diffs.
+            .find(&client_metadata)
             .map(|connection| {
                 let interactions = state
                     .history
@@ -105,14 +110,14 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             .subject
             .clone();
 
-        let domain_validation = match &did {
+        let domain_validation = match &identity {
             // Domain linkage and linked VPs are checked on the DID, so there is nothing to check without one.
             None => {
                 use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
 
                 info!(
-                    "No DID for {}: its identity is not verified",
-                    client_metadata.connection_url
+                    "No identity for {}: it is not verified",
+                    url_host(&client_metadata.connection_url)
                 );
                 Box::new(ValidationResult {
                     status: ValidationStatus::Unknown,
@@ -124,16 +129,23 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
                 })
             }
             #[cfg(not(feature = "test_utils"))]
-            Some(did) => {
+            Some(identity) => {
                 use crate::state::did::validate_domain_linkage::validate_connection_domain;
 
                 info!(
-                    "Checking domain linkage for DID: {did} and URL: {}",
+                    "Checking the domain of identity {identity} and URL: {}",
                     client_metadata.connection_url
                 );
-                let resolver = subject.resolver().await;
-
-                Box::new(validate_connection_domain(resolver.as_ref(), url.clone(), did).await)
+                match identity {
+                    Identity::Did(did) => {
+                        let resolver = subject.resolver().await;
+                        Box::new(validate_connection_domain(resolver.as_ref(), url.clone(), &did).await)
+                    }
+                    // The certificate chain certifies the DNS name; the connection's URL is on it or not.
+                    Identity::X509 { dns_name } => Box::new(
+                        crate::state::did::validate_domain_linkage::certificate_domain_validation(&url, &dns_name),
+                    ),
+                }
             }
             #[cfg(feature = "test_utils")]
             Some(_) => {
@@ -153,18 +165,17 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         info!("Domain validation result: {domain_validation:?}");
 
-        let linked_verifiable_presentations = match &did {
-            Some(did) => match validate_linked_verifiable_presentations(&subject, did)
+        // Linked verifiable presentations are published in a DID document, so only a DID identity has them.
+        let linked_verifiable_presentations = match identity.as_ref().and_then(Identity::as_did) {
+            Some(did) => validate_linked_verifiable_presentations(&subject, did)
                 .await
                 .into_iter()
                 .flatten()
-                .collect::<Vec<LinkedVerifiableCredentialData>>()
-            {
-                vec if !vec.is_empty() => Some(vec),
-                _ => None,
-            },
-            None => None,
+                .collect::<Vec<LinkedVerifiableCredentialData>>(),
+            None => Vec::new(),
         };
+        let linked_verifiable_presentations =
+            (!linked_verifiable_presentations.is_empty()).then_some(linked_verifiable_presentations);
 
         info!("Linked verifiable presentations: {linked_verifiable_presentations:?}");
 
@@ -275,6 +286,7 @@ async fn parse_qr_code(state: &AppState, qr_code_scanned: String) -> Result<Pars
 /// For OID4VCI the next reducer will be `read_credential_offer`.
 async fn get_client_metadata_init_active_flow(
     parsed_qr_code: ParsedQrCode,
+    trust_anchors: &[String],
 ) -> Result<(ClientMetadata, ActiveFlow), AppError> {
     match parsed_qr_code {
         ParsedQrCode::Siopv2(siopv2_authorization_request) => {
@@ -293,7 +305,7 @@ async fn get_client_metadata_init_active_flow(
             Ok((client_metadata, active_flow))
         }
         ParsedQrCode::Oid4vci(credential_offer) => {
-            let client_metadata = get_oid4vci_client_metadata(&credential_offer).await?;
+            let client_metadata = get_oid4vci_client_metadata(&credential_offer, trust_anchors).await?;
             let active_flow = ActiveFlow::Oid4vciOffer {
                 stage: Oid4vciStage::OfferReceived,
                 logo_uri: client_metadata.logo_uri.clone(),
@@ -310,8 +322,9 @@ async fn get_siopv2_client_metadata(
     let redirect_uri = siopv2_authorization_request.body.uri.uri().clone();
     let connection_url = normalize_connection_url(&redirect_uri);
 
+    // Verifiers keep DID identities until openid4vc verifies requests signed under `x5c` (ADR 0004).
     let client_id = strip_client_id_prefix(&siopv2_authorization_request.body.client_id);
-    let client_id = Did::parse(&client_id)
+    let identity = Identity::did(&client_id)
         .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?;
 
     Ok(match &siopv2_authorization_request.body.extension.client_metadata {
@@ -333,7 +346,7 @@ async fn get_siopv2_client_metadata(
                 client_name,
                 logo_uri,
                 connection_url: connection_url.clone(),
-                client_id: Some(client_id.clone()),
+                proofs: vec![Proof::new(identity.clone(), ProofMethod::SignedRequest)],
                 redirect_uri: Some(redirect_uri.to_string()),
             }
         }
@@ -348,7 +361,8 @@ pub(crate) async fn get_oid4vp_client_metadata(
 ) -> Result<ClientMetadata, AppError> {
     let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
     let connection_url = normalize_connection_url(&redirect_uri);
-    let client_id = Did::parse(&strip_client_id_prefix(&oid4vp_authorization_request.body.client_id))
+    // Verifiers keep DID identities until openid4vc verifies requests signed under `x5c` (ADR 0004).
+    let identity = Identity::did(&strip_client_id_prefix(&oid4vp_authorization_request.body.client_id))
         .map_err(|error| AppError::UntrustedError(format!("Failed to parse client_id as DID: {error}")))?;
 
     Ok(match &oid4vp_authorization_request.body.extension.client_metadata {
@@ -370,7 +384,7 @@ pub(crate) async fn get_oid4vp_client_metadata(
                 client_name,
                 logo_uri,
                 connection_url: connection_url.clone(),
-                client_id: Some(client_id),
+                proofs: vec![Proof::new(identity, ProofMethod::SignedRequest)],
                 redirect_uri: Some(redirect_uri.to_string()),
             }
         }
@@ -380,14 +394,18 @@ pub(crate) async fn get_oid4vp_client_metadata(
     })
 }
 
-async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameters) -> Result<ClientMetadata, AppError> {
+async fn get_oid4vci_client_metadata(
+    credential_offer: &CredentialOfferParameters,
+    trust_anchors: &[String],
+) -> Result<ClientMetadata, AppError> {
     let credential_issuer_url = credential_offer.credential_issuer.clone();
     let connection_url = normalize_connection_url(&credential_issuer_url);
 
-    info!("credential issuer url: {credential_issuer_url:?}");
-    info!("connection url: {connection_url:?}");
+    info!("Credential issuer: {}", url_host(&credential_issuer_url));
 
-    let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+    let credential_issuer_metadata = get_verified_credential_issuer_metadata(&credential_issuer_url, trust_anchors)
+        .await
+        .ok();
 
     let display = credential_issuer_metadata
         .as_ref()
@@ -414,34 +432,76 @@ async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameter
         None => (connection_url.clone(), None),
     };
 
-    // An issuer that publishes a DID document at `/.well-known/did.json` is verified with it before the user accepts
-    // (ADR 0001). One that publishes none is accepted as unverified, and bound to the DID that signs its credential
-    // (ADR 0005). A DID document that is unavailable, such as behind a 503, or whose `id` is no DID, is refused.
-    let did_document_id = get_did_document_id(&credential_issuer_url).await.map_err(|err| {
-        warn!("Failed to get the DID document of {credential_issuer_url}: {err:#}");
-        match err.downcast::<reqwest::Error>() {
-            Ok(reqwest_error) => AppError::DownloadFailed(reqwest_error),
-            Err(_) => AppError::DidParseError,
-        }
-    })?;
-    let client_id = match did_document_id {
-        Some(client_id) => Some(
-            Did::parse(&client_id)
-                .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))?,
-        ),
-        None => {
-            info!("No DID document for {credential_issuer_url}, its identity is not verified");
-            None
-        }
-    };
+    // Verified with a DID document or signed metadata before the user accepts (ADR 0001, ADR 0004), or `None`: accepted
+    // as unverified, and bound to the DID that signs its credential (ADR 0005).
+    let proof = credential_issuer_proof(
+        &credential_issuer_url,
+        credential_issuer_metadata.as_ref(),
+        trust_anchors,
+    )
+    .await?;
 
     Ok(ClientMetadata {
         client_name: issuer_name,
         redirect_uri: Some(credential_issuer_url.to_string()),
         connection_url,
         logo_uri,
-        client_id,
+        proofs: proof.into_iter().collect(),
     })
+}
+
+/// The proof of the identity of the OID4VCI credential issuer at `credential_issuer_url`, verified before the user
+/// accepts the connection (ADR 0004): the DID document it publishes at `/.well-known/did.json` (ADR 0001), or else its
+/// `signed_metadata`, signed under an `x5c` certificate chain that validates against one of `trust_anchors`.
+///
+/// `None` when it publishes no DID document and no signed metadata verifies it: it is accepted as unverified (ADR 0005).
+/// A DID document that may exist but is unavailable, such as behind a 503, refuses the issuer unless its signed metadata
+/// verifies it, so that an outage does not leave it unverified.
+async fn credential_issuer_proof(
+    credential_issuer_url: &url::Url,
+    metadata: Option<&CredentialIssuerMetadata>,
+    trust_anchors: &[String],
+) -> Result<Option<Proof>, AppError> {
+    let did_document_error = match get_did_document_id(credential_issuer_url).await {
+        Ok(Some(did)) => {
+            return Identity::did(&did)
+                .map(|identity| Some(Proof::new(identity, ProofMethod::WellKnownDidDocument)))
+                .map_err(|e| AppError::UntrustedError(format!("Failed to parse client_id as DID: {e}")))
+        }
+        Ok(None) => None,
+        Err(err) => Some(err),
+    };
+
+    let signed_metadata = metadata.and_then(|metadata| metadata.signed_metadata.as_deref());
+    if let (Some(signed_metadata), false) = (signed_metadata, trust_anchors.is_empty()) {
+        match crate::x509::credential_issuer_identity(signed_metadata, credential_issuer_url, trust_anchors).await {
+            Ok(identity) => return Ok(Some(Proof::new(identity, ProofMethod::SignedMetadata))),
+            Err(err) => warn!(
+                "The signed metadata of {} does not verify its identity: {err:#}",
+                url_host(credential_issuer_url)
+            ),
+        }
+    }
+
+    match did_document_error {
+        None => {
+            info!(
+                "No DID document for {}, its identity is not verified",
+                url_host(credential_issuer_url)
+            );
+            Ok(None)
+        }
+        Some(err) => {
+            warn!(
+                "Failed to get the DID document of {}: {err:#}",
+                url_host(credential_issuer_url)
+            );
+            Err(match err.downcast::<reqwest::Error>() {
+                Ok(reqwest_error) => AppError::DownloadFailed(reqwest_error),
+                Err(_) => AppError::DidParseError,
+            })
+        }
+    }
 }
 
 fn strip_client_id_prefix(client_id: &str) -> String {
@@ -834,7 +894,6 @@ mod tests {
 
     use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
     use oid4vc_manager::ProviderManager;
-    use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
     use oid4vci::credential_offer::CredentialConfigurationIds;
     use oid4vci::Wallet;
     use openid_federation::{
@@ -991,14 +1050,20 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let client_metadata = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri()))
+        let client_metadata = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri()), &[])
             .await
             .unwrap();
 
         assert_eq!(client_metadata.client_name, ISSUER_NAME);
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(issuer_logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, mock_server.uri());
-        assert_eq!(client_metadata.client_id.unwrap().to_string(), ISSUER_DID);
+        assert_eq!(
+            client_metadata.proofs,
+            vec![Proof::new(
+                Identity::did(ISSUER_DID).unwrap(),
+                ProofMethod::WellKnownDidDocument
+            )]
+        );
 
         // Logos are downloaded into `assets/tmp` under the hash of their URI.
         let downloaded_logo = ASSETS_DIR
@@ -1034,7 +1099,7 @@ mod tests {
         mount_issuer_metadata(&mock_server, None).await;
         mount_did_document(&mock_server).await;
 
-        let client_metadata = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri()))
+        let client_metadata = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri()), &[])
             .await
             .unwrap();
 
@@ -1086,14 +1151,14 @@ mod tests {
                 state.current_user_prompt
             );
         };
-        assert_eq!(client_metadata.client_id, None);
+        assert_eq!(client_metadata.proofs, vec![]);
         assert_eq!(client_metadata.client_name, mock_server.uri());
         assert!(connection_data.is_none());
         assert_eq!(domain_validation.status, ValidationStatus::Unknown);
         assert_eq!(domain_validation.message.as_deref(), Some(UNVERIFIED_ISSUER_MESSAGE));
         assert!(linked_verifiable_presentations.is_none());
         let pending = state.core_utils.pending_connection_data.unwrap();
-        assert_eq!(pending.client_metadata.client_id, None);
+        assert_eq!(pending.client_metadata.proofs, vec![]);
     }
 
     /// An issuer that publishes a DID document is still held to it: one whose `id` is no DID is refused.
@@ -1108,7 +1173,7 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri())).await;
+        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri()), &[]).await;
 
         assert!(matches!(result, Err(UntrustedError(_))), "{result:?}");
     }
@@ -1126,7 +1191,7 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri())).await;
+        let result = get_oid4vci_client_metadata(&credential_offer(&mock_server.uri()), &[]).await;
 
         assert!(matches!(result, Err(DidParseError)), "{result:?}");
     }
@@ -1153,13 +1218,19 @@ mod tests {
         .unwrap();
         assert!(matches!(parsed, ParsedQrCode::Siopv2(_)));
 
-        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed).await.unwrap();
+        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed, &[]).await.unwrap();
 
         assert_eq!(client_metadata.client_name, CLIENT_NAME);
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, "https://example.com");
         assert_eq!(client_metadata.redirect_uri.as_deref(), Some("https://example.com/"));
-        assert_eq!(client_metadata.client_id.unwrap().to_string(), CLIENT_DID);
+        assert_eq!(
+            client_metadata.proofs,
+            vec![Proof::new(
+                Identity::did(CLIENT_DID).unwrap(),
+                ProofMethod::SignedRequest
+            )]
+        );
         assert!(matches!(active_flow, ActiveFlow::Siopv2 { .. }));
 
         let downloaded_logo = ASSETS_DIR
@@ -1184,7 +1255,7 @@ mod tests {
         .await
         .unwrap();
 
-        let (client_metadata, _) = get_client_metadata_init_active_flow(parsed).await.unwrap();
+        let (client_metadata, _) = get_client_metadata_init_active_flow(parsed, &[]).await.unwrap();
 
         assert_eq!(client_metadata.client_name, "https://example.com");
         assert_eq!(client_metadata.logo_uri, None);
@@ -1212,12 +1283,18 @@ mod tests {
         .unwrap();
         assert!(matches!(parsed, ParsedQrCode::Oid4vp(_)));
 
-        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed).await.unwrap();
+        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed, &[]).await.unwrap();
 
         assert_eq!(client_metadata.client_name, CLIENT_NAME);
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, "https://example.com");
-        assert_eq!(client_metadata.client_id.unwrap().to_string(), CLIENT_DID);
+        assert_eq!(
+            client_metadata.proofs,
+            vec![Proof::new(
+                Identity::did(CLIENT_DID).unwrap(),
+                ProofMethod::SignedRequest
+            )]
+        );
         // OID4VP flows started from a QR-code are never part of an interactive OID4VCI authorization.
         assert!(matches!(
             active_flow,

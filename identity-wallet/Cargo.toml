@@ -20,7 +20,7 @@ dyn-clone = "1.0"
 futures = "0.3"
 hickory-resolver = { version = "0.26", default-features = false, features = ["tokio"] }
 icu = "1.4.0"
-identity-kit = { workspace = true, features = ["did-jwk", "did-key", "did-web", "domain-linkage", "linked-vp", "sd-jwt", "status-list"] }
+identity-kit = { workspace = true, features = ["did-jwk", "did-key", "did-web", "domain-linkage", "linked-vp", "sd-jwt", "status-list", "x509"] }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10"
 jsonschema = "0.29"
