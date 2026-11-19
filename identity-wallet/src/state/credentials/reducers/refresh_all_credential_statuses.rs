@@ -1,36 +1,45 @@
 use log::info;
-use std::sync::Arc;
 
 use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
         common::actions::unlock_storage::UnlockStorage,
-        credentials::{
-            actions::refresh_credential_status::RefreshCredentialStatus,
-            reducers::refresh_credential_status::refresh_credential_status,
-        },
+        credentials::reducers::refresh_credential_status::refresh_statuses,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
-// TODO: test for possible poor latency/performance due to many stronghold interactions when many credentials need to be refreshed.
-/// Refreshes the credential status for all credentials in the state.
+/// Refreshes the credential status for all credentials in the state, see [`refresh_statuses`].
 #[tracing::instrument(skip_all, err)]
 pub async fn refresh_all_credential_statuses(state: AppState, action: Action) -> Result<AppState, AppError> {
     let credential_ids: Vec<String> = state
         .credentials
         .iter()
+        .filter(|credential| credential.credential_status.is_some())
         .map(|credential| credential.id.clone())
         .collect();
 
-    let mut state = state;
+    info!(
+        "Refreshing statuses for {} of {} credentials",
+        credential_ids.len(),
+        state.credentials.len()
+    );
 
-    info!("Refreshing statuses for all {} credentials", credential_ids.len());
+    let (state, summary) = refresh_statuses(state, &credential_ids).await?;
 
-    for credential_id in credential_ids {
-        state = refresh_credential_status(state, Arc::new(RefreshCredentialStatus { credential_id })).await?;
+    let message = format!(
+        "Refreshing the status of {} credential(s) from {} status list(s) took {}ms ({} failed)",
+        summary.refreshed + summary.failed,
+        summary.status_lists,
+        summary.duration.as_millis(),
+        summary.failed
+    );
+    if summary.failed == 0 {
+        crate::debug_log_ok!(state.core_utils.debug_log, "{message}");
+    } else {
+        crate::debug_log_error!(state.core_utils.debug_log, "{message}");
     }
 
     // TODO: This is a temporary solution to pass the correct `current_user_prompt` to the new state.

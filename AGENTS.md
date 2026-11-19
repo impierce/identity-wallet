@@ -268,9 +268,49 @@ external action. A successful local build is not by itself approval to release.
 
 - Never commit or push code unless the user explicitly approves that specific operation.
 - Do not perform any other remote operation unless it has been explicitly approved.
-- You may stage changes and propose a short, concise commit message that summarizes the current changes.
+- You may stage changes and propose a short, concise commit message that summarizes the current changes, in the style
+  below.
 - Do not include a commit message body unless the user requests one. All commits are squashed when merged, so a body
   is not normally needed.
+
+### Commit messages and PR titles
+
+PRs are squash-merged: PR title becomes commit message on `dev`. Same style for both.
+
+- Format: `<type>(<scope>): <subject>`, [Conventional Commits](https://www.conventionalcommits.org/)
+- Types: `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`
+  - `chore(deps)`, `chore(deps-dev)`: dependency bumps, as Dependabot names them
+  - `build`: version strings, build and release tooling, platform build configuration
+- Scope: optional; area or platform, e.g. `deps`, `android`, `ios`, `connection`, `logging`, `dev-mode`
+- Subject: imperative, lowercase, no trailing period, header at most 72 characters
+- Terse: fragments, no full sentences
+  - no relative clauses (`that`, `which`, `so that`)
+  - no contractions (`don't`, `isn't`)
+  - no filler (`actually`, `properly`, `just`, `some`, `various`, `this PR`)
+  - drop articles (`the`, `a`) where meaning stays clear
+- Code identifiers, crates, packages, protocols and file names in backticks
+- What changed, not why in detail (PR description) and no future plans
+- Commit bodies (only on request) and PR descriptions: same terse style, bullet fragments over prose
+
+Good:
+
+- `fix: keep email verification countdown in sync`
+- `refactor: replace IOTA Identity crates with IdentityKit`
+- `chore(deps): bump oid4vp to 0.7, siopv2 to 0.6.1`
+- ``fix(tls): use `webpki-roots` for HTTP client and DID resolver``
+- ``feat: self-issue profile and address as `vc+sd-jwt` ``
+- ``build: bump version strings to `0.19.2` ``
+
+Bad, with fix:
+
+| Bad                                                                        | Problem                                          | Good                                                              |
+| -------------------------------------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------- |
+| `fix: holder DID must match the signing key for vc+sd-jwt`                 | statement, not imperative; article; no backticks | ``fix: require holder DID to match signing key for `vc+sd-jwt` `` |
+| `fix: decide "not yet valid" from validFrom or nbf, not the issuance time` | identifiers without backticks, article           | ``fix: decide "not yet valid" from `validFrom` or `nbf` ``        |
+| `feat: clickable-domains`                                                  | branch name as subject                           | `feat: make domain names clickable`                               |
+| `Add agent improvements`                                                   | no type, capitalized, vague                      | `build: add Tauri MCP bridge for UI automation`                   |
+| `fix: smoke test findings (profile birth date, data: logos, copy)`         | vague, unrelated changes in one PR               | one PR per fix, e.g. `fix: validate profile birth date`           |
+| `feat: add did:web, which will later replace did:key`                      | relative clause, future plans                    | ``feat: add `did:web` ``                                          |
 
 ## Security and debugging
 
@@ -288,6 +328,10 @@ Logging follows `docs/adr/0003-no-personal-data-in-logs.md`, in this repository 
 - In the frontend, log the action type or a count, never a payload or a URL from a deep link or QR code.
 - Keep the manual `Debug` implementations that redact secrets in action payloads (`CheckPassword`, `UnlockStorage`,
   `CreateNew`). Do not add file or remote logging without revisiting `docs/adr/0002-logging-sensitive-information.md`.
+
+A debug build trusts the CA certificates in the PEM file `UNIME_EXTRA_CA_CERTS` names on top of the pinned
+`webpki-roots`, for local test servers with a test CA (`docs/debugging.md`). The code is behind
+`#[cfg(debug_assertions)]`: keep it out of release builds.
 
 Release builds log at INFO; DEBUG is only available in debug builds. In debug builds, state updates are written to
 `debug/state.json` by default. Set `LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The

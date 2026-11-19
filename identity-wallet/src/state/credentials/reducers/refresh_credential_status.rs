@@ -1,147 +1,257 @@
-use std::time::Duration;
+use std::collections::{HashMap, HashSet};
+use std::time::{Duration, Instant};
 
 use crate::{
     error::AppError,
     http_client::get_http_client_builder,
-    logging::url_without_query,
+    logging::url_host,
     state::{
         actions::{listen, Action},
         core_utils::DateUtils,
         credentials::{
             actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, CredentialStatusType,
-            VerifiableCredentialRecord,
+            DisplayCredential, VerifiableCredentialRecord,
         },
         AppState,
     },
     subject::Subject,
 };
+use futures::StreamExt;
 use identity_kit::{status_list::StatusListToken, vc::Jwt};
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use log::{info, warn};
 use oid4vc_core::{utils::did::extract_normalized_did_kid_from_jwt, Verify};
 use reqwest::{header, redirect::Policy};
+use url::Url;
+
+/// How many status lists are requested at the same time when several credentials are refreshed.
+const MAX_CONCURRENT_STATUS_LIST_REQUESTS: usize = 8;
+
+/// How long a refresh waits for status lists. It stays below the action's time limit (`DEFAULT_ACTION_TIME_LIMIT`),
+/// so that what has been fetched is still applied and saved: a credential whose status list has not answered by then
+/// keeps its status, as it does when the request fails.
+const STATUS_REFRESH_BUDGET: Duration = Duration::from_secs(7);
 
 #[tracing::instrument(skip_all, err)]
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
-        let state_guard = state.core_utils.managers.lock().await;
-        let mut credentials = state.credentials.clone();
         let credential_id = refresh_credential_status.credential_id;
 
-        let credential = credentials.iter_mut().find(|c| c.id == credential_id).ok_or_else(|| {
-            // This should never happen, as the credential ID send by the frontend is supposed to be valid.
-            warn!("No credential found with id: `{credential_id}`");
-            AppError::NoCredentialWithIdError(credential_id.clone())
-        })?;
+        let credential = state
+            .credentials
+            .iter()
+            .find(|c| c.id == credential_id)
+            .ok_or_else(|| {
+                // This should never happen, as the credential ID send by the frontend is supposed to be valid.
+                warn!("No credential found with id: `{credential_id}`");
+                AppError::NoCredentialWithIdError(credential_id.clone())
+            })?;
 
-        let credential_status_data = match credential.credential_status.as_mut() {
-            Some(data) => data,
-            None => {
-                // The frontend should already be displaying the fact that there is no credentialStatus for this credential, so only a log message is enough here.
-                warn!("No credential status found for credential with id: `{credential_id}`");
+        if credential.credential_status.is_none() {
+            // The frontend should already be displaying the fact that there is no credentialStatus for this credential, so only a log message is enough here.
+            warn!("No credential status found for credential with id: `{credential_id}`");
 
-                // Abort the function without any changes to the state.
-                // No error needed here since the credential_status is optional.
-                return Ok(AppState {
-                    current_user_prompt: None,
-                    ..state.clone()
-                });
-            }
-        };
-
-        let subject = state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(AppError::MissingManagerError("identity"))?
-            .subject
-            .clone();
-
-        let debug_timestamp_before = chrono::Local::now();
+            // Abort the function without any changes to the state.
+            // No error needed here since the credential_status is optional.
+            return Ok(AppState {
+                current_user_prompt: None,
+                ..state
+            });
+        }
 
         let display_name = credential.display_name.clone();
+        let (state, summary) = refresh_statuses(state, std::slice::from_ref(&credential_id)).await?;
 
-        match fetch_credential_status(credential_status_data, &subject).await {
-            Ok(status) => {
-                info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
-                credential_status_data.last_checked = DateUtils::new_date_string();
-                credential_status_data.status = status;
+        if summary.refreshed == 1 {
+            crate::debug_log_ok!(
+                state.core_utils.debug_log,
+                "Refreshing credential status for `{display_name}` took {}ms (success)",
+                summary.duration.as_millis()
+            );
+        } else {
+            crate::debug_log_error!(
+                state.core_utils.debug_log,
+                "Refreshing credential status for `{display_name}` took {}ms (failed)",
+                summary.duration.as_millis()
+            );
+        }
 
-                // Update the credential in Stronghold
-                {
-                    let stronghold_manager = state_guard
-                        .stronghold_manager
-                        .as_ref()
-                        .ok_or(AppError::MissingManagerError("stronghold"))?;
-
-                    let key: uuid::Uuid = credential_id.parse().map_err(AppError::InvalidUuidError)?;
-
-                    let updated_credential = credentials
-                        .iter()
-                        .find(|c| c.id == credential_id)
-                        .ok_or(AppError::NoCredentialWithIdError(credential_id))?;
-
-                    let mut verifiable_credential_record = stronghold_manager
-                        .remove(key)
-                        .map_err(AppError::StrongholdDeletionError)?
-                        .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
-                        .ok_or(AppError::StrongholdMissingCredentialError(key))?;
-
-                    verifiable_credential_record.display_credential = updated_credential.clone();
-
-                    stronghold_manager
-                        .insert(
-                            key,
-                            serde_json::json!(verifiable_credential_record)
-                                .to_string()
-                                .as_bytes()
-                                .to_vec(),
-                        )
-                        .map_err(AppError::StrongholdInsertionError)?;
-                }
-            }
-            Err(e) => {
-                // This error handling means we don't panic when the refresh_credential_status function fails.
-                // We log the error, keep the status and the last_checked field the same.
-                // We don't make any assumptions on the credential status since the error has to do with the reachability of the status list, not the status itself.
-                // However, it is up to the verifier how to handle a status that is unreachable.
-                // This means a seemingly valid credential could be rejected when a user shares it.
-                warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
-
-                let debug_timestamp_after = chrono::Local::now();
-                let debug_duration = debug_timestamp_after - debug_timestamp_before;
-
-                crate::debug_log_error!(
-                    state.core_utils.debug_log,
-                    "Refreshing credential status for `{}` took {:?}ms (failed): {e}",
-                    display_name,
-                    debug_duration.num_milliseconds()
-                );
-                return Ok(AppState {
-                    current_user_prompt: None,
-                    ..state.clone()
-                });
-            }
-        };
-
-        let debug_timestamp_after = chrono::Local::now();
-        let debug_duration = debug_timestamp_after - debug_timestamp_before;
-
-        drop(state_guard);
-
-        crate::debug_log_ok!(
-            state.core_utils.debug_log,
-            "Refreshing credential status for `{}` took {:?}ms (success)",
-            display_name,
-            debug_duration.num_milliseconds()
-        );
         return Ok(AppState {
             current_user_prompt: None,
-            credentials,
-            ..state.to_owned()
+            ..state
         });
     }
 
     Ok(state)
+}
+
+/// The outcome of [`refresh_statuses`].
+#[derive(Debug, PartialEq)]
+pub struct RefreshSummary {
+    /// Credentials whose status was refreshed.
+    pub refreshed: usize,
+    /// Credentials whose status list could not be fetched, did not verify or did not answer in time. They keep their
+    /// status and `last_checked`.
+    pub failed: usize,
+    /// The distinct status lists requested.
+    pub status_lists: usize,
+    pub duration: Duration,
+}
+
+/// Refreshes the status of the credentials `credential_ids` that have a `credentialStatus`, and saves those refreshed
+/// to Stronghold.
+///
+/// - Each status list is requested once, however many credentials refer to it, and its signature is verified once.
+/// - At most [`MAX_CONCURRENT_STATUS_LIST_REQUESTS`] status lists are requested at the same time.
+/// - Status lists that have not answered after [`STATUS_REFRESH_BUDGET`] count as failed.
+/// - The refreshed credentials are saved with one Stronghold commit, which encrypts and writes the whole snapshot.
+pub async fn refresh_statuses(
+    state: AppState,
+    credential_ids: &[String],
+) -> Result<(AppState, RefreshSummary), AppError> {
+    let start = Instant::now();
+
+    let subject = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .identity_manager
+        .as_ref()
+        .ok_or(AppError::MissingManagerError("identity"))?
+        .subject
+        .clone();
+
+    let status_lists: HashSet<Url> = state
+        .credentials
+        .iter()
+        .filter(|credential| credential_ids.contains(&credential.id))
+        .filter_map(|credential| credential.credential_status.as_ref())
+        .map(|credential_status| credential_status.uri.clone())
+        .collect();
+
+    let tokens = fetch_status_list_tokens(status_lists.iter().cloned(), &subject).await;
+
+    let mut credentials = state.credentials.clone();
+    let mut refreshed_ids = Vec::new();
+    let mut failed = 0;
+    for credential in credentials
+        .iter_mut()
+        .filter(|credential| credential_ids.contains(&credential.id))
+    {
+        let Some(credential_status) = credential.credential_status.as_mut() else {
+            continue;
+        };
+        let status = match tokens.get(&credential_status.uri) {
+            Some(Ok(token)) => status_at(token, credential_status.idx),
+            Some(Err(e)) => Err(e.clone()),
+            None => Err(StatusRefreshError::NoAnswer),
+        };
+        match status {
+            Ok(status) => {
+                info!(
+                    "Refreshed the status of credential `{}`: `{status:?}` (previous status: `{:?}`)",
+                    credential.id, credential_status.status
+                );
+                credential_status.status = status;
+                credential_status.last_checked = DateUtils::new_date_string();
+                refreshed_ids.push(credential.id.clone());
+            }
+            Err(e) => {
+                // We log the error, keep the status and the last_checked field the same.
+                // We don't make any assumptions on the credential status since the error has to do with the reachability of the status list, not the status itself.
+                // However, it is up to the verifier how to handle a status that is unreachable.
+                // This means a seemingly valid credential could be rejected when a user shares it.
+                warn!(
+                    "Failed to refresh the status of credential `{}`, it stays `{:?}`: {e}",
+                    credential.id, credential_status.status
+                );
+                failed += 1;
+            }
+        }
+    }
+
+    save_credentials(&state, &credentials, &refreshed_ids).await?;
+
+    let summary = RefreshSummary {
+        refreshed: refreshed_ids.len(),
+        failed,
+        status_lists: status_lists.len(),
+        duration: start.elapsed(),
+    };
+    info!(
+        "Refreshed the status of {} credential(s) from {} status list(s) in {}ms, {} failed",
+        summary.refreshed,
+        summary.status_lists,
+        summary.duration.as_millis(),
+        summary.failed
+    );
+
+    Ok((AppState { credentials, ..state }, summary))
+}
+
+/// Why a credential's status could not be refreshed.
+#[derive(Debug, Clone, thiserror::Error)]
+enum StatusRefreshError {
+    #[error("{0}")]
+    Fetch(String),
+    #[error("its status list did not answer within {STATUS_REFRESH_BUDGET:?}")]
+    NoAnswer,
+}
+
+/// Fetches and verifies the status lists `uris`, at most [`MAX_CONCURRENT_STATUS_LIST_REQUESTS`] at the same time. A
+/// status list that has not answered after [`STATUS_REFRESH_BUDGET`] is left out.
+async fn fetch_status_list_tokens(
+    uris: impl IntoIterator<Item = Url>,
+    subject: &Subject,
+) -> HashMap<Url, Result<StatusListToken, StatusRefreshError>> {
+    let mut fetches = futures::stream::iter(uris)
+        .map(|uri| async move {
+            let token = fetch_status_list_token(&uri, subject)
+                .await
+                .map_err(|e| StatusRefreshError::Fetch(e.to_string()));
+            (uri, token)
+        })
+        .buffer_unordered(MAX_CONCURRENT_STATUS_LIST_REQUESTS);
+
+    let deadline = tokio::time::Instant::now() + STATUS_REFRESH_BUDGET;
+    let mut tokens = HashMap::new();
+    while let Ok(Some((uri, token))) = tokio::time::timeout_at(deadline, fetches.next()).await {
+        tokens.insert(uri, token);
+    }
+    tokens
+}
+
+/// Saves the credentials `ids` of `credentials` to Stronghold, with a single commit.
+async fn save_credentials(state: &AppState, credentials: &[DisplayCredential], ids: &[String]) -> Result<(), AppError> {
+    if ids.is_empty() {
+        return Ok(());
+    }
+
+    let managers = state.core_utils.managers.lock().await;
+    let stronghold_manager = managers
+        .stronghold_manager
+        .as_ref()
+        .ok_or(AppError::MissingManagerError("stronghold"))?;
+
+    let mut records = Vec::with_capacity(ids.len());
+    for credential in credentials.iter().filter(|credential| ids.contains(&credential.id)) {
+        let key: uuid::Uuid = credential.id.parse().map_err(AppError::InvalidUuidError)?;
+        let mut verifiable_credential_record = stronghold_manager
+            .get(key)
+            .map_err(AppError::StrongholdValuesError)?
+            .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
+            .ok_or(AppError::StrongholdMissingCredentialError(key))?;
+        verifiable_credential_record.display_credential = credential.clone();
+        records.push((
+            key,
+            serde_json::json!(verifiable_credential_record).to_string().into_bytes(),
+        ));
+    }
+
+    stronghold_manager
+        .insert_all(records)
+        .map_err(AppError::StrongholdInsertionError)
 }
 
 // Helpers
@@ -153,8 +263,15 @@ pub async fn fetch_credential_status(
     credential_status_data: &CredentialStatus,
     subject: &Subject,
 ) -> Result<CredentialStatusType, AppError> {
+    let token = fetch_status_list_token(&credential_status_data.uri, subject).await?;
+    status_at(&token, credential_status_data.idx).map_err(|_| AppError::GetCredentialStatusError)
+}
+
+/// Fetches the Status List Token at `uri`, verifies its signature with the key its `kid` names and checks its claims.
+#[tracing::instrument(skip_all, err)]
+pub async fn fetch_status_list_token(uri: &Url, subject: &Subject) -> Result<StatusListToken, AppError> {
     // TODO: we only request JWTs, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
-    let status_list_jwt = fetch_status_list(credential_status_data.uri.as_str()).await?;
+    let status_list_jwt = fetch_status_list(uri.as_str()).await?;
 
     // Checks that `typ` is `statuslist+jwt` and reads the claims; the signature is verified below.
     let invalid_token = |e: &dyn std::fmt::Display| {
@@ -191,21 +308,21 @@ pub async fn fetch_credential_status(
 
     check_status_list_token(&status_list_token, chrono::Utc::now().timestamp())?;
 
+    info!("Fetched the status list from {}", url_host(uri));
+
+    Ok(status_list_token)
+}
+
+/// The status at `idx` of a verified Status List Token.
+fn status_at(token: &StatusListToken, idx: u64) -> Result<CredentialStatusType, StatusRefreshError> {
     // TODO: use `StatusListToken::status_of`, which also checks that `sub` is the referenced URI (Token Status List
     // §8.3). The status list tokens in the integration tests carry a different `sub`.
-    let status = status_list_token
+    token
         .status_list
-        .get(credential_status_data.idx)
+        .get(idx)
         .ok_or(AppError::GetCredentialStatusError)
-        .and_then(CredentialStatusType::try_from)?;
-
-    info!(
-        "Successfully fetched status list from `{}` with status: `{:?}`",
-        url_without_query(&credential_status_data.uri),
-        credential_status_data.status
-    );
-
-    Ok(status)
+        .and_then(CredentialStatusType::try_from)
+        .map_err(|_| StatusRefreshError::Fetch(format!("the status list has no valid status at index {idx}")))
 }
 
 /// Requests the status list token from the provided URI and returns the response body as a String.

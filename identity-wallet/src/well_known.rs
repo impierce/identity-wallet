@@ -9,7 +9,7 @@ use log::debug;
 use oid4vci::credential_issuer::{
     authorization_server_metadata::AuthorizationServerMetadata, credential_issuer_metadata::CredentialIssuerMetadata,
 };
-use reqwest::StatusCode;
+use reqwest::{header::ACCEPT, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize};
 use url::Url;
 
@@ -167,8 +167,12 @@ async fn fetch_well_known<T: DeserializeOwned>(
     for url in suffixes.iter().flat_map(|suffix| well_known_candidates(base, suffix)) {
         debug!("Trying {resource} at {url}");
 
+        // "The Wallet is RECOMMENDED to send an Accept header in the HTTP GET request to indicate the Content Type(s)
+        // it supports" (OpenID4VCI 1.0, Section 12.2.2). An issuer that also serves signed metadata
+        // (`application/jwt`) may answer 406 to a request that names none.
         let response = client
             .get(url.clone())
+            .header(ACCEPT, "application/json")
             .send()
             .await
             .map_err(|err| request_error(err).context(format!("Failed to get {resource} from {url}")))?;
@@ -290,6 +294,29 @@ mod tests {
             .expect(1)
             .mount(mock_server)
             .await;
+    }
+
+    #[tokio::test]
+    async fn asks_for_json_so_that_an_issuer_negotiating_the_content_type_answers() {
+        let mock_server = MockServer::start().await;
+        let issuer = mock_server.uri();
+        // An issuer that serves its metadata as JSON or as a signed JWT, and neither to a request that names none.
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-credential-issuer"))
+            .and(wiremock::matchers::header("accept", "application/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(credential_issuer_metadata(&issuer)))
+            .mount(&mock_server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-credential-issuer"))
+            .respond_with(ResponseTemplate::new(406))
+            .with_priority(10)
+            .mount(&mock_server)
+            .await;
+
+        let metadata = get_credential_issuer_metadata(&url(&issuer)).await.unwrap();
+
+        assert_eq!(metadata.credential_issuer, url(&issuer));
     }
 
     #[tokio::test]
