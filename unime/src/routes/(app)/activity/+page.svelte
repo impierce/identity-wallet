@@ -13,6 +13,9 @@
   let triggers = [$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()];
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
 
+  let historyOpened = false;
+  $: if ($activeTab === triggers[1]) historyOpened = true;
+
   useParentRoute('/me');
 
   beforeNavigate(({ type }) => {
@@ -33,8 +36,9 @@
         <ConnectionsList />
       </div>
       <div slot="1" class="h-full">
-        <!-- Rendered once its tab is opened, so that the connections show without waiting for the whole history. -->
-        {#if $activeTab === triggers[1]}
+        <!-- Rendered once its tab is first opened, so that the connections show without waiting for the whole history,
+        and kept afterwards, so that switching back does not render it again. -->
+        {#if historyOpened}
           <History />
         {/if}
       </div>
