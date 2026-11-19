@@ -20,7 +20,10 @@ UNIME_EXTRA_CA_CERTS=/absolute/path/to/test-ca.pem pnpm tauri dev
 - The file can hold several certificates. Use an absolute path.
 - Set the variable in the environment UniMe is started in, or in `unime/.env`, which is loaded at startup like the other
   debug settings.
-- UniMe logs a warning with the number of certificates it added. A file it cannot read, or one without a certificate,
-  is logged as an error and adds nothing. Neither line names the file: check the variable's value when it is not found.
+- UniMe reads the file once and logs a warning with the number of certificates it gives. A file it cannot read, or one
+  without a certificate, is logged as an error and adds nothing. Neither line names the file: check the variable's
+  value when it is not found.
 - Release builds do not contain this: their roots stay the built-in ones, whatever the environment says.
-- It applies to UniMe's own HTTP clients. Requests the openid4vc library sends with its own client are not covered.
+- It applies to every request UniMe sends, the OpenID4VCI and OpenID4VP requests of the openid4vc library included:
+  UniMe gives the library's `Wallet` and `ProviderManager` a client with the same trust anchors
+  (`get_openid4vc_http_client`).

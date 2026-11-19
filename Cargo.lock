@@ -1519,7 +1519,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users 0.5.3",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1897,7 +1897,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e35d6e78f4cebb90e51d543db8fe41528851d6deeef6ef21ebd4bfdc1e784776"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4446,7 +4446,7 @@ dependencies = [
  "png",
  "serde",
  "thiserror 2.0.21",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5104,9 +5104,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vc-core"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "479b38ddabab40466598dc463c1f37783bfc8f5b4d753d408d0e3d45995ac5e7"
+checksum = "d640331ae28a34bb555db25db05d75c7db625562c5db4ae43a836db1e2f6b7c5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5131,9 +5131,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vc-manager"
-version = "0.6.2"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "303c79dc2c1d73b4d72f142aec6c669a203c27a24dd55de3b1197b526c95c031"
+checksum = "ab88f83e263906ab8b517449fbeafe8f0589503ef4a9ddc1eb3fe26bc059d5c6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5161,9 +5161,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vci"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c435b935639e9dd1e78f988edf323567ba83cca2d4a4098617e0ff7c8246f120"
+checksum = "ba4bf41ffe1f18a1c94a23f06e1e39db4f07563d6b6e234e7b7cc422d6a1d662"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5188,9 +5188,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vp"
-version = "0.7.0"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73d75fd464abb58eadf3a2bfd21c79c29a137285e4854bffed0525071de6ec68"
+checksum = "d5b2cbb365047a1d147e58f9b75219899359b69dffbd67480b04f5955d2250bb"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5315,7 +5315,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5858,7 +5858,7 @@ dependencies = [
  "quinn-udp",
  "rustc-hash",
  "rustls",
- "socket2 0.5.10",
+ "socket2 0.6.5",
  "thiserror 2.0.21",
  "tokio",
  "tracing",
@@ -5897,9 +5897,9 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "once_cell",
- "socket2 0.5.10",
+ "socket2 0.6.5",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6376,7 +6376,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6435,7 +6435,7 @@ dependencies = [
  "security-framework 3.7.0",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -7051,9 +7051,9 @@ dependencies = [
 
 [[package]]
 name = "siopv2"
-version = "0.6.1"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86ebe9d6210dd4f2f1fe92df54683e99f18c70c423eb650ecfb71ad729c920ab"
+checksum = "abe94ee49c37875a04c44092ebfc60eeea91ecef85f068fd1db5538e1557a222"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -7111,7 +7111,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8009,7 +8009,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8414,7 +8414,7 @@ dependencies = [
  "png",
  "serde",
  "thiserror 2.0.21",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8515,7 +8515,7 @@ checksum = "f2f6fb2847f6742cd76af783a2a2c49e9375d0a111c7bef6f71cd9e738c72d6e"
 dependencies = [
  "memoffset 0.9.1",
  "tempfile",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -9073,7 +9073,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -9094,7 +9094,7 @@ dependencies = [
  "objc2-foundation 0.3.2",
  "objc2-quartz-core 0.3.2",
  "raw-window-handle",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
  "windows-version",
 ]
 
@@ -9527,7 +9527,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d6f32a0ff4a9f6f01231eb2059cc85479330739333e0e58cadf03b6af2cca10"
 dependencies = [
  "cfg-if",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

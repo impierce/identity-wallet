@@ -6,18 +6,38 @@ use openid_federation::{FederationError, FederationResult, HttpClient};
 use reqwest::{Client, Url};
 use reqwest_middleware::{ClientBuilder, ClientWithMiddleware};
 use reqwest_retry::{policies::ExponentialBackoff, RetryError, RetryTransientMiddleware};
+use std::sync::OnceLock;
 use tokio::sync::OnceCell;
 
 use crate::error::AppError;
 use crate::state::core_utils::tls_config;
 
 static HTTP_CLIENT: OnceCell<ClientWithMiddleware> = OnceCell::const_new();
+static OPENID4VC_HTTP_CLIENT: OnceLock<Client> = OnceLock::new();
 static PUBLIC_DESTINATION_HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
 
 pub fn get_http_client_builder() -> reqwest::ClientBuilder {
     reqwest::Client::builder()
         .use_preconfigured_tls(tls_config())
         .timeout(std::time::Duration::from_secs(5))
+}
+
+/// Returns the globally shared client the oid4vc `Wallet` and `ProviderManager` send their requests with, so these
+/// follow the trust anchors of [`tls_config`] like every other request of the app (#746). Their own default client
+/// trusts the operating system's store instead.
+///
+/// It has no timeout for a whole request, like that default client: the library retries a request that times out,
+/// and a slow token or credential request must not be sent twice. The time limit of an action bounds the request.
+pub fn get_openid4vc_http_client() -> Client {
+    OPENID4VC_HTTP_CLIENT
+        .get_or_init(|| {
+            // No `Client::new()` fallback: it drops the pinned `webpki-roots` anchors (#746).
+            reqwest::Client::builder()
+                .use_preconfigured_tls(tls_config())
+                .build()
+                .expect("HTTP client with pinned roots could not be built")
+        })
+        .clone()
 }
 
 /// Returns a globally shared HTTP client configured with `webpki-roots` TLS, which retries transient failures up to
