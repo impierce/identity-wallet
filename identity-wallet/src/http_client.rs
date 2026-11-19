@@ -1,4 +1,5 @@
 use std::net::{IpAddr, SocketAddr};
+use std::time::Duration;
 
 use async_trait::async_trait;
 use identity_kit::methods::web::{HttpError, HttpResponse};
@@ -85,6 +86,7 @@ async fn get_public_destination_http_client() -> Result<Client, AppError> {
     PUBLIC_DESTINATION_HTTP_CLIENT
         .get_or_try_init(|| async {
             get_http_client_builder()
+                .connect_timeout(CONNECT_TIMEOUT)
                 .redirect(reqwest::redirect::Policy::none())
                 .dns_resolver(PublicAddressResolver {
                     allow_private: private_destinations_allowed(),
@@ -154,15 +156,68 @@ pub async fn fetch_public_destination(mut url: Url) -> Result<reqwest::Response,
     Err(AppError::DownloadAborted(TOO_MANY_REDIRECTS))
 }
 
-/// Sends `form` as a form POST to a remote-supplied `url`, once: the destination must pass
-/// [`assert_public_destination`], and a redirect is returned as the response rather than followed.
+/// How long one attempt of a POST to a remote-supplied endpoint may take, answer included. A verifier may check the
+/// presentation (signatures, status lists, trust chains) before it answers, so this is longer than the client's limit
+/// for a GET.
+const POST_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// How long opening a connection to a remote-supplied destination may take.
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(3);
+
+/// Pause before a POST whose connection could not be opened is sent again.
+const CONNECT_RETRY_DELAY: Duration = Duration::from_millis(500);
+
+/// How long [`post_to_public_destination`] may take at most: a first attempt whose connection could not be opened,
+/// the pause, and a second attempt. An action that sends such a POST must allow for it in its time limit.
+pub const MAX_POST_DURATION: Duration = CONNECT_TIMEOUT
+    .saturating_add(CONNECT_RETRY_DELAY)
+    .saturating_add(POST_TIMEOUT);
+
+/// Sends `form` as a form POST to a remote-supplied `url`, see [`post_to_public_destination`].
 pub async fn post_form_to_public_destination<T: serde::Serialize + ?Sized>(
     url: &Url,
     form: &T,
 ) -> Result<reqwest::Response, AppError> {
+    post_to_public_destination(url, |client| client.post(url.clone()).form(form)).await
+}
+
+/// Sends `body`, an `application/x-www-form-urlencoded` form that is already encoded, as a POST to a remote-supplied
+/// `url`, see [`post_to_public_destination`].
+pub async fn post_encoded_form_to_public_destination(url: &Url, body: String) -> Result<reqwest::Response, AppError> {
+    post_to_public_destination(url, |client| {
+        client
+            .post(url.clone())
+            .header(reqwest::header::CONTENT_TYPE, "application/x-www-form-urlencoded")
+            .body(body.clone())
+    })
+    .await
+}
+
+/// Sends the POST that `request` builds to a remote-supplied `url`, which must pass [`assert_public_destination`].
+///
+/// - **Sent once.** A POST that went out is not sent again, whatever the answer or when none comes back: the server
+///   may have read it. Only a POST whose connection could not be opened is sent once more, after
+///   [`CONNECT_RETRY_DELAY`]: nothing of it left the device.
+/// - **No redirect is followed.** A redirect is returned as the response.
+/// - **Up to [`POST_TIMEOUT`]** for the whole request, and [`CONNECT_TIMEOUT`] to open the connection.
+async fn post_to_public_destination(
+    url: &Url,
+    request: impl Fn(&Client) -> reqwest::RequestBuilder,
+) -> Result<reqwest::Response, AppError> {
     assert_public_destination(url).await?;
     let client = get_public_destination_http_client().await?;
-    Ok(client.post(url.clone()).form(form).send().await?)
+
+    match request(&client).timeout(POST_TIMEOUT).send().await {
+        Err(error) if error.is_connect() => {
+            log::info!(
+                "Connection to {} could not be opened, sending again",
+                crate::logging::url_host(url)
+            );
+            tokio::time::sleep(CONNECT_RETRY_DELAY).await;
+            Ok(request(&client).timeout(POST_TIMEOUT).send().await?)
+        }
+        result => Ok(result?),
+    }
 }
 
 /// An `openid-federation` HTTP client that only requests public destinations, see [`fetch_public_destination`].
@@ -276,32 +331,46 @@ fn private_destinations_allowed() -> bool {
 /// again in its resolver, see [`PublicAddressResolver`]. This check stays so that a refused destination is reported as
 /// one, see [`is_refused_destination`].
 pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
+    assert_destination(url, private_destinations_allowed()).await
+}
+
+/// [`assert_public_destination`], with private addresses allowed or not.
+async fn assert_destination(url: &Url, allow_private: bool) -> Result<(), AppError> {
     if !matches!(url.scheme(), "http" | "https") {
         return Err(AppError::DownloadAborted(NOT_HTTP));
     }
 
-    if private_destinations_allowed() {
+    if allow_private {
         return Ok(());
     }
 
-    let host = url.host_str().ok_or(AppError::DownloadAborted(NO_HOST))?;
-    let port = url.port_or_known_default().unwrap_or(443);
-
-    let addresses = tokio::net::lookup_host((host, port))
-        .await
-        .map_err(|_| AppError::DownloadAborted(HOST_NOT_RESOLVED))?;
-
-    let mut resolved = false;
-    for address in addresses {
-        resolved = true;
-        if !is_public(&address.ip()) {
-            log::warn!("Refusing to request {url}: {} is not a public address", address.ip());
-            return Err(AppError::DownloadAborted(NON_PUBLIC_ADDRESS));
+    // An IP literal is the address itself. Looking it up as a name would fail for an IPv6 literal, which the URL
+    // holds in brackets.
+    let addresses: Vec<IpAddr> = match url.host() {
+        None => return Err(AppError::DownloadAborted(NO_HOST)),
+        Some(url::Host::Ipv4(address)) => vec![IpAddr::V4(address)],
+        Some(url::Host::Ipv6(address)) => vec![IpAddr::V6(address)],
+        Some(url::Host::Domain(domain)) => {
+            let port = url.port_or_known_default().unwrap_or(443);
+            tokio::net::lookup_host((domain, port))
+                .await
+                .map_err(|_| AppError::DownloadAborted(HOST_NOT_RESOLVED))?
+                .map(|address| address.ip())
+                .collect()
         }
+    };
+
+    if addresses.is_empty() {
+        return Err(AppError::DownloadAborted("URL host resolved to no addresses"));
     }
 
-    if !resolved {
-        return Err(AppError::DownloadAborted("URL host resolved to no addresses"));
+    if let Some(address) = addresses.iter().find(|address| !is_public(address)) {
+        // Only the host is logged: the rest of the URL can grant access or carry request parameters.
+        log::warn!(
+            "Refusing to request {}: {address} is not a public address",
+            crate::logging::url_host(url)
+        );
+        return Err(AppError::DownloadAborted(NON_PUBLIC_ADDRESS));
     }
 
     Ok(())
@@ -611,6 +680,35 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn an_ip_literal_is_checked_as_the_address_it_is() {
+        let destination = |url: &'static str| async move { assert_destination(&Url::parse(url).unwrap(), false).await };
+
+        // No lookup is needed, and an IPv6 literal is not looked up as a name, brackets and all.
+        for public in [
+            "https://1.1.1.1/response",
+            "https://[2606:4700:4700::1111]/response",
+            "https://[2606:4700:4700::1111]:8443/response",
+        ] {
+            assert!(destination(public).await.is_ok(), "{public}");
+        }
+
+        for private in [
+            "https://127.0.0.1/response",
+            "https://10.0.0.1/response",
+            "https://[::1]/response",
+            "https://[fd00::1]/response",
+            "https://[fe80::1]/response",
+        ] {
+            let refusal = destination(private).await.unwrap_err();
+            assert!(
+                matches!(refusal, AppError::DownloadAborted(NON_PUBLIC_ADDRESS)),
+                "{private}: {refusal:?}"
+            );
+            assert!(is_refused_destination(&refusal), "{private}");
+        }
+    }
+
+    #[tokio::test]
     async fn refusals_are_told_apart_from_unreachable_destinations() {
         let file_url = Url::parse("file:///etc/passwd").unwrap();
         assert!(is_refused_destination(
@@ -630,5 +728,78 @@ mod tests {
 
         // As while offline, in release builds.
         assert!(!is_refused_destination(&AppError::DownloadAborted(HOST_NOT_RESOLVED)));
+    }
+
+    /// A local address nothing listens on, so a connection to it is refused.
+    fn closed_address() -> SocketAddr {
+        std::net::TcpListener::bind("127.0.0.1:0")
+            .unwrap()
+            .local_addr()
+            .unwrap()
+    }
+
+    #[tokio::test]
+    async fn a_post_is_sent_again_when_its_connection_could_not_be_opened() {
+        let address = closed_address();
+        let url = Url::parse(&format!("http://{address}/response")).unwrap();
+
+        // The endpoint starts listening after the first attempt was refused, and before the second one.
+        let endpoint = tokio::spawn(async move {
+            tokio::time::sleep(CONNECT_RETRY_DELAY / 2).await;
+            let server = MockServer::builder()
+                .listener(std::net::TcpListener::bind(address).unwrap())
+                .start()
+                .await;
+            Mock::given(method("POST"))
+                .respond_with(ResponseTemplate::new(200))
+                .expect(1)
+                .mount(&server)
+                .await;
+            server
+        });
+
+        let response = post_form_to_public_destination(&url, &[("state", "abc")])
+            .await
+            .unwrap();
+        assert_eq!(response.status(), 200);
+        // `expect(1)` is verified when the server is dropped.
+        drop(endpoint.await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn a_post_whose_connection_cannot_be_opened_is_tried_twice() {
+        let url = Url::parse(&format!("http://{}/response", closed_address())).unwrap();
+
+        let started = std::time::Instant::now();
+        assert!(post_form_to_public_destination(&url, &[("state", "abc")])
+            .await
+            .is_err());
+        // The pause before the second attempt shows that there was one.
+        assert!(started.elapsed() >= CONNECT_RETRY_DELAY);
+    }
+
+    #[tokio::test]
+    async fn a_post_that_went_out_is_not_sent_again() {
+        // An endpoint that accepts the connection and closes it without an answer.
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let url = Url::parse(&format!("http://{}/response", listener.local_addr().unwrap())).unwrap();
+        let connections = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+        let counted = connections.clone();
+        let endpoint = tokio::spawn(async move {
+            loop {
+                let (connection, _) = listener.accept().await.unwrap();
+                counted.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                drop(connection);
+            }
+        });
+
+        assert!(post_form_to_public_destination(&url, &[("state", "abc")])
+            .await
+            .is_err());
+        // Long enough for a second attempt to arrive, had there been one.
+        tokio::time::sleep(CONNECT_RETRY_DELAY * 2).await;
+        endpoint.abort();
+
+        assert_eq!(connections.load(std::sync::atomic::Ordering::SeqCst), 1);
     }
 }
