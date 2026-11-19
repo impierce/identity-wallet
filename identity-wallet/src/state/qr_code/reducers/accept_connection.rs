@@ -2,6 +2,7 @@ use crate::identity::{Identity, Proof, ProofMethod};
 use crate::{
     error::AppError::{self, *},
     http_client::{fetch_public_destination, is_refused_destination, PublicDestinationHttpClient},
+    logging::url_host,
     state::{
         actions::{listen, Action},
         connections::EcosystemsCheck,
@@ -110,7 +111,10 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             None => {
                 use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
 
-                info!("No identity for {}: it is not verified", client_metadata.connection_url);
+                info!(
+                    "No identity for {}: it is not verified",
+                    url_host(&client_metadata.connection_url)
+                );
                 Box::new(ValidationResult {
                     status: ValidationStatus::Unknown,
                     url: url.clone(),
@@ -393,8 +397,7 @@ async fn get_oid4vci_client_metadata(
     let credential_issuer_url = credential_offer.credential_issuer.clone();
     let connection_url = normalize_connection_url(&credential_issuer_url);
 
-    info!("credential issuer url: {credential_issuer_url:?}");
-    info!("connection url: {connection_url:?}");
+    info!("Credential issuer: {}", url_host(&credential_issuer_url));
 
     let credential_issuer_metadata = get_verified_credential_issuer_metadata(&credential_issuer_url, trust_anchors)
         .await
@@ -469,17 +472,26 @@ async fn credential_issuer_proof(
     if let (Some(signed_metadata), false) = (signed_metadata, trust_anchors.is_empty()) {
         match crate::x509::credential_issuer_identity(signed_metadata, credential_issuer_url, trust_anchors).await {
             Ok(identity) => return Ok(Some(Proof::new(identity, ProofMethod::SignedMetadata))),
-            Err(err) => warn!("The signed metadata of {credential_issuer_url} does not verify its identity: {err:#}"),
+            Err(err) => warn!(
+                "The signed metadata of {} does not verify its identity: {err:#}",
+                url_host(credential_issuer_url)
+            ),
         }
     }
 
     match did_document_error {
         None => {
-            info!("No DID document for {credential_issuer_url}, its identity is not verified");
+            info!(
+                "No DID document for {}, its identity is not verified",
+                url_host(credential_issuer_url)
+            );
             Ok(None)
         }
         Some(err) => {
-            warn!("Failed to get the DID document of {credential_issuer_url}: {err:#}");
+            warn!(
+                "Failed to get the DID document of {}: {err:#}",
+                url_host(credential_issuer_url)
+            );
             Err(match err.downcast::<reqwest::Error>() {
                 Ok(reqwest_error) => AppError::DownloadFailed(reqwest_error),
                 Err(_) => AppError::DidParseError,

@@ -1,6 +1,7 @@
 //! Identities verified with X.509 certificate chains, see `docs/adr/0004-identities-verified-with-did-or-x509.md`.
 
 use crate::identity::Identity;
+use crate::logging::url_host;
 use anyhow::{anyhow, bail, Context as _};
 use identity_kit::{
     jose::DefaultVerifier,
@@ -65,7 +66,10 @@ pub async fn apply_signed_metadata(
         match serde_json::from_value(Value::Object(merged)) {
             Ok(merged) => return Ok(merged),
             Err(err) => {
-                warn!("The signed metadata of {credential_issuer} is no valid credential issuer metadata: {err}")
+                warn!(
+                    "The signed metadata of {} is no valid credential issuer metadata: {err}",
+                    url_host(credential_issuer)
+                )
             }
         }
     }
@@ -87,7 +91,10 @@ async fn verified_signed_metadata(
     match verify_signed_metadata(signed_metadata, credential_issuer, trust_anchors).await {
         Ok((_, claims)) => Some(claims.additional.into_iter().collect()),
         Err(err) => {
-            warn!("The signed metadata of {credential_issuer} is not applied: {err:#}");
+            warn!(
+                "The signed metadata of {} is not applied: {err:#}",
+                url_host(credential_issuer)
+            );
             None
         }
     }
