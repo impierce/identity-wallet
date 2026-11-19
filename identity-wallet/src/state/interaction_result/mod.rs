@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use url::Url;
 
-use crate::http_client::post_encoded_form_to_public_destination;
+use crate::http_client::{plain_http_allowed, post_encoded_form_to_public_destination};
 
 /// The outcome of the last interaction with an issuer or verifier, shown to the user in the result pop-up.
 #[derive(Debug, TS, Clone, Serialize, Deserialize, PartialEq)]
@@ -163,7 +163,8 @@ pub async fn send_authorization_response<E: Extension>(
 /// - its host is a domain name, not an IP address. An internationalized name is in its ASCII form here, so that is
 ///   also what the user is shown.
 ///
-/// `local` lifts the `https` and domain name rules for a verifier on the developer's machine (debug builds).
+/// `local` lifts the `https` and domain name rules for a verifier on the developer's machine, where requests over plain
+/// `http` are allowed ([`plain_http_allowed`]: debug builds with `UNIME_ALLOW_PLAIN_HTTP=true`).
 fn redirect_uri_of(body: &str, response_uri: &Url, local: bool) -> Option<Url> {
     if response_uri.scheme() != "https" && !local {
         return None;
@@ -187,8 +188,11 @@ fn redirect_uri_of(body: &str, response_uri: &Url, local: bool) -> Option<Url> {
 
 /// Posts an encoded authorization response to the verifier's Response Endpoint. It carries the user's credentials,
 /// so it is sent once and to that endpoint only:
-/// - **No retry.** A request that got an error or no answer may still have been read; sending it again is the
-///   user's decision.
+/// - **No retry once sent.** A request that got an error or no answer may still have been read; sending it again is
+///   the user's decision. Only a request whose connection could not be opened is sent once more, see
+///   [`post_encoded_form_to_public_destination`].
+/// - **Time for the verifier.** The verifier may check the presentation before it answers, so the request may take
+///   longer than other requests of the app.
 /// - **No redirect is followed.** A redirect would send the credentials to an address the request never named, and
 ///   over plain `http` if the redirect says so. It is reported as [`InteractionOutcome::Rejected`], like any other
 ///   answer that is not a success.
@@ -218,7 +222,7 @@ async fn post_authorization_response(response_uri: &str, encoded: String) -> Res
     if status.is_success() {
         return ResponseAnswer {
             outcome: InteractionOutcome::Approved,
-            redirect_uri: redirect_uri_of(&body, &response_uri, cfg!(debug_assertions)),
+            redirect_uri: redirect_uri_of(&body, &response_uri, plain_http_allowed()),
         };
     }
 
@@ -375,12 +379,12 @@ mod tests {
             .mount(&response_endpoint)
             .await;
 
-        // The mock is reached over `http`, which only a debug build accepts for a `redirect_uri`.
+        // The mock is reached over `http`, which tests allow as a debug build with `UNIME_ALLOW_PLAIN_HTTP=true` does.
         let answer = answer_of(&response_endpoint).await;
         assert_eq!(answer.outcome, InteractionOutcome::Approved);
         assert_eq!(
             answer.redirect_uri.as_ref().map(Url::as_str),
-            cfg!(debug_assertions).then_some("https://verifier.example/done")
+            Some("https://verifier.example/done")
         );
     }
 
@@ -406,6 +410,19 @@ mod tests {
             .and(header("content-type", "application/x-www-form-urlencoded"))
             .and(body_string(ENCODED))
             .respond_with(ResponseTemplate::new(200))
+            .expect(1)
+            .mount(&response_endpoint)
+            .await;
+
+        assert_eq!(post_to(&response_endpoint).await, InteractionOutcome::Approved);
+    }
+
+    #[tokio::test]
+    async fn a_verifier_that_answers_after_the_limit_of_other_requests_is_waited_for() {
+        // Longer than the five seconds a request of the shared clients may take.
+        let response_endpoint = MockServer::start().await;
+        Mock::given(method("POST"))
+            .respond_with(ResponseTemplate::new(200).set_delay(std::time::Duration::from_secs(6)))
             .expect(1)
             .mount(&response_endpoint)
             .await;

@@ -1,4 +1,5 @@
 use crate::error::AppError::{self, *};
+use crate::http_client::get_openid4vc_http_client;
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::unlock_storage::UnlockStorage;
 use crate::state::core_utils::IdentityManager;
@@ -29,13 +30,15 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .map_err(OID4VCProviderManagerError)?;
+        .map_err(OID4VCProviderManagerError)?
+        .with_http_client(get_openid4vc_http_client());
         let wallet: Wallet = Wallet::new(
             subject.clone(),
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .map_err(OID4VCWalletError)?;
+        .map_err(OID4VCWalletError)?
+        .with_http_client(get_openid4vc_http_client());
 
         state_guard.identity_manager.replace(IdentityManager {
             subject: subject.clone(),
