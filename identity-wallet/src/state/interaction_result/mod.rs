@@ -104,8 +104,11 @@ pub async fn send_authorization_response<E: Extension>(
 
 /// Posts an encoded authorization response to the verifier's Response Endpoint. It carries the user's credentials,
 /// so it is sent once and to that endpoint only:
-/// - **No retry.** A request that got an error or no answer may still have been read; sending it again is the
-///   user's decision.
+/// - **No retry once sent.** A request that got an error or no answer may still have been read; sending it again is
+///   the user's decision. Only a request whose connection could not be opened is sent once more, see
+///   [`post_encoded_form_to_public_destination`].
+/// - **Time for the verifier.** The verifier may check the presentation before it answers, so the request may take
+///   longer than other requests of the app.
 /// - **No redirect is followed.** A redirect would send the credentials to an address the request never named, and
 ///   over plain `http` if the redirect says so. It is reported as [`InteractionOutcome::Rejected`], like any other
 ///   answer that is not a success.
@@ -173,6 +176,19 @@ mod tests {
             .and(header("content-type", "application/x-www-form-urlencoded"))
             .and(body_string(ENCODED))
             .respond_with(ResponseTemplate::new(200))
+            .expect(1)
+            .mount(&response_endpoint)
+            .await;
+
+        assert_eq!(post_to(&response_endpoint).await, InteractionOutcome::Approved);
+    }
+
+    #[tokio::test]
+    async fn a_verifier_that_answers_after_the_limit_of_other_requests_is_waited_for() {
+        // Longer than the five seconds a request of the shared clients may take.
+        let response_endpoint = MockServer::start().await;
+        Mock::given(method("POST"))
+            .respond_with(ResponseTemplate::new(200).set_delay(std::time::Duration::from_secs(6)))
             .expect(1)
             .mount(&response_endpoint)
             .await;
