@@ -1,6 +1,6 @@
 {
   "type": "[QR Code] Scanned",
   "payload": {
-    "form_urlencoded": "openid://?client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&client_metadata=%7B%22client_name%22%3A%22example123%22%2C%22id_token_signed_response_alg%22%3A%22EdDSA%22%2C%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&nonce=nonce&redirect_uri=https%3A%2F%2Fexample.com%2F&response_type=id_token&scope=openid"
+    "form_urlencoded": "openid://?client_id=did%3Akey%3Az6Mkt2vQQkbotNSfJT2Arfb4bcPoZMNvdLVREhzdELSczQ6V&request=eyJ0eXAiOiJvYXV0aC1hdXRoei1yZXErand0IiwiYWxnIjoiRWREU0EiLCJraWQiOiJkaWQ6a2V5Ono2TWt0MnZRUWtib3ROU2ZKVDJBcmZiNGJjUG9aTU52ZExWUkVoemRFTFNjelE2ViN6Nk1rdDJ2UVFrYm90TlNmSlQyQXJmYjRiY1BvWk1OdmRMVlJFaHpkRUxTY3pRNlYifQ.eyJjbGllbnRfaWQiOiJkaWQ6a2V5Ono2TWt0MnZRUWtib3ROU2ZKVDJBcmZiNGJjUG9aTU52ZExWUkVoemRFTFNjelE2ViIsInJlZGlyZWN0X3VyaSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vIiwiY2xpZW50X21ldGFkYXRhIjp7ImNsaWVudF9uYW1lIjoiZXhhbXBsZTEyMyIsImlkX3Rva2VuX3NpZ25lZF9yZXNwb25zZV9hbGciOiJFZERTQSIsInN1YmplY3Rfc3ludGF4X3R5cGVzX3N1cHBvcnRlZCI6WyJkaWQ6a2V5Il19LCJub25jZSI6Im5vbmNlIiwicmVzcG9uc2VfdHlwZSI6ImlkX3Rva2VuIiwic2NvcGUiOiJvcGVuaWQifQ.xdIn8uCXhbEr2IeGwq-50lB_j3e4eF_sy_oSEVRRy_9z7WNSjzAp24InJ4yVGm0lNmf8czlK5qjkVVxj0Pj7Cg"
   }
 }
