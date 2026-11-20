@@ -1,5 +1,5 @@
 {
-  "$comment": "Input for scripts/generate-app-reference.mjs. Every route in unime/src/routes needs an entry: either a screen in a group, with a name (letters, digits and spaces) and a purpose of one to three sentences, or an entry in omittedRoutes with a reason. The order of the groups and screens is the order of the reference. developerModeConditions names the variables, next to dev_mode, whose {#if} only shows its content in developer mode, such as a panel that the developer menu opens. Run `pnpm docs:app-reference` after a change.",
+  "$comment": "Input for scripts/generate-app-reference.mjs. Every route in unime/src/routes needs an entry: either a screen in a group, with a name (letters, digits and spaces) and a purpose of one to three sentences, or an entry in omittedRoutes with a reason. The order of the groups and screens is the order of the reference. Run `pnpm docs:app-reference` after a change.",
   "groups": [
     {
       "title": "Start and unlock",
@@ -65,7 +65,7 @@
         {
           "route": "/me",
           "name": "Me tab",
-          "purpose": "The home screen. It greets the user and lists their credentials in one list, favorites first, with a sorting menu and buttons for search, settings and adding data. An empty wallet shows a hint instead. Opening the tab refreshes the status of all credentials."
+          "purpose": "The home screen, and the first of the three tabs in the bar at the bottom. It greets the user and lists their credentials in one list, favorites first, with a sorting menu and buttons for search, settings and adding data. An empty wallet shows a hint instead. Opening the tab refreshes the status of all credentials."
         },
         {
           "route": "/me/search",
@@ -122,12 +122,12 @@
     },
     {
       "title": "Scan and exchange",
-      "description": "Scanning a QR code or opening a link starts an exchange with an issuer or a verifier. The backend then opens the screens below one after the other. The progress and the result of an exchange show in a sheet on top of the current screen, see the layout `/`.",
+      "description": "Scanning a QR code or opening a link starts an exchange with an issuer or a verifier. The backend then opens the screens below one after the other. The progress and the result of an exchange show in a sheet on top of the current screen.",
       "screens": [
         {
           "route": "/scan",
           "name": "Scan tab",
-          "purpose": "Opens the camera and waits for the QR code of an issuer or a verifier. Without camera permission it offers to open the device settings. In developer mode the value of a QR code can be pasted instead."
+          "purpose": "The second tab in the bar at the bottom. It opens the camera and waits for the QR code of an issuer or a verifier. Without camera permission it offers to open the device settings. In developer mode the value of a QR code can be pasted instead."
         },
         {
           "route": "/prompt/accept-connection",
@@ -173,7 +173,7 @@
         {
           "route": "/activity",
           "name": "Activity tab",
-          "purpose": "Two lists: the connections, which are the organizations the user has exchanged credentials with, and the history of every exchange."
+          "purpose": "The third tab in the bar at the bottom. It has two lists: the connections, which are the organizations the user has exchanged credentials with, and the history of every exchange."
         },
         {
           "route": "/activity/connection/[id]",
@@ -259,17 +259,6 @@
       ]
     }
   ],
-  "layouts": [
-    {
-      "layout": "/",
-      "note": "Wraps every screen. On top of the current screen it shows the progress and the result of an exchange, error messages and, in developer mode, the developer menu with the debug messages and the test profile. It also receives deep links and follows the redirects and prompts of the backend."
-    },
-    {
-      "layout": "/(app)",
-      "note": "Adds the bottom bar with the Me, Scan and Activity tabs."
-    }
-  ],
-  "developerModeConditions": ["showDebugMessages"],
   "omittedRoutes": [
     {
       "route": "/goals",

@@ -124,9 +124,9 @@ In order to regenerate the TypeScript bindings in `identity-wallet/bindings` aft
 
 ### Updating the app reference
 
-[`docs/app-reference.md`](docs/app-reference.md) lists every screen of the app with its purpose, controls, navigation and backend actions. It is generated from the routes, the Svelte components and the English translations, and the documentation portal publishes it.
+[`docs/app-reference.md`](docs/app-reference.md) lists every screen of the app with its purpose, its title and the screens it leads to. It is generated from the routes, the Svelte components and the English translations, and the documentation portal publishes it.
 
-1. After changing a screen or an English text, run `pnpm docs:app-reference` from the repository root and commit the result. CI fails when the file is out of date.
+1. After changing the title of a screen or a link between screens, run `pnpm docs:app-reference` from the repository root and commit the result. CI fails when the file is out of date.
 2. After adding or removing a route, also update `scripts/app-reference-screens.json`: every route needs a name and a purpose there, or an entry in `omittedRoutes`. The script tells you which entry is missing.
 
 ### Updating dependencies
