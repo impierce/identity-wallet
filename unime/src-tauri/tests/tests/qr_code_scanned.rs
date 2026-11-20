@@ -148,3 +148,90 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     )
     .await;
 }
+
+/// The user accepts the connection on screen while another request is being read. By the time the answer is handled,
+/// that request has taken the place of the one the user saw: the answer must not accept it.
+#[tokio::test]
+#[serial_test::serial]
+async fn test_an_answer_to_a_replaced_request_is_refused() {
+    use crate::common::{app_origin, mock_app};
+    use identity_wallet::state::user_prompt::CurrentUserPrompt;
+    use std::time::{Duration, Instant};
+    use tauri::Manager;
+
+    setup_state_file();
+
+    let scanned = json_example::<Action>("tests/fixtures/actions/qr_scanned_id_token.json");
+    let accepted = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
+
+    let app = mock_app(AppStateContainer(Mutex::new(AppState {
+        core_utils: CoreUtils {
+            managers: test_managers(vec![]).await,
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(Profile {
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: AppTheme::System,
+            }),
+            ..Default::default()
+        },
+        ..AppState::default()
+    })));
+    let window = tauri::webview::WebviewWindowBuilder::new(&app, "main", Default::default())
+        .build()
+        .unwrap();
+    let dispatch = |action: &Action| {
+        tauri::test::assert_ipc_response(
+            &window,
+            tauri::webview::InvokeRequest {
+                cmd: "handle_action".into(),
+                callback: tauri::ipc::CallbackFn(0),
+                error: tauri::ipc::CallbackFn(1),
+                url: app_origin(),
+                body: json!({ "action": action }).into(),
+                headers: Default::default(),
+                invoke_key: tauri::test::INVOKE_KEY.to_string(),
+            },
+            Ok(()),
+        );
+    };
+    let container = app.app_handle().state::<AppStateContainer>().inner();
+
+    // The request is read and its connection prompt is shown.
+    dispatch(&scanned);
+    {
+        let mut state = container.0.lock().await;
+        assert!(matches!(
+            state.current_user_prompt,
+            Some(CurrentUserPrompt::AcceptConnection { .. })
+        ));
+        assert!(state.core_utils.flow_started_at.is_some());
+        // As if this request had only just taken the place of another one: an answer that arrives now was given
+        // before.
+        state.core_utils.flow_started_at = Some(Instant::now() + Duration::from_secs(60));
+    }
+
+    dispatch(&accepted);
+    {
+        let state = container.0.lock().await;
+        // Nothing was accepted: the prompt is still there, and no connection was made.
+        assert!(matches!(
+            state.current_user_prompt,
+            Some(CurrentUserPrompt::AcceptConnection { .. })
+        ));
+        assert!(state.core_utils.active_flow.is_some());
+        assert!(state.connections.0.is_empty());
+    }
+
+    // The same answer, given to the request on screen, is handled as before.
+    container.0.lock().await.core_utils.flow_started_at = Some(Instant::now());
+    dispatch(&accepted);
+    let state = container.0.lock().await;
+    assert!(matches!(
+        state.current_user_prompt,
+        Some(CurrentUserPrompt::Redirect { .. })
+    ));
+    assert!(state.core_utils.active_flow.is_none());
+}

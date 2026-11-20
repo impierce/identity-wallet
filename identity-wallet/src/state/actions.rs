@@ -28,6 +28,13 @@ pub trait ActionTrait: Send + std::fmt::Debug + DowncastSync {
         None
     }
 
+    /// Whether this action is the user's answer to the request on screen: accepting a connection, sharing
+    /// credentials, accepting an offer. `main_exec` refuses such an answer when another request has taken the place
+    /// of the one it was given to. `false`, the default, for every other action.
+    fn answers_request(&self) -> bool {
+        false
+    }
+
     /// How long `handle_action` waits for this action, `prepare` included, before it gives up on it and reports a
     /// timeout to the user. Actions that may take longer, such as ones whose `prepare` waits on slow remote parties,
     /// raise it.

@@ -413,6 +413,7 @@ mod tests {
                 })),
                 active_flow: None,
                 pending_connection_data: None,
+                flow_started_at: None,
             },
             ..Default::default()
         };
