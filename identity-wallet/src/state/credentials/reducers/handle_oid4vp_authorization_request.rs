@@ -106,39 +106,38 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             AppError::FlowExpiredError("Expected pending connection data for OID4VP authorization request".to_string())
         })?;
         let interaction_result = |outcome| {
-            Some(InteractionResult {
-                kind: InteractionKind::Presentation,
-                counterparty: pending_connection_data.client_metadata.client_name.clone(),
+            InteractionResult::new(
+                InteractionKind::Presentation,
+                pending_connection_data.client_metadata.client_name.clone(),
                 outcome,
-            })
+            )
         };
 
         #[cfg(not(feature = "test_utils"))]
-        let outcome = match send_authorization_response(&response).await {
+        let answer = send_authorization_response(&response).await;
+        #[cfg(feature = "test_utils")]
+        let answer = crate::state::interaction_result::ResponseAnswer::from(InteractionOutcome::Approved);
+
+        match &answer.outcome {
             // No answer came back: keep the flow so the user can try again.
             outcome @ InteractionOutcome::NotSent { .. } => {
                 log::warn!("Failed to send OID4VP authorization response to verifier: {outcome:?}");
                 drop(state_guard);
                 return Ok(AppState {
-                    interaction_result: interaction_result(outcome),
+                    interaction_result: Some(interaction_result(answer.outcome)),
                     ..state
                 });
             }
             outcome @ InteractionOutcome::Rejected { .. } => {
                 log::warn!("Verifier rejected the OID4VP authorization response: {outcome:?}");
-                outcome
             }
-            outcome @ InteractionOutcome::Approved => {
-                info!("OID4VP presentation response accepted by verifier");
-                outcome
-            }
-        };
-        #[cfg(feature = "test_utils")]
-        let outcome = InteractionOutcome::Approved;
+            InteractionOutcome::Approved => info!("OID4VP presentation response accepted by verifier"),
+        }
 
         // The verifier answered, so it has the credentials whether it accepted them or not: the share is recorded
-        // either way, and the flow ends.
-        let interaction_result = interaction_result(outcome);
+        // either way, and the flow ends. Where the verifier asks the user to continue is offered in the result pop-up,
+        // after the share is recorded.
+        let interaction_result = Some(interaction_result(answer.outcome).continuing_at(answer.redirect_uri));
         let mut connections = state.connections;
         let mut history = state.history;
 

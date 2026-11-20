@@ -695,6 +695,8 @@ const sv_FI = {
     NO_RESPONSE: 'Inget svar',
     UNKNOWN_ERROR: 'unknown_error',
     AUTO_CLOSE: 'Stängs automatiskt om {seconds} s',
+    CONTINUE_TO: 'Fortsätt till {host}',
+    CONTINUE_BODY: '{name} ber dig fortsätta på {host}. Då öppnas din webbläsare.',
     DONE: 'Klar',
     TRY_AGAIN: 'Försök igen',
     COPY_DETAILS: 'Kopiera feldetaljer',

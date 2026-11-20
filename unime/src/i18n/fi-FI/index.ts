@@ -693,6 +693,8 @@ const fi_FI = {
     NO_RESPONSE: 'Ei vastausta',
     UNKNOWN_ERROR: 'unknown_error',
     AUTO_CLOSE: 'Sulkeutuu automaattisesti {seconds} s kuluttua',
+    CONTINUE_TO: 'Jatka osoitteeseen {host}',
+    CONTINUE_BODY: '{name} pyytää sinua jatkamaan osoitteessa {host}. Tämä avaa selaimesi.',
     DONE: 'Valmis',
     TRY_AGAIN: 'Yritä uudelleen',
     COPY_DETAILS: 'Kopioi virheen tiedot',

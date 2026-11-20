@@ -146,6 +146,12 @@
   // What the issuer or verifier said, in its own words. Usually technical, so it stays in the error details.
   const counterpartyMessage = $derived(outcome?.status === 'rejected' ? outcome.error_description : undefined);
 
+  // The host a verifier asks to continue at after an accepted presentation. Going there is the user's choice, so the
+  // sheet then waits for it and does not close on its own.
+  const continueTo = $derived(outcome?.status === 'approved' ? (result?.continue_to ?? undefined) : undefined);
+  // The user chose to continue: the backend opens the address and clears the result, which closes the sheet.
+  let continuing = $state(false);
+
   // Only a presentation that could not be sent keeps its flow, so only that one can be retried.
   const canRetry = $derived(
     outcome?.status === 'not_sent' && unexpectedError === undefined && !!$pendingInteraction?.retry,
@@ -190,17 +196,19 @@
     }
   });
 
-  // An outcome arrived. Every state update brings a new copy of the same outcome, so handle each outcome once.
+  // An outcome arrived. Every state update brings a new copy of the same outcome, so handle each outcome once. Where
+  // to continue is part of what makes an outcome the same: one that offers it can follow one that does not.
   let handledOutcome: string | undefined;
   $effect(() => {
-    const key = outcome ? JSON.stringify(outcome) : undefined;
+    const key = outcome ? JSON.stringify([outcome, continueTo ?? null]) : undefined;
     if (key === handledOutcome) return;
     handledOutcome = key;
     if (outcome) untrack(() => showOutcome(outcome));
   });
 
   function showOutcome(outcome: InteractionOutcome) {
-    if (minimized) {
+    // An outcome with somewhere to continue comes back as the sheet: a toast has no button for it.
+    if (minimized && continueTo === undefined) {
       toast = {
         variant: outcome.status === 'approved' ? 'info' : 'error',
         title:
@@ -213,10 +221,17 @@
       reset();
       return;
     }
+    // The sheet shows this outcome from here on: what an earlier one left behind, its countdown to closing and the
+    // "still waiting" toast, would close or crowd it.
+    clearTimers();
+    countdown = undefined;
+    toast = undefined;
     open = true;
+    minimized = false;
     if (outcome.status === 'approved') {
       secondStepRevealed = false;
       later(() => (secondStepRevealed = true), 400);
+      if (continueTo !== undefined) return;
       // The seconds left, counted down once a second: 5, 4, 3, 2, 1.
       for (let elapsed = 0; elapsed < AUTO_CLOSE_SECONDS; elapsed++) {
         later(() => (countdown = AUTO_CLOSE_SECONDS - elapsed), 450 + elapsed * 1000);
@@ -230,10 +245,27 @@
     clearTimers();
     countdown = undefined;
     copied = false;
+    continuing = false;
     unexpectedError = undefined;
     pendingInteraction.set(undefined);
     if (result) dispatch({ type: '[Interaction Result] Dismiss' });
   }
+
+  // Opens the address the verifier asks to continue at. If the browser cannot be opened, the backend keeps the result
+  // and reports an error, so the sheet stays and the user can try again or close it.
+  function continueToVerifier() {
+    continuing = true;
+    dispatch({ type: '[Interaction Result] Continue' });
+  }
+
+  $effect(() => {
+    if (continuing && !result) {
+      untrack(() => {
+        open = false;
+        reset();
+      });
+    }
+  });
 
   function close() {
     open = false;
@@ -371,6 +403,11 @@
         {title}
       </p>
       <p class="text-[14px]/[20px] text-slate-500 dark:text-slate-300">{body}</p>
+      {#if continueTo}
+        <p class="text-[14px]/[20px] text-slate-500 dark:text-slate-300" data-testid="continue-to">
+          {$LL.INTERACTION_RESULT.CONTINUE_BODY({ name, host: continueTo })}
+        </p>
+      {/if}
     </div>
 
     <!-- Steps -->
@@ -421,7 +458,7 @@
     {/if}
 
     <!-- Auto-close countdown, see the ring around the seal. The line keeps its space so that nothing moves. -->
-    {#if phase === 'approved'}
+    {#if phase === 'approved' && !continueTo}
       <p
         class="w-full text-center text-[12px]/[16px] font-medium text-slate-500 dark:text-slate-300"
         class:invisible={countdown === undefined}
@@ -433,7 +470,10 @@
 
     <!-- Actions -->
     <div class="flex w-full flex-col gap-3">
-      {#if phase === 'approved'}
+      {#if phase === 'approved' && continueTo}
+        <Button label={$LL.INTERACTION_RESULT.CONTINUE_TO({ host: continueTo })} on:click={continueToVerifier} />
+        <Button label={$LL.INTERACTION_RESULT.DONE()} variant="secondary" on:click={close} />
+      {:else if phase === 'approved'}
         <Button label={$LL.INTERACTION_RESULT.DONE()} on:click={close} />
       {:else if phase === 'rejected'}
         <Button label={$LL.CLOSE()} on:click={close} />

@@ -2028,6 +2028,17 @@ type RootTranslation = {
 		 */
 		AUTO_CLOSE: RequiredParams<'seconds'>
 		/**
+		 * C​o​n​t​i​n​u​e​ ​t​o​ ​{​h​o​s​t​}
+		 * @param {string} host
+		 */
+		CONTINUE_TO: RequiredParams<'host'>
+		/**
+		 * {​n​a​m​e​}​ ​a​s​k​s​ ​y​o​u​ ​t​o​ ​c​o​n​t​i​n​u​e​ ​a​t​ ​{​h​o​s​t​}​.​ ​T​h​i​s​ ​o​p​e​n​s​ ​y​o​u​r​ ​b​r​o​w​s​e​r​.
+		 * @param {string} host
+		 * @param {string} name
+		 */
+		CONTINUE_BODY: RequiredParams<'host' | 'name'>
+		/**
 		 * D​o​n​e
 		 */
 		DONE: string
@@ -4216,6 +4227,14 @@ export type TranslationFunctions = {
 		 * Closing automatically in {seconds} s
 		 */
 		AUTO_CLOSE: (arg: { seconds: number }) => LocalizedString
+		/**
+		 * Continue to {host}
+		 */
+		CONTINUE_TO: (arg: { host: string }) => LocalizedString
+		/**
+		 * {name} asks you to continue at {host}. This opens your browser.
+		 */
+		CONTINUE_BODY: (arg: { host: string, name: string }) => LocalizedString
 		/**
 		 * Done
 		 */
