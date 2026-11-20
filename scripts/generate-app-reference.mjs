@@ -168,24 +168,41 @@ function reexportedComponents(file) {
 
 /**
  * The titles that a `title` attribute names: fixed texts, and keys of translations as in `title={$LL.A.B()}`. An
- * attribute that picks between titles, as in `title={many ? $LL.A() : $LL.B()}`, gives all of them.
+ * attribute that picks between titles, as in `title={many ? $LL.A() : $LL.B()}`, gives all of them. Anything else,
+ * such as a variable or a text with a value in it, gives no title.
  */
 function titlesOf(attribute) {
   const titles = [];
-  walk(attribute.value, (node) => {
-    const text = node.type === 'Text' ? node.data : node.type === 'Literal' ? node.value : undefined;
-    if (typeof text === 'string' && text.trim()) titles.push({ text: text.trim() });
-    if (node.type !== 'CallExpression') return true;
-    const key = [];
-    let callee = node.callee;
-    while (callee.type === 'MemberExpression' && !callee.computed) {
-      key.unshift(callee.property.name);
-      callee = callee.object;
+  const addText = (text) => typeof text === 'string' && text.trim() && titles.push({ text: text.trim() });
+  const visit = (node) => {
+    if (Array.isArray(node)) return node.forEach(visit);
+    switch (node?.type) {
+      case 'Text':
+        return addText(node.data);
+      case 'Literal':
+        return addText(node.value);
+      case 'TemplateLiteral':
+        return node.expressions.length === 0 && addText(node.quasis[0].value.cooked);
+      case 'ExpressionTag':
+        return visit(node.expression);
+      // Only the outcomes name a title. A text in the condition, as in `kind === 'personal' ? ... : ...`, does not.
+      case 'ConditionalExpression':
+        return visit([node.consequent, node.alternate]);
+      case 'LogicalExpression':
+        return visit([node.left, node.right]);
+      case 'CallExpression': {
+        const key = [];
+        let callee = node.callee;
+        while (callee.type === 'MemberExpression' && !callee.computed) {
+          key.unshift(callee.property.name);
+          callee = callee.object;
+        }
+        if (callee.type === 'Identifier' && callee.name === '$LL' && key.length > 0)
+          titles.push({ key: key.join('.') });
+      }
     }
-    if (callee.type !== 'Identifier' || callee.name !== '$LL' || key.length === 0) return true;
-    titles.push({ key: key.join('.') });
-    return false;
-  });
+  };
+  visit(attribute.value);
   return titles;
 }
 
@@ -353,7 +370,7 @@ function buildReference() {
     `- The line under the name gives the route of the screen and the file that implements it. A part in square brackets, as in ${code('/credentials/[id]')}, is a parameter.`,
     '- The paragraph below it says what the screen is for. It is written by hand.',
     '- **Title** is the English title in the bar at the top of the screen, for a screen that sets one.',
-    '- **Opens** lists the screens that the code of this screen names as the target of a link or a redirect, and **Opened from** lists the screens that name this one. A screen that the backend opens, such as a prompt, says so in its purpose.',
+    '- **Opens** lists the screens whose route the code of this screen names, and **Opened from** lists the screens that name this one. A route in the code is nearly always the target of a link or a redirect, but the lists also include a route that the code only compares with. A screen that the backend opens, such as a prompt, says so in its purpose.',
     '- The buttons and texts of a screen are not listed. The file of the screen is the place to look them up.',
     '',
     '## Screens',
