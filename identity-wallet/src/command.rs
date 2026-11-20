@@ -206,16 +206,16 @@ pub async fn handle_action(
 
 /// This function emits an event to the frontend with the updated state.
 pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyhow::Result<()> {
-    window.emit(STATE_CHANGED_EVENT, app_state)?;
-    debug!("emitted event `{STATE_CHANGED_EVENT}`");
-    Ok(())
+    Ok(window.emit(STATE_CHANGED_EVENT, app_state)?)
 }
 
 const STATE_CHANGED_EVENT: &str = "state-changed";
 
-/// Prints `app_state` to the console when `LOG_STATE_UPDATES_TO_CONSOLE` is set, and otherwise writes it to
-/// `debug/state.json` in debug builds.
+/// Logs that the state was emitted, and prints `app_state` to the console when `LOG_STATE_UPDATES_TO_CONSOLE` is set or
+/// otherwise writes it to `debug/state.json` in debug builds. Runs after a new request's start is recorded, see
+/// [`emit_and_save`].
 fn write_state_for_debugging(app_state: &AppState) {
+    debug!("emitted event `{STATE_CHANGED_EVENT}`");
     if crate::logging::debug_flag("LOG_STATE_UPDATES_TO_CONSOLE") {
         debug!(
             "emitted event `{}` with payload:\n{}",
@@ -326,6 +326,30 @@ mod tests {
             async |saved: &AppState| assert!(saved.core_utils.flow_started_at >= emitted_at.get()),
         )
         .await;
+    }
+
+    #[tokio::test]
+    async fn a_sent_presentation_is_kept_when_saving_it_is_cut_short() {
+        use crate::state::core_utils::history_event::{EventType, HistoryEvent};
+
+        // What a reducer leaves behind once the verifier answered a presentation: the share is in the history, and the
+        // flow is over.
+        let started_at = Some(Instant::now() - Duration::from_secs(5));
+        let mut state = state_with_a_request_started_at(started_at);
+        state.history.push(HistoryEvent {
+            connection_id: "verifier".to_string(),
+            connection_name: "Verifier".to_string(),
+            event_type: EventType::CredentialsShared,
+            date: "2026-11-19T00:00:00Z".to_string(),
+            credentials: vec![],
+        });
+        let before = serde_json::to_value(&state).unwrap();
+
+        assert!(cut_short_while_saving(&mut state, started_at).await);
+
+        assert_eq!(serde_json::to_value(&state).unwrap(), before);
+        assert!(state.core_utils.active_flow.is_none());
+        assert_eq!(state.core_utils.flow_started_at, started_at);
     }
 
     #[tokio::test]
