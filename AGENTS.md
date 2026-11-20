@@ -26,8 +26,9 @@ cp identity-wallet/.env.example identity-wallet/.env
 ```
 
 The environment files are ignored by Git. Frontend feature and debugging flags live in `unime/.env`. The backend
-email-verification settings live in `identity-wallet/.env`; its build script supplies production-host/empty-key
-defaults if they are absent. Never commit real keys or secrets.
+email-verification settings live in `identity-wallet/.env` or the environment. A release build fails when either is
+missing or empty, or when the host is not `https`; a debug build only warns, and email verification then fails at
+runtime. Never commit real keys or secrets.
 
 Generate application icons when setting up a fresh checkout or after changing `unime/src-tauri/app-icon.png`:
 
