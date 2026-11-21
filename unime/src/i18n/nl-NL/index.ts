@@ -495,6 +495,12 @@ const nl_NL = {
         BIRTH_DATE: 'Geboortedatum',
         BIRTH_PLACE: 'Geboorteplaats',
       },
+      STRUCTURED: {
+        ITEM: 'Item {position}',
+        ENTRY: 'Regel {position}',
+        FIELDS: '{count} {{veld|velden}}',
+        ENTRIES: '{count} {{regel|regels}}',
+      },
     },
     ACTIONS: {
       EDIT: {

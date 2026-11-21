@@ -494,6 +494,12 @@ const fi_FI = {
         BIRTH_DATE: 'Syntymäaika',
         BIRTH_PLACE: 'Syntymäpaikka',
       },
+      STRUCTURED: {
+        ITEM: 'Kohde {position}',
+        ENTRY: 'Merkintä {position}',
+        FIELDS: '{count} {{kenttä|kenttää}}',
+        ENTRIES: '{count} {{merkintä|merkintää}}',
+      },
     },
     ACTIONS: {
       EDIT: {
