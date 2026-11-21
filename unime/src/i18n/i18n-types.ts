@@ -1973,6 +1973,11 @@ type RootTranslation = {
 		REJECTED_BODY: RequiredParams<'name'>
 		REJECTED_REASON: {
 			/**
+			 * T​h​i​s​ ​o​f​f​e​r​ ​i​s​ ​m​e​a​n​t​ ​f​o​r​ ​a​ ​d​i​f​f​e​r​e​n​t​ ​w​a​l​l​e​t​.​ ​A​s​k​ ​{​n​a​m​e​}​ ​f​o​r​ ​a​n​ ​o​f​f​e​r​ ​o​f​ ​y​o​u​r​ ​o​w​n​.
+			 * @param {string} name
+			 */
+			NOT_FOR_THIS_WALLET: RequiredParams<'name'>
+			/**
 			 * T​h​i​s​ ​o​f​f​e​r​ ​h​a​s​ ​e​x​p​i​r​e​d​ ​o​r​ ​h​a​s​ ​a​l​r​e​a​d​y​ ​b​e​e​n​ ​u​s​e​d​.​ ​A​s​k​ ​{​n​a​m​e​}​ ​f​o​r​ ​a​ ​n​e​w​ ​o​n​e​.
 			 * @param {string} name
 			 */
@@ -2186,6 +2191,10 @@ type RootTranslation = {
 			 * @param {string} name
 			 */
 			UNTRUSTED: RequiredParams<'name'>
+			/**
+			 * T​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​l​i​n​k​e​d​ ​t​o​ ​a​ ​k​e​y​ ​t​h​i​s​ ​w​a​l​l​e​t​ ​d​o​e​s​n​'​t​ ​h​a​v​e​.​ ​I​t​ ​m​a​y​ ​b​e​ ​m​e​a​n​t​ ​f​o​r​ ​s​o​m​e​o​n​e​ ​e​l​s​e​,​ ​o​r​ ​i​s​s​u​e​d​ ​b​e​f​o​r​e​ ​y​o​u​r​ ​w​a​l​l​e​t​ ​w​a​s​ ​r​e​s​e​t​,​ ​s​o​ ​U​n​i​M​e​ ​c​a​n​'​t​ ​u​s​e​ ​i​t​.
+			 */
+			NOT_HOLDER: string
 			/**
 			 * T​h​i​s​ ​r​e​q​u​e​s​t​ ​i​s​ ​n​o​ ​l​o​n​g​e​r​ ​a​c​t​i​v​e​.​ ​S​c​a​n​ ​t​h​e​ ​Q​R​ ​c​o​d​e​ ​a​g​a​i​n​ ​t​o​ ​s​t​a​r​t​ ​o​v​e​r​.
 			 */
@@ -4168,6 +4177,10 @@ export type TranslationFunctions = {
 		REJECTED_BODY: (arg: { name: string }) => LocalizedString
 		REJECTED_REASON: {
 			/**
+			 * This offer is meant for a different wallet. Ask {name} for an offer of your own.
+			 */
+			NOT_FOR_THIS_WALLET: (arg: { name: string }) => LocalizedString
+			/**
 			 * This offer has expired or has already been used. Ask {name} for a new one.
 			 */
 			OFFER_EXPIRED: (arg: { name: string }) => LocalizedString
@@ -4365,6 +4378,10 @@ export type TranslationFunctions = {
 			 * UniMe couldn't verify who {name} is, so it stopped to keep your data safe.
 			 */
 			UNTRUSTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * This credential is linked to a key this wallet doesn't have. It may be meant for someone else, or issued before your wallet was reset, so UniMe can't use it.
+			 */
+			NOT_HOLDER: () => LocalizedString
 			/**
 			 * This request is no longer active. Scan the QR code again to start over.
 			 */

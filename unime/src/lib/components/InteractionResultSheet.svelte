@@ -104,6 +104,8 @@
       case 'access_denied':
       case 'credential_request_denied':
         return reasons.ACCESS_DENIED({ name });
+      case 'credential-offer-recipient-mismatch':
+        return reasons.NOT_FOR_THIS_WALLET({ name });
       case 'invalid_proof':
       case 'invalid_nonce':
         return reasons.INVALID_PROOF({ name });

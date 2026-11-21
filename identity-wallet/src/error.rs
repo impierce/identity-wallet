@@ -114,6 +114,8 @@ pub enum AppError {
     UnsupportedError(String),
     #[error("Not trusted: {0}")]
     UntrustedError(String),
+    #[error("Not the holder: {0}")]
+    HolderBindingError(String),
     #[error("No active flow: {0}")]
     FlowExpiredError(String),
     #[error("Invalid input: {0}")]

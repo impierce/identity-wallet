@@ -684,6 +684,7 @@ const es_ES = {
     REJECTED_BODY:
       '{name} no pudo aceptar la solicitud. Vuelve a intentarlo o ponte en contacto con {name} si sigue ocurriendo.',
     REJECTED_REASON: {
+      NOT_FOR_THIS_WALLET: 'Esta oferta es para otra cartera. Pide a {name} una oferta para ti.',
       OFFER_EXPIRED: 'Esta oferta ha caducado o ya se ha utilizado. Pide una nueva a {name}.',
       WRONG_TX_CODE: 'El código no es correcto o la oferta ha caducado. Revisa el código e inténtalo de nuevo.',
       ACCESS_DENIED: '{name} ha denegado la solicitud.',
@@ -741,6 +742,8 @@ const es_ES = {
       UNSUPPORTED: 'UniMe todavía no admite este tipo de credencial o solicitud.',
       MISSING_CREDENTIALS: 'No tienes las credenciales que pidió {name}, así que no se ha compartido nada.',
       UNTRUSTED: 'UniMe no pudo verificar quién es {name} y se ha detenido para proteger tus datos.',
+      NOT_HOLDER:
+        'Esta credencial está vinculada a una clave que esta cartera no tiene. Puede que sea para otra persona o que se emitiera antes de restablecer tu cartera, así que UniMe no puede usarla.',
       FLOW_EXPIRED: 'Esta solicitud ya no está activa. Vuelve a escanear el código QR para empezar de nuevo.',
       INVALID_INPUT: 'Algunos de los datos introducidos no son válidos. Revísalos y vuelve a intentarlo.',
       WRONG_PASSWORD: 'Esa contraseña no es correcta. Revísala y vuelve a intentarlo.',
