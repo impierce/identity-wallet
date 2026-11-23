@@ -172,6 +172,11 @@ function reexportedComponents(file) {
  * such as a variable or a text with a value in it, gives no title.
  */
 function titlesOf(attribute) {
+  // A text with a value in it, as in `title="Wallet {profileName}"`, is a `Text` next to an `ExpressionTag`. Its text
+  // alone is not the title. Spaces around a single value, as in `title=" {$LL.A()} "`, still name that value.
+  const parts = Array.isArray(attribute.value) ? attribute.value : [];
+  const hasText = parts.some((part) => part.type === 'Text' && part.data.trim());
+  if (hasText && parts.some((part) => part.type === 'ExpressionTag')) return [];
   const titles = [];
   const addText = (text) => typeof text === 'string' && text.trim() && titles.push({ text: text.trim() });
   const visit = (node) => {
