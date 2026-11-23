@@ -6,6 +6,22 @@ When running UniMe via `pnpm tauri dev`, the current state of the app will be wr
 
 In case you prefer to inspect the state update directly on the console, you can set the environment variable `LOG_STATE_UPDATES_TO_CONSOLE=true` in the `unime/.env` file and then restart the app. This only works in debug builds. To log full action, credential and protocol payloads as well, set `LOG_FULL_PAYLOADS=true` (also debug builds only).
 
+## Plain http
+
+UniMe sends every request over `https`: a release build refuses an `http` URL, and a redirect to one, before it
+connects. That covers issuers, verifiers, status lists, logos and `did:web` documents. A debug build does the same,
+unless it is told otherwise:
+
+```sh
+UNIME_ALLOW_PLAIN_HTTP=true pnpm tauri dev
+```
+
+- Use it for a local issuer or verifier without a certificate, such as UniCore on `http://localhost`. With it, the
+  `did:web` documents of `localhost` are fetched over `http` too.
+- Set the variable in the environment UniMe is started in, or in `unime/.env`. UniMe logs a warning once when it is on.
+- Release builds do not contain this: they are `https` only, whatever the environment says.
+- A local server with a certificate from a test CA needs no plain http: see the next section.
+
 ## Trusting a test CA
 
 UniMe trusts only the root certificates compiled into it (`webpki-roots`), on every platform. A debug build can trust

@@ -57,6 +57,10 @@ jobs:
       - name: Check
         run: pnpm check
 
+      - name: App reference
+        # Fails when a change to a screen or a translation is not reflected in `docs/app-reference.md`.
+        run: pnpm docs:app-reference --check
+
   changes:
     # Skip draft PRs; pushes to `dev` always run.
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
