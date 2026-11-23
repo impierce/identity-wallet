@@ -9,10 +9,8 @@ use crate::{
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived,
-            holder_binding::{ensure_held_binding, BindingCheck},
-            issuer_signature::verify_issuer_signature,
-            reducers::refresh_credential_status::fetch_credential_status,
+            actions::authorization_code_received::CodeReceived, holder_binding::ensure_held_binding,
+            issuer_signature::verify_issuer_signature, reducers::refresh_credential_status::fetch_credential_status,
             CredentialStatus, CredentialStatusType, DisplayCredential, VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
@@ -375,7 +373,6 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 &credential_configuration.credential_format.format(),
                 &credential,
                 identity_manager.subject.as_ref(),
-                BindingCheck::Receive,
             )
             .await?;
 

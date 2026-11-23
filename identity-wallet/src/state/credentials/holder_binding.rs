@@ -20,15 +20,6 @@ pub enum HolderBinding {
     Jwk(Value),
 }
 
-/// When the wallet checks a credential's holder binding, which decides what the user is told when it fails.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum BindingCheck {
-    /// Before storing a credential that was just issued.
-    Receive,
-    /// Before presenting a stored credential.
-    Present,
-}
-
 /// The holder binding of `credential`, received in `format`, or `None` for a credential not bound to any holder.
 ///
 /// - `jwt_vc_json`: the `sub` claim, else `vc.credentialSubject.id`, when it is a DID.
@@ -62,12 +53,11 @@ pub fn holder_binding(format: &CredentialFormats, credential: &Value) -> Result<
     })
 }
 
-/// Fails when `credential` is bound to a DID or key that the wallet does not hold.
+/// Fails when `credential`, just issued, is bound to a DID or key that the wallet does not hold.
 pub async fn ensure_held_binding(
     format: &CredentialFormats,
     credential: &Value,
     subject: &dyn Subject,
-    check: BindingCheck,
 ) -> Result<(), AppError> {
     let Some(binding) = holder_binding(format, credential)? else {
         return Ok(());
@@ -87,13 +77,10 @@ pub async fn ensure_held_binding(
     }
 
     // The DIDs and keys are not logged: they identify the holder (ADR 0003).
-    warn!("The credential is bound to a holder this wallet does not hold ({check:?})");
-    Err(AppError::HolderBindingError(match check {
-        BindingCheck::Receive => "The credential is bound to a DID or key that this wallet does not hold".to_string(),
-        BindingCheck::Present => {
-            "The credential is bound to a key this wallet no longer holds, for example after a reset".to_string()
-        }
-    }))
+    warn!("The credential is bound to a holder this wallet does not hold");
+    Err(AppError::HolderBindingError(
+        "The credential is bound to a DID or key that this wallet does not hold".to_string(),
+    ))
 }
 
 /// Every DID of the wallet: one per supported DID method and signing algorithm.
