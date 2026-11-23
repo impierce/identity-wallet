@@ -114,7 +114,7 @@ pub enum AppError {
     UnsupportedError(String),
     #[error("Not trusted: {0}")]
     UntrustedError(String),
-    #[error("Not the holder: {0}")]
+    #[error("This wallet/holder doesn't match the credentials intended holder: {0}")]
     HolderBindingError(String),
     #[error("No active flow: {0}")]
     FlowExpiredError(String),
