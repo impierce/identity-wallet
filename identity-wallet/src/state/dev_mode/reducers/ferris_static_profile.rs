@@ -1,5 +1,6 @@
 use crate::{
     error::AppError::{self, *},
+    http_client::get_openid4vc_http_client,
     persistence::{hash, ASSETS_DIR},
     state::{
         connections::{Connection, Connections, EcosystemsCheck},
@@ -133,13 +134,15 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
-    .map_err(OID4VCProviderManagerError)?;
+    .map_err(OID4VCProviderManagerError)?
+    .with_http_client(get_openid4vc_http_client());
     let wallet: Wallet = Wallet::new(
         subject.clone(),
         Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
-    .map_err(OID4VCWalletError)?;
+    .map_err(OID4VCWalletError)?
+    .with_http_client(get_openid4vc_http_client());
     let identity_manager = IdentityManager {
         subject: subject.clone(),
         provider_manager,

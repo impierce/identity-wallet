@@ -1,5 +1,6 @@
 use crate::{
     error::AppError::{self, *},
+    http_client::get_openid4vc_http_client,
     state::{
         actions::{listen, Action},
         core_utils::IdentityManager,
@@ -47,13 +48,15 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .map_err(OID4VCProviderManagerError)?;
+        .map_err(OID4VCProviderManagerError)?
+        .with_http_client(get_openid4vc_http_client());
         let wallet: Wallet = Wallet::new(
             subject.clone(),
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .map_err(OID4VCWalletError)?;
+        .map_err(OID4VCWalletError)?
+        .with_http_client(get_openid4vc_http_client());
 
         let mut dids = state.dids;
 

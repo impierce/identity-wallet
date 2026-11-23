@@ -1,3 +1,10 @@
+<script lang="ts" module>
+  import { createThrottle } from '$lib/utils/throttle';
+
+  // Lives as long as the app, so leaving the tab and coming back does not reset it.
+  const mayRefreshStatuses = createThrottle(5 * 60 * 1000);
+</script>
+
 <script lang="ts">
   import { beforeNavigate, goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
@@ -29,7 +36,11 @@
   });
 
   onMount(() => {
-    dispatch({ type: '[Credential] Refresh all statuses' });
+    // Every credential's status list is fetched and checked, so not each time the tab is opened again. A credential's
+    // status is also refreshed whenever it is opened.
+    if (mayRefreshStatuses()) {
+      dispatch({ type: '[Credential] Refresh all statuses' });
+    }
   });
 
   $: {

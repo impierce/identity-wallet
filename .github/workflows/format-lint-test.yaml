@@ -30,14 +30,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v6
         with:
           version: latest
 
       - name: Use Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
           cache: 'pnpm'
@@ -57,6 +57,10 @@ jobs:
       - name: Check
         run: pnpm check
 
+      - name: App reference
+        # Fails when a change to a screen or a translation is not reflected in `docs/app-reference.md`.
+        run: pnpm docs:app-reference --check
+
   changes:
     # Skip draft PRs; pushes to `dev` always run.
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
@@ -65,9 +69,9 @@ jobs:
       rust: ${{ steps.filter.outputs.rust }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: dorny/paths-filter@v3
+      - uses: dorny/paths-filter@v4
         id: filter
         with:
           filters: |
@@ -89,7 +93,7 @@ jobs:
       CARGO_PROFILE_DEV_DEBUG: line-tables-only
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Use Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -114,7 +118,7 @@ jobs:
           version: latest
 
       - name: Use Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 'lts/*'
           cache: 'pnpm'
