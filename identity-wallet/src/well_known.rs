@@ -115,17 +115,22 @@ pub async fn get_did_document_id(base: &Url) -> anyhow::Result<Option<String>> {
 
         if matches!(status, StatusCode::NOT_FOUND | StatusCode::GONE) {
             debug!("No DID document at {url} (HTTP {status})");
+            crate::log_payload!("DID document error response from {url}: {text}");
             continue;
         }
         if !status.is_success() {
             debug!("DID document at {url} unavailable (HTTP {status})");
             unavailable.get_or_insert_with(|| {
-                anyhow::anyhow!("Failed to get DID document from {url} (HTTP {status}): {text}")
+                anyhow::anyhow!(
+                    "Failed to get DID document from {url} (HTTP {status}), {} byte body",
+                    text.len()
+                )
             });
             continue;
         }
         let Ok(json) = serde_json::from_str::<serde_json::Value>(&text) else {
             debug!("No DID document at {url}: the body is not JSON");
+            crate::log_payload!("DID document response from {url}: {text}");
             continue;
         };
         match serde_json::from_value::<DidDocumentId>(json) {
@@ -184,8 +189,11 @@ async fn fetch_well_known<T: DeserializeOwned>(
 
         if !status.is_success() {
             debug!("No {resource} at {url} (HTTP {status})");
+            crate::log_payload!("{resource} error response from {url}: {text}");
+            // The body is left out: it is the other party's text and may carry personal data (ADR 0003).
             last_error = Some(anyhow::anyhow!(
-                "Failed to get {resource} from {url} (HTTP {status}): {text}"
+                "Failed to get {resource} from {url} (HTTP {status}), {} byte body",
+                text.len()
             ));
             continue;
         }
@@ -203,6 +211,7 @@ async fn fetch_well_known<T: DeserializeOwned>(
             },
             Err(err) => {
                 debug!("Unparseable {resource} at {url}: {err}");
+                crate::log_payload!("Unparseable {resource} response from {url}: {text}");
                 last_error = Some(anyhow::anyhow!(
                     "Failed to parse {resource} from {url} (HTTP {status}): {err}"
                 ));
@@ -435,6 +444,27 @@ mod tests {
             "{error}"
         );
         assert_eq!(mock_server.received_requests().await.unwrap().len(), 3);
+    }
+
+    #[tokio::test]
+    async fn an_error_response_body_is_left_out_of_the_error() {
+        let mock_server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .respond_with(ResponseTemplate::new(500).set_body_string("secret"))
+            .mount(&mock_server)
+            .await;
+
+        let error = get_credential_issuer_metadata(&url(&mock_server.uri()))
+            .await
+            .unwrap_err();
+
+        assert!(
+            error
+                .to_string()
+                .contains("(HTTP 500 Internal Server Error), 6 byte body"),
+            "{error}"
+        );
+        assert!(!format!("{error:#}").contains("secret"), "{error:#}");
     }
 
     #[tokio::test]
