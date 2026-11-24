@@ -401,6 +401,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         let mut connections = state.connections;
         let mut history = state.history;
         let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data)?;
+        connection.credential_issuer = Some(credential_issuer_url.to_string());
 
         // Every record is built and validated before the first one is stored, so that a credential that fails leaves
         // none of the others behind (ADR 0005).

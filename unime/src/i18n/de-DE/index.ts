@@ -417,6 +417,15 @@ const de_DE = {
     TABS: {
       SUMMARY: 'Übersicht',
       ACTIVITY: 'Verlauf',
+      CREDENTIALS: 'Nachweise',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Nachweise, die {name} ausstellen kann.',
+      COUNT: '{count} {{Nachweis|Nachweise}}',
+      SEARCH_PLACEHOLDER: 'Nachweise suchen',
+      EMPTY: '{name} listet keine Nachweise auf.',
+      NO_RESULTS: 'Keine Nachweise passen zu "{term}".',
+      UNAVAILABLE: 'Die Nachweise von {name} konnten nicht geladen werden.',
     },
     SUMMARY: {
       TITLE: 'Verbunden mit',

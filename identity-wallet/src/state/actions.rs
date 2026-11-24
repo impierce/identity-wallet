@@ -90,7 +90,7 @@ mod bindings {
         common::actions::{
             cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
         },
-        connections::actions::delete_connection::DeleteConnection,
+        connections::actions::{delete_connection::DeleteConnection, load_issued_credentials::LoadIssuedCredentials},
         credentials::actions::{
             authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
             credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
@@ -139,6 +139,8 @@ mod bindings {
         ConnectionAccepted,
         #[serde(rename = "[Connection] Delete")]
         DeleteConnection { payload: DeleteConnection },
+        #[serde(rename = "[Connection] Load issued credentials")]
+        LoadIssuedCredentials { payload: LoadIssuedCredentials },
         #[serde(rename = "[User Flow] Cancel")]
         CancelUserFlow {
             #[ts(optional)]

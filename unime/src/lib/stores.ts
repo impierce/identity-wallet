@@ -50,6 +50,7 @@ const empty_state: AppState = {
   is_unlocked: false,
   dev_mode: 'Off',
   interaction_result: null,
+  issued_credentials: null,
 };
 
 /**

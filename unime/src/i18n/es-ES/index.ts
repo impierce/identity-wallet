@@ -418,6 +418,15 @@ const es_ES = {
     TABS: {
       SUMMARY: 'Resumen',
       ACTIVITY: 'Actividad',
+      CREDENTIALS: 'Credenciales',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Credenciales que {name} puede emitir.',
+      COUNT: '{count} {{credencial|credenciales}}',
+      SEARCH_PLACEHOLDER: 'Buscar credenciales',
+      EMPTY: '{name} no ofrece ninguna credencial.',
+      NO_RESULTS: 'Ninguna credencial coincide con "{term}".',
+      UNAVAILABLE: 'No se pudieron cargar las credenciales de {name}.',
     },
     SUMMARY: {
       EMPTY: 'Todavía sin conexiones.',

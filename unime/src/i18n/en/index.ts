@@ -416,6 +416,15 @@ const en = {
     TABS: {
       SUMMARY: 'Summary',
       ACTIVITY: 'Activity',
+      CREDENTIALS: 'Credentials',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Credentials {name:string} can issue.',
+      COUNT: '{count:number} {{credential|credentials}}',
+      SEARCH_PLACEHOLDER: 'Search credentials',
+      EMPTY: '{name:string} does not list any credentials.',
+      NO_RESULTS: 'No credentials match "{term:string}".',
+      UNAVAILABLE: 'The credentials of {name:string} could not be loaded.',
     },
     SUMMARY: {
       EMPTY: 'No connections yet.',

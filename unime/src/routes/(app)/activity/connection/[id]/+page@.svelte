@@ -14,16 +14,29 @@
   import ConnectionDetailsModal from './ConnectionDetailsModal.svelte';
   import ConnectionHeaderMenu from './ConnectionHeaderMenu.svelte';
   import ConnectionSummary from './ConnectionSummary.svelte';
+  import IssuedCredentials from './IssuedCredentials.svelte';
 
   let connection: Connection = $state.connections.find((c) => c.id === page.params.id)!;
   $: connection = $state.connections.find((c) => c.id === page.params.id)!;
 
-  let triggers: string[] = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.ACTIVITY()];
+  // Issuers only: connections that issued credentials before `credential_issuer` was recorded are known by those.
+  const isIssuer =
+    !!connection.credential_issuer ||
+    $state.credentials.some((credential) => credential.connection_id === connection.id);
+
+  let triggers: string[] = [
+    $LL.CONNECTION.TABS.SUMMARY(),
+    $LL.CONNECTION.TABS.ACTIVITY(),
+    ...(isIssuer ? [$LL.CONNECTION.TABS.CREDENTIALS()] : []),
+  ];
   // A history entry may still hold a tab that no longer exists (such as the removed Data tab).
   let activeTab: Writable<string> = writable(
     page.state.tab && triggers.includes(page.state.tab) ? page.state.tab : triggers[0],
   );
   const detailsOpen = writable(false);
+
+  let credentialsOpened = false;
+  $: if (isIssuer && $activeTab === triggers[2]) credentialsOpened = true;
 
   const navigateUp = useParentRoute(() => returnRoute('/activity'));
 
@@ -48,6 +61,12 @@
       <div slot="1" class="bg-silver pt-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <History connectionId={connection.id} />
+      </div>
+      <div slot="2" class="bg-silver pt-5 dark:bg-navy">
+        <!-- Mounted once the tab is first opened, so the issuer metadata is only fetched when asked for. -->
+        {#if credentialsOpened}
+          <IssuedCredentials {connection} />
+        {/if}
       </div>
     </Tabs>
   </div>

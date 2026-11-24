@@ -1181,6 +1181,41 @@ type RootTranslation = {
 			 * A​c​t​i​v​i​t​y
 			 */
 			ACTIVITY: string
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​s
+			 */
+			CREDENTIALS: string
+		}
+		ISSUED_CREDENTIALS: {
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​s​ ​{​n​a​m​e​}​ ​c​a​n​ ​i​s​s​u​e​.
+			 * @param {string} name
+			 */
+			DESCRIPTION: RequiredParams<'name'>
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​c​r​e​d​e​n​t​i​a​l​|​c​r​e​d​e​n​t​i​a​l​s​}​}
+			 * @param {number} count
+			 */
+			COUNT: RequiredParams<'count'>
+			/**
+			 * S​e​a​r​c​h​ ​c​r​e​d​e​n​t​i​a​l​s
+			 */
+			SEARCH_PLACEHOLDER: string
+			/**
+			 * {​n​a​m​e​}​ ​d​o​e​s​ ​n​o​t​ ​l​i​s​t​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​.
+			 * @param {string} name
+			 */
+			EMPTY: RequiredParams<'name'>
+			/**
+			 * N​o​ ​c​r​e​d​e​n​t​i​a​l​s​ ​m​a​t​c​h​ ​"​{​t​e​r​m​}​"​.
+			 * @param {string} term
+			 */
+			NO_RESULTS: RequiredParams<'term'>
+			/**
+			 * T​h​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​o​f​ ​{​n​a​m​e​}​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​l​o​a​d​e​d​.
+			 * @param {string} name
+			 */
+			UNAVAILABLE: RequiredParams<'name'>
 		}
 		SUMMARY: {
 			/**
@@ -3399,6 +3434,36 @@ export type TranslationFunctions = {
 			 * Activity
 			 */
 			ACTIVITY: () => LocalizedString
+			/**
+			 * Credentials
+			 */
+			CREDENTIALS: () => LocalizedString
+		}
+		ISSUED_CREDENTIALS: {
+			/**
+			 * Credentials {name} can issue.
+			 */
+			DESCRIPTION: (arg: { name: string }) => LocalizedString
+			/**
+			 * {count} {{credential|credentials}}
+			 */
+			COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Search credentials
+			 */
+			SEARCH_PLACEHOLDER: () => LocalizedString
+			/**
+			 * {name} does not list any credentials.
+			 */
+			EMPTY: (arg: { name: string }) => LocalizedString
+			/**
+			 * No credentials match "{term}".
+			 */
+			NO_RESULTS: (arg: { term: string }) => LocalizedString
+			/**
+			 * The credentials of {name} could not be loaded.
+			 */
+			UNAVAILABLE: (arg: { name: string }) => LocalizedString
 		}
 		SUMMARY: {
 			/**

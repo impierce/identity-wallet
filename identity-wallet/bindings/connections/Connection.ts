@@ -4,4 +4,4 @@ import type { EcosystemsCheck } from "./EcosystemsCheck";
 import type { LinkedVerifiableCredentialData } from "../user_prompt/LinkedVerifiableCredentialData";
 import type { ValidationStatus } from "../user_prompt/ValidationStatus";
 
-export interface Connection { id: string, name: string, url: string, did: string, verified: boolean, first_interacted: string, last_interacted: string, linked_verifiable_presentations?: Array<LinkedVerifiableCredentialData>, ecosystems?: Array<EcosystemProfile>, ecosystems_check?: EcosystemsCheck, domain_validation?: [ValidationStatus, string], }
+export interface Connection { id: string, name: string, url: string, did: string, verified: boolean, first_interacted: string, last_interacted: string, linked_verifiable_presentations?: Array<LinkedVerifiableCredentialData>, ecosystems?: Array<EcosystemProfile>, ecosystems_check?: EcosystemsCheck, domain_validation?: [ValidationStatus, string], credential_issuer?: string, }

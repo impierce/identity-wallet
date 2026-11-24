@@ -19,6 +19,7 @@ use self::{
     actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
 };
+use crate::state::connections::issued_credentials::IssuedCredentialsPage;
 use crate::state::core_utils::history_event::HistoryEvent;
 use crate::state::credentials::DisplayCredential;
 use crate::state::interaction_result::InteractionResult;
@@ -128,6 +129,9 @@ pub struct AppState {
     /// The outcome of the last issuance or presentation, shown in the result pop-up until dismissed. Cleared when the
     /// state is loaded from disk.
     pub interaction_result: Option<InteractionResult>,
+    /// The page of a connection's issued credentials last requested by the frontend. Cleared when the state is loaded
+    /// from disk.
+    pub issued_credentials: Option<IssuedCredentialsPage>,
 }
 
 impl AppState {

@@ -422,6 +422,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ecosystems: None,
             ecosystems_check: None,
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -440,6 +441,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 last_resolved: Some(impierce_last_interaction.clone()),
             }),
             domain_validation: Some(impierce_domain_validation),
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -454,6 +456,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ecosystems: None,
             ecosystems_check: None,
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -468,6 +471,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ecosystems: None,
             ecosystems_check: None,
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -486,6 +490,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 last_resolved: Some(road_authority_interaction),
             }),
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
     ]);

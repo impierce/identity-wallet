@@ -417,6 +417,15 @@ const fi_FI = {
     TABS: {
       SUMMARY: 'Yhteenveto',
       ACTIVITY: 'Aktiviteetti',
+      CREDENTIALS: 'Todisteet',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Todisteet, joita {name} voi myöntää.',
+      COUNT: '{count} {{todiste|todistetta}}',
+      SEARCH_PLACEHOLDER: 'Hae todisteita',
+      EMPTY: '{name} ei listaa todisteita.',
+      NO_RESULTS: 'Haulla "{term}" ei löytynyt todisteita.',
+      UNAVAILABLE: 'Toimijan {name} todisteita ei voitu ladata.',
     },
     SUMMARY: {
       EMPTY: 'Ei vielä yhteyksiä.',
