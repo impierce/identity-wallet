@@ -66,6 +66,31 @@ describe('claimRows', () => {
 
     expect(rows[0].label).toBe('Given name');
   });
+
+  test('labels a requested claim inside another one with the label its description gives', () => {
+    const request: RequestedCredential = {
+      ...pid,
+      claims: [
+        ['address', 'locality'],
+        ['courses', 0, 'country'],
+      ],
+      claim_sets: [],
+    };
+    const rows = claimRows(request, option(['Utrecht', 'NL']), {
+      ...credential,
+      display_claims: [
+        { path: ['address'], key: 'Place of residence', value: {}, nested: [{ path: ['locality'], label: 'City' }] },
+        {
+          path: ['courses'],
+          key: 'Courses',
+          value: [],
+          nested: [{ path: [null, 'country'], label: 'Country of study' }],
+        },
+      ],
+    } as unknown as DisplayCredential);
+
+    expect(rows.map((row) => row.label)).toEqual(['City', 'Country of study']);
+  });
 });
 
 describe('defaultDisclosure', () => {

@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { findCountry } from '$lib/utils/country';
+  import type { NestedDisplayClaim } from '@bindings/credentials/NestedDisplayClaim';
+
+  import { countryByCode, findCountry } from '$lib/utils/country';
   import { parseIso8601 } from '$lib/utils/date';
 
   import { isStructuredClaim } from '../structuredClaim';
@@ -11,12 +13,16 @@
 
   export let key: string;
   export let value: unknown;
+  /** The issuer's `format` for the claim, from its claims metadata. */
+  export let format: string | undefined = undefined;
+  /** The issuer's descriptions of the claims inside this one. */
+  export let nested: NestedDisplayClaim[] = [];
 
   function isDataUrl(value: unknown): value is string {
     return typeof value === 'string' && value.startsWith('data:image/');
   }
 
-  $: country = findCountry(key, value);
+  $: country = format === 'country' ? countryByCode(value) : findCountry(key, value);
 </script>
 
 <!--
@@ -25,7 +31,7 @@ Renders a single claim of a credential by picking the renderer that fits the val
 rendered as foldable rows, Lists and Tables. Claims that no specialized renderer applies to are rendered as plain text.
 -->
 {#if isStructuredClaim(value)}
-  <StructuredClaimRenderer {key} {value} />
+  <StructuredClaimRenderer {key} {value} hints={{ format, nested }} />
 {:else if isDataUrl(value)}
   <DataUrlImageRenderer {key} dataUrl={value} />
 {:else if parseIso8601(value)}

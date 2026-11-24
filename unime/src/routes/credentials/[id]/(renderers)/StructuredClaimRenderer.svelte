@@ -11,15 +11,16 @@
     buildClaimTree,
     type ClaimCount,
     type ClaimGroup,
+    type ClaimHints,
     type ClaimNode,
     type ClaimTable,
     type ClaimTitle,
   } from '../structuredClaim';
   import ClaimValue from './ClaimValue.svelte';
 
-  let { key, value }: { key: string; value: unknown } = $props();
+  let { key, value, hints = { nested: [] } }: { key: string; value: unknown; hints?: ClaimHints } = $props();
 
-  const tree = $derived(buildClaimTree(key, value));
+  const tree = $derived(buildClaimTree(key, value, hints));
 
   // Rows the holder folded or unfolded. The others keep their default: only the top level opens expanded.
   const toggled = new SvelteMap<string, boolean>();
@@ -47,13 +48,13 @@
 
   // The Table row shown in the sheet.
   const sheetOpen = writable(false);
-  let sheet = $state<{ title: string; entry: string; pairs: [string, string | undefined][] }>();
+  let sheet = $state<{ title: string; entry: string; pairs: [string, string | undefined, string | undefined][] }>();
 
   function openRow(table: ClaimTable, rowIndex: number) {
     sheet = {
       title: titleText(table.title),
       entry: $LL.CREDENTIAL.RENDERER.STRUCTURED.ENTRY({ position: rowIndex + 1 }),
-      pairs: table.columns.map((column, index) => [column, table.rows[rowIndex].cells[index]]),
+      pairs: table.columns.map((column, index) => [column.title, table.rows[rowIndex].cells[index], column.format]),
     };
     sheetOpen.set(true);
   }
@@ -107,7 +108,7 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
       >
         <div class="col-span-full grid grid-cols-subgrid gap-x-2 px-2 py-2 text-[11px]/[16px] text-text-alt">
           {#each node.columns as column, index (index)}
-            <div class="wrap-break-word">{column}</div>
+            <div class="wrap-break-word">{column.title}</div>
           {/each}
         </div>
         {#each node.rows as row, rowIndex (row.key)}
@@ -118,7 +119,17 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
             onclick={() => openRow(node, rowIndex)}
           >
             {#each row.cells as cell, index (index)}
-              <div class="wrap-break-word">{cell ?? '—'}</div>
+              <!-- The row is a button, so links show in its sheet only. -->
+              <div class="wrap-break-word">
+                {#if cell}
+                  <ClaimValue
+                    key={node.columns[index].title}
+                    value={cell}
+                    format={node.columns[index].format}
+                    links={false}
+                  />
+                {:else}—{/if}
+              </div>
             {/each}
           </button>
         {/each}
@@ -133,10 +144,12 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
   </div>
 {/snippet}
 
-{#snippet chips(values: string[])}
+{#snippet chips(node: Extract<ClaimNode, { kind: 'chips' }>)}
   <div class="flex flex-wrap gap-1.5">
-    {#each values as chip, index (index)}
-      <span class="rounded-full bg-slate-200 px-2.5 py-0.5 text-[12px]/[20px] dark:bg-slate-600">{chip}</span>
+    {#each node.values as chip, index (index)}
+      <span class="rounded-full bg-slate-200 px-2.5 py-0.5 text-[12px]/[20px] dark:bg-slate-600">
+        <ClaimValue key={titleText(node.title)} value={chip} format={node.format} />
+      </span>
     {/each}
   </div>
 {/snippet}
@@ -145,12 +158,14 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
   {#if node.kind === 'value'}
     <div class="px-3 py-2.5">
       {@render label(titleText(node.title))}
-      <div class="wrap-break-word"><ClaimValue key={titleText(node.title)} value={node.value} /></div>
+      <div class="wrap-break-word">
+        <ClaimValue key={titleText(node.title)} value={node.value} format={node.format} />
+      </div>
     </div>
   {:else if node.kind === 'chips'}
     <div class="flex flex-col gap-1.5 px-3 py-2.5">
       {@render label(titleText(node.title))}
-      {@render chips(node.values)}
+      {@render chips(node)}
     </div>
   {:else}
     {@render fold(node)}
@@ -187,12 +202,14 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
     {#if tree.kind === 'chips'}
       <div class="flex flex-col gap-1.5 px-4 py-3">
         <h2 class="font-medium text-text-alt">{titleText(tree.title)}</h2>
-        {@render chips(tree.values)}
+        {@render chips(tree)}
       </div>
     {:else if tree.kind === 'value'}
       <div class="px-4 py-3">
         <h2 class="font-medium text-text-alt">{titleText(tree.title)}</h2>
-        <p class="wrap-break-word"><ClaimValue key={titleText(tree.title)} value={tree.value} /></p>
+        <p class="wrap-break-word">
+          <ClaimValue key={titleText(tree.title)} value={tree.value} format={tree.format} />
+        </p>
       </div>
     {:else}
       {@render fold(tree)}
@@ -207,11 +224,11 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
       <div
         class="divide-y divide-slate-200 rounded-xl bg-background text-[13px]/[20px] text-slate-800 dark:divide-slate-600 dark:text-grey"
       >
-        {#each sheet.pairs as [pairLabel, pairValue], index (index)}
+        {#each sheet.pairs as [pairLabel, pairValue, pairFormat], index (index)}
           <div class="px-3 py-2.5">
             {@render label(pairLabel)}
             <div class="wrap-break-word">
-              {#if pairValue}<ClaimValue key={pairLabel} value={pairValue} />{:else}—{/if}
+              {#if pairValue}<ClaimValue key={pairLabel} value={pairValue} format={pairFormat} />{:else}—{/if}
             </div>
           </div>
         {/each}

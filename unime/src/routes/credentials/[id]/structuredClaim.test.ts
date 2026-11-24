@@ -51,7 +51,7 @@ describe('buildClaimTree', () => {
       title: { kind: 'key', text: 'Courses' },
       count: { unit: 'entries', count: 2 },
       depth: 0,
-      columns: ['Name', 'Credits', 'Grade'],
+      columns: [{ title: 'Name' }, { title: 'Credits' }, { title: 'Grade' }],
       rows: [
         { key: '/Courses/0', cells: ['Rust', '5', undefined] },
         { key: '/Courses/1', cells: ['Svelte', undefined, 'A'] },
@@ -111,5 +111,105 @@ describe('buildClaimTree', () => {
     expect(buildClaimTree('Empty', ['', null])).toBeUndefined();
     expect(buildClaimTree('Empty', [{ Name: '' }, { Name: ' ' }])).toBeUndefined();
     expect(buildClaimTree('Empty', [{ Team: { Lead: '' } }])).toBeUndefined();
+  });
+});
+
+describe("buildClaimTree with the issuer's claims metadata", () => {
+  const courses = [
+    { Code: 'C101', Title: 'Analytical Engines', Country: 'GB', 'Completed on': '2026-06-15' },
+    { Title: 'Number Theory', Code: 'C102', Country: 'IT' },
+  ];
+
+  it('takes columns, their labels, order and formats from the descriptions of a Table', () => {
+    const tree = buildClaimTree('Courses', courses, {
+      format: 'table',
+      nested: [
+        { path: [null, 'Title'], label: 'Course' },
+        { path: [null, 'Code'] },
+        { path: [null, 'Country'], label: 'Country', format: 'country' },
+      ],
+    });
+
+    expect(tree).toMatchObject({
+      kind: 'table',
+      columns: [
+        { title: 'Course' },
+        { title: 'Code' },
+        { title: 'Country', format: 'country' },
+        { title: 'Completed on' },
+      ],
+      rows: [
+        { cells: ['Analytical Engines', 'C101', 'GB', '2026-06-15'] },
+        { cells: ['Number Theory', 'C102', 'IT', undefined] },
+      ],
+    });
+  });
+
+  it('shows an array of flat objects as a List of Objects when its items are described without `table`', () => {
+    const tree = buildClaimTree('Courses', courses, { nested: [{ path: [null, 'Code'], label: 'Course code' }] });
+
+    expect(tree?.kind).toBe('group');
+    if (tree?.kind !== 'group') return;
+    expect(tree.count).toEqual({ unit: 'entries', count: 2 });
+    const [first] = tree.children;
+    expect(first.kind === 'group' && first.children.map((child) => child.title)).toEqual([
+      { kind: 'key', text: 'Course code' },
+      { kind: 'key', text: 'Title' },
+      { kind: 'key', text: 'Country' },
+      { kind: 'key', text: 'Completed on' },
+    ]);
+  });
+
+  it('labels, orders and formats the fields of an Object', () => {
+    const tree = buildClaimTree(
+      'Trainee',
+      { 'Full name': 'Ada Lovelace', Nationality: 'GB', Note: 'First programmer' },
+      {
+        nested: [
+          { path: ['Nationality'], label: 'Country of citizenship', format: 'country' },
+          { path: ['Full name'], label: 'Name' },
+        ],
+      },
+    );
+
+    expect(tree?.kind === 'group' && tree.children).toEqual([
+      {
+        kind: 'value',
+        key: '/Trainee/Nationality',
+        title: { kind: 'key', text: 'Country of citizenship' },
+        value: 'GB',
+        format: 'country',
+      },
+      { kind: 'value', key: '/Trainee/Full name', title: { kind: 'key', text: 'Name' }, value: 'Ada Lovelace' },
+      { kind: 'value', key: '/Trainee/Note', title: { kind: 'key', text: 'Note' }, value: 'First programmer' },
+    ]);
+  });
+
+  it('gives the items of a List of values the format described with `null`', () => {
+    const tree = buildClaimTree('Websites', ['https://example.com/ada'], { nested: [{ path: [null], format: 'uri' }] });
+
+    expect(tree).toMatchObject({ kind: 'chips', values: ['https://example.com/ada'], format: 'uri' });
+  });
+
+  it('applies descriptions inside the items of a List of Objects', () => {
+    const tree = buildClaimTree(
+      'Work',
+      [{ Employer: 'Analytical Engine Society', Tasks: ['Programs'], Country: 'GB' }],
+      {
+        nested: [
+          { path: [null, 'Employer'], label: 'Organisation' },
+          { path: [null, 'Country'], format: 'country' },
+        ],
+      },
+    );
+
+    expect(tree?.kind).toBe('group');
+    if (tree?.kind !== 'group') return;
+    const [item] = tree.children;
+    expect(item.kind === 'group' && item.children).toMatchObject([
+      { title: { kind: 'key', text: 'Organisation' } },
+      { title: { kind: 'key', text: 'Country' }, format: 'country' },
+      { kind: 'chips', title: { kind: 'key', text: 'Tasks' } },
+    ]);
   });
 });

@@ -89,4 +89,40 @@ describe('StructuredClaimRenderer', () => {
     expect(container.children).toHaveLength(0);
     expect(container.textContent?.trim()).toBe('');
   });
+
+  test('shows a Table column the issuer marks as countries with their names, in each row', () => {
+    render(ClaimRenderer, {
+      key: 'Courses',
+      value: [
+        { Code: 'C101', Country: 'GB' },
+        { Code: 'C102', Country: 'IT' },
+      ],
+      format: 'table',
+      nested: [
+        { path: [null, 'Code'], label: 'Code' },
+        { path: [null, 'Country'], label: 'Country', format: 'country' },
+      ],
+    });
+
+    expect(screen.getByText('United Kingdom')).toBeInTheDocument();
+    expect(screen.getByText('Italy')).toBeInTheDocument();
+    expect(screen.queryByText('GB')).not.toBeInTheDocument();
+  });
+
+  test('links the items of a List the issuer marks as URIs', () => {
+    render(ClaimRenderer, {
+      key: 'Websites',
+      value: ['https://example.com/ada', 'example.org'],
+      nested: [{ path: [null], format: 'uri' }],
+    });
+
+    expect(screen.getByRole('link', { name: 'https://example.com/ada' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'example.org' })).toBeInTheDocument();
+  });
+
+  test('shows a code the issuer marks as a country with its name, whatever the claim is called', () => {
+    render(ClaimRenderer, { key: 'Citizenship', value: 'NL', format: 'country' });
+
+    expect(screen.getByText('Netherlands')).toBeInTheDocument();
+  });
 });

@@ -7,6 +7,7 @@ describe('getDisplayClaimKey', () => {
         path: ['credentialSubject', 'email'],
         key: '',
         value: 'ferris@example.com',
+        nested: [],
       }),
     ).toBe('email');
   });
@@ -17,6 +18,7 @@ describe('getDisplayClaimKey', () => {
         path: ['credentialSubject', 'email'],
         key: 'Email address',
         value: 'ferris@example.com',
+        nested: [],
       }),
     ).toBe('Email address');
   });

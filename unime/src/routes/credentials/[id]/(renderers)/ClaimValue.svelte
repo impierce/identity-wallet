@@ -3,24 +3,41 @@
 
   import ExternalLink from '$lib/components/ExternalLink.svelte';
   import { state as appState } from '$lib/stores';
-  import { findCountry } from '$lib/utils/country';
+  import { countryByCode, findCountry } from '$lib/utils/country';
   import { formatIso8601, parseIso8601 } from '$lib/utils/date';
-  import { linkifyClaim } from '$lib/utils/url';
+  import { domainUrl, isUrl, linkifyClaim, type TextPart } from '$lib/utils/url';
 
   export let key: string;
   export let value: string;
+  /** The issuer's `format` for the value, which takes precedence over what the value looks like. */
+  export let format: string | undefined = undefined;
+  /** Whether links are links; inside a button, they show as text. */
+  export let links = true;
 
-  $: country = findCountry(key, value);
+  const KNOWN_FORMATS = ['country', 'date', 'date-time', 'uri'];
+
+  $: known = format !== undefined && KNOWN_FORMATS.includes(format);
+  $: country = format === 'country' ? countryByCode(value) : known ? null : findCountry(key, value);
+  $: date = format === 'date' || format === 'date-time' || !known ? parseIso8601(value) : null;
+  $: parts = format === 'uri' ? uriParts(value) : known ? [{ text: value }] : linkifyClaim(key, value);
+
+  /** A URI as one link when it is an `https` URL or a bare domain, as text otherwise. */
+  function uriParts(uri: string): TextPart[] {
+    const trimmed = uri.trim();
+    const url = isUrl(trimmed) ? trimmed : domainUrl(trimmed);
+    return [{ text: uri, url }];
+  }
 </script>
 
 <!--
 @component
 The value of a single field inside an Object, List or Table, formatted like the card renderers format a top-level
-claim: images, dates in the profile's locale, countries with their flag, and links.
+claim: images, dates in the profile's locale, countries with their flag, and links. A `format` from the issuer's claims
+metadata (`country`, `date`, `date-time` or `uri`) decides; without one, the value's looks do.
 -->
-{#if value.startsWith('data:image/')}
+{#if !known && value.startsWith('data:image/')}
   <img src={value} alt={key} class="max-h-32 rounded-lg" />
-{:else if parseIso8601(value)}
+{:else if date}
   {formatIso8601(value, $appState.profile_settings.locale)}
 {:else if country}
   <span class="inline-flex items-center gap-2">
@@ -30,8 +47,8 @@ claim: images, dates in the profile's locale, countries with their flag, and lin
     {country.name}
   </span>
 {:else}
-  {#each linkifyClaim(key, value) as part}
-    {#if part.url}
+  {#each parts as part}
+    {#if part.url && links}
       <ExternalLink href={part.url} class="break-all text-secondary underline">{part.text}</ExternalLink>
     {:else}
       {part.text}
