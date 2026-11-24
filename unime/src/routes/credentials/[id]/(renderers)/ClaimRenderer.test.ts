@@ -30,6 +30,11 @@ describe('ClaimRenderer', () => {
     expect(screen.getByRole('link', { name: 'impierce.com' })).toHaveAttribute('href', 'https://impierce.com/');
   });
 
+  test('renders a claim the issuer marks as a `uri` as a link', () => {
+    render(ClaimRenderer, { key: 'Reference', value: 'example.org', format: 'uri' });
+    expect(screen.getByRole('link', { name: 'example.org' })).toHaveAttribute('href', 'https://example.org/');
+  });
+
   test('does not render a domain-like name as a link', () => {
     render(ClaimRenderer, { key: 'givenName', value: 'Ferris.Crab' });
     expect(screen.queryByRole('link')).not.toBeInTheDocument();

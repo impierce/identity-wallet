@@ -5,7 +5,7 @@
   import { state as appState } from '$lib/stores';
   import { countryByCode, findCountry } from '$lib/utils/country';
   import { formatIso8601, parseIso8601 } from '$lib/utils/date';
-  import { domainUrl, isUrl, linkifyClaim, type TextPart } from '$lib/utils/url';
+  import { linkifyClaim, uriParts } from '$lib/utils/url';
 
   export let key: string;
   export let value: string;
@@ -20,13 +20,6 @@
   $: country = format === 'country' ? countryByCode(value) : known ? null : findCountry(key, value);
   $: date = format === 'date' || format === 'date-time' || !known ? parseIso8601(value) : null;
   $: parts = format === 'uri' ? uriParts(value) : known ? [{ text: value }] : linkifyClaim(key, value);
-
-  /** A URI as one link when it is an `https` URL or a bare domain, as text otherwise. */
-  function uriParts(uri: string): TextPart[] {
-    const trimmed = uri.trim();
-    const url = isUrl(trimmed) ? trimmed : domainUrl(trimmed);
-    return [{ text: uri, url }];
-  }
 </script>
 
 <!--

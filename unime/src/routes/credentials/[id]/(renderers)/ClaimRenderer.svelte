@@ -39,5 +39,5 @@ rendered as foldable rows, Lists and Tables. Claims that no specialized renderer
 {:else if country}
   <CountryRenderer {key} {country} />
 {:else}
-  <TextFieldRenderer {key} value={String(value ?? '')} />
+  <TextFieldRenderer {key} value={String(value ?? '')} {format} />
 {/if}

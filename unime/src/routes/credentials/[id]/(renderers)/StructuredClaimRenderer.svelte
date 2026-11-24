@@ -220,7 +220,7 @@ expanded. Lists of single values show as chips, and Tables as a compact grid who
 <!-- Mounted once a Table row is opened, so a claim without a Table carries no dialog. -->
 {#if sheet}
   <ActionSheet open={sheetOpen} titleText={sheet.title} descriptionText={sheet.entry}>
-    <div slot="content" class="mt-4 w-full">
+    <div slot="content" class="mt-4 max-h-[60vh] w-full overflow-y-auto">
       <div
         class="divide-y divide-slate-200 rounded-xl bg-background text-[13px]/[20px] text-slate-800 dark:divide-slate-600 dark:text-grey"
       >
