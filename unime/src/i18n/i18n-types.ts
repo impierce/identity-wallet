@@ -1430,12 +1430,11 @@ type RootTranslation = {
 				 */
 				MENU_BUTTON: string
 				/**
-				 * {​n​a​m​e​}​ ​f​r​o​m​ ​{​i​s​s​u​e​r​}​:​ ​{​l​i​n​k​}
-				 * @param {string} issuer
+				 * I​ ​r​e​c​e​i​v​e​d​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​{​c​o​n​n​e​c​t​i​o​n​}​:​ ​{​l​i​n​k​}
+				 * @param {string} connection
 				 * @param {string} link
-				 * @param {string} name
 				 */
-				TEXT: RequiredParams<'issuer' | 'link' | 'name'>
+				TEXT: RequiredParams<'connection' | 'link'>
 				/**
 				 * L​i​n​k​ ​c​o​p​i​e​d
 				 */
@@ -3670,9 +3669,9 @@ export type TranslationFunctions = {
 				 */
 				MENU_BUTTON: () => LocalizedString
 				/**
-				 * {name} from {issuer}: {link}
+				 * I received the following credential from {connection}: {link}
 				 */
-				TEXT: (arg: { issuer: string, link: string, name: string }) => LocalizedString
+				TEXT: (arg: { connection: string, link: string }) => LocalizedString
 				/**
 				 * Link copied
 				 */

@@ -498,7 +498,7 @@ const sv_FI = {
     ACTIONS: {
       SHARE: {
         MENU_BUTTON: 'Dela…',
-        TEXT: '{name} från {issuer}: {link}',
+        TEXT: 'Jag har fått följande intyg från {connection}: {link}',
         LINK_COPIED: 'Länken kopierades',
         LINK_COPIED_DETAIL: 'Alla som har den här länken kan se det här intyget.',
       },

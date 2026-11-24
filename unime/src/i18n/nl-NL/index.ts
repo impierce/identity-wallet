@@ -499,7 +499,7 @@ const nl_NL = {
     ACTIONS: {
       SHARE: {
         MENU_BUTTON: 'Delen…',
-        TEXT: '{name} van {issuer}: {link}',
+        TEXT: 'Ik heb de volgende credential ontvangen van {connection}: {link}',
         LINK_COPIED: 'Link gekopieerd',
         LINK_COPIED_DETAIL: 'Iedereen met deze link kan deze credential zien.',
       },

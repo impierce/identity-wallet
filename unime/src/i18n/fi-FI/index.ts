@@ -498,7 +498,7 @@ const fi_FI = {
     ACTIONS: {
       SHARE: {
         MENU_BUTTON: 'Jaa…',
-        TEXT: '{name}, myöntäjä {issuer}: {link}',
+        TEXT: 'Sain seuraavan tunnisteen myöntäjältä {connection}: {link}',
         LINK_COPIED: 'Linkki kopioitu',
         LINK_COPIED_DETAIL: 'Kuka tahansa, jolla on tämä linkki, voi nähdä tämän tunnisteen.',
       },

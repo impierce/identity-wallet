@@ -498,7 +498,7 @@ const de_DE = {
     ACTIONS: {
       SHARE: {
         MENU_BUTTON: 'Teilen…',
-        TEXT: '{name} von {issuer}: {link}',
+        TEXT: 'Ich habe den folgenden Nachweis von {connection} erhalten: {link}',
         LINK_COPIED: 'Link kopiert',
         LINK_COPIED_DETAIL: 'Jeder mit diesem Link kann diesen Nachweis sehen.',
       },

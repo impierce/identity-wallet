@@ -498,7 +498,7 @@ const en = {
     ACTIONS: {
       SHARE: {
         MENU_BUTTON: 'Share…',
-        TEXT: '{name:string} from {issuer:string}: {link:string}',
+        TEXT: 'I received the following credential from {connection:string}: {link:string}',
         LINK_COPIED: 'Link copied',
         LINK_COPIED_DETAIL: 'Anyone with this link can see this credential.',
       },

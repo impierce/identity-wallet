@@ -74,11 +74,8 @@
       const credential = findCredential();
       if (!link || !credential) return;
 
-      const text = $LL.CREDENTIAL.ACTIONS.SHARE.TEXT({
-        name: credential.display_name,
-        issuer: credential.issuer_name,
-        link,
-      });
+      const connection = get(appState).connections.find((c) => c.id === credential.connection_id);
+      const text = $LL.CREDENTIAL.ACTIONS.SHARE.TEXT({ connection: connection?.name ?? credential.issuer_name, link });
       linkCopied = (await shareOrCopyLink(text, link)) === 'copied';
     } finally {
       sharing = false;

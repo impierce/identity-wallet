@@ -500,7 +500,7 @@ const es_ES = {
     ACTIONS: {
       SHARE: {
         MENU_BUTTON: 'Compartir…',
-        TEXT: '{name} de {issuer}: {link}',
+        TEXT: 'He recibido la siguiente credencial de {connection}: {link}',
         LINK_COPIED: 'Enlace copiado',
         LINK_COPIED_DETAIL: 'Cualquier persona con este enlace puede ver esta credencial.',
       },
