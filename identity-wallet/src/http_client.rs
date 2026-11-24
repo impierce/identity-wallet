@@ -75,7 +75,7 @@ pub fn get_openid4vc_http_client() -> Client {
     OPENID4VC_HTTP_CLIENT
         .get_or_init(|| {
             // No `Client::new()` fallback: it drops the pinned `webpki-roots` anchors (#746).
-            openid4vc_http_client_builder(private_destinations_allowed())
+            openid4vc_http_client_builder(private_destinations_allowed(), env_proxy_hosts())
                 .build()
                 .expect("HTTP client with pinned roots could not be built")
         })
@@ -85,15 +85,16 @@ pub fn get_openid4vc_http_client() -> Client {
 /// The builder of [`get_openid4vc_http_client`]:
 /// - **No redirect is followed**, as by the library's own default client: a redirect could lead a request, and what it
 ///   carries, to an address the remote party's URL never named.
-/// - **Public addresses only** for host names, see [`PublicAddressResolver`]; `allow_private` lifts that.
+/// - **Public addresses only** for host names, see [`PublicAddressResolver`]; `allow_private` lifts that, and
+///   `proxy_hosts` names the proxies exempt from it.
 ///
 /// An IP literal never reaches a resolver, so a URL with a private IP address is not refused here.
-fn openid4vc_http_client_builder(allow_private: bool) -> reqwest::ClientBuilder {
+fn openid4vc_http_client_builder(allow_private: bool, proxy_hosts: Vec<String>) -> reqwest::ClientBuilder {
     http_client_builder(plain_http_allowed())
         .redirect(reqwest::redirect::Policy::none())
         .dns_resolver(PublicAddressResolver {
             allow_private,
-            proxy_hosts: env_proxy_hosts(),
+            proxy_hosts,
         })
 }
 
@@ -615,7 +616,12 @@ mod tests {
             .mount(&server)
             .await;
         let url = Url::parse(&format!("http://localhost:{}/", server.address().port())).unwrap();
-        let client = |allow_private| openid4vc_http_client_builder(allow_private).no_proxy().build().unwrap();
+        let client = |allow_private| {
+            openid4vc_http_client_builder(allow_private, Vec::new())
+                .no_proxy()
+                .build()
+                .unwrap()
+        };
 
         assert!(client(false).get(url.clone()).send().await.is_err());
         assert!(client(true).get(url).send().await.unwrap().status().is_success());
@@ -637,7 +643,7 @@ mod tests {
             .mount(&server)
             .await;
 
-        let response = openid4vc_http_client_builder(true)
+        let response = openid4vc_http_client_builder(true, Vec::new())
             .no_proxy()
             .build()
             .unwrap()
