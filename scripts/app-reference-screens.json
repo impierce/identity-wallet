@@ -1,0 +1,288 @@
+{
+  "$comment": "Input for scripts/generate-app-reference.mjs. Every route in unime/src/routes needs an entry: either a screen in a group, with a name (letters, digits and spaces) and a purpose of one to three sentences, or an entry in omittedRoutes with a reason. The order of the groups and screens is the order of the reference. Run `pnpm docs:app-reference` after a change.",
+  "groups": [
+    {
+      "title": "Start and unlock",
+      "description": "What the app shows when it starts, before the wallet is open.",
+      "screens": [
+        {
+          "route": "/",
+          "name": "Start screen",
+          "purpose": "Shows the UniMe logo while the app loads its state. The backend then redirects: a new wallet goes to onboarding, an existing wallet to the lock screen."
+        },
+        {
+          "route": "/prompt/password-required",
+          "name": "Lock screen",
+          "purpose": "Opened by the backend when the wallet is locked. The user unlocks it with the password. \"Forgot password?\" resets the app and removes all data, after a confirmation."
+        }
+      ]
+    },
+    {
+      "title": "Onboarding",
+      "description": "The screens a new user goes through once, from the first start to an empty wallet.",
+      "screens": [
+        {
+          "route": "/welcome",
+          "name": "Welcome",
+          "purpose": "The first screen of a new wallet. The user picks a language and starts creating a profile."
+        },
+        {
+          "route": "/welcome/pledge",
+          "name": "Pledge",
+          "purpose": "Shows three promises about the user's data before the profile is created."
+        },
+        {
+          "route": "/welcome/terms",
+          "name": "Terms",
+          "purpose": "Asks the user to accept the terms and conditions, which open in a dialog, and to confirm that they are responsible for their own data. Both boxes have to be checked to continue."
+        },
+        {
+          "route": "/welcome/customize/name",
+          "name": "Choose profile name",
+          "purpose": "Asks for a profile name. The name stays on the device."
+        },
+        {
+          "route": "/welcome/password",
+          "name": "Set password",
+          "purpose": "Asks for the password that encrypts the wallet and shows which rules the password has to meet."
+        },
+        {
+          "route": "/welcome/password/confirm",
+          "name": "Confirm password",
+          "purpose": "Asks the user to type the password again. On a device with biometrics it then offers to unlock the app with them."
+        },
+        {
+          "route": "/welcome/completed",
+          "name": "Onboarding completed",
+          "purpose": "Confirms that the profile is protected. \"Continue\" creates the wallet's identity, after which the backend opens the Me tab."
+        }
+      ]
+    },
+    {
+      "title": "Me: credentials and own data",
+      "description": "The home of the wallet: the list of credentials, search, and adding data that the user enters themselves.",
+      "screens": [
+        {
+          "route": "/me",
+          "name": "Me tab",
+          "purpose": "The home screen, and the first of the three tabs in the bar at the bottom. It greets the user and lists their credentials in one list, favorites first, with a sorting menu and buttons for search, settings and adding data. An empty wallet shows a hint instead. Opening the tab refreshes the status of all credentials."
+        },
+        {
+          "route": "/me/search",
+          "name": "Search",
+          "purpose": "Finds credentials while the user types and remembers recent searches."
+        },
+        {
+          "route": "/me/add",
+          "name": "Add data",
+          "purpose": "Lets the user choose what to add themselves: a profile, an email address or an address."
+        },
+        {
+          "route": "/me/add/profile/info",
+          "name": "Profile introduction",
+          "purpose": "Explains what a self-issued profile is good for before the user fills one in."
+        },
+        {
+          "route": "/me/add/profile",
+          "name": "Add profile",
+          "purpose": "The form for a self-issued profile credential: names, date and place of birth and nationality. Submitting it issues the credential on the device and returns to the Me tab."
+        },
+        {
+          "route": "/me/add/email/info",
+          "name": "Email introduction",
+          "purpose": "Explains the verified email credential before the user asks for one."
+        },
+        {
+          "route": "/me/add/email",
+          "name": "Add email",
+          "purpose": "Verifies an email address. The user enters the address, receives a code by email and types it in. A correct code adds a verified email credential to the wallet."
+        },
+        {
+          "route": "/me/add/address/info",
+          "name": "Address introduction",
+          "purpose": "Explains what a self-issued address is good for before the user fills one in."
+        },
+        {
+          "route": "/me/add/address",
+          "name": "Add address",
+          "purpose": "The form for a self-issued address credential. Submitting it issues the credential on the device and returns to the Me tab."
+        }
+      ]
+    },
+    {
+      "title": "Credential",
+      "description": "The page of a single credential.",
+      "screens": [
+        {
+          "route": "/credentials/[id]",
+          "name": "Credential details",
+          "purpose": "Shows one credential: logo, name, status, issuer, the ecosystems that endorse the issuer, and every claim. The heart marks a favorite, and the menu offers sharing to LinkedIn, a display name of the user's own and deleting the credential. Opening the screen refreshes the credential's status."
+        }
+      ]
+    },
+    {
+      "title": "Scan and exchange",
+      "description": "Scanning a QR code or opening a link starts an exchange with an issuer or a verifier. The backend then opens the screens below one after the other. The progress and the result of an exchange show in a sheet on top of the current screen.",
+      "screens": [
+        {
+          "route": "/scan",
+          "name": "Scan tab",
+          "purpose": "The second tab in the bar at the bottom. It opens the camera and waits for the QR code of an issuer or a verifier. Without camera permission it offers to open the device settings. In developer mode the value of a QR code can be pasted instead."
+        },
+        {
+          "route": "/prompt/accept-connection",
+          "name": "Connection request",
+          "purpose": "Opened by the backend when an organization starts an exchange. It shows who is asking: name, logo, website with its domain label, public credentials (\"Certifications\" in the app) and ecosystems. For an organization the user already knows, it shows the interaction history instead of the warning for new connections. The user accepts or rejects the connection."
+        },
+        {
+          "route": "/prompt/accept-connection/certifications",
+          "name": "Requester certifications",
+          "purpose": "Lists all public credentials of the organization that asks for a connection."
+        },
+        {
+          "route": "/prompt/accept-connection/certifications/[id]",
+          "name": "Requester certification details",
+          "purpose": "Shows one public credential of the organization that asks for a connection: who issued it, its validity and its claims."
+        },
+        {
+          "route": "/prompt/accept-connection/ecosystems",
+          "name": "Requester ecosystems",
+          "purpose": "Lists all ecosystems of the organization that asks for a connection."
+        },
+        {
+          "route": "/prompt/accept-connection/ecosystems/[id]",
+          "name": "Requester ecosystem details",
+          "purpose": "Shows one ecosystem of the organization that asks for a connection: its description, its leader (\"Ecosystem Owner\" in the app) and its members."
+        },
+        {
+          "route": "/prompt/credential-offer",
+          "name": "Credential offer",
+          "purpose": "Opened by the backend after the user accepts an issuer. It lists the credentials on offer. When the issuer protects the offer with a transaction code, the screen asks for it as a PIN code. The user accepts or rejects the offer."
+        },
+        {
+          "route": "/prompt/share-credentials",
+          "name": "Share data",
+          "purpose": "Opened by the backend after the user accepts a verifier. It lists what the verifier asks for, with every field marked as required or optional. The user can pick another credential when several match, inspect a credential and switch optional fields off. A review of what will and will not be shared comes before anything is sent."
+        }
+      ]
+    },
+    {
+      "title": "Activity: connections and history",
+      "description": "The organizations the user has exchanged credentials with, and the history of every exchange.",
+      "screens": [
+        {
+          "route": "/activity",
+          "name": "Activity tab",
+          "purpose": "The third tab in the bar at the bottom. It has two lists: the connections, which are the organizations the user has exchanged credentials with, and the history of every exchange."
+        },
+        {
+          "route": "/activity/connection/[id]",
+          "name": "Connection details",
+          "purpose": "Shows one organization. The summary has its website with the domain label, the first and the last time the user connected, the number of interactions, its public credentials and its ecosystems. A second tab lists the history with this organization. The menu shows the organization's DID and disconnects it, which keeps the history."
+        },
+        {
+          "route": "/activity/connection/[id]/certifications",
+          "name": "Connection certifications",
+          "purpose": "Lists all public credentials of a connection."
+        },
+        {
+          "route": "/activity/connection/[id]/certifications/[certificationId]",
+          "name": "Connection certification details",
+          "purpose": "Shows one public credential of a connection: who issued it, its validity and its claims."
+        },
+        {
+          "route": "/activity/connection/[id]/ecosystems",
+          "name": "Connection ecosystems",
+          "purpose": "Lists all ecosystems of a connection."
+        },
+        {
+          "route": "/activity/connection/[id]/ecosystems/[ecosystemIndex]",
+          "name": "Connection ecosystem details",
+          "purpose": "Shows one ecosystem of a connection: its description, its leader (\"Ecosystem Owner\" in the app) and its members."
+        }
+      ]
+    },
+    {
+      "title": "Settings and developer tools",
+      "description": "What is personal to this wallet. The profile picture at the top of the Me tab opens the settings.",
+      "screens": [
+        {
+          "route": "/me/settings",
+          "name": "Settings",
+          "purpose": "The entry to the settings. It shows the profile picture, which the user can change or remove, and links to the profile, the app settings and \"About UniMe\"."
+        },
+        {
+          "route": "/me/settings/profile",
+          "name": "My profile",
+          "purpose": "Links to the profile name and offers \"Delete profile\", which resets the app and removes all data after a confirmation."
+        },
+        {
+          "route": "/me/settings/profile/name",
+          "name": "Change profile name",
+          "purpose": "Changes the profile name."
+        },
+        {
+          "route": "/me/settings/app",
+          "name": "App settings",
+          "purpose": "Links to language, theme and security. Once the developer mode setting is unlocked, the screen also shows the developer mode switch and, with developer mode on, the links to DID management and key management."
+        },
+        {
+          "route": "/me/settings/app/language",
+          "name": "Language",
+          "purpose": "Changes the language of the app."
+        },
+        {
+          "route": "/me/settings/app/theme",
+          "name": "Theme",
+          "purpose": "Switches between the light theme, the dark theme and following the device."
+        },
+        {
+          "route": "/me/settings/app/security",
+          "name": "Security",
+          "purpose": "Turns unlocking with biometrics on or off. The user confirms the change with the password."
+        },
+        {
+          "route": "/me/settings/app/did",
+          "name": "DID management",
+          "purpose": "Developer mode only. Shows the DID methods of the wallet and sets the preferred one."
+        },
+        {
+          "route": "/me/settings/app/keys",
+          "name": "Key management",
+          "purpose": "Developer mode only. Shows the keys of the wallet and sets the preferred key type."
+        },
+        {
+          "route": "/me/settings/about",
+          "name": "About UniMe",
+          "purpose": "Shows the app version, the license and the terms and conditions. Tapping the logo several times unlocks the developer mode setting. In developer mode the screen also lists the versions of the specifications the wallet implements."
+        }
+      ]
+    }
+  ],
+  "omittedRoutes": [
+    {
+      "route": "/goals",
+      "reason": "Unfinished guided journey that only the Ferris developer profile starts."
+    },
+    {
+      "route": "/goals/[id]/faqs",
+      "reason": "Unfinished guided journey that only the Ferris developer profile starts."
+    },
+    {
+      "route": "/goals/[id]/step/[id]",
+      "reason": "Unfinished guided journey that only the Ferris developer profile starts."
+    },
+    {
+      "route": "/me/settings/backup",
+      "reason": "Empty placeholder that no screen links to."
+    },
+    {
+      "route": "/me/settings/app/trust-list",
+      "reason": "Developer mode tool that is not part of the documented features."
+    },
+    {
+      "route": "/me/settings/app/trust-list/[id]",
+      "reason": "Developer mode tool that is not part of the documented features."
+    }
+  ]
+}
