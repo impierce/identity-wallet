@@ -858,6 +858,14 @@ type RootTranslation = {
 			 * A​c​c​e​p​t​ ​c​r​e​d​e​n​t​i​a​l​s
 			 */
 			ACCEPT: string
+			/**
+			 * A​ ​c​o​d​e​ ​i​s​ ​r​e​q​u​i​r​e​d​ ​t​o​ ​a​c​c​e​p​t​ ​t​h​e​s​e​ ​c​r​e​d​e​n​t​i​a​l​s​.
+			 */
+			TX_CODE_REQUIRED: string
+			/**
+			 * E​n​t​e​r​ ​c​o​d​e
+			 */
+			TX_CODE_PLACEHOLDER: string
 		}
 		CONNECTION_REQUEST: {
 			/**
@@ -3105,6 +3113,14 @@ export type TranslationFunctions = {
 			 * Accept credentials
 			 */
 			ACCEPT: () => LocalizedString
+			/**
+			 * A code is required to accept these credentials.
+			 */
+			TX_CODE_REQUIRED: () => LocalizedString
+			/**
+			 * Enter code
+			 */
+			TX_CODE_PLACEHOLDER: () => LocalizedString
 		}
 		CONNECTION_REQUEST: {
 			/**

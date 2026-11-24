@@ -328,6 +328,8 @@ const sv_FI = {
       NAVBAR_TITLE: 'Intygsserbjudande',
       DESCRIPTION: 'erbjuder dig följande intyg',
       ACCEPT: 'Acceptera intyg',
+      TX_CODE_REQUIRED: 'En kod behövs för att acceptera dessa intyg.',
+      TX_CODE_PLACEHOLDER: 'Ange koden',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Anslutningsförfrågan',

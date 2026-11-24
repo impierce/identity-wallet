@@ -328,6 +328,8 @@ const nl_NL = {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials aan',
       ACCEPT: 'Accepteer credentials',
+      TX_CODE_REQUIRED: 'Er is een code nodig om deze credentials te accepteren.',
+      TX_CODE_PLACEHOLDER: 'Voer de code in',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Aanvraag',

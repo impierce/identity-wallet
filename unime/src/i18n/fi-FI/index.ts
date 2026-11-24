@@ -329,6 +329,8 @@ const fi_FI = {
       NAVBAR_TITLE: 'Valtuustarjous',
       DESCRIPTION: 'tarjoaa sinulle seuraavat valtuudet',
       ACCEPT: 'Hyväksy valtuudet',
+      TX_CODE_REQUIRED: 'Näiden valtuuksien hyväksymiseen tarvitaan koodi.',
+      TX_CODE_PLACEHOLDER: 'Syötä koodi',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Yhteyspyyntö',
