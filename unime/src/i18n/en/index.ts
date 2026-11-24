@@ -496,6 +496,15 @@ const en = {
       },
     },
     ACTIONS: {
+      SHARE: {
+        MENU_BUTTON: 'Share…',
+        TEXT: '{name:string} from {issuer:string}: {link:string}',
+        LINK_COPIED: 'Link copied',
+        LINK_COPIED_DETAIL: 'Anyone with this link can see this credential.',
+      },
+      ADD_TO_LINKEDIN: {
+        MENU_BUTTON: 'Add to LinkedIn profile',
+      },
       EDIT: {
         MENU_BUTTON: 'Edit display name',
         CONFIRM_BUTTON: 'Update display name',

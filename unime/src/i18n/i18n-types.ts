@@ -1424,6 +1424,33 @@ type RootTranslation = {
 			}
 		}
 		ACTIONS: {
+			SHARE: {
+				/**
+				 * S​h​a​r​e​…
+				 */
+				MENU_BUTTON: string
+				/**
+				 * {​n​a​m​e​}​ ​f​r​o​m​ ​{​i​s​s​u​e​r​}​:​ ​{​l​i​n​k​}
+				 * @param {string} issuer
+				 * @param {string} link
+				 * @param {string} name
+				 */
+				TEXT: RequiredParams<'issuer' | 'link' | 'name'>
+				/**
+				 * L​i​n​k​ ​c​o​p​i​e​d
+				 */
+				LINK_COPIED: string
+				/**
+				 * A​n​y​o​n​e​ ​w​i​t​h​ ​t​h​i​s​ ​l​i​n​k​ ​c​a​n​ ​s​e​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​.
+				 */
+				LINK_COPIED_DETAIL: string
+			}
+			ADD_TO_LINKEDIN: {
+				/**
+				 * A​d​d​ ​t​o​ ​L​i​n​k​e​d​I​n​ ​p​r​o​f​i​l​e
+				 */
+				MENU_BUTTON: string
+			}
 			EDIT: {
 				/**
 				 * E​d​i​t​ ​d​i​s​p​l​a​y​ ​n​a​m​e
@@ -3637,6 +3664,30 @@ export type TranslationFunctions = {
 			}
 		}
 		ACTIONS: {
+			SHARE: {
+				/**
+				 * Share…
+				 */
+				MENU_BUTTON: () => LocalizedString
+				/**
+				 * {name} from {issuer}: {link}
+				 */
+				TEXT: (arg: { issuer: string, link: string, name: string }) => LocalizedString
+				/**
+				 * Link copied
+				 */
+				LINK_COPIED: () => LocalizedString
+				/**
+				 * Anyone with this link can see this credential.
+				 */
+				LINK_COPIED_DETAIL: () => LocalizedString
+			}
+			ADD_TO_LINKEDIN: {
+				/**
+				 * Add to LinkedIn profile
+				 */
+				MENU_BUTTON: () => LocalizedString
+			}
 			EDIT: {
 				/**
 				 * Edit display name

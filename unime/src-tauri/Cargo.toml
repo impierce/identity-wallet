@@ -28,12 +28,14 @@ rustls.workspace = true
 rustls-platform-verifier.workspace = true
 serde_json.workspace = true
 tauri-plugin-barcode-scanner = { version = "2" }
+tauri-plugin-clipboard-manager = { version = "2.3" }
 tauri-plugin-deep-link = { version = "2" }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-keystore = { version = "2.1.0-alpha.1" }
 tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-opener = { version = "2" }
 tauri-plugin-os = { version = "2" }
+tauri-plugin-sharekit = { version = "=0.4.0-rc.8" }
 tauri-plugin-shell = { version = "2" }
 
 [dev-dependencies]

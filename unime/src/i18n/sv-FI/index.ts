@@ -496,6 +496,15 @@ const sv_FI = {
       },
     },
     ACTIONS: {
+      SHARE: {
+        MENU_BUTTON: 'Dela…',
+        TEXT: '{name} från {issuer}: {link}',
+        LINK_COPIED: 'Länken kopierades',
+        LINK_COPIED_DETAIL: 'Alla som har den här länken kan se det här intyget.',
+      },
+      ADD_TO_LINKEDIN: {
+        MENU_BUTTON: 'Lägg till i LinkedIn-profilen',
+      },
       EDIT: {
         MENU_BUTTON: 'Uppdatera visningsnamn',
         CONFIRM_BUTTON: 'Uppdatera visningsnamn',

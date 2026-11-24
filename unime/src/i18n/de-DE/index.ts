@@ -496,6 +496,15 @@ const de_DE = {
       },
     },
     ACTIONS: {
+      SHARE: {
+        MENU_BUTTON: 'Teilen…',
+        TEXT: '{name} von {issuer}: {link}',
+        LINK_COPIED: 'Link kopiert',
+        LINK_COPIED_DETAIL: 'Jeder mit diesem Link kann diesen Nachweis sehen.',
+      },
+      ADD_TO_LINKEDIN: {
+        MENU_BUTTON: 'Zum LinkedIn-Profil hinzufügen',
+      },
       EDIT: {
         MENU_BUTTON: 'Anzeigename ändern',
         CONFIRM_BUTTON: 'Anzeigename ändern',

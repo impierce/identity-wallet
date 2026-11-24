@@ -92,9 +92,9 @@ mod bindings {
         },
         connections::actions::delete_connection::DeleteConnection,
         credentials::actions::{
-            authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
-            credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
-            refresh_credential_ecosystems::RefreshCredentialEcosystems,
+            authorization_code_received::CodeReceived, create_public_link::CreatePublicLink,
+            credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
+            delete_credential::DeleteCredential, refresh_credential_ecosystems::RefreshCredentialEcosystems,
             refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
             share_to_linkedin::ShareToLinkedIn, update_credential_metadata::UpdateCredentialMetadata,
         },
@@ -214,5 +214,7 @@ mod bindings {
         SelfIssueCredential { payload: SelfIssueCredential },
         #[serde(rename = "[Credential] Share to LinkedIn")]
         ShareToLinkedIn { payload: ShareToLinkedIn },
+        #[serde(rename = "[Credential] Create public link")]
+        CreatePublicLink { payload: CreatePublicLink },
     }
 }

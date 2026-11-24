@@ -498,6 +498,15 @@ const es_ES = {
       },
     },
     ACTIONS: {
+      SHARE: {
+        MENU_BUTTON: 'Compartir…',
+        TEXT: '{name} de {issuer}: {link}',
+        LINK_COPIED: 'Enlace copiado',
+        LINK_COPIED_DETAIL: 'Cualquier persona con este enlace puede ver esta credencial.',
+      },
+      ADD_TO_LINKEDIN: {
+        MENU_BUTTON: 'Añadir al perfil de LinkedIn',
+      },
       EDIT: {
         MENU_BUTTON: 'Editar nombre para mostrar',
         CONFIRM_BUTTON: 'Actualizar nombre para mostrar',

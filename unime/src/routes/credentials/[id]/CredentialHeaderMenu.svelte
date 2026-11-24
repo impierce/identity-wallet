@@ -2,14 +2,23 @@
   import { createEventDispatcher } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
+  import { get } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
   import { createDropdownMenu, melt } from '@melt-ui/svelte';
 
-  import { ActionSheet, Button } from '$lib/components';
+  import { ActionSheet, Button, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { CodeRegularIcon, DotsThreeVerticalBoldIcon, LinkedinIcon, PencilFillIcon, TrashFillIcon } from '$lib/icons';
-  import { state as appState } from '$lib/stores';
+  import {
+    CodeRegularIcon,
+    DotsThreeVerticalBoldIcon,
+    LinkedinIcon,
+    PencilFillIcon,
+    ShareNetworkFillIcon,
+    TrashFillIcon,
+  } from '$lib/icons';
+  import { shareOrCopyLink } from '$lib/share';
+  import { state as appState, error as errorState } from '$lib/stores';
 
   const dispatchEvent = createEventDispatcher();
 
@@ -24,6 +33,57 @@
     // forceVisible: true,
     loop: true,
   });
+
+  let sharing = false;
+  let linkCopied = false;
+
+  const findCredential = () => get(appState).credentials.find((credential) => credential.id === id);
+
+  // Resolves with the public link once the backend has stored it, or with `undefined` when creating it failed.
+  async function getPublicLink(): Promise<string | undefined> {
+    const existingLink = findCredential()?.public_link;
+    if (existingLink) {
+      return existingLink;
+    }
+
+    errorState.set(undefined);
+    let unsubscribeState = () => {};
+    let unsubscribeError = () => {};
+    const link = new Promise<string | undefined>((resolve) => {
+      unsubscribeState = appState.subscribe(() => {
+        const publicLink = findCredential()?.public_link;
+        if (publicLink) resolve(publicLink);
+      });
+      unsubscribeError = errorState.subscribe((error) => {
+        if (error) resolve(undefined);
+      });
+    });
+    await dispatch({ type: '[Credential] Create public link', payload: { id } });
+    const result = await Promise.race([link, new Promise<undefined>((resolve) => setTimeout(resolve, 2_000))]);
+    unsubscribeState();
+    unsubscribeError();
+    return result;
+  }
+
+  async function share() {
+    $open = false;
+    if (sharing) return;
+    sharing = true;
+    try {
+      const link = await getPublicLink();
+      const credential = findCredential();
+      if (!link || !credential) return;
+
+      const text = $LL.CREDENTIAL.ACTIONS.SHARE.TEXT({
+        name: credential.display_name,
+        issuer: credential.issuer_name,
+        link,
+      });
+      linkCopied = (await shareOrCopyLink(text, link)) === 'copied';
+    } finally {
+      sharing = false;
+    }
+  }
 </script>
 
 <button type="button" class="trigger p-0.5" use:melt={$trigger} aria-label="Open credential menu">
@@ -37,7 +97,17 @@
   use:melt={$menu}
   transition:fly={{ duration: 150, y: -10 }}
 >
-  <!-- Share to LinkedIn -->
+  <!-- Share the public link through the native share sheet -->
+  <button
+    class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background disabled:opacity-50 dark:text-grey"
+    disabled={sharing}
+    on:click={share}
+  >
+    <ShareNetworkFillIcon class="size-5" />
+    <p class="grow text-left text-[13px]/[24px] font-medium">{$LL.CREDENTIAL.ACTIONS.SHARE.MENU_BUTTON()}</p>
+  </button>
+
+  <!-- Add to LinkedIn profile -->
   <button
     class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background dark:text-grey"
     on:click={() => {
@@ -46,7 +116,7 @@
     }}
   >
     <LinkedinIcon class="size-5" />
-    <p class="grow text-left text-[13px]/[24px] font-medium">Share to LinkedIn</p>
+    <p class="grow text-left text-[13px]/[24px] font-medium">{$LL.CREDENTIAL.ACTIONS.ADD_TO_LINKEDIN.MENU_BUTTON()}</p>
   </button>
 
   <!-- Edit title -->
@@ -113,3 +183,15 @@
   <div use:melt={$arrow} class="border border-r-0 border-b-0 border-slate-300 dark:border-slate-600"></div>
 </div>
 <!-- {/if} -->
+
+{#if linkCopied}
+  <div class="fixed right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] z-50 w-[calc(100%-32px)]">
+    <Toast
+      variant="info"
+      title={$LL.CREDENTIAL.ACTIONS.SHARE.LINK_COPIED()}
+      detail={$LL.CREDENTIAL.ACTIONS.SHARE.LINK_COPIED_DETAIL()}
+      autoDismissAfterMs={5_000}
+      ondismissed={() => (linkCopied = false)}
+    />
+  </div>
+{/if}

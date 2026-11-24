@@ -1,6 +1,7 @@
 pub mod delete_credential;
 pub mod handle_credential_offer;
 pub mod handle_oid4vp_authorization_request;
+pub mod public_link;
 pub mod refresh_all_credential_statuses;
 pub mod refresh_credential_ecosystems;
 pub mod refresh_credential_status;

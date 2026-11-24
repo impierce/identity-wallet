@@ -4,11 +4,13 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "clipboard-manager:allow-write-text",
     "deep-link:default",
     "fs:default",
     "log:default",
     "opener:allow-open-url",
     "opener:allow-default-urls",
+    "sharekit:allow-share-text",
     "shell:allow-open",
     {
       "identifier": "fs:allow-exists",

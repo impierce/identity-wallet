@@ -57,7 +57,7 @@ impl ErrorContext {
             "[Credential Metadata] Update" => UpdateCredential,
             "[Credential] Refresh status" | "[Credential] Refresh all statuses" => RefreshCredentialStatus,
             "[Credential] Self Issue" => SelfIssueCredential,
-            "[Credential] Share to LinkedIn" => SharePublicLink,
+            "[Credential] Share to LinkedIn" | "[Credential] Create public link" => SharePublicLink,
             "[Connection] Delete" => DeleteConnection,
             "[Verified Data] Check service health"
             | "[Verified Data] Send verification email"

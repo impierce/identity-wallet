@@ -1,4 +1,5 @@
 pub mod authorization_code_received;
+pub mod create_public_link;
 pub mod credential_offers_selected;
 pub mod credentials_selected;
 pub mod delete_credential;

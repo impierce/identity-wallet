@@ -497,6 +497,15 @@ const nl_NL = {
       },
     },
     ACTIONS: {
+      SHARE: {
+        MENU_BUTTON: 'Delen…',
+        TEXT: '{name} van {issuer}: {link}',
+        LINK_COPIED: 'Link gekopieerd',
+        LINK_COPIED_DETAIL: 'Iedereen met deze link kan deze credential zien.',
+      },
+      ADD_TO_LINKEDIN: {
+        MENU_BUTTON: 'Toevoegen aan LinkedIn-profiel',
+      },
       EDIT: {
         MENU_BUTTON: 'Weergavenaam bijwerken',
         CONFIRM_BUTTON: 'Weergavenaam bijwerken',

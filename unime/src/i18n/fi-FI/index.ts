@@ -496,6 +496,15 @@ const fi_FI = {
       },
     },
     ACTIONS: {
+      SHARE: {
+        MENU_BUTTON: 'Jaa…',
+        TEXT: '{name}, myöntäjä {issuer}: {link}',
+        LINK_COPIED: 'Linkki kopioitu',
+        LINK_COPIED_DETAIL: 'Kuka tahansa, jolla on tämä linkki, voi nähdä tämän tunnisteen.',
+      },
+      ADD_TO_LINKEDIN: {
+        MENU_BUTTON: 'Lisää LinkedIn-profiiliin',
+      },
       EDIT: {
         MENU_BUTTON: 'Päivitä tunnisteen nimi',
         CONFIRM_BUTTON: 'Päivitä tunnisteen nimi',
