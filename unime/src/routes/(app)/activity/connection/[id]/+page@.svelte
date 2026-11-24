@@ -26,8 +26,8 @@
 
   let triggers: string[] = [
     $LL.CONNECTION.TABS.SUMMARY(),
+    ...(isIssuer ? [$LL.CONNECTION.TABS.AVAILABLE()] : []),
     $LL.CONNECTION.TABS.ACTIVITY(),
-    ...(isIssuer ? [$LL.CONNECTION.TABS.CREDENTIALS()] : []),
   ];
   // A history entry may still hold a tab that no longer exists (such as the removed Data tab).
   let activeTab: Writable<string> = writable(
@@ -36,7 +36,7 @@
   const detailsOpen = writable(false);
 
   let credentialsOpened = false;
-  $: if (isIssuer && $activeTab === triggers[2]) credentialsOpened = true;
+  $: if (isIssuer && $activeTab === triggers[1]) credentialsOpened = true;
 
   const navigateUp = useParentRoute(() => returnRoute('/activity'));
 
@@ -58,14 +58,21 @@
       <div slot="0" class="h-full py-5">
         <ConnectionSummary {connection} />
       </div>
+      <!-- Tabs fills its slots by position, so the activity moves one slot to the right for issuers. -->
       <div slot="1" class="bg-silver pt-5 dark:bg-navy">
-        <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
-        <History connectionId={connection.id} />
+        {#if isIssuer}
+          <!-- Mounted once the tab is first opened, so the issuer metadata is only fetched when asked for. -->
+          {#if credentialsOpened}
+            <IssuedCredentials {connection} />
+          {/if}
+        {:else}
+          <History connectionId={connection.id} />
+        {/if}
       </div>
       <div slot="2" class="bg-silver pt-5 dark:bg-navy">
-        <!-- Mounted once the tab is first opened, so the issuer metadata is only fetched when asked for. -->
-        {#if credentialsOpened}
-          <IssuedCredentials {connection} />
+        {#if isIssuer}
+          <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
+          <History connectionId={connection.id} />
         {/if}
       </div>
     </Tabs>

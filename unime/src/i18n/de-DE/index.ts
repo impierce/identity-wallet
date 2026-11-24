@@ -417,10 +417,10 @@ const de_DE = {
     TABS: {
       SUMMARY: 'Übersicht',
       ACTIVITY: 'Verlauf',
-      CREDENTIALS: 'Nachweise',
+      AVAILABLE: 'Verfügbar',
     },
     ISSUED_CREDENTIALS: {
-      DESCRIPTION: 'Nachweise, die {name} ausstellen kann.',
+      DESCRIPTION: 'Nachweise, die Sie von {name} erhalten können.',
       COUNT: '{count} {{Nachweis|Nachweise}}',
       SEARCH_PLACEHOLDER: 'Nachweise suchen',
       EMPTY: '{name} listet keine Nachweise auf.',

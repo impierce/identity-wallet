@@ -417,10 +417,10 @@ const fi_FI = {
     TABS: {
       SUMMARY: 'Yhteenveto',
       ACTIVITY: 'Aktiviteetti',
-      CREDENTIALS: 'Todisteet',
+      AVAILABLE: 'Saatavilla',
     },
     ISSUED_CREDENTIALS: {
-      DESCRIPTION: 'Todisteet, joita {name} voi myöntää.',
+      DESCRIPTION: 'Todisteet, jotka voit saada toimijalta {name}.',
       COUNT: '{count} {{todiste|todistetta}}',
       SEARCH_PLACEHOLDER: 'Hae todisteita',
       EMPTY: '{name} ei listaa todisteita.',

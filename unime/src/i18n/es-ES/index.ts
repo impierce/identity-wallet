@@ -418,10 +418,10 @@ const es_ES = {
     TABS: {
       SUMMARY: 'Resumen',
       ACTIVITY: 'Actividad',
-      CREDENTIALS: 'Credenciales',
+      AVAILABLE: 'Disponibles',
     },
     ISSUED_CREDENTIALS: {
-      DESCRIPTION: 'Credenciales que {name} puede emitir.',
+      DESCRIPTION: 'Credenciales que puedes obtener de {name}.',
       COUNT: '{count} {{credencial|credenciales}}',
       SEARCH_PLACEHOLDER: 'Buscar credenciales',
       EMPTY: '{name} no ofrece ninguna credencial.',

@@ -15,8 +15,11 @@ pub async fn load_issued_credentials(state: AppState, action: Action) -> Result<
         None => load_issued_credentials.load(&state).await,
     };
 
+    // Like other reducers of plain screens, this clears a redirect that was already followed (such as the one to `me`
+    // after unlocking), which the frontend would otherwise follow again on this state update.
     Ok(AppState {
         issued_credentials: Some(page),
+        current_user_prompt: None,
         ..state
     })
 }
@@ -25,6 +28,7 @@ pub async fn load_issued_credentials(state: AppState, action: Action) -> Result<
 mod tests {
     use super::*;
     use crate::state::connections::{Connection, Connections};
+    use crate::state::user_prompt::CurrentUserPrompt;
     use std::sync::Arc;
 
     #[tokio::test]
@@ -34,6 +38,9 @@ mod tests {
                 id: "known".to_string(),
                 ..Default::default()
             }]),
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            }),
             ..Default::default()
         };
 
@@ -50,6 +57,7 @@ mod tests {
         .await
         .unwrap();
 
+        assert!(state.current_user_prompt.is_none());
         let page = state.issued_credentials.unwrap();
         assert_eq!(page.connection_id, "unknown");
         assert_eq!(page.search_term, "badge");

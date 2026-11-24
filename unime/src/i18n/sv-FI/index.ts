@@ -416,10 +416,10 @@ const sv_FI = {
     TABS: {
       SUMMARY: 'Översikt',
       ACTIVITY: 'Aktivitet',
-      CREDENTIALS: 'Intyg',
+      AVAILABLE: 'Tillgängliga',
     },
     ISSUED_CREDENTIALS: {
-      DESCRIPTION: 'Intyg som {name} kan utfärda.',
+      DESCRIPTION: 'Intyg du kan få från {name}.',
       COUNT: '{count} {{intyg|intyg}}',
       SEARCH_PLACEHOLDER: 'Sök intyg',
       EMPTY: '{name} listar inga intyg.',

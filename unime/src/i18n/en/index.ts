@@ -416,10 +416,10 @@ const en = {
     TABS: {
       SUMMARY: 'Summary',
       ACTIVITY: 'Activity',
-      CREDENTIALS: 'Credentials',
+      AVAILABLE: 'Available',
     },
     ISSUED_CREDENTIALS: {
-      DESCRIPTION: 'Credentials {name:string} can issue.',
+      DESCRIPTION: 'Credentials you can get from {name:string}.',
       COUNT: '{count:number} {{credential|credentials}}',
       SEARCH_PLACEHOLDER: 'Search credentials',
       EMPTY: '{name:string} does not list any credentials.',

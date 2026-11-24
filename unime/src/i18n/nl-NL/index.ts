@@ -417,10 +417,10 @@ const nl_NL = {
     TABS: {
       SUMMARY: 'Overzicht',
       ACTIVITY: 'Activiteit',
-      CREDENTIALS: 'Credentials',
+      AVAILABLE: 'Beschikbaar',
     },
     ISSUED_CREDENTIALS: {
-      DESCRIPTION: 'Credentials die {name} kan uitgeven.',
+      DESCRIPTION: 'Credentials die je van {name} kunt krijgen.',
       COUNT: '{count} {{credential|credentials}}',
       SEARCH_PLACEHOLDER: 'Zoek credentials',
       EMPTY: '{name} vermeldt geen credentials.',

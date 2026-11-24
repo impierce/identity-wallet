@@ -1182,13 +1182,13 @@ type RootTranslation = {
 			 */
 			ACTIVITY: string
 			/**
-			 * C​r​e​d​e​n​t​i​a​l​s
+			 * A​v​a​i​l​a​b​l​e
 			 */
-			CREDENTIALS: string
+			AVAILABLE: string
 		}
 		ISSUED_CREDENTIALS: {
 			/**
-			 * C​r​e​d​e​n​t​i​a​l​s​ ​{​n​a​m​e​}​ ​c​a​n​ ​i​s​s​u​e​.
+			 * C​r​e​d​e​n​t​i​a​l​s​ ​y​o​u​ ​c​a​n​ ​g​e​t​ ​f​r​o​m​ ​{​n​a​m​e​}​.
 			 * @param {string} name
 			 */
 			DESCRIPTION: RequiredParams<'name'>
@@ -3435,13 +3435,13 @@ export type TranslationFunctions = {
 			 */
 			ACTIVITY: () => LocalizedString
 			/**
-			 * Credentials
+			 * Available
 			 */
-			CREDENTIALS: () => LocalizedString
+			AVAILABLE: () => LocalizedString
 		}
 		ISSUED_CREDENTIALS: {
 			/**
-			 * Credentials {name} can issue.
+			 * Credentials you can get from {name}.
 			 */
 			DESCRIPTION: (arg: { name: string }) => LocalizedString
 			/**
