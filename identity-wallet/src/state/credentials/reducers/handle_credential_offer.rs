@@ -78,14 +78,15 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
             }
         };
 
-        // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.credential_issuer.clone();
-        debug!("Credential issuer URL: {credential_issuer_url}");
+        // The credential offer contains the Credential Issuer Identifier.
+        let credential_issuer = &credential_offer.credential_issuer;
+        debug!("Credential issuer URL: {credential_issuer}");
 
         // Get the credential issuer metadata.
-        let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url)
+        let credential_issuer_metadata = get_credential_issuer_metadata(credential_issuer)
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
+        let credential_issuer_url = credential_issuer.url();
 
         debug!("Credential issuer metadata: {credential_issuer_metadata:?}");
 

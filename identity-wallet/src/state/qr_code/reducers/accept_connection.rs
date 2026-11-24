@@ -381,13 +381,14 @@ pub(crate) async fn get_oid4vp_client_metadata(
 }
 
 async fn get_oid4vci_client_metadata(credential_offer: &CredentialOfferParameters) -> Result<ClientMetadata, AppError> {
-    let credential_issuer_url = credential_offer.credential_issuer.clone();
+    let credential_issuer = &credential_offer.credential_issuer;
+    let credential_issuer_url = credential_issuer.url();
     let connection_url = normalize_connection_url(&credential_issuer_url);
 
     info!("credential issuer url: {credential_issuer_url:?}");
     info!("connection url: {connection_url:?}");
 
-    let credential_issuer_metadata = get_credential_issuer_metadata(&credential_issuer_url).await.ok();
+    let credential_issuer_metadata = get_credential_issuer_metadata(credential_issuer).await.ok();
 
     let display = credential_issuer_metadata
         .as_ref()
