@@ -1,12 +1,12 @@
 import { shareText } from '@choochmeque/tauri-plugin-sharekit-api';
 import { writeText } from '@tauri-apps/plugin-clipboard-manager';
-import { platform } from '@tauri-apps/plugin-os';
+import { platform, version } from '@tauri-apps/plugin-os';
 
 import { shareOrCopyLink } from './share';
 
 vi.mock('@choochmeque/tauri-plugin-sharekit-api', () => ({ shareText: vi.fn() }));
 vi.mock('@tauri-apps/plugin-clipboard-manager', () => ({ writeText: vi.fn() }));
-vi.mock('@tauri-apps/plugin-os', () => ({ platform: vi.fn() }));
+vi.mock('@tauri-apps/plugin-os', () => ({ platform: vi.fn(), version: vi.fn() }));
 
 const text = 'Bachelor from TU Delft: https://example.com/public/verify/1';
 const link = 'https://example.com/public/verify/1';
@@ -15,6 +15,7 @@ describe('shareOrCopyLink', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(platform).mockReturnValue('android');
+    vi.mocked(shareText).mockResolvedValue();
   });
 
   test('opens the share sheet with the text', async () => {
@@ -37,6 +38,21 @@ describe('shareOrCopyLink', () => {
 
   test('copies the link on Linux without trying the share sheet', async () => {
     vi.mocked(platform).mockReturnValue('linux');
+    expect(await shareOrCopyLink(text, link)).toBe('copied');
+    expect(shareText).not.toHaveBeenCalled();
+    expect(writeText).toHaveBeenCalledWith(link);
+  });
+
+  test('opens the share sheet on Windows 11', async () => {
+    vi.mocked(platform).mockReturnValue('windows');
+    vi.mocked(version).mockReturnValue('10.0.26100');
+    expect(await shareOrCopyLink(text, link)).toBe('shared');
+    expect(shareText).toHaveBeenCalledWith(text);
+  });
+
+  test('copies the link on Windows 10 without trying the share sheet', async () => {
+    vi.mocked(platform).mockReturnValue('windows');
+    vi.mocked(version).mockReturnValue('10.0.19045');
     expect(await shareOrCopyLink(text, link)).toBe('copied');
     expect(shareText).not.toHaveBeenCalled();
     expect(writeText).toHaveBeenCalledWith(link);
