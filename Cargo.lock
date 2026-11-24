@@ -2629,6 +2629,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "h2"
+version = "0.4.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d29020232d6aa3fb1daca64c1127cf662cf97f254ae16c18c05b8ab635fc118"
+dependencies = [
+ "atomic-waker",
+ "bytes",
+ "fnv",
+ "futures-core",
+ "futures-sink",
+ "http 1.5.0",
+ "indexmap 2.14.2",
+ "slab",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2914,7 +2933,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2",
+ "h2 0.3.27",
  "http 0.2.12",
  "http-body 0.4.6",
  "httparse",
@@ -2936,7 +2955,9 @@ checksum = "2c3e324da4c95177d6291d4c8730197c0d1822f8a9766814a4a44fa5ab797c9c"
 dependencies = [
  "atomic-waker",
  "bytes",
+ "futures-channel",
  "futures-core",
+ "h2 0.4.20",
  "http 1.5.0",
  "http-body 1.1.0",
  "httparse",
@@ -3505,9 +3526,9 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "identity-kit"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5bcf36cb9b72d98ac3c6469c7db971fecea7ddc291b3228d1b909e9d6238da4"
+checksum = "bb6a8bdddf4dd715fa3e21119b1199a1107be87a687284d72f72b5917f97563e"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -3520,10 +3541,13 @@ dependencies = [
  "k256 0.14.0",
  "miniz_oxide 0.9.1",
  "p256 0.14.0",
+ "reqwest 0.13.5",
+ "rustls",
  "serde",
  "serde_json",
  "sha2 0.11.1",
  "thiserror 2.0.21",
+ "tokio",
  "url",
  "zeroize",
 ]
@@ -5104,9 +5128,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vc-core"
-version = "0.7.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d640331ae28a34bb555db25db05d75c7db625562c5db4ae43a836db1e2f6b7c5"
+checksum = "8cb8bdf073173190d58e62d394d7b924fb6b959e1a0a139e8224c6aaee142ff5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5114,26 +5138,28 @@ dependencies = [
  "derive_more",
  "ed25519-dalek",
  "getset",
+ "http 1.5.0",
  "identity-kit",
  "is_empty",
  "jsonwebtoken",
  "nutype",
  "rand 0.10.4",
  "reqwest 0.13.5",
- "rustls",
+ "reqwest-middleware",
  "serde",
  "serde_json",
  "serde_urlencoded",
  "serde_with",
+ "thiserror 2.0.21",
  "tracing",
  "url",
 ]
 
 [[package]]
 name = "oid4vc-manager"
-version = "0.7.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab88f83e263906ab8b517449fbeafe8f0589503ef4a9ddc1eb3fe26bc059d5c6"
+checksum = "c1aa76afe66d2a2719f543a1a76fc45d5c004b5d4bffa59d15f9d5f305149be9"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5146,7 +5172,6 @@ dependencies = [
  "jsonwebtoken",
  "oid4vc-core",
  "oid4vci",
- "oid4vp",
  "reqwest 0.13.5",
  "serde",
  "serde_json",
@@ -5161,9 +5186,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vci"
-version = "0.7.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba4bf41ffe1f18a1c94a23f06e1e39db4f07563d6b6e234e7b7cc422d6a1d662"
+checksum = "23bd47871e7bf3bb9bc91a0ecd4d7b1b383679b8c427f661ab7febc4e5028d31"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5188,9 +5213,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vp"
-version = "0.8.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5b2cbb365047a1d147e58f9b75219899359b69dffbd67480b04f5955d2250bb"
+checksum = "338892d193dfc83d7d055fc840dea018e3966a377c53961f08dbce4f96c57dc1"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5205,7 +5230,6 @@ dependencies = [
  "oid4vci",
  "reqwest 0.13.5",
  "reqwest-middleware",
- "reqwest-retry",
  "serde",
  "serde_json",
  "serde_with",
@@ -6201,6 +6225,7 @@ dependencies = [
  "bytes",
  "futures-core",
  "futures-util",
+ "h2 0.4.20",
  "http 1.5.0",
  "http-body 1.1.0",
  "http-body-util",
@@ -7051,9 +7076,9 @@ dependencies = [
 
 [[package]]
 name = "siopv2"
-version = "0.7.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "abe94ee49c37875a04c44092ebfc60eeea91ecef85f068fd1db5538e1557a222"
+checksum = "ad26d0de1c9551790433a71c518fed47b9d7bbba81b886afee06ea2bfbe11f9f"
 dependencies = [
  "anyhow",
  "async-trait",

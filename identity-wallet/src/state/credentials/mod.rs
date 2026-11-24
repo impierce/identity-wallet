@@ -397,7 +397,7 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
                 .display
                 // TODO: Support multiple locales here. For now we just take the first one if it exists.
                 .first()
-                .map(|display| display.name.clone())
+                .and_then(|display| display.name.clone())
                 .filter(|name| !name.trim().is_empty())
                 .unwrap_or_else(|| {
                     claim_description
@@ -523,8 +523,9 @@ mod tests {
                 path: ClaimPathPointer::try_new(vec![ClaimPathElement::String("first_name".to_string())]).unwrap(),
                 mandatory: true,
                 display: vec![ClaimDescriptionDisplay {
-                    name: "First Name".to_string(),
+                    name: Some("First Name".to_string()),
                     locale: None,
+                    additional_parameters: Default::default(),
                 }],
             }],
         )
@@ -572,8 +573,9 @@ mod tests {
                 .unwrap(),
                 mandatory: true,
                 display: vec![ClaimDescriptionDisplay {
-                    name: "First Name".to_string(),
+                    name: Some("First Name".to_string()),
                     locale: None,
+                    additional_parameters: Default::default(),
                 }],
             }],
         )
