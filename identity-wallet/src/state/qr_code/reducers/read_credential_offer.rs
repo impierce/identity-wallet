@@ -154,13 +154,15 @@ mod tests {
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .unwrap();
+        .unwrap()
+        .with_http_client(crate::http_client::get_openid4vc_http_client());
         let wallet = Wallet::new(
             subject.clone(),
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .unwrap();
+        .unwrap()
+        .with_http_client(crate::http_client::get_openid4vc_http_client());
 
         Arc::new(tauri::async_runtime::Mutex::new(Managers {
             stronghold_manager: Some(stronghold_manager),

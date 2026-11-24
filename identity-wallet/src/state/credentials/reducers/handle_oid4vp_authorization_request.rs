@@ -39,6 +39,10 @@ use oid4vp::{
     },
 };
 
+#[allow(
+    deprecated,
+    reason = "`jwt_vc_json` presentations are VCDM 1.1 JWTs, which identity-kit 0.6 deprecates"
+)]
 use identity_kit::{
     did::{Did, DidUrl},
     sd_jwt_vc::{KeyBinding, SdJwt, SdJwtVc},
@@ -408,6 +412,10 @@ async fn get_vp_token(
                         .ok_or(AppError::InvalidCredentialFormatError)
                         .and_then(|vc_jwt| Jwt::new(vc_jwt).map_err(|_| AppError::InvalidCredentialFormatError))?;
 
+                    #[allow(
+                        deprecated,
+                        reason = "`jwt_vc_json` presentations are VCDM 1.1 JWTs, which identity-kit 0.6 deprecates"
+                    )]
                     let presentation = IdentityKitPresentation::new()
                         .with_holder(holder)
                         .with_credential(vc_jwt);
