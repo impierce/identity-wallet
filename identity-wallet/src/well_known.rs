@@ -8,7 +8,8 @@
 use anyhow::Context as _;
 use log::debug;
 use oid4vci::credential_issuer::{
-    authorization_server_metadata::AuthorizationServerMetadata, credential_issuer_metadata::CredentialIssuerMetadata,
+    authorization_server_metadata::AuthorizationServerMetadata,
+    credential_issuer_identifier::CredentialIssuerIdentifier, credential_issuer_metadata::CredentialIssuerMetadata,
 };
 use reqwest::{header::ACCEPT, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize};
@@ -55,71 +56,74 @@ pub fn well_known_candidates(base: &Url, suffix: &str) -> Vec<Url> {
     candidates
 }
 
-/// Fetches the credential issuer metadata of `credential_issuer_url`. Metadata naming another Credential Issuer is
-/// not used, see [`ensure_credential_issuer`].
-pub async fn get_credential_issuer_metadata(credential_issuer_url: &Url) -> anyhow::Result<CredentialIssuerMetadata> {
+/// Fetches the credential issuer metadata of `credential_issuer`. Metadata naming another Credential Issuer is not
+/// used, see [`ensure_credential_issuer`].
+pub async fn get_credential_issuer_metadata(
+    credential_issuer: &CredentialIssuerIdentifier,
+) -> anyhow::Result<CredentialIssuerMetadata> {
     fetch_well_known(
-        credential_issuer_url,
+        &credential_issuer.url(),
         &[OPENID_CREDENTIAL_ISSUER],
         "credential issuer metadata",
         |metadata: &CredentialIssuerMetadata| {
-            ensure_credential_issuer(Some(metadata.credential_issuer.as_str()), credential_issuer_url)
+            ensure_credential_issuer(Some(metadata.credential_issuer.as_str()), credential_issuer)
         },
     )
     .await
 }
 
 /// "If the Credential Issuer metadata contains a credential_issuer parameter that is not identical to the Credential
-/// Issuer Identifier, the metadata MUST NOT be used" (OpenID4VCI 1.0, Section 12.2.4). Both are compared as parsed
-/// URLs, so a difference `url::Url` normalizes away (a trailing slash on an origin) is not seen.
-fn ensure_credential_issuer(credential_issuer: Option<&str>, credential_issuer_url: &Url) -> anyhow::Result<()> {
+/// Issuer Identifier, the metadata MUST NOT be used" (OpenID4VCI 1.0, Section 12.2.4). Both are compared as strings,
+/// "with no normalization", so `https://issuer.example` and `https://issuer.example/` differ.
+fn ensure_credential_issuer(
+    credential_issuer: Option<&str>,
+    identifier: &CredentialIssuerIdentifier,
+) -> anyhow::Result<()> {
     anyhow::ensure!(
-        credential_issuer
-            .and_then(|credential_issuer| Url::parse(credential_issuer).ok())
-            .as_ref()
-            == Some(credential_issuer_url),
-        "its credential_issuer {} is not the Credential Issuer Identifier {credential_issuer_url}",
+        credential_issuer == Some(identifier.as_str()),
+        "its credential_issuer {} is not the Credential Issuer Identifier {identifier}",
         credential_issuer.unwrap_or("(none)")
     );
     Ok(())
 }
 
-/// Fetches the credential issuer metadata of `credential_issuer_url`, with the values of its `signed_metadata` taking
+/// Fetches the credential issuer metadata of `credential_issuer`, with the values of its `signed_metadata` taking
 /// precedence when it verifies the credential issuer under `trust_anchors` (OID4VCI 1.0 §11.2.3, ADR 0004). Metadata
 /// naming another Credential Issuer is not used, before or after the signed values are applied
 /// ([`ensure_credential_issuer`]).
 pub async fn get_verified_credential_issuer_metadata(
-    credential_issuer_url: &Url,
+    credential_issuer: &CredentialIssuerIdentifier,
     trust_anchors: &[String],
 ) -> anyhow::Result<CredentialIssuerMetadata> {
-    load_verified_credential_issuer_metadata(credential_issuer_url, trust_anchors)
+    load_verified_credential_issuer_metadata(credential_issuer, trust_anchors)
         .await
         .map(|applied| applied.metadata)
 }
 
 /// [`get_verified_credential_issuer_metadata`], with whether the values of a verified `signed_metadata` were applied.
 pub async fn load_verified_credential_issuer_metadata(
-    credential_issuer_url: &Url,
+    credential_issuer: &CredentialIssuerIdentifier,
     trust_anchors: &[String],
 ) -> anyhow::Result<crate::x509::AppliedMetadata> {
     let resource = "credential issuer metadata";
+    let credential_issuer_url = credential_issuer.url();
     let (metadata, url, status) = fetch_well_known_with(
-        credential_issuer_url,
+        &credential_issuer_url,
         &[OPENID_CREDENTIAL_ISSUER],
         resource,
         parse_credential_issuer_metadata,
         |metadata: &Map<String, Value>| {
             ensure_credential_issuer(
                 metadata.get("credential_issuer").and_then(Value::as_str),
-                credential_issuer_url,
+                credential_issuer,
             )
         },
     )
     .await?;
-    let applied = crate::x509::apply_signed_metadata(metadata, credential_issuer_url, trust_anchors)
+    let applied = crate::x509::apply_signed_metadata(metadata, &credential_issuer_url, trust_anchors)
         .await
         .with_context(|| format!("Failed to parse {resource} from {url} (HTTP {status})"))?;
-    ensure_credential_issuer(Some(applied.metadata.credential_issuer.as_str()), credential_issuer_url)
+    ensure_credential_issuer(Some(applied.metadata.credential_issuer.as_str()), credential_issuer)
         .with_context(|| format!("The {resource} at {url} is not used"))?;
     Ok(applied)
 }
@@ -314,6 +318,10 @@ mod tests {
         );
     }
 
+    fn identifier(identifier: &str) -> CredentialIssuerIdentifier {
+        identifier.parse().unwrap()
+    }
+
     fn strings(urls: Vec<Url>) -> Vec<String> {
         urls.into_iter().map(String::from).collect()
     }
@@ -402,9 +410,9 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let metadata = get_credential_issuer_metadata(&url(&issuer)).await.unwrap();
+        let metadata = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap();
 
-        assert_eq!(metadata.credential_issuer, url(&issuer));
+        assert_eq!(metadata.credential_issuer, identifier(&issuer));
     }
 
     #[tokio::test]
@@ -418,7 +426,7 @@ mod tests {
             let issuer = format!("{}/tenant", mock_server.uri());
             mount_json(&mock_server, at, credential_issuer_metadata(&issuer)).await;
 
-            let metadata = get_credential_issuer_metadata(&url(&issuer)).await;
+            let metadata = get_credential_issuer_metadata(&identifier(&issuer)).await;
 
             assert!(metadata.is_ok(), "{position}: {metadata:?}");
             let requested: Vec<String> = mock_server
@@ -460,9 +468,9 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let metadata = get_credential_issuer_metadata(&url(&issuer)).await.unwrap();
+        let metadata = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap();
 
-        assert_eq!(metadata.credential_issuer.as_str(), url(&issuer).as_str());
+        assert_eq!(metadata.credential_issuer, identifier(&issuer));
     }
 
     #[tokio::test]
@@ -474,7 +482,7 @@ mod tests {
         metadata["signed_metadata"] = json!("not.a.jwt");
         mount_json(&mock_server, "/.well-known/openid-credential-issuer", metadata).await;
 
-        let error = get_verified_credential_issuer_metadata(&url(&issuer), &[])
+        let error = get_verified_credential_issuer_metadata(&identifier(&issuer), &[])
             .await
             .unwrap_err();
 
@@ -499,7 +507,7 @@ mod tests {
             )
             .await;
 
-            let error = load_credential_issuer_metadata(&url(&issuer), verified)
+            let error = load_credential_issuer_metadata(&identifier(&issuer), verified)
                 .await
                 .unwrap_err();
 
@@ -529,15 +537,43 @@ mod tests {
             )
             .await;
 
-            let metadata = load_credential_issuer_metadata(&url(&issuer), verified).await.unwrap();
+            let metadata = load_credential_issuer_metadata(&identifier(&issuer), verified)
+                .await
+                .unwrap();
 
-            assert_eq!(metadata.credential_issuer, url(&issuer));
+            assert_eq!(metadata.credential_issuer, identifier(&issuer));
+        }
+    }
+
+    #[tokio::test]
+    async fn metadata_naming_the_issuer_with_another_spelling_is_not_used() {
+        for verified in [false, true] {
+            let mock_server = MockServer::start().await;
+            let issuer = mock_server.uri();
+            mount_json(
+                &mock_server,
+                "/.well-known/openid-credential-issuer",
+                credential_issuer_metadata(&format!("{issuer}/")),
+            )
+            .await;
+
+            let error = load_credential_issuer_metadata(&identifier(&issuer), verified)
+                .await
+                .unwrap_err();
+
+            assert!(
+                format!("{error:#}").contains("is not the Credential Issuer Identifier"),
+                "{error:#}"
+            );
         }
     }
 
     /// The credential issuer metadata of `issuer`, with [`get_verified_credential_issuer_metadata`] (without trust
     /// anchors) when `verified`, else with [`get_credential_issuer_metadata`].
-    async fn load_credential_issuer_metadata(issuer: &Url, verified: bool) -> anyhow::Result<CredentialIssuerMetadata> {
+    async fn load_credential_issuer_metadata(
+        issuer: &CredentialIssuerIdentifier,
+        verified: bool,
+    ) -> anyhow::Result<CredentialIssuerMetadata> {
         if verified {
             get_verified_credential_issuer_metadata(issuer, &[]).await
         } else {
@@ -550,7 +586,7 @@ mod tests {
         let mock_server = MockServer::start().await;
         let issuer = format!("{}/tenant", mock_server.uri());
 
-        let error = get_credential_issuer_metadata(&url(&issuer)).await.unwrap_err();
+        let error = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap_err();
 
         assert!(error.to_string().contains("(HTTP 404 Not Found)"), "{error}");
         assert!(
@@ -574,7 +610,7 @@ mod tests {
             .port();
         let issuer = format!("http://127.0.0.1:{closed_port}/tenant");
 
-        let error = get_credential_issuer_metadata(&url(&issuer)).await.unwrap_err();
+        let error = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap_err();
 
         assert_eq!(
             error.to_string(),

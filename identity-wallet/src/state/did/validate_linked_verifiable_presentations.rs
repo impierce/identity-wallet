@@ -16,6 +16,10 @@ use futures::{
     stream::{iter, FuturesUnordered},
     StreamExt,
 };
+#[allow(
+    deprecated,
+    reason = "linked verifiable presentations are VCDM 1.1 JWTs, which identity-kit 0.6 deprecates"
+)]
 use identity_kit::{
     did::DidDocument,
     jose::DefaultVerifier,
@@ -125,6 +129,10 @@ async fn get_validated_linked_presentation_data(
 ///
 /// Returns the credentials that validated, each with its JWT. A presentation that holds is kept even when some of its
 /// credentials do not: those are left out, the others shown.
+#[allow(
+    deprecated,
+    reason = "linked verifiable presentations are VCDM 1.1 JWTs, which identity-kit 0.6 deprecates"
+)]
 async fn validate_linked_verifiable_presentation(
     resolver: &Resolver,
     holder_document: &DidDocument,
@@ -193,6 +201,10 @@ async fn validate_linked_verifiable_presentation(
 /// valid domain linkage.
 /// Since anyone can host a linked verifiable presentation, the issuer of each credential is checked: its DID document's
 /// linked domains must link back to it.
+#[allow(
+    deprecated,
+    reason = "linked verifiable presentations are VCDM 1.1 JWTs, which identity-kit 0.6 deprecates"
+)]
 async fn get_validated_linked_credential_data(
     subject: &Subject,
     linked_verifiable_credentials: Vec<(Jwt, DecodedCredential)>,
@@ -396,6 +408,10 @@ fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
 
 #[cfg(not(feature = "test_utils"))]
 #[cfg(test)]
+#[allow(
+    deprecated,
+    reason = "the tests publish VCDM 1.1 linked verifiable presentations, which identity-kit 0.6 deprecates"
+)]
 mod tests {
     use super::*;
     use crate::stronghold::{StrongholdManager, ES256_KEY_ID};

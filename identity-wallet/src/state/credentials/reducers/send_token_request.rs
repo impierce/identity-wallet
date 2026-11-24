@@ -148,15 +148,16 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
         let (stage, credential_offer, logo_uri) = active_oid4vci_flow;
 
-        // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.credential_issuer.clone();
-        debug!("Credential issuer URL: {credential_issuer_url}");
+        // The credential offer contains the Credential Issuer Identifier.
+        let credential_issuer = &credential_offer.credential_issuer;
+        debug!("Credential issuer URL: {credential_issuer}");
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata =
-            get_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors)
+            get_verified_credential_issuer_metadata(credential_issuer, &state.trust_anchors)
                 .await
                 .map_err(GetCredentialIssuerMetadataError)?;
+        let credential_issuer_url = credential_issuer.url();
 
         // Check that the specified authorization servers are listed in the Credential Issuer Metadata's `authorization_servers` parameter.
         let specified_authorization_server = &credential_offer.grants.as_ref().and_then(|grants| {
@@ -998,13 +999,15 @@ mod issuance_tests {
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .unwrap();
+        .unwrap()
+        .with_http_client(crate::http_client::get_openid4vc_http_client());
         let wallet = Wallet::new(
             subject.clone(),
             Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
-        .unwrap();
+        .unwrap()
+        .with_http_client(crate::http_client::get_openid4vc_http_client());
         Arc::new(tauri::async_runtime::Mutex::new(Managers {
             stronghold_manager: Some(stronghold_manager),
             identity_manager: Some(IdentityManager {

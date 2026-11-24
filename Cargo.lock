@@ -1532,7 +1532,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users 0.5.3",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1910,7 +1910,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e35d6e78f4cebb90e51d543db8fe41528851d6deeef6ef21ebd4bfdc1e784776"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2648,6 +2648,25 @@ dependencies = [
 ]
 
 [[package]]
+name = "h2"
+version = "0.4.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7d29020232d6aa3fb1daca64c1127cf662cf97f254ae16c18c05b8ab635fc118"
+dependencies = [
+ "atomic-waker",
+ "bytes",
+ "fnv",
+ "futures-core",
+ "futures-sink",
+ "http 1.5.0",
+ "indexmap 2.14.2",
+ "slab",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
 name = "hashbrown"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2933,7 +2952,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2",
+ "h2 0.3.27",
  "http 0.2.12",
  "http-body 0.4.6",
  "httparse",
@@ -2955,7 +2974,9 @@ checksum = "2c3e324da4c95177d6291d4c8730197c0d1822f8a9766814a4a44fa5ab797c9c"
 dependencies = [
  "atomic-waker",
  "bytes",
+ "futures-channel",
  "futures-core",
+ "h2 0.4.20",
  "http 1.5.0",
  "http-body 1.1.0",
  "httparse",
@@ -3524,9 +3545,9 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "identity-kit"
-version = "0.5.1"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5bcf36cb9b72d98ac3c6469c7db971fecea7ddc291b3228d1b909e9d6238da4"
+checksum = "bb6a8bdddf4dd715fa3e21119b1199a1107be87a687284d72f72b5917f97563e"
 dependencies = [
  "async-trait",
  "base64 0.23.1",
@@ -3539,12 +3560,15 @@ dependencies = [
  "k256 0.14.0",
  "miniz_oxide 0.9.1",
  "p256 0.14.0",
+ "reqwest 0.13.5",
+ "rustls",
  "rustls-pki-types",
  "rustls-webpki",
  "serde",
  "serde_json",
  "sha2 0.11.1",
  "thiserror 2.0.21",
+ "tokio",
  "url",
  "x509-cert",
  "zeroize",
@@ -3552,7 +3576,7 @@ dependencies = [
 
 [[package]]
 name = "identity-wallet"
-version = "0.19.4"
+version = "0.20.1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4468,7 +4492,7 @@ dependencies = [
  "png",
  "serde",
  "thiserror 2.0.21",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5126,9 +5150,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vc-core"
-version = "0.6.0"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "479b38ddabab40466598dc463c1f37783bfc8f5b4d753d408d0e3d45995ac5e7"
+checksum = "8cb8bdf073173190d58e62d394d7b924fb6b959e1a0a139e8224c6aaee142ff5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5136,26 +5160,28 @@ dependencies = [
  "derive_more",
  "ed25519-dalek",
  "getset",
+ "http 1.5.0",
  "identity-kit",
  "is_empty",
  "jsonwebtoken",
  "nutype",
  "rand 0.10.4",
  "reqwest 0.13.5",
- "rustls",
+ "reqwest-middleware",
  "serde",
  "serde_json",
  "serde_urlencoded",
  "serde_with",
+ "thiserror 2.0.21",
  "tracing",
  "url",
 ]
 
 [[package]]
 name = "oid4vc-manager"
-version = "0.6.2"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "303c79dc2c1d73b4d72f142aec6c669a203c27a24dd55de3b1197b526c95c031"
+checksum = "c1aa76afe66d2a2719f543a1a76fc45d5c004b5d4bffa59d15f9d5f305149be9"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5168,7 +5194,6 @@ dependencies = [
  "jsonwebtoken",
  "oid4vc-core",
  "oid4vci",
- "oid4vp",
  "reqwest 0.13.5",
  "serde",
  "serde_json",
@@ -5183,9 +5208,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vci"
-version = "0.6.1"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c435b935639e9dd1e78f988edf323567ba83cca2d4a4098617e0ff7c8246f120"
+checksum = "23bd47871e7bf3bb9bc91a0ecd4d7b1b383679b8c427f661ab7febc4e5028d31"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5210,9 +5235,9 @@ dependencies = [
 
 [[package]]
 name = "oid4vp"
-version = "0.7.0"
+version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73d75fd464abb58eadf3a2bfd21c79c29a137285e4854bffed0525071de6ec68"
+checksum = "338892d193dfc83d7d055fc840dea018e3966a377c53961f08dbce4f96c57dc1"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5227,7 +5252,6 @@ dependencies = [
  "oid4vci",
  "reqwest 0.13.5",
  "reqwest-middleware",
- "reqwest-retry",
  "serde",
  "serde_json",
  "serde_with",
@@ -5337,7 +5361,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d8fae84b431384b68627d0f9b3b1245fcf9f46f6c0e3dc902e9dce64edd1967"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5880,7 +5904,7 @@ dependencies = [
  "quinn-udp",
  "rustc-hash",
  "rustls",
- "socket2 0.5.10",
+ "socket2 0.6.5",
  "thiserror 2.0.21",
  "tokio",
  "tracing",
@@ -5919,9 +5943,9 @@ dependencies = [
  "cfg_aliases",
  "libc",
  "once_cell",
- "socket2 0.5.10",
+ "socket2 0.6.5",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6223,6 +6247,7 @@ dependencies = [
  "bytes",
  "futures-core",
  "futures-util",
+ "h2 0.4.20",
  "http 1.5.0",
  "http-body 1.1.0",
  "http-body-util",
@@ -6398,7 +6423,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6457,7 +6482,7 @@ dependencies = [
  "security-framework 3.7.0",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -7073,9 +7098,9 @@ dependencies = [
 
 [[package]]
 name = "siopv2"
-version = "0.6.1"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86ebe9d6210dd4f2f1fe92df54683e99f18c70c423eb650ecfb71ad729c920ab"
+checksum = "ad26d0de1c9551790433a71c518fed47b9d7bbba81b886afee06ea2bfbe11f9f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -7133,7 +7158,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c3d1e2c7f27f8d4cb10542a02c49005dbd6e93095799d6f3be745fae9f8fedd4"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8031,7 +8056,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8457,7 +8482,7 @@ dependencies = [
  "png",
  "serde",
  "thiserror 2.0.21",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8558,7 +8583,7 @@ checksum = "f2f6fb2847f6742cd76af783a2a2c49e9375d0a111c7bef6f71cd9e738c72d6e"
 dependencies = [
  "memoffset 0.9.1",
  "tempfile",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -8590,7 +8615,7 @@ checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 
 [[package]]
 name = "unime"
-version = "0.19.4"
+version = "0.20.1"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -9116,7 +9141,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -9137,7 +9162,7 @@ dependencies = [
  "objc2-foundation 0.3.2",
  "objc2-quartz-core 0.3.2",
  "raw-window-handle",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
  "windows-version",
 ]
 
@@ -9570,7 +9595,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7d6f32a0ff4a9f6f01231eb2059cc85479330739333e0e58cadf03b6af2cca10"
 dependencies = [
  "cfg-if",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -9711,9 +9736,9 @@ dependencies = [
 
 [[package]]
 name = "x509-cert"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "105ef4642d9cb137ef83d623d0e4bf08b8adf69e9918ca904a174adb6d3d038b"
+checksum = "e9f58ad685a2945c7c063f5d69b5c27105d75bb85c740380d8fc64e79a098417"
 dependencies = [
  "const-oid 0.10.3",
  "der 0.8.3",

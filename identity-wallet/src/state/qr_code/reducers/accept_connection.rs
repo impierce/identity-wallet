@@ -398,12 +398,13 @@ async fn get_oid4vci_client_metadata(
     credential_offer: &CredentialOfferParameters,
     trust_anchors: &[String],
 ) -> Result<ClientMetadata, AppError> {
-    let credential_issuer_url = credential_offer.credential_issuer.clone();
+    let credential_issuer = &credential_offer.credential_issuer;
+    let credential_issuer_url = credential_issuer.url();
     let connection_url = normalize_connection_url(&credential_issuer_url);
 
     info!("Credential issuer: {}", url_host(&credential_issuer_url));
 
-    let credential_issuer_metadata = get_verified_credential_issuer_metadata(&credential_issuer_url, trust_anchors)
+    let credential_issuer_metadata = get_verified_credential_issuer_metadata(credential_issuer, trust_anchors)
         .await
         .ok();
 
