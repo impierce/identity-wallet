@@ -2192,9 +2192,10 @@ type RootTranslation = {
 			 */
 			UNTRUSTED: RequiredParams<'name'>
 			/**
-			 * T​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​l​i​n​k​e​d​ ​t​o​ ​a​ ​k​e​y​ ​t​h​i​s​ ​w​a​l​l​e​t​ ​d​o​e​s​n​'​t​ ​h​a​v​e​.​ ​I​t​ ​m​a​y​ ​b​e​ ​m​e​a​n​t​ ​f​o​r​ ​s​o​m​e​o​n​e​ ​e​l​s​e​,​ ​o​r​ ​i​s​s​u​e​d​ ​b​e​f​o​r​e​ ​y​o​u​r​ ​w​a​l​l​e​t​ ​w​a​s​ ​r​e​s​e​t​,​ ​s​o​ ​U​n​i​M​e​ ​c​a​n​'​t​ ​u​s​e​ ​i​t​.
+			 * T​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​ ​m​e​a​n​t​ ​f​o​r​ ​a​ ​d​i​f​f​e​r​e​n​t​ ​w​a​l​l​e​t​,​ ​s​o​ ​U​n​i​M​e​ ​d​i​d​n​'​t​ ​a​d​d​ ​i​t​.​ ​A​s​k​ ​{​n​a​m​e​}​ ​t​o​ ​s​e​n​d​ ​y​o​u​ ​a​ ​n​e​w​ ​o​n​e​.
+			 * @param {string} name
 			 */
-			NOT_HOLDER: string
+			NOT_HOLDER: RequiredParams<'name'>
 			/**
 			 * T​h​i​s​ ​r​e​q​u​e​s​t​ ​i​s​ ​n​o​ ​l​o​n​g​e​r​ ​a​c​t​i​v​e​.​ ​S​c​a​n​ ​t​h​e​ ​Q​R​ ​c​o​d​e​ ​a​g​a​i​n​ ​t​o​ ​s​t​a​r​t​ ​o​v​e​r​.
 			 */
@@ -4379,9 +4380,9 @@ export type TranslationFunctions = {
 			 */
 			UNTRUSTED: (arg: { name: string }) => LocalizedString
 			/**
-			 * This credential is linked to a key this wallet doesn't have. It may be meant for someone else, or issued before your wallet was reset, so UniMe can't use it.
+			 * This credential is meant for a different wallet, so UniMe didn't add it. Ask {name} to send you a new one.
 			 */
-			NOT_HOLDER: () => LocalizedString
+			NOT_HOLDER: (arg: { name: string }) => LocalizedString
 			/**
 			 * This request is no longer active. Scan the QR code again to start over.
 			 */

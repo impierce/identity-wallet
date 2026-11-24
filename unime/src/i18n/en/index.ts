@@ -742,7 +742,7 @@ const en = {
       MISSING_CREDENTIALS: "You don't have the credentials {name:string} asked for, so nothing was shared.",
       UNTRUSTED: "UniMe couldn't verify who {name:string} is, so it stopped to keep your data safe.",
       NOT_HOLDER:
-        "This credential is linked to a key this wallet doesn't have. It may be meant for someone else, or issued before your wallet was reset, so UniMe can't use it.",
+        "This credential is meant for a different wallet, so UniMe didn't add it. Ask {name:string} to send you a new one.",
       FLOW_EXPIRED: 'This request is no longer active. Scan the QR code again to start over.',
       INVALID_INPUT: "Some of the information you entered isn't valid. Check it and try again.",
       WRONG_PASSWORD: "That password isn't right. Check it and try again.",

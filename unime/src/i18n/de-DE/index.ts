@@ -745,7 +745,7 @@ const de_DE = {
       MISSING_CREDENTIALS: 'Du hast nicht die Nachweise, die für {name} nötig sind, daher wurde nichts geteilt.',
       UNTRUSTED: 'UniMe konnte {name} nicht verifizieren und hat zum Schutz deiner Daten abgebrochen.',
       NOT_HOLDER:
-        'Dieser Nachweis gehört zu einem Schlüssel, den diese Wallet nicht hat. Er ist vielleicht für jemand anderen bestimmt oder wurde vor dem Zurücksetzen deiner Wallet ausgestellt, daher kann UniMe ihn nicht verwenden.',
+        'Dieser Nachweis ist für eine andere Wallet bestimmt, daher hat UniMe ihn nicht hinzugefügt. Bitte {name}, dir einen neuen zu senden.',
       FLOW_EXPIRED: 'Diese Anfrage ist nicht mehr aktiv. Scanne den QR-Code erneut, um neu zu beginnen.',
       INVALID_INPUT: 'Einige deiner Angaben sind ungültig. Prüfe sie und versuche es noch einmal.',
       WRONG_PASSWORD: 'Das Passwort ist nicht richtig. Prüfe es und versuche es noch einmal.',

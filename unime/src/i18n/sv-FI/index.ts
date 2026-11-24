@@ -740,7 +740,7 @@ const sv_FI = {
       MISSING_CREDENTIALS: 'Du har inte de intyg som {name} bad om, så inget delades.',
       UNTRUSTED: 'UniMe kunde inte verifiera vem {name} är och avbröt för att skydda dina uppgifter.',
       NOT_HOLDER:
-        'Det här intyget är kopplat till en nyckel som den här plånboken inte har. Det kan vara avsett för någon annan eller utfärdat innan din plånbok återställdes, så UniMe kan inte använda det.',
+        'Det här intyget är avsett för en annan plånbok, så UniMe lade inte till det. Be {name} att skicka ett nytt till dig.',
       FLOW_EXPIRED: 'Den här begäran är inte längre aktiv. Skanna QR-koden igen för att börja om.',
       INVALID_INPUT: 'En del av uppgifterna du angav är ogiltiga. Kontrollera dem och försök igen.',
       WRONG_PASSWORD: 'Lösenordet stämmer inte. Kontrollera det och försök igen.',

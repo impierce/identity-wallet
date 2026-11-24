@@ -743,7 +743,7 @@ const nl_NL = {
       MISSING_CREDENTIALS: 'Je hebt niet de credentials waar {name} om vroeg, dus er is niets gedeeld.',
       UNTRUSTED: 'UniMe kon niet controleren wie {name} is en is gestopt om je gegevens te beschermen.',
       NOT_HOLDER:
-        'Deze credential is gekoppeld aan een sleutel die deze wallet niet heeft. Hij is misschien voor iemand anders bedoeld, of uitgegeven voordat je wallet werd gereset, dus UniMe kan hem niet gebruiken.',
+        'Deze credential is bedoeld voor een andere wallet, dus UniMe heeft hem niet toegevoegd. Vraag {name} om je een nieuwe te sturen.',
       FLOW_EXPIRED: 'Dit verzoek is niet meer actief. Scan de QR-code opnieuw om opnieuw te beginnen.',
       INVALID_INPUT: 'Een deel van de ingevulde gegevens is niet geldig. Controleer ze en probeer het opnieuw.',
       WRONG_PASSWORD: 'Dat wachtwoord klopt niet. Controleer het en probeer het opnieuw.',

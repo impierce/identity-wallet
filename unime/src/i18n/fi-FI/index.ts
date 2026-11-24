@@ -737,7 +737,7 @@ const fi_FI = {
       MISSING_CREDENTIALS: 'Sinulla ei ole pyydettyjä todisteita ({name}), joten mitään ei jaettu.',
       UNTRUSTED: 'UniMe ei voinut varmistaa osapuolen henkilöllisyyttä ({name}) ja keskeytti tietojesi suojaamiseksi.',
       NOT_HOLDER:
-        'Tämä todiste on sidottu avaimeen, jota tässä lompakossa ei ole. Se voi olla tarkoitettu jollekulle muulle tai myönnetty ennen lompakkosi nollausta, joten UniMe ei voi käyttää sitä.',
+        'Tämä todiste on tarkoitettu toiselle lompakolle, joten UniMe ei lisännyt sitä. Pyydä uusi todiste ({name}).',
       FLOW_EXPIRED: 'Tämä pyyntö ei ole enää voimassa. Skannaa QR-koodi uudelleen aloittaaksesi alusta.',
       INVALID_INPUT: 'Osa syöttämistäsi tiedoista ei kelpaa. Tarkista ne ja yritä uudelleen.',
       WRONG_PASSWORD: 'Salasana on väärä. Tarkista se ja yritä uudelleen.',

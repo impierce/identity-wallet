@@ -743,7 +743,7 @@ const es_ES = {
       MISSING_CREDENTIALS: 'No tienes las credenciales que pidió {name}, así que no se ha compartido nada.',
       UNTRUSTED: 'UniMe no pudo verificar quién es {name} y se ha detenido para proteger tus datos.',
       NOT_HOLDER:
-        'Esta credencial está vinculada a una clave que esta cartera no tiene. Puede que sea para otra persona o que se emitiera antes de restablecer tu cartera, así que UniMe no puede usarla.',
+        'Esta credencial es para otra cartera, así que UniMe no la ha añadido. Pide a {name} que te envíe una nueva.',
       FLOW_EXPIRED: 'Esta solicitud ya no está activa. Vuelve a escanear el código QR para empezar de nuevo.',
       INVALID_INPUT: 'Algunos de los datos introducidos no son válidos. Revísalos y vuelve a intentarlo.',
       WRONG_PASSWORD: 'Esa contraseña no es correcta. Revísala y vuelve a intentarlo.',
