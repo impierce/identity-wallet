@@ -37,7 +37,7 @@ val tauriProperties = Properties().apply {
 }
 
 android {
-    compileSdk = 36
+    compileSdk = 37
     namespace = "com.impierce.identity_wallet"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
