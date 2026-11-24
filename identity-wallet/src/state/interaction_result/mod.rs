@@ -9,6 +9,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use url::Url;
 
+use crate::error::AppError;
 use crate::http_client::post_encoded_form_to_public_destination;
 
 /// The outcome of the last interaction with an issuer or verifier, shown to the user in the result pop-up.
@@ -88,6 +89,33 @@ impl InteractionOutcome {
     }
 }
 
+/// A one-line description for the logs and the Debug screen, e.g. `rejected (HTTP 400, invalid_request: Missing nonce)`.
+impl std::fmt::Display for InteractionOutcome {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            InteractionOutcome::Approved => write!(f, "approved"),
+            InteractionOutcome::Rejected {
+                error_code,
+                error_description,
+                http_status,
+            } => {
+                let status = http_status.map(|status| format!("HTTP {status}"));
+                let error = match (error_code, error_description) {
+                    (Some(code), Some(description)) => Some(format!("{code}: {description}")),
+                    (code, description) => code.clone().or(description.clone()),
+                };
+                let details: Vec<String> = status.into_iter().chain(error).collect();
+                if details.is_empty() {
+                    write!(f, "rejected")
+                } else {
+                    write!(f, "rejected ({})", details.join(", "))
+                }
+            }
+            InteractionOutcome::NotSent { reason } => write!(f, "not sent ({reason})"),
+        }
+    }
+}
+
 /// Sends an authorization response with the `direct_post` response mode and reports how the verifier answered.
 ///
 /// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code reaches the user.
@@ -127,7 +155,7 @@ async fn post_authorization_response(response_uri: &str, encoded: String) -> Int
     };
     let response = match post_encoded_form_to_public_destination(&response_uri, encoded).await {
         Ok(response) => response,
-        Err(error) => return not_sent(error.into()),
+        Err(error) => return not_sent(without_url(error).into()),
     };
 
     let status = response.status();
@@ -138,6 +166,16 @@ async fn post_authorization_response(response_uri: &str, encoded: String) -> Int
     // An answer that is too large or cannot be read is treated as an empty one: the status still decides the outcome.
     let body = bounded_text(response).await.unwrap_or_default();
     InteractionOutcome::rejected(status.as_u16(), &body)
+}
+
+/// Drops the request URI from a failed send. `reqwest` adds the full URI, query included, to its `Display` output, and
+/// the reason reaches the logs, the Debug screen and the user, while the verifier's `response_uri` may carry request
+/// parameters.
+fn without_url(error: AppError) -> AppError {
+    match error {
+        AppError::DownloadFailed(error) => AppError::DownloadFailed(error.without_url()),
+        error => error,
+    }
 }
 
 /// The largest answer of a Response Endpoint that is read: far above any error body.
@@ -285,6 +323,43 @@ mod tests {
             Some(MAX_ANSWER_SIZE)
         );
         assert_eq!(answer_of(MAX_ANSWER_SIZE + 1).await, None);
+    }
+
+    #[tokio::test]
+    async fn a_failed_send_does_not_reveal_the_response_uri() {
+        // Nothing listens on port 1, so the request fails before reaching a server.
+        let outcome =
+            post_authorization_response("http://127.0.0.1:1/callback?session=secret", ENCODED.to_string()).await;
+
+        let InteractionOutcome::NotSent { reason } = outcome else {
+            panic!("expected NotSent, got {outcome:?}");
+        };
+        assert!(
+            reason.starts_with("Failed to send the authorization response: "),
+            "{reason}"
+        );
+        assert!(!reason.contains("127.0.0.1") && !reason.contains("secret"), "{reason}");
+    }
+
+    #[test]
+    fn displays_the_outcome_on_one_line() {
+        assert_eq!(InteractionOutcome::Approved.to_string(), "approved");
+        assert_eq!(
+            InteractionOutcome::rejected(
+                400,
+                r#"{"error":"invalid_request","error_description":"Missing nonce"}"#
+            )
+            .to_string(),
+            "rejected (HTTP 400, invalid_request: Missing nonce)"
+        );
+        assert_eq!(InteractionOutcome::rejected(500, "").to_string(), "rejected (HTTP 500)");
+        assert_eq!(
+            InteractionOutcome::NotSent {
+                reason: "connection refused".to_string()
+            }
+            .to_string(),
+            "not sent (connection refused)"
+        );
     }
 
     #[test]

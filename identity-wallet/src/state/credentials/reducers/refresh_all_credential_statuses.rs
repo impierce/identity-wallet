@@ -27,15 +27,20 @@ pub async fn refresh_all_credential_statuses(state: AppState, action: Action) ->
         state.credentials.len()
     );
 
-    let (mut state, summary) = refresh_statuses(state, &credential_ids).await?;
+    let (state, summary) = refresh_statuses(state, &credential_ids).await?;
 
-    state.debug_messages.push_back(format!(
+    let message = format!(
         "Refreshing the status of {} credential(s) from {} status list(s) took {}ms ({} failed)",
         summary.refreshed + summary.failed,
         summary.status_lists,
         summary.duration.as_millis(),
         summary.failed
-    ));
+    );
+    if summary.failed == 0 {
+        crate::debug_log_ok!(state.core_utils.debug_log, "{message}");
+    } else {
+        crate::debug_log_error!(state.core_utils.debug_log, "{message}");
+    }
 
     // TODO: This is a temporary solution to pass the correct `current_user_prompt` to the new state.
     // The UnlockStorage action needs to end with a redirect prompt to "me", but other actions should end with the current user prompt set to None.
