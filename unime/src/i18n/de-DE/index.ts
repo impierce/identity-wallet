@@ -417,7 +417,7 @@ const de_DE = {
     TABS: {
       SUMMARY: 'Übersicht',
       ACTIVITY: 'Verlauf',
-      AVAILABLE: 'Verfügbar',
+      OFFERS: 'Angebote',
     },
     ISSUED_CREDENTIALS: {
       DESCRIPTION: 'Nachweise, die du von {name} erhalten kannst.',

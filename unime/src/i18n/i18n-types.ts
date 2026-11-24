@@ -1182,9 +1182,9 @@ type RootTranslation = {
 			 */
 			ACTIVITY: string
 			/**
-			 * A​v​a​i​l​a​b​l​e
+			 * O​f​f​e​r​s
 			 */
-			AVAILABLE: string
+			OFFERS: string
 		}
 		ISSUED_CREDENTIALS: {
 			/**
@@ -3439,9 +3439,9 @@ export type TranslationFunctions = {
 			 */
 			ACTIVITY: () => LocalizedString
 			/**
-			 * Available
+			 * Offers
 			 */
-			AVAILABLE: () => LocalizedString
+			OFFERS: () => LocalizedString
 		}
 		ISSUED_CREDENTIALS: {
 			/**

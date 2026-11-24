@@ -416,7 +416,7 @@ const sv_FI = {
     TABS: {
       SUMMARY: 'Översikt',
       ACTIVITY: 'Aktivitet',
-      AVAILABLE: 'Tillgängliga',
+      OFFERS: 'Erbjudanden',
     },
     ISSUED_CREDENTIALS: {
       DESCRIPTION: 'Intyg du kan få från {name}.',

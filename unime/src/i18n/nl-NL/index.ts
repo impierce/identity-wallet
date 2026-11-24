@@ -417,7 +417,7 @@ const nl_NL = {
     TABS: {
       SUMMARY: 'Overzicht',
       ACTIVITY: 'Activiteit',
-      AVAILABLE: 'Beschikbaar',
+      OFFERS: 'Aanbod',
     },
     ISSUED_CREDENTIALS: {
       DESCRIPTION: 'Credentials die je van {name} kunt krijgen.',

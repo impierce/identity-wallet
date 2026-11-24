@@ -418,7 +418,7 @@ const es_ES = {
     TABS: {
       SUMMARY: 'Resumen',
       ACTIVITY: 'Actividad',
-      AVAILABLE: 'Disponibles',
+      OFFERS: 'Ofertas',
     },
     ISSUED_CREDENTIALS: {
       DESCRIPTION: 'Credenciales que puedes obtener de {name}.',

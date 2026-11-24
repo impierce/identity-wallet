@@ -26,7 +26,7 @@
 
   let triggers: string[] = [
     $LL.CONNECTION.TABS.SUMMARY(),
-    ...(isIssuer ? [$LL.CONNECTION.TABS.AVAILABLE()] : []),
+    ...(isIssuer ? [$LL.CONNECTION.TABS.OFFERS()] : []),
     $LL.CONNECTION.TABS.ACTIVITY(),
   ];
   // A history entry may still hold a tab that no longer exists (such as the removed Data tab).

@@ -417,7 +417,7 @@ const fi_FI = {
     TABS: {
       SUMMARY: 'Yhteenveto',
       ACTIVITY: 'Aktiviteetti',
-      AVAILABLE: 'Saatavilla',
+      OFFERS: 'Tarjoukset',
     },
     ISSUED_CREDENTIALS: {
       DESCRIPTION: 'Todisteet, jotka voit saada toimijalta {name}.',

@@ -257,11 +257,12 @@ pub fn page(all: &[IssuedCredential], search_term: &str, offset: u32, limit: u32
 }
 
 async fn download_logos(items: &[IssuedCredential]) {
-    let downloads = items
+    let logo_uris: std::collections::BTreeSet<&str> = items
         .iter()
         .filter_map(|item| item.logo_uri.as_deref())
         .filter(|logo_uri| !temp_asset_exists(&hash(logo_uri)))
-        .map(download_logo);
+        .collect();
+    let downloads = logo_uris.into_iter().map(download_logo);
     if tokio::time::timeout(LOGOS_TIMEOUT, futures::future::join_all(downloads))
         .await
         .is_err()

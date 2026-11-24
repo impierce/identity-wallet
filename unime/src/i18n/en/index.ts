@@ -416,7 +416,7 @@ const en = {
     TABS: {
       SUMMARY: 'Summary',
       ACTIVITY: 'Activity',
-      AVAILABLE: 'Available',
+      OFFERS: 'Offers',
     },
     ISSUED_CREDENTIALS: {
       DESCRIPTION: 'Credentials you can get from {name:string}.',
