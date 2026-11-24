@@ -135,6 +135,12 @@ pub struct CredentialMetadata {
     pub expiration_date: Option<String>,
     #[ts(optional)]
     pub icon: Option<String>,
+    /// The issuer's `credential_configuration_id` the credential was issued under. Absent for self-issued credentials
+    /// and for credentials received before it was recorded.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[derivative(PartialEq = "ignore")]
+    pub credential_configuration_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
@@ -296,6 +302,7 @@ impl VerifiableCredentialRecord {
                     valid_from,
                     expiration_date,
                     icon: None,
+                    credential_configuration_id: None,
                 },
                 // The other fields will be filled in at a later stage.
                 issuer_name: String::new(),

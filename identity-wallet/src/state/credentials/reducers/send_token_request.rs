@@ -441,6 +441,10 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
             // Set the connection ID of the credential.
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
+            verifiable_credential_record
+                .display_credential
+                .metadata
+                .credential_configuration_id = Some(credential_configuration_id.clone());
 
             // Set the display name of the credential.
             verifiable_credential_record.display_credential.display_name = get_credential_display_name(

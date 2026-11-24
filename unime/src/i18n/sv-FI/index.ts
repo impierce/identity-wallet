@@ -424,6 +424,7 @@ const sv_FI = {
       SEARCH_PLACEHOLDER: 'Sök intyg',
       EMPTY: '{name} listar inga intyg.',
       NO_RESULTS: 'Inga intyg matchar "{term}".',
+      OWNED: 'I din plånbok',
       UNAVAILABLE: 'Intygen från {name} kunde inte laddas.',
     },
     SUMMARY: {

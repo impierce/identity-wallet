@@ -1212,6 +1212,10 @@ type RootTranslation = {
 			 */
 			NO_RESULTS: RequiredParams<'term'>
 			/**
+			 * I​n​ ​y​o​u​r​ ​w​a​l​l​e​t
+			 */
+			OWNED: string
+			/**
 			 * T​h​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​o​f​ ​{​n​a​m​e​}​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​l​o​a​d​e​d​.
 			 * @param {string} name
 			 */
@@ -3460,6 +3464,10 @@ export type TranslationFunctions = {
 			 * No credentials match "{term}".
 			 */
 			NO_RESULTS: (arg: { term: string }) => LocalizedString
+			/**
+			 * In your wallet
+			 */
+			OWNED: () => LocalizedString
 			/**
 			 * The credentials of {name} could not be loaded.
 			 */

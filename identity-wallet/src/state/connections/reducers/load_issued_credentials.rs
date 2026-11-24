@@ -1,6 +1,7 @@
 use crate::error::AppError;
 use crate::state::actions::{listen, Action};
 use crate::state::connections::actions::load_issued_credentials::LoadIssuedCredentials;
+use crate::state::connections::issued_credentials::mark_owned;
 use crate::state::AppState;
 
 #[tracing::instrument(skip_all, err)]
@@ -10,10 +11,13 @@ pub async fn load_issued_credentials(state: AppState, action: Action) -> Result<
     };
 
     // Loaded in `prepare` when dispatched from the frontend, or here when reduced directly.
-    let page = match load_issued_credentials.loaded {
+    let mut page = match load_issued_credentials.loaded {
         Some(page) => page,
         None => load_issued_credentials.load(&state).await,
     };
+
+    // Against the current state: credentials may have been added while the page loaded.
+    mark_owned(&mut page, &state.credentials);
 
     // Like other reducers of plain screens, this clears a redirect that was already followed (such as the one to `me`
     // after unlocking), which the frontend would otherwise follow again on this state update.

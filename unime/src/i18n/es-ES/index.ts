@@ -426,6 +426,7 @@ const es_ES = {
       SEARCH_PLACEHOLDER: 'Buscar credenciales',
       EMPTY: '{name} no ofrece ninguna credencial.',
       NO_RESULTS: 'Ninguna credencial coincide con "{term}".',
+      OWNED: 'En tu billetera',
       UNAVAILABLE: 'No se pudieron cargar las credenciales de {name}.',
     },
     SUMMARY: {

@@ -424,6 +424,7 @@ const en = {
       SEARCH_PLACEHOLDER: 'Search credentials',
       EMPTY: '{name:string} does not list any credentials.',
       NO_RESULTS: 'No credentials match "{term:string}".',
+      OWNED: 'In your wallet',
       UNAVAILABLE: 'The credentials of {name:string} could not be loaded.',
     },
     SUMMARY: {

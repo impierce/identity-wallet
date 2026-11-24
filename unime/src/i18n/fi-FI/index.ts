@@ -425,6 +425,7 @@ const fi_FI = {
       SEARCH_PLACEHOLDER: 'Hae todisteita',
       EMPTY: '{name} ei listaa todisteita.',
       NO_RESULTS: 'Haulla "{term}" ei löytynyt todisteita.',
+      OWNED: 'Lompakossasi',
       UNAVAILABLE: 'Toimijan {name} todisteita ei voitu ladata.',
     },
     SUMMARY: {

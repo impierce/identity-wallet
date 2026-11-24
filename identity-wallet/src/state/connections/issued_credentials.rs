@@ -7,6 +7,7 @@
 use crate::persistence::{hash, temp_asset_exists};
 use crate::state::connections::Connection;
 use crate::state::core_utils::helpers::download_logo;
+use crate::state::credentials::DisplayCredential;
 use crate::state::profile_settings::Locale;
 use crate::well_known::get_credential_issuer_metadata;
 
@@ -41,6 +42,9 @@ pub struct IssuedCredential {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logo_uri: Option<String>,
+    /// The wallet holds a credential of this configuration from this connection.
+    #[serde(default)]
+    pub owned: bool,
 }
 
 /// A page of the credentials a connection issues that match `search_term`.
@@ -165,6 +169,7 @@ pub fn from_metadata(metadata: &CredentialIssuerMetadata, locale: &Locale) -> Ve
                 logo_uri: display
                     .and_then(|display| display.logo.as_ref())
                     .map(|logo| logo.uri.to_string()),
+                owned: false,
             }
         })
         .collect();
@@ -199,6 +204,25 @@ fn localized<'a>(
         })
         .or_else(|| display.iter().find(|display| display.locale.is_none()))
         .or_else(|| display.first())
+}
+
+/// Marks the items of `page` that the wallet already holds a credential of. Credentials received before their
+/// `credential_configuration_id` was recorded are matched by their display name, which was taken from the same
+/// configuration.
+pub fn mark_owned(page: &mut IssuedCredentialsPage, credentials: &[DisplayCredential]) {
+    let from_connection: Vec<_> = credentials
+        .iter()
+        .filter(|credential| credential.connection_id.as_deref() == Some(page.connection_id.as_str()))
+        .collect();
+    for item in &mut page.items {
+        item.owned =
+            from_connection.iter().any(
+                |credential| match credential.metadata.credential_configuration_id.as_deref() {
+                    Some(id) => id == item.id,
+                    None => credential.display_name == item.name,
+                },
+            );
+    }
 }
 
 /// The BCP 47 tag of `locale`, such as `en-US`.
@@ -310,6 +334,7 @@ mod tests {
                 name: format!("Badge {index:03}"),
                 description: (index % 10 == 0).then(|| "Tenth".to_string()),
                 logo_uri: None,
+                owned: false,
             })
             .collect();
 
@@ -346,6 +371,49 @@ mod tests {
             credential_issuer_url(&connection).unwrap().as_str(),
             "https://issuer.example/tenant"
         );
+    }
+
+    #[test]
+    fn marks_credentials_the_wallet_holds() {
+        let item = |id: &str, name: &str| IssuedCredential {
+            id: id.to_string(),
+            name: name.to_string(),
+            description: None,
+            logo_uri: None,
+            owned: false,
+        };
+        let credential = |connection_id: &str, configuration_id: Option<&str>, name: &str| DisplayCredential {
+            connection_id: Some(connection_id.to_string()),
+            display_name: name.to_string(),
+            metadata: crate::state::credentials::CredentialMetadata {
+                credential_configuration_id: configuration_id.map(ToString::to_string),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+        let mut page = IssuedCredentialsPage {
+            connection_id: "issuer".to_string(),
+            items: vec![
+                item("a", "Badge A"),
+                item("b", "Badge B"),
+                item("c", "Badge C"),
+                item("d", "Badge D"),
+            ],
+            ..Default::default()
+        };
+
+        mark_owned(
+            &mut page,
+            &[
+                credential("issuer", Some("a"), "Renamed since"),
+                credential("issuer", None, "Badge B"),
+                credential("other", Some("c"), "Badge C"),
+                credential("issuer", Some("x"), "Badge D"),
+            ],
+        );
+
+        let owned: Vec<_> = page.items.iter().map(|item| item.owned).collect();
+        assert_eq!(owned, vec![true, true, false, false]);
     }
 
     #[tokio::test]

@@ -425,6 +425,7 @@ const nl_NL = {
       SEARCH_PLACEHOLDER: 'Zoek credentials',
       EMPTY: '{name} vermeldt geen credentials.',
       NO_RESULTS: 'Geen credentials gevonden voor "{term}".',
+      OWNED: 'In je wallet',
       UNAVAILABLE: 'De credentials van {name} konden niet worden geladen.',
     },
     SUMMARY: {

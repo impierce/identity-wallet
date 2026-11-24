@@ -9,7 +9,7 @@
   import LogoBadge from '$lib/components/ecosystems/LogoBadge.svelte';
   import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { MagnifyingGlassBoldIcon, XBoldIcon } from '$lib/icons';
+  import { CheckCircleFillIcon, MagnifyingGlassBoldIcon, XBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { hashIndex } from '$lib/utils';
 
@@ -164,6 +164,15 @@ The credentials a connection issues, read from its issuer metadata page by page 
             </p>
           {/if}
         </div>
+        {#if item.owned}
+          <span
+            class="ml-2 flex shrink-0 items-center gap-1 rounded-full bg-primary/10 px-2 py-1 text-[11px]/[16px] font-semibold text-primary"
+            data-testid="issued-credential-owned"
+          >
+            <CheckCircleFillIcon class="size-3.5" />
+            {$LL.CONNECTION.ISSUED_CREDENTIALS.OWNED()}
+          </span>
+        {/if}
       </li>
     {/each}
   </ul>
