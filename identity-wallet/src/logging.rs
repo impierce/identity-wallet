@@ -2,9 +2,9 @@
 //!
 //! Log lines contain only IDs, credential types, counts, issuer/verifier names and hosts, statuses, and durations.
 //! Credentials, claims, tokens, codes, nonces, protocol payloads, actions, and app state are logged only through
-//! [`log_payload!`], which is a no-op unless `LOG_FULL_PAYLOADS=true` is set in a debug build.
+//! [`log_payload!`], which is a no-op unless `UNIME_DEV_LOG_FULL_PAYLOADS=true` is set in a debug build.
 
-/// Whether a debug switch such as `LOG_FULL_PAYLOADS` is on: only in debug builds, and only when the environment
+/// Whether a debug switch such as `UNIME_DEV_LOG_FULL_PAYLOADS` is on: only in debug builds, and only when the environment
 /// variable is set to `true`. Always `false` in release builds, whatever the environment says.
 pub fn debug_flag(name: &str) -> bool {
     cfg!(debug_assertions)
@@ -14,11 +14,11 @@ pub fn debug_flag(name: &str) -> bool {
             .unwrap_or(false)
 }
 
-/// Logs a full payload at DEBUG, only when `LOG_FULL_PAYLOADS=true` is set in a debug build.
+/// Logs a full payload at DEBUG, only when `UNIME_DEV_LOG_FULL_PAYLOADS=true` is set in a debug build.
 #[macro_export]
 macro_rules! log_payload {
     ($($arg:tt)+) => {
-        if $crate::logging::debug_flag("LOG_FULL_PAYLOADS") {
+        if $crate::logging::debug_flag("UNIME_DEV_LOG_FULL_PAYLOADS") {
             log::debug!($($arg)+);
         }
     };

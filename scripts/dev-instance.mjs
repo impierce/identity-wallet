@@ -84,7 +84,7 @@ const child = spawn('pnpm --filter unime tauri dev --config src-tauri/tauri.inst
   env: {
     ...process.env,
     UNIME_DEV_PORT: String(devPort),
-    UNIME_MCP_PORT: String(mcpPort),
+    UNIME_DEV_MCP_PORT: String(mcpPort),
     CARGO_TERM_COLOR: 'always',
     FORCE_COLOR: '1',
   },

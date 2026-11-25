@@ -23,7 +23,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
     }
 
     // Overwrite dev_mode_enabled if environment variable is set
-    if let Some(dev_mode) = std::env::var("DEV_MODE_ENABLED")
+    if let Some(dev_mode) = std::env::var("UNIME_DEV_MODE_ENABLED")
         .ok()
         .and_then(|s| s.parse::<bool>().ok())
     {

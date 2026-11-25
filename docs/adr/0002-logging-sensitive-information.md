@@ -40,7 +40,7 @@ The following constraints are part of this decision, not incidental implementati
 
 - no file log target, so UniMe writes no log file into the app container
 - no remote or network log target
-- full-state dumps stay behind `cfg!(debug_assertions)` or the `LOG_STATE_UPDATES_TO_CONSOLE` environment variable
+- full-state dumps stay behind `cfg!(debug_assertions)` or the `UNIME_DEV_LOG_STATE_UPDATES_TO_CONSOLE` environment variable
 
 ## Consequences
 

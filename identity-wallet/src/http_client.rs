@@ -19,13 +19,13 @@ static PUBLIC_DESTINATION_HTTP_CLIENT: OnceCell<Client> = OnceCell::const_new();
 
 /// The environment variable that lets a debug build send requests over plain `http`.
 #[cfg(debug_assertions)]
-pub const PLAIN_HTTP_VARIABLE: &str = "UNIME_ALLOW_PLAIN_HTTP";
+pub const PLAIN_HTTP_VARIABLE: &str = "UNIME_DEV_ALLOW_PLAIN_HTTP";
 
 /// Whether the wallet may send a request over plain `http`.
 ///
 /// A release build never does: "Communication with the Credential Endpoint MUST utilize TLS" (OpenID4VCI 1.0,
 /// Section 8), as with the Credential Issuer Metadata (Section 12.2.2), and a presentation sent in the clear can be
-/// read on the way. A debug build does when `UNIME_ALLOW_PLAIN_HTTP=true` is set, for a local issuer or verifier
+/// read on the way. A debug build does when `UNIME_DEV_ALLOW_PLAIN_HTTP=true` is set, for a local issuer or verifier
 /// without a certificate; a release build has no code that reads the variable. Tests always may, for `wiremock`.
 pub fn plain_http_allowed() -> bool {
     if cfg!(any(test, feature = "test_utils")) {

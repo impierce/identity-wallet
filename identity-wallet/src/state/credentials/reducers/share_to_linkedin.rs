@@ -249,7 +249,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
     // This test feature is added to avoid the need to set up an entire trust ecosystem to create a unit test for this file.
     // This .env variable is managed programmatically by the unit test in this file, and is only used for testing purposes. It is not used in production.
     #[cfg(test)]
-    if let Ok(endpoint) = std::env::var("UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT") {
+    if let Ok(endpoint) = std::env::var("UNIME_DEV_TEST_PUBLIC_VERIFIER_ENDPOINT") {
         return Ok(endpoint);
     }
 
@@ -431,7 +431,7 @@ mod tests {
             .await;
 
         std::env::set_var(
-            "UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT",
+            "UNIME_DEV_TEST_PUBLIC_VERIFIER_ENDPOINT",
             format!("{}/verify", mock_server.uri()),
         );
 
@@ -473,7 +473,7 @@ mod tests {
         }
         .await;
 
-        std::env::remove_var("UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT");
+        std::env::remove_var("UNIME_DEV_TEST_PUBLIC_VERIFIER_ENDPOINT");
         result
     }
 
