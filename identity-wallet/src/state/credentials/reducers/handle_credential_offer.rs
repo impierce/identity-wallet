@@ -21,7 +21,7 @@ use crate::{
         AppState,
     },
 };
-use log::{debug, info};
+use log::{debug, info, warn};
 use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vci::authorization_request::CodeChallengeMethod;
 use oid4vci::InteractionType;
@@ -391,22 +391,8 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             .append_pair("client_id", UNIME_CLIENT_ID)
                             .append_pair("request_uri", &par_response.request_uri.to_string());
 
-                        info!(
-                            "Opening authorization endpoint `{}` in browser",
-                            url_without_query(&authorization_endpoint)
-                        );
                         crate::log_payload!("Authorization URL: {authorization_endpoint}");
-                        let app_handle = state
-                            .core_utils
-                            .app_handle
-                            .clone()
-                            .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
-                        app_handle
-                            .opener()
-                            .open_url(authorization_endpoint, None::<&str>)
-                            .map_err(|err| {
-                                AppError::BrowserUnavailableError(format!("Failed to open URL in browser: {err}"))
-                            })?;
+                        open_authorization_endpoint(state.core_utils.app_handle.as_ref(), authorization_endpoint)?;
 
                         drop(state_guard);
                         return Ok(AppState {
@@ -439,4 +425,61 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
     }
 
     Ok(state)
+}
+
+/// Debug builds only: with `UNIME_NO_BROWSER=true`, the authorization endpoint is not opened in the system browser. An
+/// automated test then logs in itself, with the URL from the `log_payload!` line (`LOG_FULL_PAYLOADS=true`), and sends
+/// the code back as the `unime://callback` deep link would (`docs/debugging.md`).
+const NO_BROWSER: &str = "UNIME_NO_BROWSER";
+
+/// Opens the authorization endpoint in the system browser, unless `UNIME_NO_BROWSER` is set in a debug build.
+fn open_authorization_endpoint(
+    app_handle: Option<&tauri::AppHandle<crate::command::Runtime>>,
+    authorization_endpoint: url::Url,
+) -> Result<(), AppError> {
+    if crate::logging::debug_flag(NO_BROWSER) {
+        warn!(
+            "Not opening authorization endpoint `{}` in browser: `{NO_BROWSER}` is set",
+            url_without_query(&authorization_endpoint)
+        );
+        return Ok(());
+    }
+    info!(
+        "Opening authorization endpoint `{}` in browser",
+        url_without_query(&authorization_endpoint)
+    );
+    app_handle
+        .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?
+        .opener()
+        .open_url(authorization_endpoint, None::<&str>)
+        .map_err(|err| AppError::BrowserUnavailableError(format!("Failed to open URL in browser: {err}")))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn opens_browser_unless_no_browser_is_set() {
+        let url: url::Url = "https://as.example.com/authorize?client_id=unime&request_uri=urn:x"
+            .parse()
+            .unwrap();
+
+        // Without the switch, the browser is needed: here there is no app handle to open it with.
+        std::env::remove_var(NO_BROWSER);
+        assert!(matches!(
+            open_authorization_endpoint(None, url.clone()),
+            Err(AppError::Error(message)) if message == "Tauri app handle is not available"
+        ));
+
+        // With it, nothing is opened, and nothing is needed to open it (tests are debug builds).
+        std::env::set_var(NO_BROWSER, "true");
+        let skipped = open_authorization_endpoint(None, url.clone());
+        std::env::set_var(NO_BROWSER, "false");
+        let off = open_authorization_endpoint(None, url);
+        std::env::remove_var(NO_BROWSER);
+
+        assert!(skipped.is_ok());
+        assert!(off.is_err());
+    }
 }

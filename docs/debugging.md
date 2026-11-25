@@ -43,3 +43,20 @@ UNIME_EXTRA_CA_CERTS=/absolute/path/to/test-ca.pem pnpm tauri dev
 - It applies to every request UniMe sends, the OpenID4VCI and OpenID4VP requests of the openid4vc library included:
   UniMe gives the library's `Wallet` and `ProviderManager` a client with the same trust anchors
   (`get_openid4vc_http_client`).
+
+## Authorization without the browser
+
+For an offer with the `authorization_code` grant, UniMe pushes the authorization request, opens the authorization
+endpoint in the system browser and waits for the `unime://callback` deep link with the code. An automated test can
+take the browser's part in a debug build:
+
+```sh
+UNIME_NO_BROWSER=true LOG_FULL_PAYLOADS=true pnpm tauri:mcp
+```
+
+- With `UNIME_NO_BROWSER=true`, UniMe does not open the browser and logs a warning instead.
+- With `LOG_FULL_PAYLOADS=true`, the authorization URL is logged at DEBUG (`Authorization URL: …`). Debug builds send
+  their logs to the WebView too, where a test reads it.
+- The test logs in at that URL and sends the code back as the deep link would: the action
+  `[Credential Offer] Code received` with the `code` and `state` of the redirect.
+- Release builds ignore it: they always open the browser, whatever the environment says.
