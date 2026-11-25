@@ -720,7 +720,7 @@ const en = {
       SHARE_PUBLIC_LINK: "Couldn't create a public link",
       DELETE_CONNECTION: "Couldn't delete the connection",
       VERIFY_EMAIL: "Couldn't verify your email address",
-      TRUST_LIST: "Couldn't update the trust list",
+      TRUST_ANCHORS: "Couldn't update the trust anchors",
       SETTINGS: "Couldn't save your settings",
       BIOMETRICS: "Couldn't change biometric unlock",
       RESET_APP: "Couldn't reset UniMe",

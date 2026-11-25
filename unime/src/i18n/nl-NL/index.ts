@@ -721,7 +721,7 @@ const nl_NL = {
       SHARE_PUBLIC_LINK: 'Openbare link kon niet worden gemaakt',
       DELETE_CONNECTION: 'Verbinding kon niet worden verwijderd',
       VERIFY_EMAIL: 'E-mailadres kon niet worden geverifieerd',
-      TRUST_LIST: 'Vertrouwenslijst kon niet worden bijgewerkt',
+      TRUST_ANCHORS: 'Vertrouwensankers konden niet worden bijgewerkt',
       SETTINGS: 'Instellingen konden niet worden opgeslagen',
       BIOMETRICS: 'Biometrisch ontgrendelen kon niet worden aangepast',
       RESET_APP: 'UniMe kon niet worden gereset',

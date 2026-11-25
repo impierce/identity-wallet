@@ -108,11 +108,7 @@ mod bindings {
         search::actions::{
             add_recent_search::AddRecentSearch, delete_recent_search::DeleteRecentSearch, search_query::SearchQuery,
         },
-        trust_list::actions::{
-            add_trust_list::AddTrustList, add_trust_list_entry::AddTrustListEntry, delete_trust_list::DeleteTrustList,
-            delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list::EditTrustList,
-            edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
-        },
+        trust_anchors::actions::{FetchTrustAnchor, RemoveTrustAnchor, ToggleTrustAnchor},
         verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
@@ -184,20 +180,16 @@ mod bindings {
         SetPreferredDidMethod { payload: SetPreferredDidMethod },
         #[serde(rename = "[Keys] Set preferred key type")]
         SetPreferredKeyType { payload: SetPreferredKeyType },
-        #[serde(rename = "[Trust List] Add entry")]
-        AddTrustListEntry { payload: AddTrustListEntry },
-        #[serde(rename = "[Trust List] Edit entry")]
-        EditTrustListEntry { payload: EditTrustListEntry },
-        #[serde(rename = "[Trust List] Delete entry")]
-        DeleteTrustListEntry { payload: DeleteTrustListEntry },
-        #[serde(rename = "[Trust List] Toggle entry")]
-        ToggleTrustListEntry { payload: ToggleTrustListEntry },
-        #[serde(rename = "[Trust Lists] Add")]
-        TrustListsAdd { payload: AddTrustList },
-        #[serde(rename = "[Trust Lists] Edit")]
-        TrustListsEdit { payload: EditTrustList },
-        #[serde(rename = "[Trust Lists] Delete")]
-        TrustListsDelete { payload: DeleteTrustList },
+        #[serde(rename = "[Trust Anchors] Fetch")]
+        FetchTrustAnchor { payload: FetchTrustAnchor },
+        #[serde(rename = "[Trust Anchors] Accept")]
+        AcceptTrustAnchor,
+        #[serde(rename = "[Trust Anchors] Deny")]
+        DenyTrustAnchor,
+        #[serde(rename = "[Trust Anchors] Toggle")]
+        ToggleTrustAnchor { payload: ToggleTrustAnchor },
+        #[serde(rename = "[Trust Anchors] Remove")]
+        RemoveTrustAnchor { payload: RemoveTrustAnchor },
         #[serde(rename = "[Biometrics] Enable")]
         EnableBiometrics { payload: EnableBiometrics },
         #[serde(rename = "[Storage] Check password")]

@@ -60,7 +60,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         crate::log_payload!("Parsed QR code: {parsed_qr_code:?}");
 
         let (client_metadata, active_flow) =
-            get_client_metadata_init_active_flow(parsed_qr_code.clone(), &state.trust_anchors).await?;
+            get_client_metadata_init_active_flow(parsed_qr_code.clone(), &state.trust_anchors.enabled()).await?;
         info!(
             "Retrieved client metadata with {} proof(s)",
             client_metadata.proofs.len()

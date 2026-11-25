@@ -16,7 +16,7 @@ use crate::{
             validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
         },
         profile_settings::{AppTheme, CredentialSortMethod, Profile},
-        trust_list::TrustList,
+        trust_anchors::TrustAnchors,
         user_prompt::{CurrentUserPrompt, EcosystemProfile, Member},
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
@@ -555,11 +555,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         OPEN_BADGE.display_credential.id.clone(),
     ];
 
-    // Import trusted domains
-    let default_trust_list: TrustList =
-        serde_json::from_str(include_str!("../../../../resources/default_trust_list.json")).unwrap();
-
-    state.trust_lists.insert(default_trust_list);
+    state.trust_anchors = TrustAnchors::default().with_curated();
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),

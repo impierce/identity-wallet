@@ -104,8 +104,10 @@ pub enum AppError {
     StrongholdPublicKeyError(#[source] anyhow::Error),
     #[error("Failed to delete state file")]
     StateFileDeletionError(#[source] anyhow::Error),
-    #[error("Failed to find TrustList with ID `{0}`")]
-    TrustListNotFoundError(String),
+    #[error("No trust anchor with id `{0}`")]
+    TrustAnchorNotFoundError(String),
+    #[error("Not a trust anchor: {0}")]
+    InvalidTrustAnchorError(String),
     #[error("Failed to reach the email verification service")]
     EmailVerificationServiceError(#[source] anyhow::Error),
     #[error("The email verification service responded with HTTP {0}")]

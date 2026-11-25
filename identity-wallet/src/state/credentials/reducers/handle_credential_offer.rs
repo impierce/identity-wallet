@@ -85,7 +85,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
         debug!("Credential issuer URL: {credential_issuer}");
 
         // Get the credential issuer metadata.
-        let applied = load_verified_credential_issuer_metadata(credential_issuer, &state.trust_anchors)
+        let applied = load_verified_credential_issuer_metadata(credential_issuer, &state.trust_anchors.enabled())
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
         let metadata_signed = applied.signed;

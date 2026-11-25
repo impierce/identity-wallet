@@ -34,7 +34,7 @@ pub enum ErrorContext {
     SharePublicLink,
     DeleteConnection,
     VerifyEmail,
-    TrustList,
+    TrustAnchors,
     Settings,
     Biometrics,
     ResetApp,
@@ -63,7 +63,7 @@ impl ErrorContext {
             | "[Verified Data] Send verification email"
             | "[Verified Data] Redeem code"
             | "[Verified Data] Reset email verification" => VerifyEmail,
-            action if action.starts_with("[Trust List") => TrustList,
+            action if action.starts_with("[Trust Anchors]") => TrustAnchors,
             "[Biometrics] Enable" => Biometrics,
             "[App] Reset" => ResetApp,
             action
@@ -232,7 +232,7 @@ impl ErrorCause {
             | WriteFailed(_)
             | AppStateMigrationError(..) => Storage,
             BrowserUnavailableError(_) => BrowserUnavailable,
-            GetCredentialStatusError | InvalidCredentialError(_) => InvalidResponse,
+            GetCredentialStatusError | InvalidCredentialError(_) | InvalidTrustAnchorError(_) => InvalidResponse,
             _ => Unknown,
         }
     }
@@ -415,8 +415,8 @@ mod tests {
             ErrorContext::ReceiveCredential
         );
         assert_eq!(
-            ErrorContext::from_action_type("[Trust Lists] Add"),
-            ErrorContext::TrustList
+            ErrorContext::from_action_type("[Trust Anchors] Fetch"),
+            ErrorContext::TrustAnchors
         );
         assert_eq!(
             ErrorContext::from_action_type("[Settings] Set locale"),

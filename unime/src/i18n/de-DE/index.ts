@@ -722,7 +722,7 @@ const de_DE = {
       SHARE_PUBLIC_LINK: 'Öffentlicher Link konnte nicht erstellt werden',
       DELETE_CONNECTION: 'Verbindung konnte nicht gelöscht werden',
       VERIFY_EMAIL: 'E-Mail-Adresse konnte nicht verifiziert werden',
-      TRUST_LIST: 'Vertrauensliste konnte nicht aktualisiert werden',
+      TRUST_ANCHORS: 'Vertrauensanker konnten nicht aktualisiert werden',
       SETTINGS: 'Einstellungen konnten nicht gespeichert werden',
       BIOMETRICS: 'Biometrisches Entsperren konnte nicht geändert werden',
       RESET_APP: 'UniMe konnte nicht zurückgesetzt werden',

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Authbound EUDI Testbed Issuer Issuing CA",
+    "origin": "Findynet pension demo: issuing CA of the Authbound test bed issuer (testbed-issuer.authbound.io), x5c[1] of its credentials. Its root, Authbound EUDI Testbed Root CA 20260908 v3, is not published.",
+    "enabled_by_default": false,
+    "certificate": "-----BEGIN CERTIFICATE-----\nMIICHjCCAcSgAwIBAgIUQMauTJY1lAh1JsWOZjUUrIQRz5owCgYIKoZIzj0EAwIw\nVjEzMDEGA1UEAwwqQXV0aGJvdW5kIEVVREkgVGVzdGJlZCBSb290IENBIDIwMjYw\nOTA4IHYzMRIwEAYDVQQKDAlBdXRoYm91bmQxCzAJBgNVBAYTAkZJMB4XDTI2MDkw\nODE4MzcyOFoXDTMxMDkwNzE4NDIyOFowYDE9MDsGA1UEAww0QXV0aGJvdW5kIEVV\nREkgVGVzdGJlZCBJc3N1ZXIgSXNzdWluZyBDQSAyMDI2MDkwOCB2MzESMBAGA1UE\nCgwJQXV0aGJvdW5kMQswCQYDVQQGEwJGSTBZMBMGByqGSM49AgEGCCqGSM49AwEH\nA0IABCA3JF7Qhq71P7c02zkfCTkiQVd+2WjyD8twimSv9pHxfduRVqT9uuey6yUY\nXPvdLlvem0mbI3gqCFW74AN9ZMyjZjBkMBIGA1UdEwEB/wQIMAYBAf8CAQAwDgYD\nVR0PAQH/BAQDAgEGMB0GA1UdDgQWBBSBRN20kfr4+ArTn4ul41jyZVJZ4zAfBgNV\nHSMEGDAWgBSrAkXzmHkaXHpp17mWJ9cm6MQ2ZDAKBggqhkjOPQQDAgNIADBFAiEA\noQmS+wAT41MFqp8om0BAC7d0nNJOFVQVmss/cWZs8ywCIFRkgGAG+Y6Fle1shN1q\no5HuWo5bXWZw5RilfjquY9Cb\n-----END CERTIFICATE-----\n"
+  },
+  {
+    "name": "Authbound EUDI Testbed Verifier Issuing CA",
+    "origin": "Findynet pension demo: issuing CA of the Authbound test bed verifier (testbed-api.authbound.io), as impierce/e2e-tests pins it (src/e2e/conformance/testbeds/findynet.ts). Its root is not published.",
+    "enabled_by_default": false,
+    "certificate": "-----BEGIN CERTIFICATE-----\nMIICITCCAcagAwIBAgIUKgPWeEvrDh6WGByW+Huq/TVc0g0wCgYIKoZIzj0EAwIw\nVjEzMDEGA1UEAwwqQXV0aGJvdW5kIEVVREkgVGVzdGJlZCBSb290IENBIDIwMjYw\nOTA4IHYzMRIwEAYDVQQKDAlBdXRoYm91bmQxCzAJBgNVBAYTAkZJMB4XDTI2MDkw\nODE4MzcyOFoXDTMxMDkwNzE4NDIyOFowYjE/MD0GA1UEAww2QXV0aGJvdW5kIEVV\nREkgVGVzdGJlZCBWZXJpZmllciBJc3N1aW5nIENBIDIwMjYwOTA4IHYzMRIwEAYD\nVQQKDAlBdXRoYm91bmQxCzAJBgNVBAYTAkZJMFkwEwYHKoZIzj0CAQYIKoZIzj0D\nAQcDQgAE3K+uXWIqhFYldjDNzCrqaxlQQaQAx+YCuY7YYRFX/Y7j+xKLpeWUjqC5\nHlKV1PZ6c9dpou02GP45bnWqyS6RRqNmMGQwEgYDVR0TAQH/BAgwBgEB/wIBADAO\nBgNVHQ8BAf8EBAMCAQYwHQYDVR0OBBYEFKmCL2Nv77KWQ4TFBY1YUjbIeFu5MB8G\nA1UdIwQYMBaAFKsCRfOYeRpcemnXuZYn1yboxDZkMAoGCCqGSM49BAMCA0kAMEYC\nIQCE+ELNY4r2qwtnD/Tg1U+N00zJw3c55CjhOnSwuC64WgIhANKdjcsB5QNEmZpi\nj9Gla76DD66dJJi5j5bnBL3xLUyU\n-----END CERTIFICATE-----\n"
+  }
+]

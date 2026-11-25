@@ -2118,9 +2118,9 @@ type RootTranslation = {
 			 */
 			VERIFY_EMAIL: string
 			/**
-			 * C​o​u​l​d​n​'​t​ ​u​p​d​a​t​e​ ​t​h​e​ ​t​r​u​s​t​ ​l​i​s​t
+			 * C​o​u​l​d​n​'​t​ ​u​p​d​a​t​e​ ​t​h​e​ ​t​r​u​s​t​ ​a​n​c​h​o​r​s
 			 */
-			TRUST_LIST: string
+			TRUST_ANCHORS: string
 			/**
 			 * C​o​u​l​d​n​'​t​ ​s​a​v​e​ ​y​o​u​r​ ​s​e​t​t​i​n​g​s
 			 */
@@ -4304,9 +4304,9 @@ export type TranslationFunctions = {
 			 */
 			VERIFY_EMAIL: () => LocalizedString
 			/**
-			 * Couldn't update the trust list
+			 * Couldn't update the trust anchors
 			 */
-			TRUST_LIST: () => LocalizedString
+			TRUST_ANCHORS: () => LocalizedString
 			/**
 			 * Couldn't save your settings
 			 */

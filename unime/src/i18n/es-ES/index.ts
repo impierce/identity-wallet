@@ -721,7 +721,7 @@ const es_ES = {
       SHARE_PUBLIC_LINK: 'No se pudo crear un enlace público',
       DELETE_CONNECTION: 'No se pudo eliminar la conexión',
       VERIFY_EMAIL: 'No se pudo verificar tu correo electrónico',
-      TRUST_LIST: 'No se pudo actualizar la lista de confianza',
+      TRUST_ANCHORS: 'No se pudieron actualizar los anclajes de confianza',
       SETTINGS: 'No se pudieron guardar los ajustes',
       BIOMETRICS: 'No se pudo cambiar el desbloqueo biométrico',
       RESET_APP: 'No se pudo restablecer UniMe',
