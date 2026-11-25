@@ -688,6 +688,7 @@ const en = {
     REJECTED_BODY: "{name:string} couldn't accept the request. Try again, or contact them if this keeps happening.",
     // Explanations for error codes that issuers and verifiers commonly answer with.
     REJECTED_REASON: {
+      NOT_FOR_THIS_WALLET: 'This offer is meant for a different wallet. Ask {name:string} for an offer of your own.',
       OFFER_EXPIRED: 'This offer has expired or has already been used. Ask {name:string} for a new one.',
       WRONG_TX_CODE: "That code isn't right, or the offer has expired. Check the code and try again.",
       ACCESS_DENIED: '{name:string} declined the request.',
@@ -746,6 +747,8 @@ const en = {
       UNSUPPORTED: "UniMe doesn't support this type of credential or request yet.",
       MISSING_CREDENTIALS: "You don't have the credentials {name:string} asked for, so nothing was shared.",
       UNTRUSTED: "UniMe couldn't verify who {name:string} is, so it stopped to keep your data safe.",
+      NOT_HOLDER:
+        "This credential is meant for a different wallet, so UniMe didn't add it. Ask {name:string} to send you a new one.",
       FLOW_EXPIRED: 'This request is no longer active. Scan the QR code again to start over.',
       INVALID_INPUT: "Some of the information you entered isn't valid. Check it and try again.",
       WRONG_PASSWORD: "That password isn't right. Check it and try again.",

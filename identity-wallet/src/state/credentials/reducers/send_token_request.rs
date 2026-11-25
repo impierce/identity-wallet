@@ -9,9 +9,9 @@ use crate::{
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived, issuer_signature::verify_issuer_signature,
-            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, CredentialStatusType,
-            DisplayCredential, VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived, holder_binding::ensure_held_binding,
+            issuer_signature::verify_issuer_signature, reducers::refresh_credential_status::fetch_credential_status,
+            CredentialStatus, CredentialStatusType, DisplayCredential, VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
@@ -368,6 +368,14 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             )
             .await?;
             debug!("Verified the issuer signature of credential configuration {credential_configuration_id}");
+
+            // A credential bound to another wallet's DID or key is refused before anything is stored.
+            ensure_held_binding(
+                &credential_configuration.credential_format.format(),
+                &credential,
+                identity_manager.subject.as_ref(),
+            )
+            .await?;
 
             received_credentials.push((
                 credential_configuration_id,

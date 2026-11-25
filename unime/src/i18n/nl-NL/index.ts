@@ -690,6 +690,7 @@ const nl_NL = {
     REJECTED_BODY:
       '{name} kon het verzoek niet accepteren. Probeer het opnieuw, of neem contact met hen op als dit blijft gebeuren.',
     REJECTED_REASON: {
+      NOT_FOR_THIS_WALLET: 'Dit aanbod is bedoeld voor een andere wallet. Vraag {name} om een aanbod voor jezelf.',
       OFFER_EXPIRED: 'Dit aanbod is verlopen of al gebruikt. Vraag {name} om een nieuw aanbod.',
       WRONG_TX_CODE: 'Die code klopt niet, of het aanbod is verlopen. Controleer de code en probeer het opnieuw.',
       ACCESS_DENIED: '{name} heeft het verzoek afgewezen.',
@@ -747,6 +748,8 @@ const nl_NL = {
       UNSUPPORTED: 'UniMe ondersteunt dit soort credential of verzoek nog niet.',
       MISSING_CREDENTIALS: 'Je hebt niet de credentials waar {name} om vroeg, dus er is niets gedeeld.',
       UNTRUSTED: 'UniMe kon niet controleren wie {name} is en is gestopt om je gegevens te beschermen.',
+      NOT_HOLDER:
+        'Deze credential is bedoeld voor een andere wallet, dus UniMe heeft hem niet toegevoegd. Vraag {name} om je een nieuwe te sturen.',
       FLOW_EXPIRED: 'Dit verzoek is niet meer actief. Scan de QR-code opnieuw om opnieuw te beginnen.',
       INVALID_INPUT: 'Een deel van de ingevulde gegevens is niet geldig. Controleer ze en probeer het opnieuw.',
       WRONG_PASSWORD: 'Dat wachtwoord klopt niet. Controleer het en probeer het opnieuw.',

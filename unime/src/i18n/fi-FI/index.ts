@@ -686,6 +686,7 @@ const fi_FI = {
     NOT_SENT_TITLE: 'Yhteys epäonnistui: {name}',
     REJECTED_BODY: 'Pyyntöä ei hyväksytty ({name}). Yritä uudelleen tai ota yhteyttä, jos ongelma toistuu.',
     REJECTED_REASON: {
+      NOT_FOR_THIS_WALLET: 'Tämä tarjous on tarkoitettu toiselle lompakolle. Pyydä omaa tarjousta ({name}).',
       OFFER_EXPIRED: 'Tämä tarjous on vanhentunut tai jo käytetty. Pyydä uusi: {name}.',
       WRONG_TX_CODE: 'Koodi ei ole oikea tai tarjous on vanhentunut. Tarkista koodi ja yritä uudelleen.',
       ACCESS_DENIED: 'Pyyntö hylättiin ({name}).',
@@ -741,6 +742,8 @@ const fi_FI = {
       UNSUPPORTED: 'UniMe ei vielä tue tämäntyyppistä todistetta tai pyyntöä.',
       MISSING_CREDENTIALS: 'Sinulla ei ole pyydettyjä todisteita ({name}), joten mitään ei jaettu.',
       UNTRUSTED: 'UniMe ei voinut varmistaa osapuolen henkilöllisyyttä ({name}) ja keskeytti tietojesi suojaamiseksi.',
+      NOT_HOLDER:
+        'Tämä todiste on tarkoitettu toiselle lompakolle, joten UniMe ei lisännyt sitä. Pyydä uusi todiste ({name}).',
       FLOW_EXPIRED: 'Tämä pyyntö ei ole enää voimassa. Skannaa QR-koodi uudelleen aloittaaksesi alusta.',
       INVALID_INPUT: 'Osa syöttämistäsi tiedoista ei kelpaa. Tarkista ne ja yritä uudelleen.',
       WRONG_PASSWORD: 'Salasana on väärä. Tarkista se ja yritä uudelleen.',

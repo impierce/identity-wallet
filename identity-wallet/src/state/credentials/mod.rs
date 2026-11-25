@@ -1,5 +1,6 @@
 pub mod actions;
 pub mod credential_query_matching;
+pub mod holder_binding;
 pub mod issuer_signature;
 pub mod reducers;
 pub mod selective_disclosure;

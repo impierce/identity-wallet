@@ -101,6 +101,8 @@ pub enum ErrorCause {
     MissingCredentials,
     /// The other party could not be verified, so UniMe stopped for the user's safety.
     Untrusted,
+    /// The received credential is bound to a DID or key this wallet does not hold: it is meant for another wallet.
+    NotHolder,
     /// The request is no longer active, for example because it was cancelled or the app was restarted.
     FlowExpired,
     /// Information the user entered is not valid.
@@ -151,6 +153,7 @@ impl ErrorCause {
             400 if body.contains("invalid_grant") || body.contains("credential-offer-not-pending") => {
                 ErrorCause::OfferExpired
             }
+            400 if body.contains("credential-offer-recipient-mismatch") => ErrorCause::NotHolder,
             500.. => ErrorCause::ServerError,
             _ => ErrorCause::Rejected,
         }
@@ -218,6 +221,7 @@ impl ErrorCause {
             InvalidCredentialFormatError | InvalidCredentialStatusFormatError | UnsupportedError(_) => Unsupported,
             NoMatchingCredentialError | MissingRequiredCredentialError(_) => MissingCredentials,
             UntrustedError(_) | DidParseError => Untrusted,
+            HolderBindingError(_) => NotHolder,
             FlowExpiredError(_) | MissingStateParameterError(_) => FlowExpired,
             InvalidInputError(_) => InvalidInput,
             StrongholdLoadingError(_) => WrongPassword,
