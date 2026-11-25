@@ -58,5 +58,6 @@ UNIME_DEV_NO_BROWSER=true LOG_FULL_PAYLOADS=true pnpm tauri:mcp
 - With `LOG_FULL_PAYLOADS=true`, the authorization URL is logged at DEBUG (`Authorization URL: …`). Debug builds send
   their logs to the WebView too, where a test reads it.
 - The test logs in at that URL and sends the code back as the deep link would: the action
-  `[Credential Offer] Code received` with the `code` and `state` of the redirect.
+  `[Credential Offer] Code received` with the `code` and `state` of the redirect, and `is_pre_authorized` and
+  `is_interactive` both `false` (required, without defaults).
 - Release builds ignore it: they always open the browser, whatever the environment says.

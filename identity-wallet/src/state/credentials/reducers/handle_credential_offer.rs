@@ -472,14 +472,14 @@ mod tests {
             Err(AppError::Error(message)) if message == "Tauri app handle is not available"
         ));
 
-        // With it, nothing is opened, and nothing is needed to open it (tests are debug builds).
+        // With it, nothing is opened, and nothing is needed to open it; a release build ignores it.
         std::env::set_var(NO_BROWSER, "true");
         let skipped = open_authorization_endpoint(None, url.clone());
         std::env::set_var(NO_BROWSER, "false");
         let off = open_authorization_endpoint(None, url);
         std::env::remove_var(NO_BROWSER);
 
-        assert!(skipped.is_ok());
+        assert_eq!(skipped.is_ok(), cfg!(debug_assertions));
         assert!(off.is_err());
     }
 }
