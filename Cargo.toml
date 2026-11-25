@@ -26,7 +26,7 @@ tokio = { version = "1.46", features = ["macros"] }
 wiremock = "0.5"
 
 [workspace.package]
-version = "0.20.1"
+version = "0.21.0"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
