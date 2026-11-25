@@ -494,6 +494,12 @@ const sv_FI = {
         BIRTH_DATE: 'Födelsedatum',
         BIRTH_PLACE: 'Födelseort',
       },
+      STRUCTURED: {
+        ITEM: 'Objekt {position}',
+        ENTRY: 'Post {position}',
+        FIELDS: '{count} {{fält|fält}}',
+        ENTRIES: '{count} {{post|poster}}',
+      },
     },
     ACTIONS: {
       EDIT: {

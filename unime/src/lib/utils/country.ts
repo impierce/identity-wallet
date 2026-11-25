@@ -3,8 +3,8 @@ import countries, { type Country } from '$lib/components/forms/countries';
 /**
  * Field names that hold a country, e.g. `country`, `countryOfBirth` or `issuing_country`.
  *
- * The `country` field type of a credential template is not preserved when the credential is issued, so the field name
- * is the only hint left that a value is a country code.
+ * Unless the issuer's claims metadata gives a claim `format: "country"`, the field name is the only hint that a value
+ * is a country code.
  */
 const COUNTRY_FIELD_REGEX = /country/i;
 
@@ -18,7 +18,16 @@ export function findCountry(key: string, value: unknown): Country | null {
     return null;
   }
 
-  const code = value.trim().toUpperCase();
+  return countryByCode(value);
+}
 
+/**
+ * The country with the [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code `value`, or
+ * `null`.
+ */
+export function countryByCode(value: unknown): Country | null {
+  if (typeof value !== 'string') return null;
+
+  const code = value.trim().toUpperCase();
   return countries.find((country) => country.code === code) ?? null;
 }

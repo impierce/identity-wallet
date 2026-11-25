@@ -1,0 +1,63 @@
+{
+  "iss": "did:example:123",
+  "sub": "did:example:456",
+  "iat": 0,
+  "vc": {
+    "@context": [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.2.json"
+    ],
+    "id": "https://demo.impierce.com/credentials/mb101-ferris-crabman",
+    "type": ["VerifiableCredential", "OpenBadgeCredential"],
+    "issuer": {
+      "id": "https://demo.impierce.com",
+      "type": ["Profile"],
+      "name": "Impierce Demo Portal"
+    },
+    "issuanceDate": "2024-02-02T00:00:00Z",
+    "name": "Marine Biology 101",
+    "credentialSubject": {
+      "id": "did:example:456",
+      "type": ["AchievementSubject"],
+      "profile": {
+        "givenName": "Ferris",
+        "familyName": "Crabman",
+        "email": "ferris.crabman@crabmail.com",
+        "dateOfBirth": "1985-05-21"
+      },
+      "activityStartDate": "2023-09-04T00:00:00Z",
+      "activityEndDate": "2024-01-26T00:00:00Z",
+      "creditsEarned": 5,
+      "achievement": {
+        "id": "https://demo.impierce.com/achievements/mb101-marine-biology",
+        "type": ["Achievement"],
+        "achievementType": "Course",
+        "name": "Marine Biology 101",
+        "description": "Certificate for the course **Marine Biology 101** (MB101): the diversity of marine life, from plankton to marine mammals, and how organisms interact with each other and with the ocean around them.",
+        "fieldOfStudy": "Marine Biology",
+        "creditsAvailable": 5,
+        "criteria": {
+          "narrative": "Awarded for passing the written exam and a field report on a tidal pool survey."
+        },
+        "alignment": [
+          {
+            "type": ["Alignment"],
+            "targetName": "marine biology",
+            "targetUrl": "http://data.europa.eu/esco/skill/2e5d8410-00fd-4c3e-87fa-7c72c0d235ba",
+            "targetCode": "2e5d8410-00fd-4c3e-87fa-7c72c0d235ba",
+            "targetDescription": "The study of marine living organisms and ecosystems and their interaction underwater.",
+            "targetFramework": "Esco",
+            "targetType": "ext:EscoSkill"
+          }
+        ]
+      },
+      "result": [
+        {
+          "type": ["Result"],
+          "resultDescription": "The final grade, from 1 to 10, where 5.5 is a pass.",
+          "value": "8"
+        }
+      ]
+    }
+  }
+}

@@ -27,6 +27,26 @@ export function humanize(name: string): string {
   return words.charAt(0).toUpperCase() + words.slice(1);
 }
 
+/**
+ * The issuer's label for the claim at `path`: the key of a display claim, or the label of a claim described inside one
+ * (`null` in a description stands for every item of an array).
+ */
+function issuerLabel(credential: DisplayCredential, path: ClaimPath): string | undefined {
+  const element = (described: unknown, requested: unknown) =>
+    described === requested || (described === null && (requested === null || typeof requested === 'number'));
+  for (const claim of credential.display_claims) {
+    if (samePath(claim.path as ClaimPath, path)) return claim.key;
+    if (!claim.path.every((part, index) => part === path[index])) continue;
+
+    const rest = path.slice(claim.path.length);
+    const nested = (claim.nested ?? []).find(
+      (hint) => hint.path.length === rest.length && hint.path.every((part, index) => element(part, rest[index])),
+    );
+    if (nested) return nested.label;
+  }
+  return undefined;
+}
+
 function claimLabel(path: ClaimPath, key?: string): string {
   const name = [...path].reverse().find((element): element is string => typeof element === 'string');
   // Without display metadata from the issuer, the key is the raw claim name.
@@ -99,7 +119,7 @@ export function claimRows(
   return requested.claims
     .map((path, index) => ({
       index,
-      label: claimLabel(path, credential.display_claims.find((claim) => samePath(claim.path as ClaimPath, path))?.key),
+      label: claimLabel(path, issuerLabel(credential, path)),
       value: option.claims[index]?.value,
       required: required.has(index),
     }))

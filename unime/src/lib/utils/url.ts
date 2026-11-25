@@ -60,6 +60,13 @@ export interface TextPart {
   url?: string;
 }
 
+/** A value the issuer marks as a URI (`format: "uri"`): one link when it is an `https` URL or a bare domain. */
+export function uriParts(uri: string): TextPart[] {
+  const trimmed = uri.trim();
+  const url = isUrl(trimmed) ? trimmed : domainUrl(trimmed);
+  return [{ text: uri, url }];
+}
+
 /**
  * Splits a claim value into text and the links in it. HTTPS URLs are links wherever they appear. A bare domain
  * is only a link when it is the whole value and either starts with `www.` or the claim is named like a website.

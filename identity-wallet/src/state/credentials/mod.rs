@@ -12,8 +12,9 @@ use identity_kit::{
     status_list::StatusType,
     vc::{CredentialV2, JwtClaims},
 };
+use log::warn;
 use oid4vc_core::{
-    claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
+    claim_path_pointer::{check_claims_description_paths, ClaimPathElement, ClaimPathPointer, ClaimPathSemantics},
     utils::jwt::get_unverified_jwt_claims,
 };
 use oid4vci::{
@@ -26,6 +27,7 @@ use ts_rs::TS;
 use url::Url;
 use uuid::Uuid;
 
+/// A top-level claim of a credential, as the issuer's claims metadata describes it (OpenID4VCI 1.0, Appendix B.2).
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
 #[ts(export, export_to = "bindings/credentials/DisplayClaim.ts")]
 pub struct DisplayClaim {
@@ -34,6 +36,28 @@ pub struct DisplayClaim {
     pub key: String,
     #[ts(type = "any")]
     pub value: serde_json::Value,
+    /// How the issuer wants the claim shown, e.g. `table`, `country` or `date`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub format: Option<String>,
+    /// The issuer's descriptions of the claims inside this one, in the issuer's order.
+    #[serde(default)]
+    pub nested: Vec<NestedDisplayClaim>,
+}
+
+/// A claim inside a [`DisplayClaim`], as the issuer's claims metadata describes it.
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
+#[ts(export, export_to = "bindings/credentials/NestedDisplayClaim.ts")]
+pub struct NestedDisplayClaim {
+    /// The path from the enclosing claim. `null` selects every item of an array (OpenID4VCI 1.0, Appendix C.1).
+    #[ts(type = "Array<string | number | null>")]
+    pub path: Vec<ClaimPathElement>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub label: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub format: Option<String>,
 }
 
 /// A credential displayable by the frontend.
@@ -173,8 +197,9 @@ impl VerifiableCredentialRecord {
                             .payload
                     );
 
+                    // The claims of an SD-JWT VC sit at the top level of its payload.
                     let display_claims: Vec<DisplayClaim> =
-                        get_display_claims(claim_descriptions, &json!(credential_subject));
+                        get_display_claims(claim_descriptions, &json!(credential_subject), &[]);
 
                     // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
                     // it can be displayed in the Frontend.
@@ -215,7 +240,9 @@ impl VerifiableCredentialRecord {
                                 AppError::Error(format!("Failed to convert Disclosed Object to Credential: {err}"))
                             })?;
 
-                    let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
+                    // The claims of a VCDM 2.0 credential sit in its `credentialSubject`.
+                    let display_claims: Vec<DisplayClaim> =
+                        get_display_claims(claim_descriptions, &json!(credential), &["credentialSubject"]);
 
                     let data = json!(credential);
 
@@ -389,43 +416,118 @@ fn parse_sd_jwt(verifiable_credential: &serde_json::Value, typ: &str) -> Result<
     Ok(sd_jwt)
 }
 
-fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_json::Value) -> Vec<DisplayClaim> {
-    claim_descriptions
-        .into_iter()
-        .map(|claim_description| {
-            let key = claim_description
-                .display
-                // TODO: Support multiple locales here. For now we just take the first one if it exists.
-                .first()
-                .and_then(|display| display.name.clone())
-                .filter(|name| !name.trim().is_empty())
-                .unwrap_or_else(|| {
-                    claim_description
-                        .path
-                        .as_ref()
-                        .iter()
-                        .rev()
-                        .find_map(|element| match element {
-                            ClaimPathElement::String(key) if !key.trim().is_empty() => Some(key.clone()),
-                            _ => None,
-                        })
-                        .unwrap_or_default()
-                });
-            let value = claim_description
-                .path
-                .get_values_from_json(data)
-                .first()
-                .cloned()
-                // TODO: Come up with a proper fallback strategy here.
-                .unwrap_or_default();
+/// The top-level claims of a credential with what the issuer's claims metadata says about them (OpenID4VCI 1.0,
+/// Appendix B). Every claims description belongs to the top-level claim its path starts with, the first element below
+/// `root`:
+/// - a description of the top-level claim itself gives its label and format;
+/// - a description of a claim inside it becomes a [`NestedDisplayClaim`], so that an Object, a List or a Table keeps its
+///   structure and labels, also when the issuer describes only the leaves.
+///
+/// The claims keep the order of their first description, which Appendix B.3 makes the display order. A claim the
+/// credential does not hold is left out.
+fn get_display_claims(
+    claim_descriptions: Vec<ClaimDescription>,
+    data: &serde_json::Value,
+    root: &[&str],
+) -> Vec<DisplayClaim> {
+    // Appendix B.3: "When a repeated or contradictory claim description is provided, the processing MUST be
+    // aborted." Without display claims, the credential shows its raw claims. The paths hold claim names, not values.
+    let paths = claim_descriptions
+        .iter()
+        .map(|claim_description| &claim_description.path);
+    if let Err(error) = check_claims_description_paths(paths, ClaimPathSemantics::Json) {
+        warn!("Ignoring the issuer's claims metadata: {error}");
+        return vec![];
+    }
 
-            DisplayClaim {
-                path: claim_description.path,
-                key,
-                value,
+    let mut display_claims: Vec<DisplayClaim> = vec![];
+    for claim_description in claim_descriptions {
+        let elements = claim_description.path.as_ref();
+        let under_root = elements.len() > root.len()
+            && root
+                .iter()
+                .zip(elements)
+                .all(|(key, element)| matches!(element, ClaimPathElement::String(name) if name == key));
+        let top_level_length = if under_root { root.len() + 1 } else { 1 };
+        let (top_level_path, nested_path) = elements.split_at(top_level_length);
+
+        let index = match display_claims
+            .iter()
+            .position(|claim| claim.path.as_ref() == top_level_path)
+        {
+            Some(index) => index,
+            None => {
+                let Ok(path) = ClaimPathPointer::try_new(top_level_path.to_vec()) else {
+                    continue;
+                };
+                let value = path.get_values_from_json(data).first().cloned().unwrap_or_default();
+                display_claims.push(DisplayClaim {
+                    key: last_key(top_level_path),
+                    path,
+                    value,
+                    format: None,
+                    nested: vec![],
+                });
+                display_claims.len() - 1
             }
+        };
+
+        let label = claim_label(&claim_description);
+        let format = claim_format(&claim_description);
+        let display_claim = &mut display_claims[index];
+        if nested_path.is_empty() {
+            if let Some(label) = label {
+                display_claim.key = label;
+            }
+            display_claim.format = format;
+        } else {
+            display_claim.nested.push(NestedDisplayClaim {
+                path: nested_path.to_vec(),
+                label,
+                format,
+            });
+        }
+    }
+
+    display_claims.retain(|claim| !claim.value.is_null());
+    display_claims
+}
+
+/// The last key of a path, the claim's name when the issuer gives no label.
+fn last_key(path: &[ClaimPathElement]) -> String {
+    path.iter()
+        .rev()
+        .find_map(|element| match element {
+            ClaimPathElement::String(key) if !key.trim().is_empty() => Some(key.clone()),
+            _ => None,
         })
-        .collect()
+        .unwrap_or_default()
+}
+
+/// The issuer's label for a claim.
+fn claim_label(claim_description: &ClaimDescription) -> Option<String> {
+    claim_description
+        .display
+        // TODO: Support multiple locales here. For now we just take the first one if it exists.
+        .first()
+        .and_then(|display| display.name.as_deref())
+        .map(|name| name.trim().to_string())
+        .filter(|name| !name.is_empty())
+}
+
+/// The issuer's `format` for a claim, a parameter of the claim's display objects next to `name` and `locale`
+/// (impierce/ssi-agent#534). A format does not depend on the language, so the first display object that has one
+/// gives it. The frontend ignores a format it does not know.
+fn claim_format(claim_description: &ClaimDescription) -> Option<String> {
+    claim_description.display.iter().find_map(|display| {
+        display
+            .additional_parameters
+            .get("format")
+            .and_then(serde_json::Value::as_str)
+            .map(str::trim)
+            .filter(|format| !format.is_empty())
+            .map(ToString::to_string)
+    })
 }
 
 #[cfg(test)]
@@ -452,6 +554,7 @@ mod tests {
                     "email": "ferris@example.com"
                 }
             }),
+            &["credentialSubject"],
         );
 
         assert_eq!(
@@ -460,7 +563,239 @@ mod tests {
                 path,
                 key: "email".to_string(),
                 value: json!("ferris@example.com"),
+                format: None,
+                nested: vec![],
             }]
+        );
+    }
+
+    /// A claims description with a label, or none.
+    fn description(path: serde_json::Value, name: Option<&str>) -> ClaimDescription {
+        match name {
+            Some(name) => from_metadata(json!({ "path": path, "display": [{ "name": name }] })),
+            None => from_metadata(json!({ "path": path })),
+        }
+    }
+
+    /// A claims description from its JSON form in the issuer metadata.
+    fn from_metadata(description: serde_json::Value) -> ClaimDescription {
+        serde_json::from_value(description).unwrap()
+    }
+
+    fn nested(path: serde_json::Value, label: Option<&str>) -> NestedDisplayClaim {
+        NestedDisplayClaim {
+            path: serde_json::from_value(path).unwrap(),
+            label: label.map(ToString::to_string),
+            format: None,
+        }
+    }
+
+    fn training_record() -> serde_json::Value {
+        json!({
+            "credentialSubject": {
+                "Trainee": { "Full name": "Ada Lovelace", "Nationality": "GB" },
+                "Websites": ["https://example.com/ada"],
+                "Courses": [
+                    { "Code": "C101", "Country": "GB" },
+                    { "Code": "C102", "Country": "IT" }
+                ]
+            }
+        })
+    }
+
+    #[test]
+    fn test_get_display_claims_nests_the_descriptions_inside_a_claim_under_it() {
+        let display_claims = get_display_claims(
+            vec![
+                description(json!(["credentialSubject", "Trainee"]), Some("Trainee")),
+                description(json!(["credentialSubject", "Trainee", "Full name"]), Some("Full name")),
+                description(
+                    json!(["credentialSubject", "Trainee", "Nationality"]),
+                    Some("Nationality"),
+                ),
+                description(json!(["credentialSubject", "Websites"]), Some("Websites")),
+                description(json!(["credentialSubject", "Websites", null]), None),
+                description(json!(["credentialSubject", "Courses"]), Some("Courses")),
+                description(json!(["credentialSubject", "Courses", null, "Code"]), Some("Code")),
+                description(
+                    json!(["credentialSubject", "Courses", null, "Country"]),
+                    Some("Country"),
+                ),
+            ],
+            &training_record(),
+            &["credentialSubject"],
+        );
+
+        let summary: Vec<_> = display_claims
+            .iter()
+            .map(|claim| (claim.key.as_str(), claim.nested.clone()))
+            .collect();
+        assert_eq!(
+            summary,
+            vec![
+                (
+                    "Trainee",
+                    vec![
+                        nested(json!(["Full name"]), Some("Full name")),
+                        nested(json!(["Nationality"]), Some("Nationality")),
+                    ]
+                ),
+                ("Websites", vec![nested(json!([null]), None)]),
+                (
+                    "Courses",
+                    vec![
+                        nested(json!([null, "Code"]), Some("Code")),
+                        nested(json!([null, "Country"]), Some("Country")),
+                    ]
+                ),
+            ]
+        );
+        assert_eq!(
+            display_claims[0].value,
+            training_record()["credentialSubject"]["Trainee"]
+        );
+        assert_eq!(
+            display_claims[2].path,
+            serde_json::from_value::<ClaimPathPointer>(json!(["credentialSubject", "Courses"])).unwrap()
+        );
+    }
+
+    #[test]
+    fn test_get_display_claims_groups_leaves_under_an_object_without_a_description() {
+        // Issuers that describe only the leaves of an Object, as UniCore does before impierce/ssi-agent#534.
+        let display_claims = get_display_claims(
+            vec![
+                description(json!(["credentialSubject", "Trainee", "Full name"]), Some("Full name")),
+                description(json!(["credentialSubject", "Websites"]), None),
+                description(
+                    json!(["credentialSubject", "Trainee", "Nationality"]),
+                    Some("Nationality"),
+                ),
+            ],
+            &training_record(),
+            &["credentialSubject"],
+        );
+
+        let summary: Vec<_> = display_claims
+            .iter()
+            .map(|claim| (claim.key.as_str(), claim.nested.len()))
+            .collect();
+        assert_eq!(summary, vec![("Trainee", 2), ("Websites", 0)]);
+    }
+
+    #[test]
+    fn test_get_display_claims_leaves_out_claims_the_credential_does_not_hold() {
+        let display_claims = get_display_claims(
+            vec![
+                description(json!(["credentialSubject", "Trainee"]), Some("Trainee")),
+                description(json!(["credentialSubject", "Certificates"]), Some("Certificates")),
+            ],
+            &training_record(),
+            &["credentialSubject"],
+        );
+
+        assert_eq!(display_claims.len(), 1);
+        assert_eq!(display_claims[0].key, "Trainee");
+    }
+
+    #[test]
+    fn test_get_display_claims_groups_sd_jwt_vc_claims_from_the_top_level() {
+        let display_claims = get_display_claims(
+            vec![
+                description(json!(["address"]), Some("Place of residence")),
+                description(json!(["address", "locality"]), Some("City")),
+                description(json!(["given_name"]), Some("Given name")),
+            ],
+            &json!({ "address": { "locality": "Berlin" }, "given_name": "Erika" }),
+            &[],
+        );
+
+        let summary: Vec<_> = display_claims
+            .iter()
+            .map(|claim| (claim.key.as_str(), claim.nested.len()))
+            .collect();
+        assert_eq!(summary, vec![("Place of residence", 1), ("Given name", 0)]);
+    }
+
+    #[test]
+    fn test_get_display_claims_ignores_claims_metadata_that_breaks_appendix_b3() {
+        let broken = [
+            // The same claim twice.
+            vec![
+                json!(["credentialSubject", "Courses"]),
+                json!(["credentialSubject", "Courses"]),
+            ],
+            // All items of an array, and a single one.
+            vec![
+                json!(["credentialSubject", "Courses", null, "Code"]),
+                json!(["credentialSubject", "Courses", 0, "Code"]),
+            ],
+            // An array, and an object.
+            vec![
+                json!(["credentialSubject", "Courses", null, "Code"]),
+                json!(["credentialSubject", "Courses", "Code"]),
+            ],
+        ];
+
+        for paths in broken {
+            let descriptions = paths.into_iter().map(|path| description(path, None)).collect();
+            assert_eq!(
+                get_display_claims(descriptions, &training_record(), &["credentialSubject"]),
+                vec![]
+            );
+        }
+    }
+
+    #[test]
+    fn test_get_display_claims_takes_the_format_from_the_display_objects() {
+        let display_claims = get_display_claims(
+            vec![
+                from_metadata(json!({
+                    "path": ["credentialSubject", "Trainee", "Nationality"],
+                    "display": [{ "name": "Nationality", "format": "country" }]
+                })),
+                from_metadata(
+                    json!({ "path": ["credentialSubject", "Websites"], "display": [{ "name": "Websites" }] }),
+                ),
+                // A display object without `name` (Appendix B.2: OPTIONAL).
+                from_metadata(
+                    json!({ "path": ["credentialSubject", "Websites", null], "display": [{ "format": "uri" }] }),
+                ),
+                // The first display object that has a format gives it, whatever its language.
+                from_metadata(json!({
+                    "path": ["credentialSubject", "Courses"],
+                    "display": [
+                        { "name": "Kurse", "locale": "de" },
+                        { "name": "Courses", "locale": "en", "format": "table" }
+                    ]
+                })),
+            ],
+            &training_record(),
+            &["credentialSubject"],
+        );
+
+        let summary: Vec<_> = display_claims
+            .iter()
+            .map(|claim| (claim.key.as_str(), claim.format.as_deref(), claim.nested.clone()))
+            .collect();
+        let with_format = |mut nested: NestedDisplayClaim, format: &str| {
+            nested.format = Some(format.to_string());
+            nested
+        };
+        assert_eq!(
+            summary,
+            vec![
+                (
+                    "Trainee",
+                    None,
+                    vec![with_format(
+                        nested(json!(["Nationality"]), Some("Nationality")),
+                        "country"
+                    )]
+                ),
+                ("Websites", None, vec![with_format(nested(json!([null]), None), "uri")]),
+                ("Kurse", Some("table"), vec![]),
+            ]
         );
     }
 
@@ -542,6 +877,8 @@ mod tests {
                 path: ClaimPathPointer::try_new(vec![ClaimPathElement::String("first_name".to_string())]).unwrap(),
                 key: "First Name".to_string(),
                 value: json!("Ferris"),
+                format: None,
+                nested: vec![],
             }]
         );
         assert_eq!(
@@ -596,6 +933,8 @@ mod tests {
                 .unwrap(),
                 key: "First Name".to_string(),
                 value: json!("Ferris"),
+                format: None,
+                nested: vec![],
             }]
         );
         assert_eq!(

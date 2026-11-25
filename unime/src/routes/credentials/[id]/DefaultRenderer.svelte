@@ -23,7 +23,12 @@
 {#if (credential.format.format === 'dc+sd-jwt' || credential.format.format === 'vc+sd-jwt') && credential.display_claims.length > 0}
   <div class="flex flex-col gap-4">
     {#each credential.display_claims as displayClaim}
-      <ClaimRenderer key={getDisplayClaimKey(displayClaim)} value={displayClaim.value} />
+      <ClaimRenderer
+        key={getDisplayClaimKey(displayClaim)}
+        value={displayClaim.value}
+        format={displayClaim.format}
+        nested={displayClaim.nested ?? []}
+      />
     {/each}
   </div>
 {:else if fields}

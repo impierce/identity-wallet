@@ -56,6 +56,22 @@ lazy_static! {
         record.display_credential.display_name = "DriverLicenseCredential".to_string();
         record
     };
+    // A VCDM 2.0 SD-JWT with Objects, Lists and Tables nested several levels deep, as UniTrust issues them: the field
+    // titles are the keys of the credential subject. All claims are plain (no disclosures), and it reuses the header and
+    // signature of `PERSONAL_INFORMATION`, since the wallet does not verify a stored credential's signature.
+    pub static ref ACADEMIC_TRANSCRIPT_PAYLOAD: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/ferris-academic-transcript-payload.json"));
+    pub static ref ACADEMIC_TRANSCRIPT: VerifiableCredentialRecord = {
+        let mut record = VerifiableCredentialRecord::try_new(
+            CredentialFormats::VcSdJwt(()),
+            json!(format!("eyJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2lkeHV3NG1tYXlRVXJndTRhbnVoS1A4blR3ZDlLTndrcG5RYUdoMnl5azJDI3o2TWtpZHh1dzRtbWF5UVVyZ3U0YW51aEtQOG5Ud2Q5S053a3BuUWFHaDJ5eWsyQyJ9.{}.C0KblQqaDxQgZvcNUYwxs5Xx7sYxVPMaTcy3ryeeer5m6PlHTk2xu0fMMN715nqY2jZ6LMxaf8Pc2sl3GZiyAw~", ACADEMIC_TRANSCRIPT_PAYLOAD.clone())),
+            vec![]
+        ).unwrap();
+        // A fixed ID, as SD-JWT credentials get a random one.
+        record.display_credential.id = "61636164-656d-6963-2d74-72616e736372".to_string();
+        record.display_credential.connection_id = Some("424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string());
+        record.display_credential.display_name = "Academic Transcript".to_string();
+        record
+    };
     pub static ref OPEN_BADGE: VerifiableCredentialRecord = {
         let mut record = VerifiableCredentialRecord::try_new(
             CredentialFormats::JwtVcJson(()),
@@ -64,6 +80,19 @@ lazy_static! {
         ).unwrap();
         record.display_credential.connection_id = Some("424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string());
         record.display_credential.display_name = "Teamwork".to_string();
+        record
+    };
+    // An Open Badge for a course certificate. It reuses the header and signature of `OPEN_BADGE`, since the wallet does
+    // not verify a stored credential's signature.
+    pub static ref MARINE_BIOLOGY_BADGE_PAYLOAD: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/ferris-marine-biology-badge-payload.json"));
+    pub static ref MARINE_BIOLOGY_BADGE: VerifiableCredentialRecord = {
+        let mut record = VerifiableCredentialRecord::try_new(
+            CredentialFormats::JwtVcJson(()),
+            json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiIsImtpZCI6ImRpZDpleGFtcGxlOjEyMyNrZXktMCJ9.{}.uNxCghKfdSVWFDmPME-j_ebmQczxxcHsF2YuqDZ9BOfegGAAJoQpOV-HEJA35afhG_wzdTaiIJ4uVLUGV_u4ig", MARINE_BIOLOGY_BADGE_PAYLOAD.clone())),
+            vec![]
+        ).unwrap();
+        record.display_credential.connection_id = Some("424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string());
+        record.display_credential.display_name = "Marine Biology 101".to_string();
         record
     };
     pub static ref EDU_BADGE: VerifiableCredentialRecord = {
@@ -147,7 +176,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     vec![
         PERSONAL_INFORMATION.clone(),
         DRIVERS_LICENSE_CREDENTIAL.clone(),
+        ACADEMIC_TRANSCRIPT.clone(),
         OPEN_BADGE.clone(),
+        MARINE_BIOLOGY_BADGE.clone(),
         EDU_BADGE.clone(),
     ]
     .into_iter()
@@ -599,11 +630,19 @@ async fn load_predefined_images() -> Result<(), AppError> {
         include_bytes!("../../../../resources/images/credential-driver-license.png"),
         &format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.display_credential.id),
     )?;
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/credential-academic-transcript.svg"),
+        &format!("{}.svg", ACADEMIC_TRANSCRIPT.display_credential.id),
+    )?;
 
     // Badges
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/badge-university-green.png"),
         &format!("{}.png", OPEN_BADGE.display_credential.id),
+    )?;
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/badge-marine-biology.jpg"),
+        &format!("{}.jpg", MARINE_BIOLOGY_BADGE.display_credential.id),
     )?;
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/edubadge-1.png"),
@@ -618,4 +657,29 @@ fn write_bytes_to_file(bytes: &[u8], file_name: &str) -> Result<File, std::io::E
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     file.write_all(bytes)?;
     Ok(file)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn the_academic_transcript_keeps_its_nested_fields() {
+        assert!(matches!(
+            ACADEMIC_TRANSCRIPT.display_credential.format,
+            CredentialFormats::VcSdJwt(())
+        ));
+        let subject = &ACADEMIC_TRANSCRIPT.display_credential.data["credentialSubject"];
+
+        assert_eq!(subject["Programme"]["Faculty"]["Address"]["City"], "Groningen");
+        assert_eq!(subject["Completed courses"].as_array().unwrap().len(), 5);
+        assert_eq!(
+            subject["Projects"][0]["Results"]["Publication"]["Reviewers"][0]["Affiliation"]["Institute"],
+            "Tidal Pool Institute"
+        );
+        assert_eq!(
+            ACADEMIC_TRANSCRIPT.display_credential.display_name,
+            "Academic Transcript"
+        );
+    }
 }

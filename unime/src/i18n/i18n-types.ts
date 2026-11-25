@@ -1422,6 +1422,28 @@ type RootTranslation = {
 				 */
 				BIRTH_PLACE: string
 			}
+			STRUCTURED: {
+				/**
+				 * I​t​e​m​ ​{​p​o​s​i​t​i​o​n​}
+				 * @param {number} position
+				 */
+				ITEM: RequiredParams<'position'>
+				/**
+				 * E​n​t​r​y​ ​{​p​o​s​i​t​i​o​n​}
+				 * @param {number} position
+				 */
+				ENTRY: RequiredParams<'position'>
+				/**
+				 * {​c​o​u​n​t​}​ ​{​{​f​i​e​l​d​|​f​i​e​l​d​s​}​}
+				 * @param {number} count
+				 */
+				FIELDS: RequiredParams<'count'>
+				/**
+				 * {​c​o​u​n​t​}​ ​{​{​e​n​t​r​y​|​e​n​t​r​i​e​s​}​}
+				 * @param {number} count
+				 */
+				ENTRIES: RequiredParams<'count'>
+			}
 		}
 		ACTIONS: {
 			EDIT: {
@@ -3634,6 +3656,24 @@ export type TranslationFunctions = {
 				 * Place of birth
 				 */
 				BIRTH_PLACE: () => LocalizedString
+			}
+			STRUCTURED: {
+				/**
+				 * Item {position}
+				 */
+				ITEM: (arg: { position: number }) => LocalizedString
+				/**
+				 * Entry {position}
+				 */
+				ENTRY: (arg: { position: number }) => LocalizedString
+				/**
+				 * {count} {{field|fields}}
+				 */
+				FIELDS: (arg: { count: number }) => LocalizedString
+				/**
+				 * {count} {{entry|entries}}
+				 */
+				ENTRIES: (arg: { count: number }) => LocalizedString
 			}
 		}
 		ACTIONS: {

@@ -1,14 +1,16 @@
 <script lang="ts">
   import ExternalLink from '$lib/components/ExternalLink.svelte';
-  import { linkifyClaim, type TextPart } from '$lib/utils/url';
+  import { linkifyClaim, uriParts, type TextPart } from '$lib/utils/url';
 
   import CollapsibleWrapper from '../CollapsibleWrapper.svelte';
 
   export let key: string;
   export let value: string;
+  /** The issuer's `format` for the claim; a `uri` is a link even where the value alone would not make one. */
+  export let format: string | undefined = undefined;
 
   let textParts: TextPart[] = [];
-  $: textParts = linkifyClaim(key, value);
+  $: textParts = format === 'uri' ? uriParts(value) : linkifyClaim(key, value);
 </script>
 
 {#if value.trim().length > 100}
