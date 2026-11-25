@@ -4,7 +4,7 @@
 
 When running UniMe via `pnpm tauri dev`, the current state of the app will be written to `debug/state.json`. It can be manually inspected or copied to be diffed later against a new state.
 
-In case you prefer to inspect the state update directly on the console, you can set the environment variable `UNIME_DEV_LOG_STATE_UPDATES_TO_CONSOLE=true` in the `unime/.env` file and then restart the app This only works in debug builds. To log full action, credential and protocol payloads as well, set `UNIME_DEV_LOG_FULL_PAYLOADS=true` (also debug builds only).
+In case you prefer to inspect the state update directly on the console, you can set the environment variable `LOG_STATE_UPDATES_TO_CONSOLE=true` in the `unime/.env` file and then restart the app This only works in debug builds. To log full action, credential and protocol payloads as well, set `LOG_FULL_PAYLOADS=true` (also debug builds only).
 
 ## Plain http
 
@@ -13,7 +13,7 @@ connects. That covers issuers, verifiers, status lists, logos and `did:web` docu
 unless it is told otherwise:
 
 ```sh
-UNIME_DEV_ALLOW_PLAIN_HTTP=true pnpm tauri dev
+UNIME_ALLOW_PLAIN_HTTP=true pnpm tauri dev
 ```
 
 - Use it for a local issuer or verifier without a certificate, such as UniCore on `http://localhost`. With it, the
@@ -25,12 +25,12 @@ UNIME_DEV_ALLOW_PLAIN_HTTP=true pnpm tauri dev
 ## Trusting a test CA
 
 UniMe trusts only the root certificates compiled into it (`webpki-roots`), on every platform. A debug build can trust
-more: set `UNIME_DEV_EXTRA_CA_CERTS` to the path of a PEM file, and the CA certificates in it are trusted on top of the
+more: set `UNIME_EXTRA_CA_CERTS` to the path of a PEM file, and the CA certificates in it are trusted on top of the
 built-in ones. This is for local test servers whose certificate comes from a test CA, such as a self-hosted conformance
 suite, or for a TLS-inspecting proxy on the development machine.
 
 ```sh
-UNIME_DEV_EXTRA_CA_CERTS=/absolute/path/to/test-ca.pem pnpm tauri dev
+UNIME_EXTRA_CA_CERTS=/absolute/path/to/test-ca.pem pnpm tauri dev
 ```
 
 - The file can hold several certificates. Use an absolute path.
@@ -51,11 +51,11 @@ endpoint in the system browser and waits for the `unime://callback` deep link wi
 take the browser's part in a debug build:
 
 ```sh
-UNIME_DEV_NO_BROWSER=true UNIME_DEV_LOG_FULL_PAYLOADS=true pnpm tauri:mcp
+UNIME_DEV_NO_BROWSER=true LOG_FULL_PAYLOADS=true pnpm tauri:mcp
 ```
 
 - With `UNIME_DEV_NO_BROWSER=true`, UniMe does not open the browser and logs a warning instead.
-- With `UNIME_DEV_LOG_FULL_PAYLOADS=true`, the authorization URL is logged at DEBUG (`Authorization URL: …`). Debug builds send
+- With `LOG_FULL_PAYLOADS=true`, the authorization URL is logged at DEBUG (`Authorization URL: …`). Debug builds send
   their logs to the WebView too, where a test reads it.
 - The test logs in at that URL and sends the code back as the deep link would: the action
   `[Credential Offer] Code received` with the `code` and `state` of the redirect.

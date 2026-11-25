@@ -156,7 +156,7 @@ rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
 
 ### Debugging
 
-You can simulate safe area insets during development by overriding CSS variables `--safe-area-inset-top` and `--safe-area-inset-button` in `unime/src/app.css`. You can add styling to the safe area insets by setting `UNIME_DEV_PUBLIC_SAFE_AREA_INSETS=true` in your `.env`.
+You can simulate safe area insets during development by overriding CSS variables `--safe-area-inset-top` and `--safe-area-inset-button` in `unime/src/app.css`. You can add styling to the safe area insets by setting `PUBLIC_STYLE_SAFE_AREA_INSETS=true` in your `.env`.
 
 ## Release a new version
 

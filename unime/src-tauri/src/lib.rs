@@ -15,7 +15,7 @@ pub fn run() {
     use tauri::Manager;
     use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
-    // Loaded first, so that `unime/.env` debug switches such as `UNIME_DEV_LOG_FULL_PAYLOADS` apply to the log filter below.
+    // Loaded first, so that `unime/.env` debug switches such as `LOG_FULL_PAYLOADS` apply to the log filter below.
     dotenvy::dotenv().ok();
 
     let mut builder = tauri::Builder::default();
@@ -35,7 +35,7 @@ pub fn run() {
             tauri_plugin_mcp_bridge::Builder::new()
                 .bind_address("127.0.0.1")
                 .base_port(
-                    std::env::var("UNIME_DEV_MCP_PORT")
+                    std::env::var("UNIME_MCP_PORT")
                         .ok()
                         .and_then(|port| port.parse().ok())
                         .unwrap_or(9223),
@@ -60,8 +60,8 @@ pub fn run() {
     } else {
         LevelFilter::Info
     };
-    // Full protocol payloads from the openid4vc crates are TRACE: only with `UNIME_DEV_LOG_FULL_PAYLOADS=true` in a debug build.
-    let oid4vc_log_level = if identity_wallet::logging::debug_flag("UNIME_DEV_LOG_FULL_PAYLOADS") {
+    // Full protocol payloads from the openid4vc crates are TRACE: only with `LOG_FULL_PAYLOADS=true` in a debug build.
+    let oid4vc_log_level = if identity_wallet::logging::debug_flag("LOG_FULL_PAYLOADS") {
         LevelFilter::Trace
     } else {
         wallet_log_level

@@ -32,8 +32,8 @@ Log lines never contain:
 - passwords and key material
 
 Release builds log at INFO. DEBUG is only available in debug builds. A developer who needs full payloads sets
-`UNIME_DEV_LOG_FULL_PAYLOADS=true` in `unime/.env` in a debug build; `identity_wallet::log_payload!` then logs them at DEBUG. It
-is a no-op in release builds, whatever the environment says. The full-state dump behind `UNIME_DEV_LOG_STATE_UPDATES_TO_CONSOLE`
+`LOG_FULL_PAYLOADS=true` in `unime/.env` in a debug build; `identity_wallet::log_payload!` then logs them at DEBUG. It
+is a no-op in release builds, whatever the environment says. The full-state dump behind `LOG_STATE_UPDATES_TO_CONSOLE`
 is likewise limited to debug builds.
 
 Full payload logging is tied to debug builds and not to Dev Mode, because Dev Mode can be switched on in release
@@ -42,7 +42,7 @@ builds through the settings screen.
 The same rules apply to the openid4vc library, whose `oid4vc*` and `siopv2` crates log through the same pipeline.
 The library cannot read UniMe's switches, so it logs full protocol payloads at TRACE and everything else at DEBUG or
 above. UniMe logs the openid4vc crates at DEBUG in debug builds and raises them to TRACE only through the same
-`UNIME_DEV_LOG_FULL_PAYLOADS` switch. Other consumers of the library see these payloads only if they log its crates at TRACE.
+`LOG_FULL_PAYLOADS` switch. Other consumers of the library see these payloads only if they log its crates at TRACE.
 
 ## Consequences
 

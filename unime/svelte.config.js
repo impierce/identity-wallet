@@ -19,11 +19,6 @@ const config = {
       '@bindings/*': '../identity-wallet/bindings/*',
       $i18n: 'src/i18n',
     },
-    // Only the development switches for the frontend (`UNIME_DEV_PUBLIC_*` in `unime/.env`) reach the client, not the
-    // backend's `UNIME_DEV_*` variables.
-    env: {
-      publicPrefix: 'UNIME_DEV_PUBLIC_',
-    },
   },
 };
 

@@ -25,9 +25,7 @@ cp unime/.env.example unime/.env
 cp identity-wallet/.env.example identity-wallet/.env
 ```
 
-The environment files are ignored by Git. Frontend feature and debugging flags live in `unime/.env`. A variable used
-only in development (debug builds, dev mode, tests, dev scripts) is named `UNIME_DEV_*`; one the frontend reads is
-`UNIME_DEV_PUBLIC_*`, SvelteKit's public prefix (`unime/svelte.config.js`). The backend
+The environment files are ignored by Git. Frontend feature and debugging flags live in `unime/.env`. The backend
 email-verification settings live in `identity-wallet/.env` or the environment. A release build fails when either is
 missing or empty, or when the host is not `https`; a debug build only warns, and email verification then fails at
 runtime. Never commit real keys or secrets.
@@ -93,7 +91,7 @@ instances neither share a wallet nor close each other. The name defaults to the 
 `identity-wallet-` prefix and is shown in the window title; the main `identity-wallet` checkout keeps the default
 identifier and wallet. Override with `--name`, `--port` and `--mcp-port`. The script prints the chosen ports; pass the
 MCP port to the Tauri MCP server's `driver_session` tool to drive that instance. Plain `pnpm tauri dev` and
-`pnpm tauri:mcp` are unchanged, and also honour `UNIME_DEV_PORT` (Vite) and `UNIME_DEV_MCP_PORT` (bridge base port) when
+`pnpm tauri:mcp` are unchanged, and also honour `UNIME_DEV_PORT` (Vite) and `UNIME_MCP_PORT` (bridge base port) when
 set by hand. Every checkout has its own `target/` directory, so the first build in a new checkout takes a while.
 
 Closing the app window ends the whole instance. Killing only the launcher (a closed shell or agent task) leaves Vite,
@@ -330,22 +328,22 @@ Logging follows `docs/adr/0003-no-personal-data-in-logs.md`, in this repository 
   Log a URL that grants access (a `credential_offer_uri`, a public link) with `identity_wallet::logging::url_host`,
   and an endpoint whose query carries request parameters with `url_without_query`.
 - Full payloads go only through `identity_wallet::log_payload!`, which logs at DEBUG in debug builds when
-  `UNIME_DEV_LOG_FULL_PAYLOADS=true` is set in `unime/.env`, and never in release builds. In the openid4vc library, full
+  `LOG_FULL_PAYLOADS=true` is set in `unime/.env`, and never in release builds. In the openid4vc library, full
   payloads are logged at TRACE; `unime/src-tauri/src/lib.rs` raises the openid4vc crates to TRACE with the same switch.
 - In the frontend, log the action type or a count, never a payload or a URL from a deep link or QR code.
 - Keep the manual `Debug` implementations that redact secrets in action payloads (`CheckPassword`, `UnlockStorage`,
   `CreateNew`). Do not add file or remote logging without revisiting `docs/adr/0002-logging-sensitive-information.md`.
 
 Every HTTP client of the wallet is `https` only (`http_client_builder`). A debug build sends plain `http` when
-`UNIME_DEV_ALLOW_PLAIN_HTTP=true` is set, for local servers without a certificate (`docs/debugging.md`); tests always may.
+`UNIME_ALLOW_PLAIN_HTTP=true` is set, for local servers without a certificate (`docs/debugging.md`); tests always may.
 The code that reads the variable is behind `#[cfg(debug_assertions)]`: keep it out of release builds.
 
-A debug build trusts the CA certificates in the PEM file `UNIME_DEV_EXTRA_CA_CERTS` names on top of the pinned
+A debug build trusts the CA certificates in the PEM file `UNIME_EXTRA_CA_CERTS` names on top of the pinned
 `webpki-roots`, for local test servers with a test CA (`docs/debugging.md`). The code is behind
 `#[cfg(debug_assertions)]`: keep it out of release builds.
 
 Release builds log at INFO; DEBUG is only available in debug builds. In debug builds, state updates are written to
-`debug/state.json` by default. Set `UNIME_DEV_LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The
+`debug/state.json` by default. Set `LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The
 `debug/`, `.env`, build output, coverage, `out/`, `node_modules/`, and `target/` paths are local artifacts and must not
 be committed.
 

@@ -428,7 +428,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
 }
 
 /// Debug builds only: with `UNIME_DEV_NO_BROWSER=true`, the authorization endpoint is not opened in the system browser. An
-/// automated test then logs in itself, with the URL from the `log_payload!` line (`UNIME_DEV_LOG_FULL_PAYLOADS=true`), and sends
+/// automated test then logs in itself, with the URL from the `log_payload!` line (`LOG_FULL_PAYLOADS=true`), and sends
 /// the code back as the `unime://callback` deep link would (`docs/debugging.md`).
 const NO_BROWSER: &str = "UNIME_DEV_NO_BROWSER";
 

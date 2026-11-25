@@ -4,9 +4,9 @@
   import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import {
-    UNIME_DEV_PUBLIC_MENU_EXPANDED,
-    UNIME_DEV_PUBLIC_SAFE_AREA_INSETS,
-    UNIME_DEV_PUBLIC_SHOW_CURRENT_ROUTE,
+    PUBLIC_DEV_MODE_MENU_EXPANDED,
+    PUBLIC_DEV_SHOW_CURRENT_ROUTE,
+    PUBLIC_STYLE_SAFE_AREA_INSETS,
   } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
@@ -165,8 +165,8 @@
     detachConsole();
   });
 
-  let expandedDevMenu = UNIME_DEV_PUBLIC_MENU_EXPANDED === 'true';
-  let styleSafeAreaInsets = UNIME_DEV_PUBLIC_SAFE_AREA_INSETS === 'true';
+  let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
+  let styleSafeAreaInsets = PUBLIC_STYLE_SAFE_AREA_INSETS === 'true';
   let showDebugMessages = false;
 
   // Tailwind considers app to be in dark theme if the class `dark` is present.
@@ -371,7 +371,7 @@
 
     if (type === 'popstate') {
       $navigationDirection = null;
-      if (UNIME_DEV_PUBLIC_SHOW_CURRENT_ROUTE === 'true') {
+      if (PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true') {
         info(`$navigationDirection: ${$navigationDirection}`);
       }
       return;
@@ -385,7 +385,7 @@
       }
     }
 
-    if (UNIME_DEV_PUBLIC_SHOW_CURRENT_ROUTE === 'true') {
+    if (PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true') {
       info(`$navigationDirection: ${$navigationDirection}`);
     }
   });
@@ -593,7 +593,7 @@ Stacking context: We have to deviate from the DOM-sequence.
       </div>
     {/if}
 
-    {#if $appState?.dev_mode !== 'Off' && UNIME_DEV_PUBLIC_SHOW_CURRENT_ROUTE === 'true'}
+    {#if $appState?.dev_mode !== 'Off' && PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true'}
       <div class="absolute bottom-4 left-4 z-50 rounded bg-orange-100 px-3 py-2 text-xs font-medium text-orange-700">
         {page.route.id}
       </div>

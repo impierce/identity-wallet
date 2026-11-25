@@ -38,7 +38,7 @@ pub fn tls_config() -> rustls::ClientConfig {
         .with_no_client_auth()
 }
 
-/// Extra trust anchors for debug builds: the PEM certificates in the file `UNIME_DEV_EXTRA_CA_CERTS` names, so a debug
+/// Extra trust anchors for debug builds: the PEM certificates in the file `UNIME_EXTRA_CA_CERTS` names, so a debug
 /// build reaches local test servers (a conformance suite, a test harness) whose certificates come from a test CA.
 /// Never part of a release build, and nothing changes when the variable is not set.
 #[cfg(debug_assertions)]
@@ -49,9 +49,9 @@ pub mod debug_trust_anchors {
     use std::sync::OnceLock;
 
     /// The environment variable naming a PEM file of test CA certificates.
-    pub const VARIABLE: &str = "UNIME_DEV_EXTRA_CA_CERTS";
+    pub const VARIABLE: &str = "UNIME_EXTRA_CA_CERTS";
 
-    /// Adds the certificates of the file `UNIME_DEV_EXTRA_CA_CERTS` names. The file is read once, with a warning that says
+    /// Adds the certificates of the file `UNIME_EXTRA_CA_CERTS` names. The file is read once, with a warning that says
     /// how many certificates it gives; a file that cannot be read, or that holds no certificate, is reported and adds
     /// nothing. Every HTTP client of the app builds its TLS configuration from here, so later calls add the same
     /// certificates without reading or logging again. The path is not logged: it can hold a user or project name.
