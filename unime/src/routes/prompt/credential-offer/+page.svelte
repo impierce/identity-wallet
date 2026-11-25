@@ -29,19 +29,25 @@
 
   let loading = $state(false);
 
-  let complete = $state(false);
-
   const imageId = logo_uri ? hash(logo_uri) : '_';
 
+  const numeric = (tx_code?.input_mode ?? 'numeric') === 'numeric';
+
+  // One box per character fits up to six boxes; a longer code, or one without a length, gets a single field.
+  const useBoxes = !!tx_code?.length && tx_code.length <= 6;
+
   const pinInput = new PinInput({
-    type: tx_code?.input_mode ?? 'numeric',
+    type: numeric ? 'numeric' : 'text',
     maxLength: tx_code?.length ?? 6,
     placeholder: '',
     onPaste: (text) => fillPinInput(pinInput, text),
-    onValueChange() {
-      complete = pinInput.value.length === tx_code?.length;
-    },
   });
+
+  let fieldValue = $state('');
+
+  const txCodeValue = $derived(useBoxes ? pinInput.value : fieldValue);
+
+  const complete = $derived(tx_code?.length ? txCodeValue.length === tx_code.length : txCodeValue.length > 0);
 
   // Going back rejects the offer, just like the "Reject" button (which is disabled while loading).
   const reject = useBackNavigation(() => {
@@ -105,16 +111,19 @@
       {/each}
     </div>
 
-    <!-- PIN Code -->
+    <!-- Transaction code -->
     {#if tx_code}
-      <!-- <div class="flex grow flex-col items-center justify-center space-x-6 p-4"> -->
-      <div>
+      <div class="w-full">
         <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-          A PIN code is required to claim the credentials.
+          {$LL.SCAN.CREDENTIAL_OFFER.TX_CODE_REQUIRED()}
         </p>
+        {#if tx_code.description}
+          <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+            {tx_code.description}
+          </p>
+        {/if}
 
-        {#if tx_code.length && tx_code.length <= 6}
-          <!-- PIN input -->
+        {#if useBoxes}
           <div {...pinInput.root} class="mt-6 flex items-center justify-center gap-2 font-mono">
             {#each pinInput.inputs as input}
               <input
@@ -124,14 +133,18 @@
             {/each}
           </div>
         {:else}
-          <!-- If length is not provided or longer than 6, fall back to a simple text input field. -->
           <input
             class="mt-6 w-full rounded-xl border border-slate-300 bg-background-alt px-3 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
-            placeholder={'Enter PIN code'}
-            bind:value={pinInput.value}
-            oninput={() => {
-              // Marks the input as complete if it holds any value.
-              complete = pinInput.value.length > 0;
+            placeholder={$LL.SCAN.CREDENTIAL_OFFER.TX_CODE_PLACEHOLDER()}
+            inputmode={numeric ? 'numeric' : 'text'}
+            autocomplete="one-time-code"
+            maxlength={tx_code.length || undefined}
+            value={fieldValue}
+            oninput={(event) => {
+              // A numeric code only takes digits, also when pasted or autofilled.
+              const value = numeric ? event.currentTarget.value.replace(/\D/g, '') : event.currentTarget.value;
+              event.currentTarget.value = value;
+              fieldValue = value;
             }}
           />
         {/if}
@@ -151,7 +164,7 @@
           type: '[Credential Offer] Selected',
           payload: {
             credential_configuration_ids: all_credential_configuration_ids,
-            tx_code: tx_code ? pinInput.value : undefined,
+            tx_code: tx_code ? txCodeValue : undefined,
           },
         });
       }}

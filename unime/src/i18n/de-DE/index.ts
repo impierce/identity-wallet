@@ -328,6 +328,8 @@ const de_DE = {
       NAVBAR_TITLE: 'Credential-Angebot',
       DESCRIPTION: 'bietet dir die folgenden Credentials an',
       ACCEPT: 'Credentials annehmen',
+      TX_CODE_REQUIRED: 'Um diese Credentials anzunehmen, ist ein Code nötig.',
+      TX_CODE_PLACEHOLDER: 'Code eingeben',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Verbindungsanfrage',

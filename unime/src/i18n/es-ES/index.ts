@@ -329,6 +329,8 @@ const es_ES = {
       NAVBAR_TITLE: 'Oferta de credenciales',
       DESCRIPTION: 'te ofrece las siguientes credenciales',
       ACCEPT: 'Acepta las credenciales',
+      TX_CODE_REQUIRED: 'Se necesita un código para aceptar estas credenciales.',
+      TX_CODE_PLACEHOLDER: 'Introduce el código',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Solicitud de conexión',
