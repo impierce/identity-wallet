@@ -42,8 +42,7 @@ const empty_state: AppState = {
   user_journey: null,
   debug_messages: [],
   history: [],
-  trust_lists: [],
-  trust_anchors: [],
+  trust_anchors: { anchors: [] },
   verified_data: {
     email_verification: null,
   },

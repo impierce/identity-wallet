@@ -3631,6 +3631,7 @@ dependencies = [
  "uuid",
  "webpki-roots 0.26.11",
  "wiremock",
+ "x509-cert",
 ]
 
 [[package]]

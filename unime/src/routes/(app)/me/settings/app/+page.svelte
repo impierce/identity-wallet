@@ -10,7 +10,7 @@
     CodeBoldIcon,
     FilesFillIcon,
     KeyFillIcon,
-    ListStarFillIcon,
+    SealCheckFillIcon,
     ShieldCheckFillIcon,
     SunFillIcon,
     TranslateFillIcon,
@@ -118,11 +118,11 @@
       </div>
 
       <div in:fade={{ duration: 200, delay: 100 }} out:fade={{ duration: 200 }}>
-        <SettingsCaretLink href="/me/settings/app/trust-list">
+        <SettingsCaretLink href="/me/settings/app/trust-anchors">
           {#snippet icon()}
-            <ListStarFillIcon class="h-5 w-5 text-primary"></ListStarFillIcon>
+            <SealCheckFillIcon class="h-5 w-5 text-primary"></SealCheckFillIcon>
           {/snippet}
-          Trusted issuers
+          Trust anchors
         </SettingsCaretLink>
       </div>
     {/if}

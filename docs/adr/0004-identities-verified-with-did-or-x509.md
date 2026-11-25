@@ -63,12 +63,23 @@ ones just verified; the connection keeps its id.
 
 ### Trust anchors
 
-X.509 identities are verified only against trust anchors the wallet holds, in `AppState::trust_anchors` (CA
-certificates, PEM). UniMe ships none yet, so until anchors are added the wallet behaves as under ADR 0001 and ADR 0005:
-an issuer verified with neither a DID document nor a certificate is accepted as unverified. Where the
-anchors of a release come from is open: an ecosystem's trusted list (for the EUDI wallet ecosystem, the trusted lists
-of ETSI TS 119 612), a list Impierce curates, or anchors the user adds. Revocation (CRL, OCSP) is not checked;
-identity-kit leaves it out of `X509Resolver`, and keeping the anchors current is the mitigation.
+X.509 identities are verified only against the enabled trust anchors the wallet holds, in `AppState::trust_anchors`
+(CA certificates). Without an enabled anchor the wallet behaves as under ADR 0001 and ADR 0005: an issuer verified with
+neither a DID document nor a certificate is accepted as unverified. Revocation (CRL, OCSP) is not checked; identity-kit
+leaves it out of `X509Resolver`, and keeping the anchors current is the mitigation.
+
+The anchors come from two sources:
+
+- **Curated by Impierce:** `identity-wallet/resources/curated_trust_anchors.json`, shipped with each release, for now
+  the CAs of the test beds UniMe tests its interoperability with. Each entry says whether it is enabled by default, so
+  testers need no developer mode for the anchors Impierce trusts. The user can enable and disable a curated anchor, not
+  change or remove it. When the state is loaded, the curated anchors are those of the running release: one no longer
+  curated is removed, and one the user left at its default follows the default of the release.
+- **Added by the user,** in developer mode: UniMe fetches a CA certificate (PEM or DER) from a URL the user enters and
+  shows it, and the user accepts or denies it. A certificate that is no CA certificate, is outside its validity period
+  or is already an anchor cannot be accepted. The user can disable and remove an anchor they added.
+
+An ecosystem's trusted list (for the EUDI wallet ecosystem, the trusted lists of ETSI TS 119 612) is not a source yet.
 
 The trust anchors of the public Web PKI are not trust anchors for identities: a TLS certificate only certifies control
 of a domain, which fetching the issuer's metadata over HTTPS already shows, and its CAs are not chosen by the wallet.

@@ -717,7 +717,7 @@ const fi_FI = {
       SHARE_PUBLIC_LINK: 'Julkisen linkin luominen epäonnistui',
       DELETE_CONNECTION: 'Yhteyden poistaminen epäonnistui',
       VERIFY_EMAIL: 'Sähköpostiosoitteen vahvistaminen epäonnistui',
-      TRUST_LIST: 'Luottamuslistan päivittäminen epäonnistui',
+      TRUST_ANCHORS: 'Luottamusankkureiden päivittäminen epäonnistui',
       SETTINGS: 'Asetusten tallentaminen epäonnistui',
       BIOMETRICS: 'Biometrisen avauksen muuttaminen epäonnistui',
       RESET_APP: 'UniMen nollaaminen epäonnistui',

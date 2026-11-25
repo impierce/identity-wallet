@@ -1,6 +1,7 @@
+use crate::state::trust_anchors::{certificate, TrustAnchor, TrustAnchorSource};
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
-use log::debug;
+use log::{debug, warn};
 use serde_json::{json, Map, Value};
 
 /// This function is used to migrate the app state from one version to the next.
@@ -12,6 +13,7 @@ pub fn apply_state_migrations(
         match current_version {
             0 => migrate_v0_to_v1(&mut app_state_object)?,
             1 => migrate_v1_to_v2(&mut app_state_object)?,
+            2 => migrate_v2_to_v3(&mut app_state_object)?,
             _ => {
                 return Err(AppError::AppStateMigrationError(
                     current_version,
@@ -79,6 +81,49 @@ fn take_did(object: &mut Map<String, Value>, field: &str) -> Option<String> {
     }
 }
 
+/// Trust anchors (ADR 0004): the trust lists are dropped, since no check used their domains, and the CA certificates
+/// of version 2 become trust anchors the user added, enabled. The curated trust anchors are added when the state is
+/// loaded, as with every version.
+fn migrate_v2_to_v3(app_state_object: &mut Map<String, Value>) -> anyhow::Result<(), AppError> {
+    app_state_object.remove("trust_lists");
+
+    let certificates = match app_state_object.remove("trust_anchors") {
+        Some(Value::Array(certificates)) => certificates,
+        // Already the trust anchors of version 3, in a state saved without its version.
+        Some(trust_anchors @ Value::Object(_)) => {
+            app_state_object.insert("trust_anchors".to_string(), trust_anchors);
+            app_state_object.insert("version".to_string(), Value::from(3));
+            return Ok(());
+        }
+        _ => Vec::new(),
+    };
+    let anchors = certificates
+        .iter()
+        .filter_map(Value::as_str)
+        .filter_map(|pem| match certificate::read(pem.as_bytes()) {
+            Ok((certificate, details)) => Some(TrustAnchor {
+                id: details.sha256_thumbprint.clone(),
+                name: certificate::subject_name(certificate.as_bytes()).unwrap_or_else(|| details.subject.clone()),
+                source: TrustAnchorSource::Added { url: None },
+                enabled: true,
+                certificate,
+                details,
+            }),
+            Err(error) => {
+                warn!("Dropping a trust anchor that is no single certificate: {error:#}");
+                None
+            }
+        })
+        .collect::<Vec<_>>();
+    app_state_object.insert(
+        "trust_anchors".to_string(),
+        json!({ "anchors": serde_json::to_value(anchors)? }),
+    );
+
+    app_state_object.insert("version".to_string(), Value::from(3));
+    Ok(())
+}
+
 /// The proofs of a DID verified by version 1, none without a DID.
 fn migrated_proofs(did: Option<String>) -> Value {
     Value::Array(
@@ -90,7 +135,10 @@ fn migrated_proofs(did: Option<String>) -> Value {
 
 #[cfg(test)]
 mod tests {
-    use crate::{migrations::apply_state_migrations, state::AppState};
+    use crate::{
+        migrations::apply_state_migrations,
+        state::{trust_anchors::TrustAnchorSource, AppState},
+    };
     use serde_json::{json, Map, Value};
 
     #[tokio::test]
@@ -105,7 +153,7 @@ mod tests {
         let expected_app_state: AppState = serde_json::from_str(
             r#"
         {
-            "version": 2,
+            "version": 3,
             "current_user_prompt": {
                 "type": "redirect",
                 "target": "welcome"
@@ -158,7 +206,7 @@ mod tests {
         let app_state = apply_state_migrations(app_state_object, 1).unwrap();
         let app_state_value = serde_json::to_value(&app_state).unwrap();
 
-        assert_eq!(app_state_value["version"], 2);
+        assert_eq!(app_state_value["version"], 3);
         let connection = &app_state_value["connections"][0];
         assert_eq!(connection["key"], json!({ "did": "did:web:issuer.example" }));
         assert_eq!(
@@ -200,5 +248,67 @@ mod tests {
             app_state_value["current_user_prompt"]["client_metadata"]["proofs"],
             json!([])
         );
+    }
+
+    #[test]
+    fn a_new_state_is_of_the_current_version_and_loads_without_migrating() {
+        use crate::state::{trust_anchors::TrustAnchors, APP_STATE_VERSION};
+
+        let state = AppState {
+            trust_anchors: TrustAnchors::default().with_curated(),
+            ..AppState::default()
+        };
+        assert_eq!(state.version, APP_STATE_VERSION);
+
+        // As `persistence::load_state` reads it: the version of the file decides which migrations run.
+        let saved = serde_json::to_value(&state).unwrap();
+        assert_eq!(saved["version"], APP_STATE_VERSION);
+    }
+
+    #[test]
+    fn trust_anchors_of_version_3_in_a_state_saved_without_its_version_are_kept() {
+        let app_state_object: Map<String, Value> = serde_json::from_value(json!({
+            "version": 2,
+            "trust_anchors": { "anchors": [] }
+        }))
+        .unwrap();
+
+        let app_state = apply_state_migrations(app_state_object, 2).unwrap();
+
+        assert_eq!(app_state.version, 3);
+        assert_eq!(app_state.trust_anchors, Default::default());
+    }
+
+    #[test]
+    fn test_migrate_v2_to_v3() {
+        use crate::state::trust_anchors::tests::root_der;
+        use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+        let root = format!(
+            "-----BEGIN CERTIFICATE-----\n{}\n-----END CERTIFICATE-----\n",
+            STANDARD.encode(root_der())
+        );
+        let app_state_object: Map<String, Value> = serde_json::from_value(json!({
+            "version": 2,
+            "trust_lists": [{
+                "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
+                "display_name": "Impierce Demos",
+                "entries": ["https://ngdil.com"]
+            }],
+            "trust_anchors": [root, "not a certificate"]
+        }))
+        .unwrap();
+
+        let app_state = apply_state_migrations(app_state_object, 2).unwrap();
+        let app_state_value = serde_json::to_value(&app_state).unwrap();
+
+        assert_eq!(app_state_value["version"], 3);
+        assert!(app_state_value.get("trust_lists").is_none());
+        let anchors = &app_state.trust_anchors.anchors;
+        assert_eq!(anchors.len(), 1);
+        assert_eq!(anchors[0].name, "x509-limbo-root");
+        assert_eq!(anchors[0].source, TrustAnchorSource::Added { url: None });
+        assert!(anchors[0].enabled);
+        assert_eq!(app_state.trust_anchors.enabled().len(), 1);
     }
 }

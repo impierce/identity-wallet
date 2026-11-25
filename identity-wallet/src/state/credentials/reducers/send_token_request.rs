@@ -154,7 +154,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata =
-            get_verified_credential_issuer_metadata(credential_issuer, &state.trust_anchors)
+            get_verified_credential_issuer_metadata(credential_issuer, &state.trust_anchors.enabled())
                 .await
                 .map_err(GetCredentialIssuerMetadataError)?;
         let credential_issuer_url = credential_issuer.url();
@@ -294,7 +294,7 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
             AppError::FlowExpiredError("Expected pending connection data for OID4VCI token request".to_string())
         })?;
         let issuer_identity = pending_connection_data.client_metadata.verified_identity().cloned();
-        let trust_anchors = state.trust_anchors.clone();
+        let trust_anchors = state.trust_anchors.enabled();
 
         // Every credential is fetched and its issuer signature verified before anything is stored, so that a credential
         // that fails leaves neither a credential nor a connection behind (ADR 0005).

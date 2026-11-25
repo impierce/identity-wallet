@@ -36,7 +36,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
         info!("credential issuer url: {credential_issuer_url:?}");
 
         let credential_issuer_metadata =
-            get_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors)
+            get_verified_credential_issuer_metadata(&credential_issuer_url, &state.trust_anchors.enabled())
                 .await
                 .ok();
 

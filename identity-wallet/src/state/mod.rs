@@ -9,7 +9,7 @@ pub mod interaction_result;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
-pub mod trust_list;
+pub mod trust_anchors;
 pub mod user_journey;
 pub mod user_prompt;
 pub mod verified_data;
@@ -32,7 +32,7 @@ use jsonwebtoken::Algorithm;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
-use trust_list::TrustLists;
+use trust_anchors::TrustAnchors;
 use ts_rs::TS;
 use verified_data::VerifiedData;
 
@@ -90,23 +90,25 @@ impl AppStateContainer {
 
 pub const SUPPORTED_SIGNING_ALGORITHMS: &[Algorithm] = &[Algorithm::EdDSA, Algorithm::ES256];
 pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
-pub const APP_STATE_VERSION: u32 = 2;
+pub const APP_STATE_VERSION: u32 = 3;
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `core_utils` field (including managers and active flow context) is skipped.
-#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone)]
-#[derivative(Debug)]
+#[derive(Serialize, Deserialize, Derivative, TS, Clone)]
+#[derivative(Debug, Default)]
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    /// The version of the serialized state. A new state is of the current version, so that it is not migrated when it
+    /// is loaded; a state file without the field is of version 0 (see `persistence::load_state`).
+    #[derivative(Default(value = "APP_STATE_VERSION"))]
     pub version: u32,
     // TODO: improve this field to include all active dids, right now it has to be derived from the preferred key type which did is actually stored here for did:key and did:jwk. An improvement could look like: #[ts(type = "Map<[string, string], string>")] \n pub dids: HashMap<(String, Algorithm), String>.
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
-    pub trust_lists: TrustLists,
-    /// The CA certificates, in PEM, that X.509 identities are verified against (ADR 0004). None by default.
-    pub trust_anchors: Vec<String>,
+    /// The trust anchors X.509 identities are verified against (ADR 0004): the curated ones and those the user added.
+    pub trust_anchors: TrustAnchors,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]

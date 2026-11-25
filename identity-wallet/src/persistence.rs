@@ -96,9 +96,10 @@ pub async fn load_state() -> Result<AppState, AppError> {
         }
     };
 
-    // A result pop-up belongs to the session it happened in.
+    // A result pop-up belongs to the session it happened in. The curated trust anchors are those of this version.
     Ok(AppState {
         interaction_result: None,
+        trust_anchors: app_state.trust_anchors.with_curated(),
         ..app_state
     })
 }

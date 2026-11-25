@@ -277,11 +277,15 @@
       "reason": "Empty placeholder that no screen links to."
     },
     {
-      "route": "/me/settings/app/trust-list",
+      "route": "/me/settings/app/trust-anchors",
       "reason": "Developer mode tool that is not part of the documented features."
     },
     {
-      "route": "/me/settings/app/trust-list/[id]",
+      "route": "/me/settings/app/trust-anchors/[id]",
+      "reason": "Developer mode tool that is not part of the documented features."
+    },
+    {
+      "route": "/me/settings/app/trust-anchors/add",
       "reason": "Developer mode tool that is not part of the documented features."
     }
   ]

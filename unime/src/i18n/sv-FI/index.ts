@@ -719,7 +719,7 @@ const sv_FI = {
       SHARE_PUBLIC_LINK: 'Kunde inte skapa en offentlig länk',
       DELETE_CONNECTION: 'Kunde inte radera anslutningen',
       VERIFY_EMAIL: 'Kunde inte verifiera din e-postadress',
-      TRUST_LIST: 'Kunde inte uppdatera förtroendelistan',
+      TRUST_ANCHORS: 'Kunde inte uppdatera förtroendeankarna',
       SETTINGS: 'Kunde inte spara inställningarna',
       BIOMETRICS: 'Kunde inte ändra biometrisk upplåsning',
       RESET_APP: 'Kunde inte återställa UniMe',
