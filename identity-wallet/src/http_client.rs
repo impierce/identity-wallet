@@ -67,15 +67,35 @@ pub fn get_http_client_builder() -> reqwest::ClientBuilder {
 ///
 /// It has no timeout for a whole request, like that default client: the library retries a request that times out,
 /// and a slow token or credential request must not be sent twice. The time limit of an action bounds the request.
+///
+/// The library sends these requests to URLs a remote party supplies (a credential offer, an authorization request,
+/// metadata), so the client has the guards of the public-destination client: it follows no redirect and connects
+/// only to public addresses, see [`openid4vc_http_client_builder`].
 pub fn get_openid4vc_http_client() -> Client {
     OPENID4VC_HTTP_CLIENT
         .get_or_init(|| {
             // No `Client::new()` fallback: it drops the pinned `webpki-roots` anchors (#746).
-            http_client_builder(plain_http_allowed())
+            openid4vc_http_client_builder(private_destinations_allowed(), env_proxy_hosts())
                 .build()
                 .expect("HTTP client with pinned roots could not be built")
         })
         .clone()
+}
+
+/// The builder of [`get_openid4vc_http_client`]:
+/// - **No redirect is followed**, as by the library's own default client: a redirect could lead a request, and what it
+///   carries, to an address the remote party's URL never named.
+/// - **Public addresses only** for host names, see [`PublicAddressResolver`]; `allow_private` lifts that, and
+///   `proxy_hosts` names the proxies exempt from it.
+///
+/// An IP literal never reaches a resolver, so a URL with a private IP address is not refused here.
+fn openid4vc_http_client_builder(allow_private: bool, proxy_hosts: Vec<String>) -> reqwest::ClientBuilder {
+    http_client_builder(plain_http_allowed())
+        .redirect(reqwest::redirect::Policy::none())
+        .dns_resolver(PublicAddressResolver {
+            allow_private,
+            proxy_hosts,
+        })
 }
 
 /// Returns a globally shared HTTP client configured with `webpki-roots` TLS, which retries transient failures up to
@@ -585,6 +605,54 @@ mod tests {
         assert!(client(false).get(url.clone()).send().await.is_err());
         assert!(client(true).get(url).send().await.unwrap().status().is_success());
         assert_eq!(server.received_requests().await.unwrap().len(), 1);
+    }
+
+    #[tokio::test]
+    async fn the_openid4vc_client_connects_only_to_public_addresses() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/"))
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+        let url = Url::parse(&format!("http://localhost:{}/", server.address().port())).unwrap();
+        let client = |allow_private| {
+            openid4vc_http_client_builder(allow_private, Vec::new())
+                .no_proxy()
+                .build()
+                .unwrap()
+        };
+
+        assert!(client(false).get(url.clone()).send().await.is_err());
+        assert!(client(true).get(url).send().await.unwrap().status().is_success());
+        assert_eq!(server.received_requests().await.unwrap().len(), 1);
+    }
+
+    #[tokio::test]
+    async fn the_openid4vc_client_follows_no_redirect() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/token"))
+            .respond_with(ResponseTemplate::new(307).insert_header("location", "/elsewhere"))
+            .mount(&server)
+            .await;
+        Mock::given(method("GET"))
+            .and(path("/elsewhere"))
+            .respond_with(ResponseTemplate::new(200))
+            .expect(0)
+            .mount(&server)
+            .await;
+
+        let response = openid4vc_http_client_builder(true, Vec::new())
+            .no_proxy()
+            .build()
+            .unwrap()
+            .get(format!("{}/token", server.uri()))
+            .send()
+            .await
+            .unwrap();
+
+        assert_eq!(response.status().as_u16(), 307);
     }
 
     /// reqwest connects to a proxy through the same resolver, so the proxy's own host must not be filtered, even when it
