@@ -27,4 +27,8 @@ impl ActionTrait for CredentialOffersSelected {
             reducer!(sort_connections),
         ]
     }
+
+    fn answers_request(&self) -> bool {
+        true
+    }
 }

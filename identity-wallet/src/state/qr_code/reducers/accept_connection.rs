@@ -200,6 +200,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             core_utils: CoreUtils {
                 active_flow: Some(active_flow),
                 pending_connection_data: Some(pending_connection_data),
+                flow_started_at: Some(std::time::Instant::now()),
                 ..state.core_utils
             },
             ..state

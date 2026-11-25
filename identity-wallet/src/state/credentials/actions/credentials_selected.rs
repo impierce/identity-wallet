@@ -46,6 +46,10 @@ impl ActionTrait for CredentialsSelected {
         ]
     }
 
+    fn answers_request(&self) -> bool {
+        true
+    }
+
     fn time_limit(&self) -> Duration {
         CREDENTIALS_SELECTED_TIME_LIMIT
     }
