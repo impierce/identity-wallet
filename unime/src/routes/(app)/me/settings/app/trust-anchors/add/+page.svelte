@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
+  import { goto } from '$app/navigation';
+
   import { Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { useParentRoute } from '$lib/navigation';
@@ -78,7 +80,7 @@
         label="Accept"
         on:click={async () => {
           await dispatch({ type: '[Trust Anchors] Accept' });
-          navigateUp();
+          goto('/me/settings/app/trust-anchors/added', { replaceState: true });
         }}
       />
       <Button label="Deny" variant="secondary" on:click={() => dispatch({ type: '[Trust Anchors] Deny' })} />

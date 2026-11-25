@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom';
 
+import { goto } from '$app/navigation';
+
 import type { AppState } from '@bindings/AppState';
 import type { PendingTrustAnchor } from '@bindings/trust_anchors/PendingTrustAnchor';
 import { fireEvent, render, screen } from '@testing-library/svelte';
@@ -14,6 +16,7 @@ import Page from './+page.svelte';
 vi.mock('@lottiefiles/lottie-player', () => ({}));
 vi.mock('$lib/dispatcher', () => ({ dispatch: vi.fn() }));
 vi.mock('$lib/navigation', () => ({ useParentRoute: () => vi.fn() }));
+vi.mock('$app/navigation', () => ({ goto: vi.fn() }));
 
 function renderWith(pending?: PendingTrustAnchor) {
   appState.set({
@@ -51,6 +54,9 @@ describe('adding a trust anchor', () => {
 
     await fireEvent.click(screen.getByRole('button', { name: 'Accept' }));
     expect(dispatch).toHaveBeenCalledWith({ type: '[Trust Anchors] Accept' });
+    await vi.waitFor(() =>
+      expect(goto).toHaveBeenCalledWith('/me/settings/app/trust-anchors/added', { replaceState: true }),
+    );
   });
 
   test('explains why a certificate cannot be a trust anchor, and offers no way to accept it', async () => {

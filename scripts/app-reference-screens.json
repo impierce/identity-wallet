@@ -287,6 +287,14 @@
     {
       "route": "/me/settings/app/trust-anchors/add",
       "reason": "Developer mode tool that is not part of the documented features."
+    },
+    {
+      "route": "/me/settings/app/trust-anchors/added",
+      "reason": "Developer mode tool that is not part of the documented features."
+    },
+    {
+      "route": "/me/settings/app/trust-anchors/curated",
+      "reason": "Developer mode tool that is not part of the documented features."
     }
   ]
 }

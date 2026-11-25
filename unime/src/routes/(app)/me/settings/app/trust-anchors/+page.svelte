@@ -1,47 +1,29 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import type { TrustAnchor } from '@bindings/trust_anchors/TrustAnchor';
-
-  import { Button, Switch, TopNavBar } from '$lib/components';
-  import { dispatch } from '$lib/dispatcher';
+  import { Button, TopNavBar } from '$lib/components';
   import { CaretRightBoldIcon, InfoRegularIcon } from '$lib/icons';
   import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
-  import { summary } from './trustAnchor';
+  import { listSummary } from './trustAnchor';
 
   const navigateUp = useParentRoute('/me/settings/app');
 
   const anchors = $derived($appState.trust_anchors.anchors);
-  const curated = $derived(anchors.filter((anchor) => anchor.source.type === 'curated'));
-  const added = $derived(anchors.filter((anchor) => anchor.source.type === 'added'));
-  const locale = $derived($appState.profile_settings.locale);
+  const lists = $derived([
+    {
+      name: 'Curated by Impierce',
+      href: '/me/settings/app/trust-anchors/curated',
+      anchors: anchors.filter((anchor) => anchor.source.type === 'curated'),
+    },
+    {
+      name: 'Added by you',
+      href: '/me/settings/app/trust-anchors/added',
+      anchors: anchors.filter((anchor) => anchor.source.type === 'added'),
+    },
+  ]);
 </script>
-
-{#snippet anchorRow(anchor: TrustAnchor)}
-  <div data-testid="trust-anchor" class="flex w-full items-center gap-3 rounded-xl bg-white p-4 dark:bg-dark">
-    <button
-      class="flex min-w-0 grow items-center gap-2 text-left"
-      onclick={() => goto(`/me/settings/app/trust-anchors/${anchor.id}`)}
-    >
-      <div class="flex min-w-0 grow flex-col">
-        <p class="text-[13px]/[20px] font-medium break-words text-slate-800 dark:text-white">{anchor.name}</p>
-        <p class="text-[12px]/[18px] font-medium text-slate-500 dark:text-slate-300">{summary(anchor, locale)}</p>
-      </div>
-      <CaretRightBoldIcon class="h-4 w-4 shrink-0 text-slate-500" />
-    </button>
-    <Switch
-      checked={anchor.enabled}
-      onCheckedChange={({ next }) => {
-        dispatch({ type: '[Trust Anchors] Toggle', payload: { id: anchor.id } });
-        return next;
-      }}
-    >
-      <span class="sr-only">{anchor.enabled ? 'Disable' : 'Enable'} {anchor.name}</span>
-    </Switch>
-  </div>
-{/snippet}
 
 <TopNavBar on:back={navigateUp} title="Trust anchors" class="sticky top-0 z-10" />
 
@@ -64,24 +46,19 @@
   </div>
 
   <div class="flex flex-col gap-[10px]">
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Curated by Impierce</p>
-    {#each curated as anchor (anchor.id)}
-      {@render anchorRow(anchor)}
-    {:else}
-      <p class="py-4 text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-        No curated anchors in this version.
-      </p>
-    {/each}
-  </div>
-
-  <div class="flex flex-col gap-[10px]">
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Added by you</p>
-    {#each added as anchor (anchor.id)}
-      {@render anchorRow(anchor)}
-    {:else}
-      <p class="py-4 text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-        You haven't added any anchors.
-      </p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trust lists</p>
+    {#each lists as list (list.href)}
+      <button
+        data-testid="trust-anchor-list"
+        class="flex min-h-14 w-full items-center gap-4 rounded-xl bg-white p-4 dark:bg-dark"
+        onclick={() => goto(list.href)}
+      >
+        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">{list.name}</p>
+        <p class="text-right text-[13px]/[24px] font-medium text-slate-400 dark:text-slate-300">
+          {listSummary(list.anchors)}
+        </p>
+        <CaretRightBoldIcon class="h-4 w-4 shrink-0 text-slate-500" />
+      </button>
     {/each}
   </div>
 

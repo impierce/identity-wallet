@@ -11,15 +11,21 @@ export function isExpired(anchor: TrustAnchor, now: number = Date.now()): boolea
   return now / 1000 > anchor.details.not_after || now / 1000 < anchor.details.not_before;
 }
 
-/** One line on `anchor` for a list: when it expires, and for a curated one whether that is its default. */
+/** One line on `anchor` for a list: when its certificate expires. */
 export function summary(anchor: TrustAnchor, locale: string, now: number = Date.now()): string {
-  const validity = isExpired(anchor, now)
+  return isExpired(anchor, now)
     ? 'Expired or not yet valid'
     : `Valid until ${formatCertificateDate(anchor.details.not_after, locale)}`;
-  if (anchor.source.type === 'curated' && anchor.enabled !== anchor.source.enabled_by_default) {
-    return `${validity} · ${anchor.source.enabled_by_default ? 'on' : 'off'} by default`;
-  }
-  return validity;
+}
+
+/** One line on a list of anchors for the list of lists: how many there are, and how many of them are enabled. */
+export function listSummary(anchors: TrustAnchor[]): string {
+  const enabled = anchors.filter((anchor) => anchor.enabled).length;
+  if (anchors.length === 0) return 'Empty list';
+  if (anchors.length === 1) return enabled === 1 ? '1 anchor, enabled' : '1 anchor, disabled';
+  if (enabled === anchors.length) return `${anchors.length} anchors, all enabled`;
+  if (enabled === 0) return `${anchors.length} anchors, none enabled`;
+  return `${enabled} of ${anchors.length} anchors enabled`;
 }
 
 export const refusalText: Record<TrustAnchorRefusal, string> = {

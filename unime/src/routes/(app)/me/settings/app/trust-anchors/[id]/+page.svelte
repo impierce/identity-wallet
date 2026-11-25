@@ -9,9 +9,14 @@
 
   import TrustAnchorDetails from '../TrustAnchorDetails.svelte';
 
-  const navigateUp = useParentRoute('/me/settings/app/trust-anchors');
-
   const anchor = $derived($appState.trust_anchors.anchors.find((anchor) => anchor.id === page.params.id));
+
+  // Back to the list the anchor is in; to the lists when it no longer exists.
+  const navigateUp = useParentRoute(() =>
+    anchor
+      ? `/me/settings/app/trust-anchors/${anchor.source.type === 'curated' ? 'curated' : 'added'}`
+      : '/me/settings/app/trust-anchors',
+  );
 </script>
 
 <TopNavBar on:back={navigateUp} title={anchor?.name ?? 'Trust anchor'} class="sticky top-0 z-10" />

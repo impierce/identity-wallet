@@ -57,6 +57,7 @@ pub async fn fetch_trust_anchor(state: AppState, action: Action) -> Result<AppSt
             pending: Some(PendingTrustAnchor { anchor, refusal }),
             ..state.trust_anchors
         },
+        current_user_prompt: None,
         ..state
     })
 }
@@ -127,7 +128,11 @@ pub async fn accept_trust_anchor(state: AppState, _action: Action) -> Result<App
     }
     info!("Added trust anchor {}", anchor.id);
     trust_anchors.anchors.push(anchor);
-    Ok(AppState { trust_anchors, ..state })
+    Ok(AppState {
+        trust_anchors,
+        current_user_prompt: None,
+        ..state
+    })
 }
 
 /// Discards the certificate under review.
@@ -138,6 +143,7 @@ pub async fn deny_trust_anchor(state: AppState, _action: Action) -> Result<AppSt
             pending: None,
             ..state.trust_anchors
         },
+        current_user_prompt: None,
         ..state
     })
 }
@@ -153,7 +159,11 @@ pub async fn toggle_trust_anchor(state: AppState, action: Action) -> Result<AppS
         .ok_or_else(|| TrustAnchorNotFoundError(id.clone()))?;
     anchor.enabled = !anchor.enabled;
     info!("Trust anchor {id} enabled: {}", anchor.enabled);
-    Ok(AppState { trust_anchors, ..state })
+    Ok(AppState {
+        trust_anchors,
+        current_user_prompt: None,
+        ..state
+    })
 }
 
 /// Removes a trust anchor the user added. A curated one can only be disabled.
@@ -175,7 +185,11 @@ pub async fn remove_trust_anchor(state: AppState, action: Action) -> Result<AppS
     }
     trust_anchors.anchors.remove(index);
     info!("Removed trust anchor {id}");
-    Ok(AppState { trust_anchors, ..state })
+    Ok(AppState {
+        trust_anchors,
+        current_user_prompt: None,
+        ..state
+    })
 }
 
 #[cfg(test)]
@@ -305,6 +319,30 @@ mod tests {
             check_scheme(&Url::parse("file:///etc/ssl/root.crt").unwrap(), true),
             Err(InvalidInputError(_))
         ));
+    }
+
+    #[tokio::test]
+    async fn clears_a_pending_redirect_so_the_screen_stays() {
+        use crate::state::user_prompt::CurrentUserPrompt;
+
+        let curated = anchor(
+            TrustAnchorSource::Curated {
+                enabled_by_default: true,
+            },
+            true,
+        );
+        let mut state = AppState::default();
+        state.trust_anchors.anchors.push(curated.clone());
+        // Left by unlocking; the frontend follows it on every state update until it is cleared.
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
+        });
+
+        let state = toggle_trust_anchor(state, Arc::new(ToggleTrustAnchor { id: curated.id.clone() }))
+            .await
+            .unwrap();
+
+        assert!(state.current_user_prompt.is_none());
     }
 
     #[tokio::test]
