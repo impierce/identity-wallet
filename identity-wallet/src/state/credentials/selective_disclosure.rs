@@ -37,7 +37,7 @@ pub fn claims_to_disclose(
     let present = |index: &usize| {
         claims
             .get(*index)
-            .is_some_and(|claim| !claim.path.get_values_from_json(credential_json).is_empty())
+            .is_some_and(|claim| claim.path.get_values_from_json(credential_json).is_ok())
     };
     let claim_sets = claim_sets(credential_query);
 
@@ -182,7 +182,8 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
     let value_counts = |value: &Value| -> Vec<usize> {
         claim_paths
             .iter()
-            .map(|claim_path| claim_path.get_values_from_json(value).len())
+            // Nothing selected, or a path that does not fit, counts as no value (OpenID4VP 1.0, Section 7.1.1).
+            .map(|claim_path| claim_path.get_values_from_json(value).map_or(0, |values| values.len()))
             .collect()
     };
     let before = value_counts(&Value::Object(processed.payload.clone()));

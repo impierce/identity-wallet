@@ -145,7 +145,10 @@ fn credential_option(credential_query: &CredentialQuery, record: &VerifiableCred
         .iter()
         .zip(concealable)
         .map(|(path, concealable)| {
-            let mut values = path.get_values_from_json(&credential_json);
+            // A path that selects nothing, or does not fit the credential's structure, aborts processing (OpenID4VP
+            // 1.0, Section 7.1.1): the claim has no value to show. Whether the credential matches at all is the DCQL
+            // evaluation's to decide.
+            let mut values = path.get_values_from_json(&credential_json).unwrap_or_default();
             let value = match values.len() {
                 0 => Value::Null,
                 1 => values.remove(0),
@@ -253,7 +256,19 @@ pub fn satisfies_credential_query(
         return false;
     };
     match DecodedPresentations::try_new(vec![credential_object.clone()]) {
-        Ok(decoded_presentations) => evaluate_credential_query(credential_query, &decoded_presentations),
+        // A claims path that does not fit the credential's structure aborts the evaluation (OpenID4VP 1.0, Section
+        // 7.1.1): such a credential does not satisfy the query.
+        Ok(decoded_presentations) => match evaluate_credential_query(credential_query, &decoded_presentations) {
+            Ok(satisfied) => satisfied,
+            Err(_) => {
+                debug!(
+                    "Credential does not fit the query's claims paths; id: {:?}, format: {:?}",
+                    verifiable_credential_record.display_credential.id,
+                    verifiable_credential_record.display_credential.format,
+                );
+                false
+            }
+        },
         Err(e) => {
             debug!(
                 "Failed to decode credential into DecodedPresentations; id: {:?}, format: {:?}, error: {:?}",
@@ -370,7 +385,7 @@ mod tests {
     /// [`satisfies_credential_query`] decides it.
     fn matches(credential_query: &CredentialQuery, credential: Value) -> bool {
         let presentations = DecodedPresentations::try_new(vec![credential.as_object().unwrap().clone()]).unwrap();
-        evaluate_credential_query(credential_query, &presentations)
+        evaluate_credential_query(credential_query, &presentations).unwrap_or(false)
     }
 
     // A query without `claims` still asks for a type (`meta`), which `evaluate_credential_query` checks since

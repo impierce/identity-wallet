@@ -460,7 +460,12 @@ fn get_display_claims(
                 let Ok(path) = ClaimPathPointer::try_new(top_level_path.to_vec()) else {
                     continue;
                 };
-                let value = path.get_values_from_json(data).first().cloned().unwrap_or_default();
+                // A claim the credential does not have selects nothing (OpenID4VP 1.0, Section 7.1.1): no value.
+                let value = path
+                    .get_values_from_json(data)
+                    .ok()
+                    .and_then(|values| values.into_iter().next())
+                    .unwrap_or_default();
                 display_claims.push(DisplayClaim {
                     key: last_key(top_level_path),
                     path,
