@@ -15,6 +15,9 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/LoadIssuedCredentials.ts")]
 pub struct LoadIssuedCredentials {
+    /// Chosen by the frontend and returned in the page, so that it can tell the answer to its latest request from a
+    /// page that is still in the state.
+    pub request_id: u32,
     pub connection_id: String,
     pub search_term: String,
     pub offset: u32,

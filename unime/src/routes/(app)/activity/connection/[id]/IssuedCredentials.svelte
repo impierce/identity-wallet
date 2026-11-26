@@ -25,6 +25,8 @@
   let items: IssuedCredential[] = [];
   let total = 0;
   let loading = false;
+  let requestId = 0;
+  let pendingRequest: number | undefined;
   let loaded = false;
   let unavailable = false;
   let sentinel: HTMLElement;
@@ -33,9 +35,16 @@
 
   function load(offset: number) {
     loading = true;
+    pendingRequest = ++requestId;
     dispatch({
       type: '[Connection] Load issued credentials',
-      payload: { connection_id: connection.id, search_term: requestedTerm, offset, limit: PAGE_SIZE },
+      payload: {
+        request_id: pendingRequest,
+        connection_id: connection.id,
+        search_term: requestedTerm,
+        offset,
+        limit: PAGE_SIZE,
+      },
     });
   }
 
@@ -47,18 +56,14 @@
     load(0);
   }
 
-  // The backend keeps only the last requested page; this list collects the pages scrolled through so far.
+  // The backend keeps only the last requested page; this list collects the pages scrolled through so far. Every state
+  // update carries that page, so only the answer to the pending request is taken, once.
   $: receive($state.issued_credentials);
 
   function receive(page: typeof $state.issued_credentials) {
-    if (!page || page.connection_id !== connection.id || page.search_term !== requestedTerm) return;
-    if (page.offset === 0) {
-      items = page.items;
-    } else if (page.offset === items.length) {
-      items = [...items, ...page.items];
-    } else {
-      return;
-    }
+    if (!page || page.request_id !== pendingRequest || page.connection_id !== connection.id) return;
+    pendingRequest = undefined;
+    items = page.offset === 0 ? page.items : [...items, ...page.items];
     total = page.total;
     unavailable = page.unavailable;
     loaded = true;

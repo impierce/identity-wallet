@@ -45,12 +45,19 @@ pub struct IssuedCredential {
     /// The wallet holds a credential of this configuration from this connection.
     #[serde(default)]
     pub owned: bool,
+    /// The names of all display languages, to recognise credentials stored before their configuration id was recorded,
+    /// which kept the name of the first display rather than the one shown here.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub display_names: Vec<String>,
 }
 
 /// A page of the credentials a connection issues that match `search_term`.
 #[derive(Serialize, Deserialize, TS, Clone, Debug, PartialEq, Default)]
 #[ts(export, export_to = "bindings/connections/IssuedCredentialsPage.ts")]
 pub struct IssuedCredentialsPage {
+    /// The `request_id` of the request this page answers.
+    pub request_id: u32,
     pub connection_id: String,
     pub search_term: String,
     pub offset: u32,
@@ -110,6 +117,7 @@ pub async fn load_page(
         items,
         total,
         unavailable: false,
+        ..Default::default()
     }
 }
 
@@ -155,11 +163,12 @@ pub fn from_metadata(metadata: &CredentialIssuerMetadata, locale: &Locale) -> Ve
         .credential_configurations_supported
         .iter()
         .map(|(id, configuration)| {
-            let display = configuration
+            let displays = configuration
                 .credential_metadata
                 .as_ref()
                 .and_then(|credential_metadata| credential_metadata.display.as_deref())
-                .and_then(|display| localized(display, locale));
+                .unwrap_or_default();
+            let display = localized(displays, locale);
             IssuedCredential {
                 id: id.clone(),
                 name: display
@@ -170,6 +179,7 @@ pub fn from_metadata(metadata: &CredentialIssuerMetadata, locale: &Locale) -> Ve
                     .and_then(|display| display.logo.as_ref())
                     .map(|logo| logo.uri.to_string()),
                 owned: false,
+                display_names: displays.iter().map(|display| display.name.clone()).collect(),
             }
         })
         .collect();
@@ -219,7 +229,7 @@ pub fn mark_owned(page: &mut IssuedCredentialsPage, credentials: &[DisplayCreden
             from_connection.iter().any(
                 |credential| match credential.metadata.credential_configuration_id.as_deref() {
                     Some(id) => id == item.id,
-                    None => credential.display_name == item.name,
+                    None => item.display_names.contains(&credential.display_name),
                 },
             );
     }
@@ -336,6 +346,7 @@ mod tests {
                 description: (index % 10 == 0).then(|| "Tenth".to_string()),
                 logo_uri: None,
                 owned: false,
+                display_names: vec![format!("Badge {index:03}")],
             })
             .collect();
 
@@ -382,6 +393,7 @@ mod tests {
             description: None,
             logo_uri: None,
             owned: false,
+            display_names: vec![name.to_string()],
         };
         let credential = |connection_id: &str, configuration_id: Option<&str>, name: &str| DisplayCredential {
             connection_id: Some(connection_id.to_string()),
@@ -415,6 +427,27 @@ mod tests {
 
         let owned: Vec<_> = page.items.iter().map(|item| item.owned).collect();
         assert_eq!(owned, vec![true, true, false, false]);
+    }
+
+    #[test]
+    fn marks_an_older_credential_stored_under_another_language() {
+        let mut page = IssuedCredentialsPage {
+            connection_id: "issuer".to_string(),
+            items: from_metadata(&metadata(), &Locale::en_US),
+            ..Default::default()
+        };
+        // Issuance stored the first display name, the Dutch one.
+        let credential = DisplayCredential {
+            connection_id: Some("issuer".to_string()),
+            display_name: "Zwemdiploma".to_string(),
+            ..Default::default()
+        };
+
+        mark_owned(&mut page, &[credential]);
+
+        let swimming = page.items.iter().find(|item| item.id == "b").unwrap();
+        assert_eq!(swimming.name, "Swimming certificate");
+        assert!(swimming.owned);
     }
 
     #[tokio::test]

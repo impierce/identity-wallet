@@ -6,6 +6,7 @@
   import { fly } from 'svelte/transition';
 
   import type { Connection } from '@bindings/connections/Connection';
+  import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { History, Tabs, TopNavBar } from '$lib/components';
   import { returnRoute, useParentRoute } from '$lib/navigation';
@@ -20,15 +21,18 @@
   $: connection = $state.connections.find((c) => c.id === page.params.id)!;
 
   // Issuers only: connections that issued credentials before `credential_issuer` was recorded are known by those.
-  const isIssuer =
-    !!connection.credential_issuer ||
-    $state.credentials.some((credential) => credential.connection_id === connection.id);
-
-  let triggers: string[] = [
-    $LL.CONNECTION.TABS.SUMMARY(),
-    ...(isIssuer ? [$LL.CONNECTION.TABS.OFFERS()] : []),
-    $LL.CONNECTION.TABS.ACTIVITY(),
+  const issues = (connection: Connection, credentials: DisplayCredential[]) =>
+    !!connection.credential_issuer || credentials.some((credential) => credential.connection_id === connection.id);
+  const tabs = (isIssuer: boolean, ll: typeof $LL): string[] => [
+    ll.CONNECTION.TABS.SUMMARY(),
+    ...(isIssuer ? [ll.CONNECTION.TABS.OFFERS()] : []),
+    ll.CONNECTION.TABS.ACTIVITY(),
   ];
+
+  let isIssuer = issues(connection, $state.credentials);
+  $: isIssuer = issues(connection, $state.credentials);
+  let triggers = tabs(isIssuer, $LL);
+  $: triggers = tabs(isIssuer, $LL);
   // A history entry may still hold a tab that no longer exists (such as the removed Data tab).
   let activeTab: Writable<string> = writable(
     page.state.tab && triggers.includes(page.state.tab) ? page.state.tab : triggers[0],
@@ -37,6 +41,14 @@
 
   let credentialsOpened = false;
   $: if (isIssuer && $activeTab === triggers[1]) credentialsOpened = true;
+
+  // SvelteKit reuses this page when it navigates straight to another connection.
+  let shownConnectionId = connection.id;
+  $: if (connection.id !== shownConnectionId) {
+    shownConnectionId = connection.id;
+    credentialsOpened = false;
+    $activeTab = triggers[0];
+  }
 
   const navigateUp = useParentRoute(() => returnRoute('/activity'));
 
@@ -63,7 +75,9 @@
         {#if isIssuer}
           <!-- Mounted once the tab is first opened, so the issuer metadata is only fetched when asked for. -->
           {#if credentialsOpened}
-            <IssuedCredentials {connection} />
+            {#key connection.id}
+              <IssuedCredentials {connection} />
+            {/key}
           {/if}
         {:else}
           <History connectionId={connection.id} />
