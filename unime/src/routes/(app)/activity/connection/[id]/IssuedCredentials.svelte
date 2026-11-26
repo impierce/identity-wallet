@@ -17,6 +17,7 @@
 
   const PAGE_SIZE = 20;
   const SEARCH_DELAY = 300;
+  const ANSWER_GRACE_MS = 1000;
   // Whole class strings: Tailwind only emits classes it finds literally in the source.
   const TINTS = ['bg-primary', 'bg-slate-700', 'bg-slate-400'];
 
@@ -33,19 +34,29 @@
   let observer: IntersectionObserver | undefined;
   let timer: ReturnType<typeof setTimeout>;
 
-  function load(offset: number) {
+  async function load(offset: number) {
     loading = true;
-    pendingRequest = ++requestId;
-    dispatch({
+    const request = ++requestId;
+    pendingRequest = request;
+    await dispatch({
       type: '[Connection] Load issued credentials',
       payload: {
-        request_id: pendingRequest,
+        request_id: request,
         connection_id: connection.id,
         search_term: requestedTerm,
         offset,
         limit: PAGE_SIZE,
       },
     });
+    // `dispatch` resolves once the backend is done, also when the action failed or timed out, in which case no page
+    // follows. The page of a successful load is emitted before that, so a short grace period covers its delivery.
+    setTimeout(() => {
+      if (pendingRequest !== request) return;
+      pendingRequest = undefined;
+      loading = false;
+      loaded = true;
+      unavailable = true;
+    }, ANSWER_GRACE_MS);
   }
 
   function reload() {
@@ -199,7 +210,8 @@ The credentials a connection issues, read from its issuer metadata page by page 
     </p>
   {/if}
 
-  <div bind:this={sentinel} class="flex justify-center py-4">
+  <!-- Not a scroll anchor: kept in view, it would pull the list down as pages are added and load them all. -->
+  <div bind:this={sentinel} class="flex justify-center py-4 [overflow-anchor:none]">
     {#if loading}
       <LoadingSpinner class="size-6" />
     {/if}
