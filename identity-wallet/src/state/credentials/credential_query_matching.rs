@@ -2,7 +2,9 @@ use crate::error::AppError;
 use crate::state::{
     connections::Connection,
     credentials::{
-        selective_disclosure::{claim_sets, concealable_claims, supports_selective_disclosure},
+        selective_disclosure::{
+            claim_sets, claims_to_disclose, concealable_claims, presented_payload, supports_selective_disclosure,
+        },
         CredentialStatusType, VerifiableCredentialRecord,
     },
 };
@@ -21,7 +23,6 @@ use oid4vp::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::collections::HashSet;
 use ts_rs::TS;
 
 /// A credential query from an OID4VP request together with the stored credentials that satisfy it.
@@ -256,73 +257,63 @@ pub fn satisfies_credential_query(
     let Some(credential_data) = credential_data(credential_query, verifiable_credential_record) else {
         return false;
     };
-    let Some(credential_object) = credential_data.as_object() else {
-        return false;
-    };
-    let decoded_presentations = match DecodedPresentations::try_new(vec![credential_object.clone()]) {
-        Ok(decoded_presentations) => decoded_presentations,
-        Err(e) => {
-            debug!(
-                "Failed to decode credential into DecodedPresentations; id: {:?}, format: {:?}, error: {:?}",
-                verifiable_credential_record.display_credential.id,
-                verifiable_credential_record.display_credential.format,
-                e
-            );
-            return false;
-        }
-    };
-    let Some(credential_query) = without_unfitting_claims(credential_query, &credential_data) else {
-        return false;
-    };
-    match evaluate_credential_query(&credential_query, &decoded_presentations) {
-        Ok(satisfied) => satisfied,
-        // Every remaining claims path fits; anything else the evaluation refuses does not match either.
-        Err(_) => {
-            debug!(
-                "Credential does not fit the query; id: {:?}, format: {:?}",
-                verifiable_credential_record.display_credential.id,
-                verifiable_credential_record.display_credential.format,
-            );
-            false
-        }
+    let sd_jwt = verifiable_credential_record.verifiable_credential.as_str();
+    let satisfied = presented_data(credential_query, credential_data, sd_jwt)
+        .is_some_and(|presented| presentation_satisfies(credential_query, &presented));
+    if !satisfied {
+        debug!(
+            "Credential does not fit the query; id: {:?}, format: {:?}",
+            verifiable_credential_record.display_credential.id, verifiable_credential_record.display_credential.format,
+        );
     }
+    satisfied
 }
 
-/// The query a stored credential is matched against. A claims query whose path does not fit the credential's
-/// structure aborts its processing (OpenID4VP 1.0, Section 7.1.1), so the credential cannot satisfy it. With
-/// `claim_sets` the Wallet answers with one option it can satisfy (Section 6.4.1): such a claim is left out, with every
-/// option that names it, and the credential is matched against the options left. `None` when no option is left, or
-/// when, without `claim_sets`, every claim is required.
-fn without_unfitting_claims(credential_query: &CredentialQuery, credential: &Value) -> Option<CredentialQuery> {
+/// Whether `presented`, the data of a credential as presented, satisfies `credential_query` as a Verifier evaluates
+/// it: every claims query in `claims`, whichever `claim_sets` option names it, has to fit the data.
+pub fn presentation_satisfies(credential_query: &CredentialQuery, presented: &Value) -> bool {
+    evaluate_presented(credential_query, presented).is_some_and(|evaluation| evaluation.unwrap_or(false))
+}
+
+/// Whether every claims query in `credential_query`, whichever `claim_sets` option names it, fits `presented`, the
+/// data of a credential as presented: a path that does not fit makes a Verifier reject the presentation (OpenID4VP
+/// 1.0, Section 7.1.1).
+pub fn presentation_fits(credential_query: &CredentialQuery, presented: &Value) -> bool {
+    evaluate_presented(credential_query, presented).is_some_and(|evaluation| evaluation.is_ok())
+}
+
+fn evaluate_presented(
+    credential_query: &CredentialQuery,
+    presented: &Value,
+) -> Option<Result<bool, oid4vp::dcql_evaluation::DcqlEvaluationError>> {
+    let decoded_presentations = DecodedPresentations::try_new(vec![presented.as_object()?.clone()]).ok()?;
+    Some(evaluate_credential_query(credential_query, &decoded_presentations))
+}
+
+/// The data a Verifier evaluates the query against when the stored credential with `credential_data` is presented for
+/// it, with the claims disclosed by default. A claims query whose path does not fit the data aborts processing
+/// (OpenID4VP 1.0, Section 7.1.1), whichever `claim_sets` option names it, so such a value has to stay out of the
+/// presentation: concealed, in a selectively disclosable format (`sd_jwt`). `None` when it cannot.
+fn presented_data(credential_query: &CredentialQuery, credential_data: Value, sd_jwt: Option<&str>) -> Option<Value> {
     let claims = credential_query.claims.as_deref().unwrap_or_default();
     let fits = |claim: &ClaimQuery| {
         !matches!(
-            claim.path.get_values_from_json(credential),
+            claim.path.get_values_from_json(&credential_data),
             Err(error) if !matches!(error, ClaimPathProcessingError::NothingSelected { .. })
         )
     };
     if claims.iter().all(fits) {
-        return Some(credential_query.clone());
+        return Some(credential_data);
     }
-    let claim_sets = credential_query.claim_sets.as_ref()?;
-    let unfitting: HashSet<&str> = claims
-        .iter()
-        .filter(|claim| !fits(claim))
-        .filter_map(|claim| claim.id.as_deref())
-        .collect();
-    let options: Vec<Vec<String>> = claim_sets
-        .iter()
-        .filter(|option| option.iter().all(|id| !unfitting.contains(id.as_str())))
-        .cloned()
-        .collect();
-    if options.is_empty() {
+    if !supports_selective_disclosure(&credential_query.format) {
         return None;
     }
-    Some(CredentialQuery {
-        claims: Some(claims.iter().filter(|claim| fits(claim)).cloned().collect()),
-        claim_sets: Some(options),
-        ..credential_query.clone()
-    })
+    let claim_paths: Vec<_> = claims_to_disclose(credential_query, &credential_data, None)
+        .ok()?
+        .into_iter()
+        .map(|index| &claims[index].path)
+        .collect();
+    presented_payload(sd_jwt?, &credential_query.format, &claim_paths).ok()
 }
 
 pub fn credential_data(
@@ -375,7 +366,9 @@ fn requested_types(credential_query: &CredentialQuery) -> Vec<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::state::credentials::selective_disclosure::tests::unsigned_sd_jwt;
     use crate::state::credentials::{CredentialMetadata, DisplayCredential};
+    use identity_kit::sd_jwt_vc::ClaimPath;
     use serde_json::json;
 
     fn record(date_issued: &str, valid_from: Option<&str>) -> VerifiableCredentialRecord {
@@ -426,11 +419,14 @@ mod tests {
     }
 
     /// Whether a stored credential with `credential` as its data satisfies `credential_query`, as
-    /// [`satisfies_credential_query`] decides it.
+    /// [`satisfies_credential_query`] decides it, for the SD-JWT `sd_jwt` when the credential is one.
+    fn satisfies(credential_query: &CredentialQuery, credential: Value, sd_jwt: Option<&str>) -> bool {
+        presented_data(credential_query, credential, sd_jwt)
+            .is_some_and(|presented| presentation_satisfies(credential_query, &presented))
+    }
+
     fn matches(credential_query: &CredentialQuery, credential: Value) -> bool {
-        let presentations = DecodedPresentations::try_new(vec![credential.as_object().unwrap().clone()]).unwrap();
-        without_unfitting_claims(credential_query, &credential)
-            .is_some_and(|query| evaluate_credential_query(&query, &presentations).unwrap_or(false))
+        satisfies(credential_query, credential, None)
     }
 
     // A query without `claims` still asks for a type (`meta`), which `evaluate_credential_query` checks since
@@ -458,28 +454,50 @@ mod tests {
     }
 
     #[test]
-    fn a_claim_path_that_does_not_fit_leaves_out_only_the_options_naming_it() {
+    fn a_claim_path_that_does_not_fit_matches_only_when_the_value_is_concealed() {
         // `nationalities` is a string, not an array: `["nationalities", null]` aborts processing (OpenID4VP 1.0,
-        // Section 7.1.1).
+        // Section 7.1.1), also when only an option the Wallet does not answer with names it.
         let credential = json!({ "vct": "urn:eudi:pid:1", "nationalities": "NL", "birthdate": "1990-01-01" });
         let claims = json!([
             { "id": "nationality", "path": ["nationalities", null] },
             { "id": "birthdate", "path": ["birthdate"] }
         ]);
+        let either = query_with_claims(claims.clone(), Some(json!([["nationality"], ["birthdate"]])));
+        let disclosable = unsigned_sd_jwt(credential.clone(), vec![ClaimPath::new(["nationalities"])]);
+        let always_disclosed = unsigned_sd_jwt(credential.clone(), vec![ClaimPath::new(["birthdate"])]);
 
-        // Another option is satisfied: the credential matches.
-        assert!(matches(
-            &query_with_claims(claims.clone(), Some(json!([["nationality"], ["birthdate"]]))),
-            credential.clone()
+        // Another option is satisfied and the value is concealed: the credential matches.
+        assert!(satisfies(&either, credential.clone(), Some(&disclosable)));
+        // The value stays in the presentation: no match.
+        assert!(!satisfies(&either, credential.clone(), Some(&always_disclosed)));
+        let jwt_vc_json: CredentialQuery = serde_json::from_value(json!({
+            "id": "pid",
+            "format": "jwt_vc_json",
+            "meta": { "type_values": [["VerifiableCredential"]] },
+            "claims": [
+                { "id": "nationality", "path": ["credentialSubject", "nationalities", null] },
+                { "id": "birthdate", "path": ["credentialSubject", "birthdate"] }
+            ],
+            "claim_sets": [["nationality"], ["birthdate"]]
+        }))
+        .unwrap();
+        assert!(!matches(
+            &jwt_vc_json,
+            json!({ "type": ["VerifiableCredential"], "credentialSubject": { "nationalities": "NL", "birthdate": "1990-01-01" } })
         ));
         // Every option names the claim that does not fit: no match.
-        assert!(!matches(
+        assert!(!satisfies(
             &query_with_claims(claims.clone(), Some(json!([["nationality", "birthdate"]]))),
-            credential.clone()
+            credential.clone(),
+            Some(&disclosable)
         ));
         // Without `claim_sets` every claim is required: no match.
-        assert!(!matches(&query_with_claims(claims, None), credential.clone()));
-        // A claim that is merely missing is not left out: its option is just not satisfied.
+        assert!(!satisfies(
+            &query_with_claims(claims, None),
+            credential.clone(),
+            Some(&disclosable)
+        ));
+        // A claim that is merely missing does not abort processing: its option is just not satisfied.
         let missing = json!([{ "id": "address", "path": ["address"] }, { "id": "birthdate", "path": ["birthdate"] }]);
         assert!(matches(
             &query_with_claims(missing.clone(), Some(json!([["address"], ["birthdate"]]))),

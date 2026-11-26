@@ -263,6 +263,16 @@ pub fn conceal_unrequested_claims(
         .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))
 }
 
+/// The payload of `sd_jwt` as presented with only the disclosures needed to reveal the claims at `claim_paths`.
+pub fn presented_payload(sd_jwt: &str, format: &Format, claim_paths: &[&ClaimPathPointer]) -> Result<Value, AppError> {
+    sd_jwt_payload(&conceal_unrequested_claims(sd_jwt, format, claim_paths)?)
+}
+
+/// The payload of `sd_jwt` with its disclosures applied.
+pub fn sd_jwt_payload(sd_jwt: &str) -> Result<Value, AppError> {
+    parse(sd_jwt).map(|(_, processed)| Value::Object(processed.payload))
+}
+
 #[cfg(test)]
 pub(crate) mod tests {
     use super::*;
@@ -375,7 +385,7 @@ pub(crate) mod tests {
     }
 
     /// An SD-JWT of `claims` with the claims at `concealed` selectively disclosable, under a fake signature.
-    fn unsigned_sd_jwt(claims: Value, concealed: Vec<ClaimPath>) -> String {
+    pub(crate) fn unsigned_sd_jwt(claims: Value, concealed: Vec<ClaimPath>) -> String {
         use base64::Engine as _;
         let Value::Object(claims) = claims else {
             panic!("claims must be an object")
