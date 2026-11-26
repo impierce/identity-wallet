@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 use url::Url;
 
-use crate::http_client::post_encoded_form_to_public_destination;
+use crate::http_client::{plain_http_allowed, post_encoded_form_to_public_destination};
 
 /// The outcome of the last interaction with an issuer or verifier, shown to the user in the result pop-up.
 #[derive(Debug, TS, Clone, Serialize, Deserialize, PartialEq)]
@@ -19,6 +19,38 @@ pub struct InteractionResult {
     /// Display name of the issuer or verifier.
     pub counterparty: String,
     pub outcome: InteractionOutcome,
+    /// The host a verifier asks the user to continue at after an accepted presentation. The result pop-up names it
+    /// on the button that opens the verifier's `redirect_uri`.
+    pub continue_to: Option<String>,
+    /// The verifier's `redirect_uri` behind [`Self::continue_to`]. It can carry a response code, so it stays in the
+    /// backend: it is neither sent to the frontend nor written to disk.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub redirect_uri: Option<Url>,
+}
+
+impl InteractionResult {
+    /// The result of an interaction that ends in the wallet.
+    pub fn new(kind: InteractionKind, counterparty: String, outcome: InteractionOutcome) -> Self {
+        InteractionResult {
+            kind,
+            counterparty,
+            outcome,
+            continue_to: None,
+            redirect_uri: None,
+        }
+    }
+
+    /// Adds the `redirect_uri` the verifier asks the user to continue at.
+    pub fn continuing_at(self, redirect_uri: Option<Url>) -> Self {
+        InteractionResult {
+            continue_to: redirect_uri
+                .as_ref()
+                .and_then(|redirect_uri| redirect_uri.host_str().map(ToString::to_string)),
+            redirect_uri,
+            ..self
+        }
+    }
 }
 
 #[derive(Debug, TS, Clone, Serialize, Deserialize, PartialEq)]
@@ -88,18 +120,70 @@ impl InteractionOutcome {
     }
 }
 
+/// How a verifier's Response Endpoint answered an authorization response.
+#[derive(Debug, PartialEq)]
+pub struct ResponseAnswer {
+    pub outcome: InteractionOutcome,
+    /// Where the verifier asks the user to continue after an accepted response: "When this parameter is present the
+    /// Wallet MUST redirect the user agent to this URI" (OpenID4VP 1.0, Section 8.2). UniMe offers it to the user and
+    /// opens it when they choose to, see [`redirect_uri_of`].
+    pub redirect_uri: Option<Url>,
+}
+
+impl From<InteractionOutcome> for ResponseAnswer {
+    fn from(outcome: InteractionOutcome) -> Self {
+        ResponseAnswer {
+            outcome,
+            redirect_uri: None,
+        }
+    }
+}
+
 /// Sends an authorization response with the `direct_post` response mode and reports how the verifier answered.
 ///
-/// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code reaches the user.
+/// Unlike `ProviderManager::send_response`, this reads the response body, so a verifier's error code and its
+/// `redirect_uri` reach the caller.
 pub async fn send_authorization_response<E: Extension>(
     authorization_response: &AuthorizationResponse<E>,
-) -> InteractionOutcome {
+) -> ResponseAnswer {
     match to_form_urlencoded_string(authorization_response) {
         Ok(encoded) => post_authorization_response(&authorization_response.redirect_uri, encoded).await,
         Err(error) => InteractionOutcome::NotSent {
             reason: error.to_string(),
-        },
+        }
+        .into(),
     }
+}
+
+/// The `redirect_uri` in the JSON a Response Endpoint answered an accepted response with, when it is one UniMe offers
+/// the user to continue at. The verifier chooses it freely, and it is opened outside the wallet, so:
+/// - the Response Endpoint was reached over `https`: over plain `http` anyone on the way could have written the answer;
+/// - it is an `https` URL: no other scheme is handed to the system to open;
+/// - it has no user name or password, which a browser shows in front of the host to mislead;
+/// - its host is a domain name, not an IP address. An internationalized name is in its ASCII form here, so that is
+///   also what the user is shown.
+///
+/// `local` lifts the `https` and domain name rules for a verifier on the developer's machine, where requests over plain
+/// `http` are allowed ([`plain_http_allowed`]: debug builds with `UNIME_ALLOW_PLAIN_HTTP=true`).
+fn redirect_uri_of(body: &str, response_uri: &Url, local: bool) -> Option<Url> {
+    if response_uri.scheme() != "https" && !local {
+        return None;
+    }
+    let json: serde_json::Value = serde_json::from_str(body).ok()?;
+    let redirect_uri = Url::parse(json.get("redirect_uri")?.as_str()?).ok()?;
+
+    let is_web_address = match redirect_uri.scheme() {
+        "https" => true,
+        "http" => local,
+        _ => false,
+    };
+    let has_credentials = !redirect_uri.username().is_empty() || redirect_uri.password().is_some();
+    let has_named_host = match redirect_uri.host() {
+        Some(url::Host::Domain(_)) => true,
+        Some(_) => local,
+        None => false,
+    };
+    (is_web_address && !has_credentials && has_named_host).then_some(redirect_uri)
 }
 
 /// Posts an encoded authorization response to the verifier's Response Endpoint. It carries the user's credentials,
@@ -116,9 +200,11 @@ pub async fn send_authorization_response<E: Extension>(
 ///
 /// [`InteractionOutcome::NotSent`] means no answer came back. Any other outcome means the endpoint answered, and so
 /// has the credentials.
-async fn post_authorization_response(response_uri: &str, encoded: String) -> InteractionOutcome {
-    let not_sent = |error: anyhow::Error| InteractionOutcome::NotSent {
-        reason: format!("{:#}", error.context("Failed to send the authorization response")),
+async fn post_authorization_response(response_uri: &str, encoded: String) -> ResponseAnswer {
+    let not_sent = |error: anyhow::Error| {
+        ResponseAnswer::from(InteractionOutcome::NotSent {
+            reason: format!("{:#}", error.context("Failed to send the authorization response")),
+        })
     };
 
     let response_uri = match Url::parse(response_uri) {
@@ -131,16 +217,19 @@ async fn post_authorization_response(response_uri: &str, encoded: String) -> Int
     };
 
     let status = response.status();
-    if status.is_success() {
-        return InteractionOutcome::Approved;
-    }
-
     // An answer that is too large or cannot be read is treated as an empty one: the status still decides the outcome.
     let body = bounded_text(response).await.unwrap_or_default();
-    InteractionOutcome::rejected(status.as_u16(), &body)
+    if status.is_success() {
+        return ResponseAnswer {
+            outcome: InteractionOutcome::Approved,
+            redirect_uri: redirect_uri_of(&body, &response_uri, plain_http_allowed()),
+        };
+    }
+
+    InteractionOutcome::rejected(status.as_u16(), &body).into()
 }
 
-/// The largest answer of a Response Endpoint that is read: far above any error body.
+/// The largest answer of a Response Endpoint that is read: far above an error body or a `redirect_uri`.
 const MAX_ANSWER_SIZE: usize = 1 << 20;
 
 /// The body of `response` as text, read in chunks so that a verifier cannot make the wallet hold more than
@@ -164,8 +253,153 @@ mod tests {
 
     const ENCODED: &str = "vp_token=%7B%7D&state=abc";
 
-    async fn post_to(response_endpoint: &MockServer) -> InteractionOutcome {
+    async fn answer_of(response_endpoint: &MockServer) -> ResponseAnswer {
         post_authorization_response(&format!("{}/response", response_endpoint.uri()), ENCODED.to_string()).await
+    }
+
+    async fn post_to(response_endpoint: &MockServer) -> InteractionOutcome {
+        answer_of(response_endpoint).await.outcome
+    }
+
+    fn response_uri() -> Url {
+        "https://verifier.example/response".parse().unwrap()
+    }
+
+    fn redirect_uri_in(redirect_uri: &str, local: bool) -> Option<Url> {
+        let body = serde_json::json!({ "redirect_uri": redirect_uri }).to_string();
+        redirect_uri_of(&body, &response_uri(), local)
+    }
+
+    #[test]
+    fn reads_the_redirect_uri_of_a_response_endpoint() {
+        assert_eq!(
+            redirect_uri_in("https://verifier.example/done#response_code=091535f6", false)
+                .unwrap()
+                .as_str(),
+            "https://verifier.example/done#response_code=091535f6"
+        );
+
+        // No body, another JSON, or a value that is no URL: nowhere to continue.
+        for body in ["", "{}", r#"{"redirect_uri":"done"}"#, r#"{"redirect_uri":42}"#] {
+            assert_eq!(redirect_uri_of(body, &response_uri(), false), None, "{body}");
+        }
+    }
+
+    #[test]
+    fn only_https_addresses_are_offered() {
+        for other in [
+            "javascript:alert(1)",
+            "file:///etc/passwd",
+            "unime://x",
+            "openid4vp://?client_id=x",
+            "data:text/html,x",
+            "http://verifier.example/done",
+        ] {
+            assert_eq!(redirect_uri_in(other, false), None, "{other}");
+        }
+        // Not even for a local verifier is another scheme than `http` and `https` opened.
+        for other in ["javascript:alert(1)", "file:///etc/passwd", "unime://x"] {
+            assert_eq!(redirect_uri_in(other, true), None, "{other}");
+        }
+    }
+
+    #[test]
+    fn an_address_that_hides_its_host_is_not_offered() {
+        for hidden in [
+            // A user name or password in front of the host reads as the host.
+            "https://bank.example@attacker.example/",
+            "https://bank.example:secret@attacker.example/",
+            // An address without a name.
+            "https://203.0.113.7/",
+            "https://[2001:db8::1]/",
+            "https://2130706433/",
+        ] {
+            assert_eq!(redirect_uri_in(hidden, false), None, "{hidden}");
+        }
+        // Credentials are refused for a local verifier as well.
+        assert_eq!(redirect_uri_in("http://bank.example@localhost:8080/", true), None);
+    }
+
+    #[test]
+    fn the_host_is_shown_as_the_browser_resolves_it() {
+        // A name that looks like `apple.example` in another script is offered in its ASCII form.
+        let result = InteractionResult::new(
+            InteractionKind::Presentation,
+            "Verifier".to_string(),
+            InteractionOutcome::Approved,
+        )
+        .continuing_at(redirect_uri_in("https://\u{430}pple.example/done", false));
+
+        assert_eq!(result.continue_to.as_deref(), Some("xn--pple-43d.example"));
+    }
+
+    #[test]
+    fn a_response_endpoint_reached_over_http_cannot_send_the_user_on() {
+        let body = r#"{"redirect_uri":"https://verifier.example/done"}"#;
+        let over_http: Url = "http://verifier.example/response".parse().unwrap();
+
+        assert_eq!(redirect_uri_of(body, &over_http, false), None);
+        assert!(redirect_uri_of(body, &response_uri(), false).is_some());
+    }
+
+    #[test]
+    fn a_local_verifier_is_reached_over_http_in_debug_builds() {
+        let body = r#"{"redirect_uri":"http://127.0.0.1:8080/done"}"#;
+        let local: Url = "http://127.0.0.1:8080/response".parse().unwrap();
+
+        assert!(redirect_uri_of(body, &local, true).is_some());
+        assert_eq!(redirect_uri_of(body, &local, false), None);
+    }
+
+    #[test]
+    fn the_redirect_uri_is_not_sent_to_the_frontend() {
+        let result = InteractionResult::new(
+            InteractionKind::Presentation,
+            "Verifier".to_string(),
+            InteractionOutcome::Approved,
+        )
+        .continuing_at(redirect_uri_in(
+            "https://verifier.example/done#response_code=091535f6",
+            false,
+        ));
+
+        let sent = serde_json::to_value(&result).unwrap();
+        assert_eq!(sent["continue_to"], "verifier.example");
+        assert!(!sent.to_string().contains("response_code"), "{sent}");
+    }
+
+    #[tokio::test]
+    async fn an_accepted_presentation_offers_the_redirect_uri_of_the_response_endpoint() {
+        let response_endpoint = MockServer::start().await;
+        Mock::given(method("POST"))
+            .and(path("/response"))
+            .respond_with(
+                ResponseTemplate::new(200).set_body_string(r#"{"redirect_uri":"https://verifier.example/done"}"#),
+            )
+            .mount(&response_endpoint)
+            .await;
+
+        // The mock is reached over `http`, which tests allow as a debug build with `UNIME_ALLOW_PLAIN_HTTP=true` does.
+        let answer = answer_of(&response_endpoint).await;
+        assert_eq!(answer.outcome, InteractionOutcome::Approved);
+        assert_eq!(
+            answer.redirect_uri.as_ref().map(Url::as_str),
+            Some("https://verifier.example/done")
+        );
+    }
+
+    #[tokio::test]
+    async fn a_rejected_presentation_offers_no_redirect_uri() {
+        let response_endpoint = MockServer::start().await;
+        Mock::given(method("POST"))
+            .respond_with(
+                ResponseTemplate::new(400)
+                    .set_body_string(r#"{"error":"invalid_request","redirect_uri":"https://verifier.example/done"}"#),
+            )
+            .mount(&response_endpoint)
+            .await;
+
+        assert_eq!(answer_of(&response_endpoint).await.redirect_uri, None);
     }
 
     #[tokio::test]
@@ -258,7 +492,9 @@ mod tests {
     async fn a_presentation_is_not_sent_to_an_address_that_is_not_a_web_address() {
         for response_uri in ["file:///etc/hosts", "not a URL"] {
             assert!(matches!(
-                post_authorization_response(response_uri, ENCODED.to_string()).await,
+                post_authorization_response(response_uri, ENCODED.to_string())
+                    .await
+                    .outcome,
                 InteractionOutcome::NotSent { .. }
             ));
         }

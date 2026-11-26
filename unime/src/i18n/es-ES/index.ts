@@ -703,6 +703,8 @@ const es_ES = {
     NO_RESPONSE: 'Sin respuesta',
     UNKNOWN_ERROR: 'unknown_error',
     AUTO_CLOSE: 'Se cierra automáticamente en {seconds} s',
+    CONTINUE_TO: 'Continuar en {host}',
+    CONTINUE_BODY: '{name} te pide que continúes en {host}. Se abrirá tu navegador.',
     DONE: 'Hecho',
     TRY_AGAIN: 'Reintentar',
     COPY_DETAILS: 'Copiar detalles del error',

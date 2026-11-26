@@ -52,11 +52,11 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
     })
     .unwrap_or_default();
     let interaction_result = |outcome| {
-        Some(InteractionResult {
-            kind: InteractionKind::Issuance,
-            counterparty: issuer_name.clone(),
+        Some(InteractionResult::new(
+            InteractionKind::Issuance,
+            issuer_name.clone(),
             outcome,
-        })
+        ))
     };
 
     let previous_state = state.clone();

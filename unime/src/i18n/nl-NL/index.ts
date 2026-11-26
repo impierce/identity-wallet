@@ -703,6 +703,8 @@ const nl_NL = {
     NO_RESPONSE: 'Geen antwoord',
     UNKNOWN_ERROR: 'unknown_error',
     AUTO_CLOSE: 'Sluit automatisch over {seconds} s',
+    CONTINUE_TO: 'Verder naar {host}',
+    CONTINUE_BODY: '{name} vraagt je om verder te gaan op {host}. Hiervoor wordt je browser geopend.',
     DONE: 'Klaar',
     TRY_AGAIN: 'Opnieuw proberen',
     COPY_DETAILS: 'Foutdetails kopiëren',
