@@ -27,6 +27,9 @@ use oid4vci::authorization_request::CodeChallengeMethod;
 use oid4vci::InteractionType;
 use oid4vci::{
     authorization_details::{AuthorizationDetailsObject, OpenidCredential},
+    credential_issuer::{
+        credential_issuer_identifier::CredentialIssuerIdentifier, credential_issuer_metadata::CredentialIssuerMetadata,
+    },
     credential_offer::Grants,
     pkce,
 };
@@ -202,25 +205,11 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                     // Generate an encrypted code challenge accordingly
                     let code_challenge = pkce::code_challenge(&code_verifier);
 
-                    let authorization_details: Vec<AuthorizationDetailsObject> = credential_configurations_supported
-                        .keys()
-                        .map(|credential_configuration_id| AuthorizationDetailsObject {
-                            r#type: OpenidCredential::Type,
-                            locations: None,
-                            credential_configuration_id: credential_configuration_id.clone(),
-                            credential_identifiers: None,
-                            // Note: Technically, the Wallet can make use of the `claims` parameter to communicate
-                            // to the Authorization Server that it requires certain claims to be included in the to
-                            // be issued credential (see https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#appendix-B.1-3.2).
-                            // However, in practice at this point, it is unlikely that there are any Authorization
-                            // Servers that support this. Since larger PAR requests (that inlcude the `claims`
-                            // property) may trigger undefined server-side behaviour we choose to omit the `claims`
-                            // property for now until there is a clear use case and support for it.
-                            // In general, the actual use case of the `mandatory` property in the VCI metadata is
-                            // questioned as can be observed in this (inactive) issue: https://github.com/openid/OpenID4VCI/issues/433
-                            claims: None,
-                        })
-                        .collect();
+                    let authorization_details = authorization_details(
+                        credential_configurations_supported.keys(),
+                        credential_issuer,
+                        &credential_issuer_metadata,
+                    );
 
                     let wallet_state = Uuid::new_v4().to_string();
 
@@ -455,9 +444,85 @@ fn open_authorization_endpoint(
         .map_err(|err| AppError::BrowserUnavailableError(format!("Failed to open URL in browser: {err}")))
 }
 
+/// The `authorization_details` of the Authorization Request: one `openid_credential` object per offered credential
+/// configuration. When the Issuer metadata names `authorization_servers`, each has `locations` set to the Credential
+/// Issuer Identifier, as received in the offer: "If the Credential Issuer metadata contains an authorization_servers
+/// parameter, the authorization detail's locations common data field MUST be set to the Credential Issuer Identifier
+/// value" (OpenID4VCI 1.0, Section 5.1.1).
+fn authorization_details<'a>(
+    credential_configuration_ids: impl IntoIterator<Item = &'a String>,
+    credential_issuer: &CredentialIssuerIdentifier,
+    credential_issuer_metadata: &CredentialIssuerMetadata,
+) -> Vec<AuthorizationDetailsObject> {
+    let locations =
+        (!credential_issuer_metadata.authorization_servers.is_empty()).then(|| vec![credential_issuer.clone()]);
+    credential_configuration_ids
+        .into_iter()
+        .map(|credential_configuration_id| AuthorizationDetailsObject {
+            r#type: OpenidCredential::Type,
+            locations: locations.clone(),
+            credential_configuration_id: credential_configuration_id.clone(),
+            credential_identifiers: None,
+            // Note: Technically, the Wallet can make use of the `claims` parameter to communicate
+            // to the Authorization Server that it requires certain claims to be included in the to
+            // be issued credential (see https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#appendix-B.1-3.2).
+            // However, in practice at this point, it is unlikely that there are any Authorization
+            // Servers that support this. Since larger PAR requests (that inlcude the `claims`
+            // property) may trigger undefined server-side behaviour we choose to omit the `claims`
+            // property for now until there is a clear use case and support for it.
+            // In general, the actual use case of the `mandatory` property in the VCI metadata is
+            // questioned as can be observed in this (inactive) issue: https://github.com/openid/OpenID4VCI/issues/433
+            claims: None,
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn metadata(credential_issuer: &str, authorization_servers: &[&str]) -> CredentialIssuerMetadata {
+        serde_json::from_value(serde_json::json!({
+            "credential_issuer": credential_issuer,
+            "authorization_servers": authorization_servers,
+            "credential_endpoint": format!("{credential_issuer}/credential"),
+            "credential_configurations_supported": {},
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn locations_name_the_credential_issuer_as_received_when_the_metadata_names_authorization_servers() {
+        let ids = ["cfg-1".to_string(), "cfg-2".to_string()];
+        // Without a path, so a URL would be written with a slash the identifier does not have.
+        let issuer: CredentialIssuerIdentifier = "https://issuer.example".parse().unwrap();
+
+        let details = authorization_details(
+            &ids,
+            &issuer,
+            &metadata("https://issuer.example", &["https://as.example"]),
+        );
+
+        assert_eq!(details.len(), 2);
+        for detail in &details {
+            assert_eq!(detail.locations, Some(vec![issuer.clone()]));
+        }
+        assert_eq!(
+            serde_json::to_value(&details[0]).unwrap()["locations"],
+            serde_json::json!(["https://issuer.example"])
+        );
+    }
+
+    #[test]
+    fn no_locations_when_the_credential_issuer_is_its_own_authorization_server() {
+        let ids = ["cfg-1".to_string()];
+        let issuer: CredentialIssuerIdentifier = "https://issuer.example".parse().unwrap();
+
+        let details = authorization_details(&ids, &issuer, &metadata("https://issuer.example", &[]));
+
+        assert_eq!(details[0].locations, None);
+        assert_eq!(details[0].credential_configuration_id, "cfg-1");
+    }
 
     #[test]
     fn opens_browser_unless_no_browser_is_set() {

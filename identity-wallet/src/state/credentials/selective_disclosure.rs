@@ -1,6 +1,6 @@
 use crate::error::AppError;
 use identity_kit::sd_jwt_vc::{ClaimPath, PathComponent, Processed, SdJwt, ELLIPSIS_KEY};
-use oid4vc_core::claim_path_pointer::{ClaimPathElement, ClaimPathPointer};
+use oid4vc_core::claim_path_pointer::{ClaimPathElement, ClaimPathPointer, ClaimPathProcessingError};
 use oid4vp::dcql::dcql_query::{CredentialQuery, Format};
 use serde_json::Value;
 use std::collections::HashSet;
@@ -37,7 +37,7 @@ pub fn claims_to_disclose(
     let present = |index: &usize| {
         claims
             .get(*index)
-            .is_some_and(|claim| !claim.path.get_values_from_json(credential_json).is_empty())
+            .is_some_and(|claim| claim.path.get_values_from_json(credential_json).is_ok())
     };
     let claim_sets = claim_sets(credential_query);
 
@@ -179,10 +179,16 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
     let Ok((sd_jwt, processed)) = parse(sd_jwt) else {
         return vec![false; claim_paths.len()];
     };
-    let value_counts = |value: &Value| -> Vec<usize> {
+    // How many values each path selects: none when it selects nothing, and `None` when it does not fit the
+    // payload's structure, which aborts its processing (OpenID4VP 1.0, Section 7.1.1) instead of making the claim absent.
+    let value_counts = |value: &Value| -> Vec<Option<usize>> {
         claim_paths
             .iter()
-            .map(|claim_path| claim_path.get_values_from_json(value).len())
+            .map(|claim_path| match claim_path.get_values_from_json(value) {
+                Ok(values) => Some(values.len()),
+                Err(ClaimPathProcessingError::NothingSelected { .. }) => Some(0),
+                Err(_) => None,
+            })
             .collect()
     };
     let before = value_counts(&Value::Object(processed.payload.clone()));
@@ -218,7 +224,10 @@ pub fn concealable_claims(sd_jwt: &str, claim_paths: &[&ClaimPathPointer]) -> Ve
                 return false;
             };
             let after = value_counts(&Value::Object(after.payload));
-            after[index] == 0 && (0..claim_paths.len()).all(|other| other == index || after[other] == before[other])
+            // Concealable only when the claim is then absent: a path that no longer fits would make a Verifier reject
+            // the presentation, not find the claim missing.
+            after[index] == Some(0)
+                && (0..claim_paths.len()).all(|other| other == index || after[other] == before[other])
         })
         .collect()
 }
@@ -252,6 +261,16 @@ pub fn conceal_unrequested_claims(
         .select(|disclosure| disclosed.contains(disclosure.as_str()))
         .map(|presented| presented.to_string())
         .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))
+}
+
+/// The payload of `sd_jwt` as presented with only the disclosures needed to reveal the claims at `claim_paths`.
+pub fn presented_payload(sd_jwt: &str, format: &Format, claim_paths: &[&ClaimPathPointer]) -> Result<Value, AppError> {
+    sd_jwt_payload(&conceal_unrequested_claims(sd_jwt, format, claim_paths)?)
+}
+
+/// The payload of `sd_jwt` with its disclosures applied.
+pub fn sd_jwt_payload(sd_jwt: &str) -> Result<Value, AppError> {
+    parse(sd_jwt).map(|(_, processed)| Value::Object(processed.payload))
 }
 
 #[cfg(test)]
@@ -366,7 +385,7 @@ pub(crate) mod tests {
     }
 
     /// An SD-JWT of `claims` with the claims at `concealed` selectively disclosable, under a fake signature.
-    fn unsigned_sd_jwt(claims: Value, concealed: Vec<ClaimPath>) -> String {
+    pub(crate) fn unsigned_sd_jwt(claims: Value, concealed: Vec<ClaimPath>) -> String {
         use base64::Engine as _;
         let Value::Object(claims) = claims else {
             panic!("claims must be an object")
@@ -516,6 +535,21 @@ pub(crate) mod tests {
         assert_eq!(presented.process().unwrap().payload["nationalities"], json!(["DE"]));
 
         assert_eq!(concealable_claims(&held, &[&first]), vec![true]);
+    }
+
+    #[test]
+    fn a_claim_whose_path_no_longer_fits_once_concealed_is_not_concealable() {
+        // Concealing the first element of `items` leaves `["tail"]`: `["items", 0, "name"]` then applies a key to a
+        // string, which aborts processing (OpenID4VP 1.0, Section 7.1.1) instead of finding the claim absent.
+        let sd_jwt = unsigned_sd_jwt(
+            json!({ "items": [{ "name": "Anna" }, "tail"] }),
+            vec![ClaimPath::new([PathComponent::from("items"), PathComponent::Index(0)])],
+        );
+
+        assert_eq!(
+            concealable_claims(&sd_jwt, &[&path(json!(["items", 0, "name"]))]),
+            vec![false]
+        );
     }
 
     #[test]
