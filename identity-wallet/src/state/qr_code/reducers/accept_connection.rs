@@ -239,6 +239,13 @@ async fn parse_qr_code(state: &AppState, qr_code_scanned: String) -> Result<Pars
         .ok_or(MissingManagerError("identity"))?
         .provider_manager;
 
+    // UniMe knows a verifier by its DID, and a request made under a DID has to be signed (OpenID4VP 1.0, Section
+    // 5.9.3). The client's name, its Response Endpoint and what it asks for are all taken from the request: one that
+    // is signed by nobody can have been written by anyone, in any verifier's name.
+    if is_unsigned_authorization_request(&qr_code_scanned) {
+        return Err(UntrustedError("The authorization request is not signed".to_string()));
+    }
+
     let generic_authorization_request = provider_manager
         .validate_request(qr_code_scanned.clone())
         .await
@@ -267,6 +274,12 @@ async fn parse_qr_code(state: &AppState, qr_code_scanned: String) -> Result<Pars
     } else {
         Err(InvalidAuthorizationRequest(Box::new(generic_authorization_request)))
     }
+}
+
+/// Whether `request` carries its parameters in the open, and not in a signed Request Object (`request` or
+/// `request_uri`). This is what `Provider::validate_request` tries first, and such a request is taken as it is.
+fn is_unsigned_authorization_request(request: &str) -> bool {
+    request.parse::<AuthorizationRequest<Object>>().is_ok()
 }
 
 /// This function retrieves the client metadata and initializes the active flow based on the parsed QR code.
@@ -834,7 +847,9 @@ mod tests {
     use crate::subject::subject;
 
     use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
-    use oid4vc_manager::ProviderManager;
+    use oid4vc_core::Subject as _;
+    use oid4vc_manager::methods::key_method::KeySubject;
+    use oid4vc_manager::{ProviderManager, RelyingPartyManager};
     use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
     use oid4vci::credential_offer::CredentialConfigurationIds;
     use oid4vci::Wallet;
@@ -850,7 +865,6 @@ mod tests {
 
     const ISSUER_NAME: &str = "University";
     const ISSUER_DID: &str = "did:web:example.com";
-    const CLIENT_DID: &str = "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb";
     const CLIENT_NAME: &str = "Example Relying Party";
 
     async fn test_state() -> AppState {
@@ -934,9 +948,31 @@ mod tests {
         format!("{}/logo/client.png", mock_server.uri())
     }
 
-    fn siopv2_request(client_metadata: serde_json::Value) -> String {
+    /// A verifier with a `did:key` of its own, and that DID.
+    async fn verifier() -> (Arc<KeySubject>, String) {
+        let verifier = Arc::new(KeySubject::new().await.unwrap());
+        let did = verifier.identifier("did:key", Algorithm::EdDSA).await.unwrap();
+        (verifier, did)
+    }
+
+    /// `request` as a verifier under a DID sends it: in a Request Object signed with the key of its `client_id`.
+    async fn signed(verifier: Arc<KeySubject>, client_id: &str, request: String) -> String {
+        let request: AuthorizationRequest<Object> = request.parse().unwrap();
+        let request_object = RelyingPartyManager::new(verifier, "did:key", vec![Algorithm::EdDSA])
+            .unwrap()
+            .encode(&request)
+            .await
+            .unwrap();
         let query = url::form_urlencoded::Serializer::new(String::new())
-            .append_pair("client_id", CLIENT_DID)
+            .append_pair("client_id", client_id)
+            .append_pair("request", &request_object)
+            .finish();
+        format!("openid://?{query}")
+    }
+
+    fn siopv2_request(client_id: &str, client_metadata: serde_json::Value) -> String {
+        let query = url::form_urlencoded::Serializer::new(String::new())
+            .append_pair("client_id", client_id)
             .append_pair("client_metadata", &client_metadata.to_string())
             .append_pair("nonce", "nonce")
             .append_pair("redirect_uri", "https://example.com/")
@@ -946,7 +982,7 @@ mod tests {
         format!("openid://?{query}")
     }
 
-    fn oid4vp_request(client_metadata: serde_json::Value) -> String {
+    fn oid4vp_request(client_id: &str, client_metadata: serde_json::Value) -> String {
         let dcql_query = json!({
             "credentials": [{
                 "id": "CredentialQuery",
@@ -956,7 +992,7 @@ mod tests {
             }],
         });
         let query = url::form_urlencoded::Serializer::new(String::new())
-            .append_pair("client_id", CLIENT_DID)
+            .append_pair("client_id", client_id)
             .append_pair("client_metadata", &client_metadata.to_string())
             .append_pair("dcql_query", &dcql_query.to_string())
             .append_pair("nonce", "nonce")
@@ -1134,6 +1170,32 @@ mod tests {
 
     #[tokio::test]
     #[serial_test::serial]
+    async fn a_request_that_is_not_signed_is_refused() {
+        let state = test_state().await;
+        let (_, client_did) = verifier().await;
+        let client_metadata = json!({
+            "client_name": CLIENT_NAME,
+            "id_token_signed_response_alg": "EdDSA",
+            "vp_formats_supported": { "jwt_vc_json": { "alg_values": ["EdDSA"] } },
+            "subject_syntax_types_supported": ["did:key"],
+        });
+        let siopv2_request = siopv2_request(&client_did, client_metadata.clone());
+        let oid4vp_request = oid4vp_request(&client_did, client_metadata);
+        // The parameters in the open win over a Request Object next to them, so that is unsigned as well.
+        let with_a_request_uri = format!("{oid4vp_request}&request_uri=https%3A%2F%2Fexample.com%2Frequest");
+
+        for request in [siopv2_request, oid4vp_request, with_a_request_uri] {
+            let result = parse_qr_code(&state, request).await;
+
+            assert!(
+                matches!(&result, Err(UntrustedError(reason)) if reason.contains("not signed")),
+                "{result:?}"
+            );
+        }
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
     async fn siopv2_request_initializes_the_siopv2_flow_and_downloads_the_client_logo() {
         *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
@@ -1141,17 +1203,19 @@ mod tests {
         let logo_uri = mount_logo(&mock_server).await;
 
         let state = test_state().await;
-        let parsed = parse_qr_code(
-            &state,
-            siopv2_request(json!({
+        let (verifier, client_did) = verifier().await;
+        let request = siopv2_request(
+            &client_did,
+            json!({
                 "client_name": CLIENT_NAME,
                 "logo_uri": logo_uri,
                 "id_token_signed_response_alg": "EdDSA",
                 "subject_syntax_types_supported": ["did:key"],
-            })),
-        )
-        .await
-        .unwrap();
+            }),
+        );
+        let parsed = parse_qr_code(&state, signed(verifier, &client_did, request).await)
+            .await
+            .unwrap();
         assert!(matches!(parsed, ParsedQrCode::Siopv2(_)));
 
         let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed).await.unwrap();
@@ -1160,7 +1224,7 @@ mod tests {
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, "https://example.com");
         assert_eq!(client_metadata.redirect_uri.as_deref(), Some("https://example.com/"));
-        assert_eq!(client_metadata.client_id.unwrap().to_string(), CLIENT_DID);
+        assert_eq!(client_metadata.client_id.unwrap().to_string(), client_did);
         assert!(matches!(active_flow, ActiveFlow::Siopv2 { .. }));
 
         let downloaded_logo = ASSETS_DIR
@@ -1175,15 +1239,17 @@ mod tests {
     #[serial_test::serial]
     async fn siopv2_request_without_client_name_falls_back_to_the_connection_url() {
         let state = test_state().await;
-        let parsed = parse_qr_code(
-            &state,
-            siopv2_request(json!({
+        let (verifier, client_did) = verifier().await;
+        let request = siopv2_request(
+            &client_did,
+            json!({
                 "id_token_signed_response_alg": "EdDSA",
                 "subject_syntax_types_supported": ["did:key"],
-            })),
-        )
-        .await
-        .unwrap();
+            }),
+        );
+        let parsed = parse_qr_code(&state, signed(verifier, &client_did, request).await)
+            .await
+            .unwrap();
 
         let (client_metadata, _) = get_client_metadata_init_active_flow(parsed).await.unwrap();
 
@@ -1200,17 +1266,19 @@ mod tests {
         let logo_uri = mount_logo(&mock_server).await;
 
         let state = test_state().await;
-        let parsed = parse_qr_code(
-            &state,
-            oid4vp_request(json!({
+        let (verifier, client_did) = verifier().await;
+        let request = oid4vp_request(
+            &client_did,
+            json!({
                 "client_name": CLIENT_NAME,
                 "logo_uri": logo_uri,
                 "vp_formats_supported": { "jwt_vc_json": { "alg_values": ["EdDSA"] } },
                 "subject_syntax_types_supported": ["did:key"],
-            })),
-        )
-        .await
-        .unwrap();
+            }),
+        );
+        let parsed = parse_qr_code(&state, signed(verifier, &client_did, request).await)
+            .await
+            .unwrap();
         assert!(matches!(parsed, ParsedQrCode::Oid4vp(_)));
 
         let (client_metadata, active_flow) = get_client_metadata_init_active_flow(parsed).await.unwrap();
@@ -1218,7 +1286,7 @@ mod tests {
         assert_eq!(client_metadata.client_name, CLIENT_NAME);
         assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
         assert_eq!(client_metadata.connection_url, "https://example.com");
-        assert_eq!(client_metadata.client_id.unwrap().to_string(), CLIENT_DID);
+        assert_eq!(client_metadata.client_id.unwrap().to_string(), client_did);
         // OID4VP flows started from a QR-code are never part of an interactive OID4VCI authorization.
         assert!(matches!(
             active_flow,
