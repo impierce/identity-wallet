@@ -416,6 +416,16 @@ const sv_FI = {
     TABS: {
       SUMMARY: 'Översikt',
       ACTIVITY: 'Aktivitet',
+      OFFERS: 'Erbjudanden',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Intyg du kan få från {name}.',
+      COUNT: '{count} {{intyg|intyg}}',
+      SEARCH_PLACEHOLDER: 'Sök intyg',
+      EMPTY: '{name} listar inga intyg.',
+      NO_RESULTS: 'Inga intyg matchar "{term}".',
+      OWNED: 'I din plånbok',
+      UNAVAILABLE: 'Intygen från {name} kunde inte laddas.',
     },
     SUMMARY: {
       EMPTY: 'Inga anslutningar ännu.',

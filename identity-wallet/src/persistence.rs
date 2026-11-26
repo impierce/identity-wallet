@@ -99,6 +99,7 @@ pub async fn load_state() -> Result<AppState, AppError> {
     // A result pop-up belongs to the session it happened in.
     Ok(AppState {
         interaction_result: None,
+        issued_credentials: None,
         ..app_state
     })
 }
@@ -318,6 +319,14 @@ fn store_asset(
     };
 
     Ok(())
+}
+
+/// Whether `/assets/tmp` holds an asset with the id `id`.
+pub fn temp_asset_exists(id: &str) -> bool {
+    let tmp_dir = ASSETS_DIR.lock().unwrap().as_path().join("tmp");
+    SUPPORTED_IMAGE_ASSET_EXTENSIONS
+        .iter()
+        .any(|extension| tmp_dir.join(format!("{id}.{extension}")).exists())
 }
 
 /// Hashes a given URL string to a unique SHA-256 string.

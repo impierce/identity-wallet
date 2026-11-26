@@ -298,6 +298,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             valid_from: Some("2025-01-15T00:00:00Z".to_string()),
             expiration_date: Some("2028-01-14T23:59:59Z".to_string()),
             icon: None,
+            credential_configuration_id: None,
         },
         connection_id: None,
         display_name: "ISO/IEC 27001:2022 Certificate".to_string(),
@@ -334,6 +335,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             valid_from: Some("2025-04-22T00:00:00Z".to_string()),
             expiration_date: Some("2028-04-21T23:59:59Z".to_string()),
             icon: None,
+            credential_configuration_id: None,
         },
         connection_id: None,
         display_name: "ISO/IEC 27701:2019 Certificate".to_string(),
@@ -453,6 +455,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ecosystems: None,
             ecosystems_check: None,
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -471,6 +474,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 last_resolved: Some(impierce_last_interaction.clone()),
             }),
             domain_validation: Some(impierce_domain_validation),
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -485,6 +489,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ecosystems: None,
             ecosystems_check: None,
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -499,6 +504,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ecosystems: None,
             ecosystems_check: None,
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
         Connection {
@@ -517,6 +523,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 last_resolved: Some(road_authority_interaction),
             }),
             domain_validation: None,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         },
     ]);

@@ -6,6 +6,7 @@
   import { fly } from 'svelte/transition';
 
   import type { Connection } from '@bindings/connections/Connection';
+  import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { History, Tabs, TopNavBar } from '$lib/components';
   import { returnRoute, useParentRoute } from '$lib/navigation';
@@ -14,16 +15,40 @@
   import ConnectionDetailsModal from './ConnectionDetailsModal.svelte';
   import ConnectionHeaderMenu from './ConnectionHeaderMenu.svelte';
   import ConnectionSummary from './ConnectionSummary.svelte';
+  import IssuedCredentials from './IssuedCredentials.svelte';
 
   let connection: Connection = $state.connections.find((c) => c.id === page.params.id)!;
   $: connection = $state.connections.find((c) => c.id === page.params.id)!;
 
-  let triggers: string[] = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.ACTIVITY()];
+  // Issuers only: connections that issued credentials before `credential_issuer` was recorded are known by those.
+  const issues = (connection: Connection, credentials: DisplayCredential[]) =>
+    !!connection.credential_issuer || credentials.some((credential) => credential.connection_id === connection.id);
+  const tabs = (isIssuer: boolean, ll: typeof $LL): string[] => [
+    ll.CONNECTION.TABS.SUMMARY(),
+    ...(isIssuer ? [ll.CONNECTION.TABS.OFFERS()] : []),
+    ll.CONNECTION.TABS.ACTIVITY(),
+  ];
+
+  let isIssuer = issues(connection, $state.credentials);
+  $: isIssuer = issues(connection, $state.credentials);
+  let triggers = tabs(isIssuer, $LL);
+  $: triggers = tabs(isIssuer, $LL);
   // A history entry may still hold a tab that no longer exists (such as the removed Data tab).
   let activeTab: Writable<string> = writable(
     page.state.tab && triggers.includes(page.state.tab) ? page.state.tab : triggers[0],
   );
   const detailsOpen = writable(false);
+
+  let credentialsOpened = false;
+  $: if (isIssuer && $activeTab === triggers[1]) credentialsOpened = true;
+
+  // SvelteKit reuses this page when it navigates straight to another connection.
+  let shownConnectionId = connection.id;
+  $: if (connection.id !== shownConnectionId) {
+    shownConnectionId = connection.id;
+    credentialsOpened = false;
+    $activeTab = triggers[0];
+  }
 
   const navigateUp = useParentRoute(() => returnRoute('/activity'));
 
@@ -45,9 +70,24 @@
       <div slot="0" class="h-full py-5">
         <ConnectionSummary {connection} />
       </div>
+      <!-- Tabs fills its slots by position, so the activity moves one slot to the right for issuers. -->
       <div slot="1" class="bg-silver pt-5 dark:bg-navy">
-        <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
-        <History connectionId={connection.id} />
+        {#if isIssuer}
+          <!-- Mounted once the tab is first opened, so the issuer metadata is only fetched when asked for. -->
+          {#if credentialsOpened}
+            {#key connection.id}
+              <IssuedCredentials {connection} />
+            {/key}
+          {/if}
+        {:else}
+          <History connectionId={connection.id} />
+        {/if}
+      </div>
+      <div slot="2" class="bg-silver pt-5 dark:bg-navy">
+        {#if isIssuer}
+          <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
+          <History connectionId={connection.id} />
+        {/if}
       </div>
     </Tabs>
   </div>

@@ -417,6 +417,16 @@ const nl_NL = {
     TABS: {
       SUMMARY: 'Overzicht',
       ACTIVITY: 'Activiteit',
+      OFFERS: 'Aanbod',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Credentials die je van {name} kunt krijgen.',
+      COUNT: '{count} {{credential|credentials}}',
+      SEARCH_PLACEHOLDER: 'Zoek credentials',
+      EMPTY: '{name} vermeldt geen credentials.',
+      NO_RESULTS: 'Geen credentials gevonden voor "{term}".',
+      OWNED: 'In je wallet',
+      UNAVAILABLE: 'De credentials van {name} konden niet worden geladen.',
     },
     SUMMARY: {
       EMPTY: 'Nog geen connecties.',

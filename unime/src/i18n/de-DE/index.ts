@@ -417,6 +417,16 @@ const de_DE = {
     TABS: {
       SUMMARY: 'Übersicht',
       ACTIVITY: 'Verlauf',
+      OFFERS: 'Angebote',
+    },
+    ISSUED_CREDENTIALS: {
+      DESCRIPTION: 'Nachweise, die du von {name} erhalten kannst.',
+      COUNT: '{count} {{Nachweis|Nachweise}}',
+      SEARCH_PLACEHOLDER: 'Nachweise suchen',
+      EMPTY: '{name} listet keine Nachweise auf.',
+      NO_RESULTS: 'Keine Nachweise passen zu "{term}".',
+      OWNED: 'In deiner Wallet',
+      UNAVAILABLE: 'Die Nachweise von {name} konnten nicht geladen werden.',
     },
     SUMMARY: {
       TITLE: 'Verbunden mit',

@@ -1,4 +1,5 @@
 pub mod actions;
+pub mod issued_credentials;
 pub mod reducers;
 
 use crate::error::AppError;
@@ -123,6 +124,11 @@ pub struct Connection {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
+    /// The Credential Issuer Identifier the connection last issued credentials under. Absent for connections that never
+    /// issued one, or did so before it was recorded.
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub credential_issuer: Option<String>,
     /// The ids of the credentials last shared with this connection, keyed by the requested credential types.
     #[ts(skip)]
     #[serde(skip_serializing_if = "HashMap::is_empty")]
@@ -156,6 +162,7 @@ impl Connection {
             ecosystems,
             ecosystems_check: None,
             domain_validation,
+            credential_issuer: None,
             last_shared_credentials: HashMap::new(),
         }
     }

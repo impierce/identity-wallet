@@ -1181,6 +1181,45 @@ type RootTranslation = {
 			 * A​c​t​i​v​i​t​y
 			 */
 			ACTIVITY: string
+			/**
+			 * O​f​f​e​r​s
+			 */
+			OFFERS: string
+		}
+		ISSUED_CREDENTIALS: {
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​s​ ​y​o​u​ ​c​a​n​ ​g​e​t​ ​f​r​o​m​ ​{​n​a​m​e​}​.
+			 * @param {string} name
+			 */
+			DESCRIPTION: RequiredParams<'name'>
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​c​r​e​d​e​n​t​i​a​l​|​c​r​e​d​e​n​t​i​a​l​s​}​}
+			 * @param {number} count
+			 */
+			COUNT: RequiredParams<'count'>
+			/**
+			 * S​e​a​r​c​h​ ​c​r​e​d​e​n​t​i​a​l​s
+			 */
+			SEARCH_PLACEHOLDER: string
+			/**
+			 * {​n​a​m​e​}​ ​d​o​e​s​ ​n​o​t​ ​l​i​s​t​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​.
+			 * @param {string} name
+			 */
+			EMPTY: RequiredParams<'name'>
+			/**
+			 * N​o​ ​c​r​e​d​e​n​t​i​a​l​s​ ​m​a​t​c​h​ ​"​{​t​e​r​m​}​"​.
+			 * @param {string} term
+			 */
+			NO_RESULTS: RequiredParams<'term'>
+			/**
+			 * I​n​ ​y​o​u​r​ ​w​a​l​l​e​t
+			 */
+			OWNED: string
+			/**
+			 * T​h​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​o​f​ ​{​n​a​m​e​}​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​l​o​a​d​e​d​.
+			 * @param {string} name
+			 */
+			UNAVAILABLE: RequiredParams<'name'>
 		}
 		SUMMARY: {
 			/**
@@ -3421,6 +3460,40 @@ export type TranslationFunctions = {
 			 * Activity
 			 */
 			ACTIVITY: () => LocalizedString
+			/**
+			 * Offers
+			 */
+			OFFERS: () => LocalizedString
+		}
+		ISSUED_CREDENTIALS: {
+			/**
+			 * Credentials you can get from {name}.
+			 */
+			DESCRIPTION: (arg: { name: string }) => LocalizedString
+			/**
+			 * {count} {{credential|credentials}}
+			 */
+			COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * Search credentials
+			 */
+			SEARCH_PLACEHOLDER: () => LocalizedString
+			/**
+			 * {name} does not list any credentials.
+			 */
+			EMPTY: (arg: { name: string }) => LocalizedString
+			/**
+			 * No credentials match "{term}".
+			 */
+			NO_RESULTS: (arg: { term: string }) => LocalizedString
+			/**
+			 * In your wallet
+			 */
+			OWNED: () => LocalizedString
+			/**
+			 * The credentials of {name} could not be loaded.
+			 */
+			UNAVAILABLE: (arg: { name: string }) => LocalizedString
 		}
 		SUMMARY: {
 			/**

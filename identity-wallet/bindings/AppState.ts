@@ -5,9 +5,10 @@ import type { DevMode } from "./dev_mode/DevMode";
 import type { DisplayCredential } from "./credentials/DisplayCredential";
 import type { HistoryEvent } from "./history/HistoryEvent";
 import type { InteractionResult } from "./interaction_result/InteractionResult";
+import type { IssuedCredentialsPage } from "./connections/IssuedCredentialsPage";
 import type { ProfileSettings } from "./profile_settings/ProfileSettings";
 import type { SearchResults } from "./search/SearchResults";
 import type { TrustLists } from "./trust_list/TrustLists";
 import type { VerifiedData } from "./verified_data/VerifiedData";
 
-export interface AppState { version: number, dids: Record<string, string>, connections: Connections, credentials: Array<DisplayCredential>, trust_lists: TrustLists, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, verified_data: VerifiedData, show_dev_mode_setting: boolean, is_unlocked: boolean, dev_mode: DevMode, interaction_result: InteractionResult | null, }
+export interface AppState { version: number, dids: Record<string, string>, connections: Connections, credentials: Array<DisplayCredential>, trust_lists: TrustLists, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, verified_data: VerifiedData, show_dev_mode_setting: boolean, is_unlocked: boolean, dev_mode: DevMode, interaction_result: InteractionResult | null, issued_credentials: IssuedCredentialsPage | null, }
