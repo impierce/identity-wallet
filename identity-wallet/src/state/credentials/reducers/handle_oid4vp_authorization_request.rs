@@ -16,8 +16,12 @@ use crate::{
         },
         credentials::{
             actions::credentials_selected::{CredentialSelection, CredentialsSelected},
-            credential_query_matching::{credential_data, credential_query_types_key, satisfies_credential_query},
-            selective_disclosure::{claims_to_disclose, conceal_unrequested_claims, supports_selective_disclosure},
+            credential_query_matching::{
+                credential_data, credential_query_types_key, presentation_fits, satisfies_credential_query,
+            },
+            selective_disclosure::{
+                claims_to_disclose, conceal_unrequested_claims, sd_jwt_payload, supports_selective_disclosure,
+            },
             VerifiableCredentialRecord,
         },
         interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
@@ -309,7 +313,16 @@ fn presented_credential(
         .into_iter()
         .map(|index| &claims[index].path)
         .collect();
-    conceal_unrequested_claims(sd_jwt, &credential_query.format, &claim_paths).map(Value::String)
+    let presented = conceal_unrequested_claims(sd_jwt, &credential_query.format, &claim_paths)?;
+    // A value left in the presentation that does not fit a claims path makes the Verifier reject it (OpenID4VP 1.0,
+    // Section 7.1.1), whichever `claim_sets` option names the path.
+    if !presentation_fits(credential_query, &sd_jwt_payload(&presented)?) {
+        return Err(AppError::MissingRequiredCredentialError(format!(
+            "The presentation does not fit credential query {}",
+            credential_query.id.as_ref()
+        )));
+    }
+    Ok(Value::String(presented))
 }
 
 #[tracing::instrument(skip_all)]
@@ -572,8 +585,9 @@ async fn get_vp_token(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::state::credentials::selective_disclosure::tests::{disclosed_claim_names, DC_SD_JWT};
+    use crate::state::credentials::selective_disclosure::tests::{disclosed_claim_names, unsigned_sd_jwt, DC_SD_JWT};
     use crate::state::credentials::{CredentialFormats, DisplayCredential};
+    use identity_kit::sd_jwt_vc::ClaimPath;
     use serde_json::json;
 
     #[test]
@@ -601,6 +615,43 @@ mod tests {
 
         let presented = presented_credential(&with_claims, &record, None).unwrap();
         assert_eq!(disclosed_claim_names(presented.as_str().unwrap()), vec!["first_name"]);
+    }
+
+    #[test]
+    fn a_presentation_keeping_a_value_that_does_not_fit_a_claims_path_is_refused() {
+        // `nationalities` is a string, not an array: `["credentialSubject", "nationalities", null]` aborts the
+        // Verifier's processing (OpenID4VP 1.0, Section 7.1.1) unless the value is left out.
+        let credential = json!({
+            "type": ["VerifiableCredential"],
+            "credentialSubject": { "nationalities": "NL", "birthdate": "1990-01-01" }
+        });
+        let record = |concealed: &str| VerifiableCredentialRecord {
+            verifiable_credential: json!(unsigned_sd_jwt(
+                credential.clone(),
+                vec![ClaimPath::new(["credentialSubject", concealed])]
+            )),
+            display_credential: DisplayCredential {
+                format: CredentialFormats::VcSdJwt(()),
+                ..Default::default()
+            },
+        };
+        let credential_query: CredentialQuery = serde_json::from_value(json!({
+            "id": "pid",
+            "format": "vc+sd-jwt",
+            "meta": { "type_values": [["VerifiableCredential"]] },
+            "claims": [
+                { "id": "nationality", "path": ["credentialSubject", "nationalities", null] },
+                { "id": "birthdate", "path": ["credentialSubject", "birthdate"] }
+            ],
+            "claim_sets": [["nationality"], ["birthdate"]]
+        }))
+        .unwrap();
+
+        assert!(presented_credential(&credential_query, &record("nationalities"), None).is_ok());
+        assert!(matches!(
+            presented_credential(&credential_query, &record("birthdate"), None),
+            Err(AppError::MissingRequiredCredentialError(_))
+        ));
     }
 
     #[test]
