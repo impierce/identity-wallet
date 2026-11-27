@@ -90,7 +90,7 @@ impl AppStateContainer {
 
 pub const SUPPORTED_SIGNING_ALGORITHMS: &[Algorithm] = &[Algorithm::EdDSA, Algorithm::ES256];
 pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
-pub const APP_STATE_VERSION: u32 = 1;
+pub const APP_STATE_VERSION: u32 = 2;
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `core_utils` field (including managers and active flow context) is skipped.
@@ -105,6 +105,8 @@ pub struct AppState {
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
     pub trust_lists: TrustLists,
+    /// The CA certificates, in PEM, that X.509 identities are verified against (ADR 0004). None by default.
+    pub trust_anchors: Vec<String>,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]

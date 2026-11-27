@@ -5,6 +5,7 @@
 //! and some deployments only serve it at the host (`/.well-known/x`). UniMe tries all three, in the order of
 //! [`well_known_candidates`].
 
+use anyhow::Context as _;
 use log::debug;
 use oid4vci::credential_issuer::{
     authorization_server_metadata::AuthorizationServerMetadata,
@@ -12,6 +13,7 @@ use oid4vci::credential_issuer::{
 };
 use reqwest::{header::ACCEPT, StatusCode};
 use serde::{de::DeserializeOwned, Deserialize};
+use serde_json::{Map, Value};
 use url::Url;
 
 use crate::http_client::{get_http_client, request_error};
@@ -54,10 +56,8 @@ pub fn well_known_candidates(base: &Url, suffix: &str) -> Vec<Url> {
     candidates
 }
 
-/// Fetches the credential issuer metadata of `credential_issuer_url`. Metadata naming another Credential Issuer is
-/// not used: "If the Credential Issuer metadata contains a credential_issuer parameter that is not identical to the
-/// Credential Issuer Identifier, the metadata MUST NOT be used" (OpenID4VCI 1.0, Section 12.2.4). Both are compared as
-/// strings, "with no normalization", so `https://issuer.example` and `https://issuer.example/` differ.
+/// Fetches the credential issuer metadata of `credential_issuer`. Metadata naming another Credential Issuer is not
+/// used, see [`ensure_credential_issuer`].
 pub async fn get_credential_issuer_metadata(
     credential_issuer: &CredentialIssuerIdentifier,
 ) -> anyhow::Result<CredentialIssuerMetadata> {
@@ -66,15 +66,76 @@ pub async fn get_credential_issuer_metadata(
         &[OPENID_CREDENTIAL_ISSUER],
         "credential issuer metadata",
         |metadata: &CredentialIssuerMetadata| {
-            anyhow::ensure!(
-                metadata.credential_issuer == *credential_issuer,
-                "its credential_issuer {} is not the Credential Issuer Identifier {credential_issuer}",
-                metadata.credential_issuer
-            );
-            Ok(())
+            ensure_credential_issuer(Some(metadata.credential_issuer.as_str()), credential_issuer)
         },
     )
     .await
+}
+
+/// "If the Credential Issuer metadata contains a credential_issuer parameter that is not identical to the Credential
+/// Issuer Identifier, the metadata MUST NOT be used" (OpenID4VCI 1.0, Section 12.2.4). Both are compared as strings,
+/// "with no normalization", so `https://issuer.example` and `https://issuer.example/` differ.
+fn ensure_credential_issuer(
+    credential_issuer: Option<&str>,
+    identifier: &CredentialIssuerIdentifier,
+) -> anyhow::Result<()> {
+    anyhow::ensure!(
+        credential_issuer == Some(identifier.as_str()),
+        "its credential_issuer {} is not the Credential Issuer Identifier {identifier}",
+        credential_issuer.unwrap_or("(none)")
+    );
+    Ok(())
+}
+
+/// Fetches the credential issuer metadata of `credential_issuer`, with the values of its `signed_metadata` taking
+/// precedence when it verifies the credential issuer under `trust_anchors` (OID4VCI 1.0 §11.2.3, ADR 0004). Metadata
+/// naming another Credential Issuer is not used, before or after the signed values are applied
+/// ([`ensure_credential_issuer`]).
+pub async fn get_verified_credential_issuer_metadata(
+    credential_issuer: &CredentialIssuerIdentifier,
+    trust_anchors: &[String],
+) -> anyhow::Result<CredentialIssuerMetadata> {
+    load_verified_credential_issuer_metadata(credential_issuer, trust_anchors)
+        .await
+        .map(|applied| applied.metadata)
+}
+
+/// [`get_verified_credential_issuer_metadata`], with whether the values of a verified `signed_metadata` were applied.
+pub async fn load_verified_credential_issuer_metadata(
+    credential_issuer: &CredentialIssuerIdentifier,
+    trust_anchors: &[String],
+) -> anyhow::Result<crate::x509::AppliedMetadata> {
+    let resource = "credential issuer metadata";
+    let credential_issuer_url = credential_issuer.url();
+    let (metadata, url, status) = fetch_well_known_with(
+        &credential_issuer_url,
+        &[OPENID_CREDENTIAL_ISSUER],
+        resource,
+        parse_credential_issuer_metadata,
+        |metadata: &Map<String, Value>| {
+            ensure_credential_issuer(
+                metadata.get("credential_issuer").and_then(Value::as_str),
+                credential_issuer,
+            )
+        },
+    )
+    .await?;
+    let applied = crate::x509::apply_signed_metadata(metadata, &credential_issuer_url, trust_anchors)
+        .await
+        .with_context(|| format!("Failed to parse {resource} from {url} (HTTP {status})"))?;
+    ensure_credential_issuer(Some(applied.metadata.credential_issuer.as_str()), credential_issuer)
+        .with_context(|| format!("The {resource} at {url} is not used"))?;
+    Ok(applied)
+}
+
+/// The JSON of credential issuer metadata, which must be complete unless it carries `signed_metadata`: an issuer that
+/// enforces signed metadata leaves its parameters out of the unsigned metadata (OID4VCI 1.0 §11.2.3).
+fn parse_credential_issuer_metadata(text: &str) -> serde_json::Result<Map<String, Value>> {
+    let metadata: Map<String, Value> = serde_json::from_str(text)?;
+    if !metadata.contains_key("signed_metadata") {
+        serde_json::from_value::<CredentialIssuerMetadata>(Value::Object(metadata.clone()))?;
+    }
+    Ok(metadata)
 }
 
 /// Fetches the metadata of `authorization_server_url`. RFC 8414 OAuth metadata is preferred, with an OpenID Provider
@@ -164,6 +225,20 @@ async fn fetch_well_known<T: DeserializeOwned>(
     resource: &str,
     accept: impl Fn(&T) -> anyhow::Result<()>,
 ) -> anyhow::Result<T> {
+    fetch_well_known_with(base, suffixes, resource, |text| serde_json::from_str(text), accept)
+        .await
+        .map(|(resource_value, _, _)| resource_value)
+}
+
+/// [`fetch_well_known`], with `parse` deciding whether a candidate's body is the resource, which is returned with the
+/// URL and status it was served with.
+async fn fetch_well_known_with<T>(
+    base: &Url,
+    suffixes: &[&str],
+    resource: &str,
+    parse: impl Fn(&str) -> serde_json::Result<T>,
+    accept: impl Fn(&T) -> anyhow::Result<()>,
+) -> anyhow::Result<(T, Url, StatusCode)> {
     let client = get_http_client().await;
     let mut last_error = None;
 
@@ -193,11 +268,11 @@ async fn fetch_well_known<T: DeserializeOwned>(
             continue;
         }
 
-        match serde_json::from_str::<T>(&text) {
+        match parse(&text) {
             Ok(resource_value) => match accept(&resource_value) {
                 Ok(()) => {
                     debug!("Found {resource} at {url}");
-                    return Ok(resource_value);
+                    return Ok((resource_value, url, status));
                 }
                 Err(err) => {
                     debug!("Not using the {resource} at {url}: {err}");
@@ -227,6 +302,20 @@ mod tests {
 
     fn url(url: &str) -> Url {
         Url::parse(url).unwrap()
+    }
+
+    #[test]
+    fn credential_issuer_metadata_must_be_complete_unless_it_is_signed() {
+        let incomplete =
+            json!({ "credential_issuer": "https://example.com", "credential_configurations_supported": {} });
+        assert!(parse_credential_issuer_metadata(&incomplete.to_string()).is_err());
+
+        let mut signed = incomplete.clone();
+        signed["signed_metadata"] = json!("eyJ...");
+        assert_eq!(
+            parse_credential_issuer_metadata(&signed.to_string()).unwrap(),
+            *signed.as_object().unwrap()
+        );
     }
 
     fn identifier(identifier: &str) -> CredentialIssuerIdentifier {
@@ -385,64 +474,111 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn metadata_naming_another_credential_issuer_is_not_used() {
+    async fn incomplete_metadata_whose_signed_metadata_is_not_applied_is_an_invalid_response() {
         let mock_server = MockServer::start().await;
         let issuer = mock_server.uri();
-        mount_json(
-            &mock_server,
-            "/.well-known/openid-credential-issuer",
-            credential_issuer_metadata("https://other.example"),
-        )
-        .await;
+        let mut metadata = credential_issuer_metadata(&issuer);
+        metadata.as_object_mut().unwrap().remove("credential_endpoint");
+        metadata["signed_metadata"] = json!("not.a.jwt");
+        mount_json(&mock_server, "/.well-known/openid-credential-issuer", metadata).await;
 
-        let error = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap_err();
+        let error = get_verified_credential_issuer_metadata(&identifier(&issuer), &[])
+            .await
+            .unwrap_err();
 
-        assert!(
-            format!("{error:#}").contains("is not the Credential Issuer Identifier"),
-            "{error:#}"
+        assert!(error.to_string().contains("(HTTP 200 OK)"), "{error}");
+        assert_eq!(
+            crate::user_error::ErrorCause::from_app_error(&crate::error::AppError::GetCredentialIssuerMetadataError(
+                error
+            )),
+            crate::user_error::ErrorCause::InvalidResponse
         );
     }
 
     #[tokio::test]
-    async fn metadata_naming_the_issuer_with_another_spelling_is_not_used() {
-        let mock_server = MockServer::start().await;
-        let issuer = mock_server.uri();
-        mount_json(
-            &mock_server,
-            "/.well-known/openid-credential-issuer",
-            credential_issuer_metadata(&format!("{issuer}/")),
-        )
-        .await;
+    async fn metadata_naming_another_credential_issuer_is_not_used() {
+        for verified in [false, true] {
+            let mock_server = MockServer::start().await;
+            let issuer = mock_server.uri();
+            mount_json(
+                &mock_server,
+                "/.well-known/openid-credential-issuer",
+                credential_issuer_metadata("https://other.example"),
+            )
+            .await;
 
-        let error = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap_err();
+            let error = load_credential_issuer_metadata(&identifier(&issuer), verified)
+                .await
+                .unwrap_err();
 
-        assert!(
-            format!("{error:#}").contains("is not the Credential Issuer Identifier"),
-            "{error:#}"
-        );
+            assert!(
+                format!("{error:#}").contains("is not the Credential Issuer Identifier"),
+                "{error:#}"
+            );
+        }
     }
 
     #[tokio::test]
     async fn a_candidate_naming_another_issuer_is_skipped_for_the_next() {
-        let mock_server = MockServer::start().await;
-        let issuer = format!("{}/tenant", mock_server.uri());
-        // The first candidate tried names another issuer; the second, the specification's location, this one.
-        mount_json(
-            &mock_server,
-            "/tenant/.well-known/openid-credential-issuer",
-            credential_issuer_metadata("https://other.example"),
-        )
-        .await;
-        mount_json(
-            &mock_server,
-            "/.well-known/openid-credential-issuer/tenant",
-            credential_issuer_metadata(&issuer),
-        )
-        .await;
+        for verified in [false, true] {
+            let mock_server = MockServer::start().await;
+            let issuer = format!("{}/tenant", mock_server.uri());
+            // The first candidate tried names another issuer; the second, the specification's location, this one.
+            mount_json(
+                &mock_server,
+                "/tenant/.well-known/openid-credential-issuer",
+                credential_issuer_metadata("https://other.example"),
+            )
+            .await;
+            mount_json(
+                &mock_server,
+                "/.well-known/openid-credential-issuer/tenant",
+                credential_issuer_metadata(&issuer),
+            )
+            .await;
 
-        let metadata = get_credential_issuer_metadata(&identifier(&issuer)).await.unwrap();
+            let metadata = load_credential_issuer_metadata(&identifier(&issuer), verified)
+                .await
+                .unwrap();
 
-        assert_eq!(metadata.credential_issuer, identifier(&issuer));
+            assert_eq!(metadata.credential_issuer, identifier(&issuer));
+        }
+    }
+
+    #[tokio::test]
+    async fn metadata_naming_the_issuer_with_another_spelling_is_not_used() {
+        for verified in [false, true] {
+            let mock_server = MockServer::start().await;
+            let issuer = mock_server.uri();
+            mount_json(
+                &mock_server,
+                "/.well-known/openid-credential-issuer",
+                credential_issuer_metadata(&format!("{issuer}/")),
+            )
+            .await;
+
+            let error = load_credential_issuer_metadata(&identifier(&issuer), verified)
+                .await
+                .unwrap_err();
+
+            assert!(
+                format!("{error:#}").contains("is not the Credential Issuer Identifier"),
+                "{error:#}"
+            );
+        }
+    }
+
+    /// The credential issuer metadata of `issuer`, with [`get_verified_credential_issuer_metadata`] (without trust
+    /// anchors) when `verified`, else with [`get_credential_issuer_metadata`].
+    async fn load_credential_issuer_metadata(
+        issuer: &CredentialIssuerIdentifier,
+        verified: bool,
+    ) -> anyhow::Result<CredentialIssuerMetadata> {
+        if verified {
+            get_verified_credential_issuer_metadata(issuer, &[]).await
+        } else {
+            get_credential_issuer_metadata(issuer).await
+        }
     }
 
     #[tokio::test]

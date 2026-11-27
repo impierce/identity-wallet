@@ -1,3 +1,4 @@
+use crate::identity::{Identity, Proof, ProofMethod};
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -18,9 +19,9 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
     subject::Subject,
-    well_known::{get_authorization_server_metadata, get_credential_issuer_metadata},
+    well_known::{get_authorization_server_metadata, get_verified_credential_issuer_metadata},
 };
-use identity_kit::{did::Did, status_list::Status};
+use identity_kit::status_list::Status;
 use log::{debug, info, warn};
 use oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vci::{
@@ -152,9 +153,10 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         debug!("Credential issuer URL: {credential_issuer}");
 
         // Get the credential issuer metadata.
-        let credential_issuer_metadata = get_credential_issuer_metadata(credential_issuer)
-            .await
-            .map_err(GetCredentialIssuerMetadataError)?;
+        let credential_issuer_metadata =
+            get_verified_credential_issuer_metadata(credential_issuer, &state.trust_anchors)
+                .await
+                .map_err(GetCredentialIssuerMetadataError)?;
         let credential_issuer_url = credential_issuer.url();
 
         // Check that the specified authorization servers are listed in the Credential Issuer Metadata's `authorization_servers` parameter.
@@ -291,6 +293,8 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         let mut pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
             AppError::FlowExpiredError("Expected pending connection data for OID4VCI token request".to_string())
         })?;
+        let issuer_identity = pending_connection_data.client_metadata.verified_identity().cloned();
+        let trust_anchors = state.trust_anchors.clone();
 
         // Every credential is fetched and its issuer signature verified before anything is stored, so that a credential
         // that fails leaves neither a credential nor a connection behind (ADR 0005).
@@ -361,12 +365,32 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
                 }
             };
 
-            let signing_did = verify_issuer_signature(
-                &credential_configuration.credential_format.format(),
-                &credential,
-                identity_manager,
-            )
-            .await?;
+            // An issuer verified with a certificate signs every credential under a chain that certifies the same identity,
+            // whatever its format (ADR 0004). Any other issuer names its signing key with a DID URL (ADR 0005).
+            let signing_did = match &issuer_identity {
+                Some(identity @ Identity::X509 { .. }) => {
+                    let credential_jws = credential.as_str().ok_or(AppError::UntrustedError(
+                        "The credential of an issuer verified with a certificate is not signed under it".to_string(),
+                    ))?;
+                    crate::x509::validate_credential(credential_jws, identity, &trust_anchors)
+                        .await
+                        .map_err(|err| {
+                            warn!("The credential is not signed under the issuer's certificate: {err:#}");
+                            AppError::UntrustedError(format!(
+                                "The credential's signature does not verify its issuer: {err}"
+                            ))
+                        })?;
+                    None
+                }
+                Some(Identity::Did(_)) | None => Some(
+                    verify_issuer_signature(
+                        &credential_configuration.credential_format.format(),
+                        &credential,
+                        identity_manager,
+                    )
+                    .await?,
+                ),
+            };
             debug!("Verified the issuer signature of credential configuration {credential_configuration_id}");
 
             received_credentials.push((
@@ -378,27 +402,45 @@ async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<
         }
 
         // An issuer verified with its DID document must have signed every credential with that DID. An unverified
-        // issuer is bound to the DID that signed them.
-        let connection_did = connection_did(
-            pending_connection_data
-                .client_metadata
-                .client_id
-                .as_ref()
-                .map(ToString::to_string),
-            received_credentials
-                .iter()
-                .map(|(.., signing_did)| signing_did.as_str()),
-        )?;
-        if pending_connection_data.client_metadata.client_id.is_none() {
-            info!("Binding the unverified issuer {connection_url} to the DID that signed its credentials");
-            pending_connection_data.client_metadata.client_id = Some(
-                Did::parse(&connection_did)
-                    .map_err(|err| AppError::UntrustedError(format!("Failed to parse the signing DID: {err}")))?,
-            );
+        // issuer is bound to the DID that signed them (ADR 0005). One verified with a certificate keeps that identity.
+        if !matches!(issuer_identity, Some(Identity::X509 { .. })) {
+            let connection_did = connection_did(
+                issuer_identity
+                    .as_ref()
+                    .and_then(Identity::as_did)
+                    .map(ToString::to_string),
+                received_credentials
+                    .iter()
+                    .filter_map(|(.., signing_did)| signing_did.as_deref()),
+            )?;
+            if issuer_identity.is_none() {
+                // An unverified issuer is held to the DIDs its connection already has: one that signs with another DID
+                // under the same DNS name is not the party the user connected to before (ADR 0004, ADR 0005).
+                if let Some(connection) = state.connections.find(&pending_connection_data.client_metadata) {
+                    if !connection
+                        .proofs
+                        .iter()
+                        .any(|proof| proof.identity.as_did() == Some(connection_did.as_str()))
+                    {
+                        return Err(AppError::UntrustedError(format!(
+                            "The credential is signed by {connection_did}, which is not an identity of the connection"
+                        )));
+                    }
+                }
+                info!("Binding the unverified issuer {connection_url} to the DID that signed its credentials");
+                pending_connection_data.client_metadata.proofs = vec![Proof::new(
+                    Identity::did(&connection_did)
+                        .map_err(|err| AppError::UntrustedError(format!("Failed to parse the signing DID: {err}")))?,
+                    ProofMethod::CredentialSignature,
+                )];
+            }
         }
 
         // Create or update the connection. It is part of the returned state only, so it is dropped with it on an error.
-        let previously_connected = state.connections.contains(&connection_did);
+        let previously_connected = state
+            .connections
+            .find(&pending_connection_data.client_metadata)
+            .is_some();
         let mut connections = state.connections;
         let mut history = state.history;
         let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data)?;
@@ -806,6 +848,7 @@ mod tests {
 #[cfg(test)]
 mod issuance_tests {
     use super::*;
+    use crate::identity::ConnectionKey;
     use crate::persistence::STRONGHOLD;
     use crate::state::core_utils::{IdentityManager, Managers, PendingConnectionData};
     use crate::state::did::validate_domain_linkage::ValidationStatus;
@@ -1014,7 +1057,15 @@ mod issuance_tests {
                         logo_uri: None,
                         connection_url: server.uri(),
                         redirect_uri: Some(server.uri()),
-                        client_id: client_id.map(|did| did.parse().unwrap()),
+                        proofs: client_id
+                            .map(|did| {
+                                Proof::new(
+                                    crate::identity::Identity::did(did).unwrap(),
+                                    ProofMethod::WellKnownDidDocument,
+                                )
+                            })
+                            .into_iter()
+                            .collect(),
                     },
                     domain_validation: Some((ValidationStatus::Unknown, DateUtils::new_date_string())),
                     linked_verifiable_presentations: None,
@@ -1055,7 +1106,14 @@ mod issuance_tests {
 
         assert_eq!(state.connections.0.len(), 1);
         let connection = state.connections.0[0].clone();
-        assert_eq!(connection.did, issuer.did);
+        assert_eq!(
+            connection.proofs,
+            vec![Proof::new(
+                crate::identity::Identity::did(&issuer.did).unwrap(),
+                ProofMethod::CredentialSignature
+            )]
+        );
+        assert_eq!(connection.key, ConnectionKey::Domain("127.0.0.1".to_string()));
         assert_eq!(state.credentials.len(), 1);
         assert_eq!(state.credentials[0].connection_id.as_ref(), Some(&connection.id));
         assert_eq!(stored_credentials(&managers).await, 1);
@@ -1137,8 +1195,45 @@ mod issuance_tests {
         let state = send_token_request(state, code_received()).await.unwrap();
 
         assert_eq!(state.connections.0.len(), 1);
-        assert_eq!(state.connections.0[0].did, issuer.did);
+        assert_eq!(state.connections.0[0].proofs[0].identity.to_string(), issuer.did);
         assert_eq!(stored_credentials(&managers).await, 1);
+    }
+
+    /// An unverified issuer is held to the DIDs of its connection: a credential signed with another DID under the same
+    /// DNS name is refused, and the connection is left as it was (ADR 0004, ADR 0005).
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn an_unverified_issuer_that_signs_with_another_did_than_its_connection_is_refused() {
+        let issuer = TestIssuer::new().await;
+        let server = mount_issuer(&issuer.sd_jwt(&issuer.did, &issuer.kid).await).await;
+        let managers = test_managers().await;
+
+        let other_did = "did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK";
+        let known = crate::state::connections::Connection::new(
+            "Issuer".to_string(),
+            server.uri(),
+            ConnectionKey::Domain("127.0.0.1".to_string()),
+            vec![Proof::new(
+                crate::identity::Identity::did(other_did).unwrap(),
+                ProofMethod::CredentialSignature,
+            )],
+            None,
+            None,
+            None,
+        );
+        let state = AppState {
+            connections: crate::state::connections::Connections(vec![known.clone()]),
+            ..AppState::default()
+        };
+
+        let state = accepted_offer(state, managers.clone(), &server, None);
+        let result = send_token_request(state, code_received()).await;
+
+        assert!(
+            matches!(&result, Err(AppError::UntrustedError(reason)) if reason.contains("not an identity of the connection")),
+            "{result:?}"
+        );
+        assert_eq!(stored_credentials(&managers).await, 0);
     }
 
     /// A credential's signature is verified only with a key listed under `verificationMethod`, as every other signature
@@ -1178,7 +1273,7 @@ mod issuance_tests {
 
             if listed {
                 let state = result.unwrap();
-                assert_eq!(state.connections.0[0].did, did);
+                assert_eq!(state.connections.0[0].proofs[0].identity.to_string(), did);
                 assert_eq!(stored_credentials(&managers).await, 1);
             } else {
                 // The key is in the document, embedded, so only the scope of the lookup refuses it.

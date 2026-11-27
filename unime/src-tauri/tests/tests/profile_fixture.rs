@@ -1,3 +1,4 @@
+use identity_wallet::identity::{ConnectionKey, Identity, Proof, ProofMethod};
 use identity_wallet::oid4vc_core::{Sign as _, Subject as _};
 use identity_wallet::persistence::{STATE_FILE, STRONGHOLD};
 use identity_wallet::state::credentials::CredentialStatusType;
@@ -142,18 +143,35 @@ async fn test_profile_v0_18_0_unlocks() {
         .connections
         .0
         .iter()
-        .map(|connection| (connection.name.as_str(), connection.did.as_str()))
+        .map(|connection| {
+            (
+                connection.name.as_str(),
+                connection.key.clone(),
+                connection.proofs.clone(),
+            )
+        })
         .collect();
-    connections.sort();
+    connections.sort_by_key(|(name, ..)| *name);
+    let migrated = |did: &str| {
+        (
+            ConnectionKey::Did(did.to_string()),
+            vec![Proof::new(Identity::from(did), ProofMethod::Migrated)],
+        )
+    };
+    let (capella_key, capella_proofs) = migrated("did:web:capella.dev2.impierce.com");
+    let (mira_key, mira_proofs) = migrated("did:web:mira.dev2.impierce.com");
     assert_eq!(
         connections,
         vec![
-            ("Capella", "did:web:capella.dev2.impierce.com"),
-            ("Mira", "did:web:mira.dev2.impierce.com"),
+            ("Capella", capella_key, capella_proofs),
+            ("Mira", mira_key, mira_proofs),
         ]
     );
 
     assert_eq!(state.history.len(), 7);
+
+    // The profile was written by `AppState` version 1, which stored each connection's `did`; it is migrated.
+    assert_eq!(state.version, identity_wallet::state::APP_STATE_VERSION);
 
     // The keys in the Stronghold snapshot still produce the DIDs the profile was created with.
     let subject = state

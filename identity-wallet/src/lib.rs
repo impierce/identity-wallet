@@ -2,6 +2,7 @@ pub mod command;
 pub mod did_resolver;
 pub mod error;
 pub mod http_client;
+pub mod identity;
 pub mod logging;
 pub mod migrations;
 pub mod persistence;
@@ -10,6 +11,7 @@ pub mod stronghold;
 pub mod subject;
 pub mod user_error;
 pub mod well_known;
+pub mod x509;
 
 // Re-exports
 pub use {oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};

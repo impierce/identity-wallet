@@ -17,8 +17,9 @@ const base: AcceptConnectionPrompt = {
     logo_uri: 'https://bestdex.com/logo.png',
     connection_url: 'https://www.bestdex.com',
     redirect_uri: 'https://www.bestdex.com/callback',
-    // A DID, or `null` for an OID4VCI issuer that publishes no DID document (see `unverified-issuer`).
-    client_id: 'did:web:bestdex.com',
+    // Each proof verifies a DID, or `x509_san_dns:<DNS name>` for an issuer verified with a certificate (ADR 0004).
+    // None for an OID4VCI issuer verified with neither (see `unverified-issuer`).
+    proofs: [{ identity: 'did:web:bestdex.com', method: 'well_known_did_document' }],
   },
   domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
   linked_verifiable_presentations: [],
@@ -230,7 +231,7 @@ export const mocks = {
   'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
   // An OID4VCI issuer without a DID document, such as one identified by did:jwk: no DID yet (ADR 0005).
   'unverified-issuer': {
-    ...withClientMetadata({ client_id: null }),
+    ...withClientMetadata({ proofs: [] }),
     domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' },
   },
   'long-name': withClientMetadata({ client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' }),
